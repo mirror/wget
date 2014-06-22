@@ -36,7 +36,6 @@ as that of the covered work.  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <time.h>
 #include <tmpdir.h>
 #include <sha1.h>
@@ -56,6 +55,7 @@ as that of the covered work.  */
 #endif
 
 #include "warc.h"
+#include "exits.h"
 
 #ifndef O_TEMPORARY
 #define O_TEMPORARY 0
@@ -1038,7 +1038,7 @@ warc_init (void)
               logprintf (LOG_NOTQUIET,
                          _("Could not read CDX file %s for deduplication.\n"),
                          quote (opt.warc_cdx_dedup_filename));
-              exit(1);
+              exit (WGET_EXIT_GENERIC_ERROR);
             }
         }
 
@@ -1047,7 +1047,7 @@ warc_init (void)
         {
           logprintf (LOG_NOTQUIET,
                      _("Could not open temporary WARC manifest file.\n"));
-          exit(1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
 
       if (opt.warc_keep_log)
@@ -1057,7 +1057,7 @@ warc_init (void)
             {
               logprintf (LOG_NOTQUIET,
                          _("Could not open temporary WARC log file.\n"));
-              exit(1);
+              exit (WGET_EXIT_GENERIC_ERROR);
             }
           log_set_warc_log_fp (warc_log_fp);
         }
@@ -1066,7 +1066,7 @@ warc_init (void)
       if (! warc_start_new_file (false))
         {
           logprintf (LOG_NOTQUIET, _("Could not open WARC file.\n"));
-          exit(1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
 
       if (opt.warc_cdx_enabled)
@@ -1075,7 +1075,7 @@ warc_init (void)
             {
               logprintf (LOG_NOTQUIET,
                          _("Could not open CDX file for output.\n"));
-              exit(1);
+              exit (WGET_EXIT_GENERIC_ERROR);
             }
         }
     }
@@ -1103,7 +1103,7 @@ warc_write_metadata (void)
   if (warc_tmp_fp == NULL)
     {
       logprintf (LOG_NOTQUIET, _("Could not open temporary WARC file.\n"));
-      exit(1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
   fflush (warc_tmp_fp);
   fprintf (warc_tmp_fp, "%s\n", program_argstring);

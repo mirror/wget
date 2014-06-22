@@ -62,4 +62,3 @@ my $the_test = FTPTest->new (name => "Test-ftp-list-UNIX-hidden",
                              output => \%expected_downloaded_files,
                              server_behavior => {list_no_hidden_if_list => 1});
 exit $the_test->run();
-

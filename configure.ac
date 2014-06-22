@@ -158,8 +158,7 @@ AC_C_VOLATILE
 
 dnl Check for basic headers, even though we expect them to exist and
 dnl #include them unconditionally in the code.  Their detection is
-dnl still needed because test programs used by Autoconf macros check
-dnl for STDC_HEADERS, HAVE_SYS_TYPES_H, etc. before using them.
+dnl still needed because test programs used by Autoconf macros check.
 dnl Without the checks they will fail to be included in test programs,
 dnl which will subsequently fail.
 AC_HEADER_STDC
@@ -200,9 +199,7 @@ AC_CHECK_TYPES([uint32_t, uintptr_t, intptr_t, int64_t])
 AC_CHECK_TYPES(sig_atomic_t, [], [], [
 #include <stdio.h>
 #include <sys/types.h>
-#if HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
+#include <inttypes.h>
 #include <signal.h>
 ])
 
@@ -276,7 +273,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
   case $host_os in
     *mingw32* )
       dnl prefer link to openssl dlls if possible. if not then fallback on static libs. if not then error
-        
+
       AC_CHECK_LIB(eay32, EVP_MD_CTX_init)
       if test x"$ac_cv_lib_eay32_EVP_MD_CTX_init" != xno
       then
@@ -288,7 +285,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
           AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the `ssl32' library (-lssl32).])
         ],
         AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
-          
+
       else
         LIBS+=' -lgdi32'
         dnl fallback and test static libs
@@ -416,7 +413,7 @@ AS_IF([test x"$ENABLE_METALINK" != xno],[
     CFLAGS="$LIBMETALINK_CFLAGS $CFLAGS"
     AC_DEFINE([ENABLE_METALINK], 1,
      [Define if you want the metalink support compiled in.])
-    
+
     AC_CHECK_LIB(metalink, metalink_parse_file, [
       if test x"$DISABLE_THREADS" == xyes
       then
@@ -645,7 +642,7 @@ AC_CHECK_HEADER(pcre.h,
                   ])
 )
 
- 
+
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" == "Xyes"])
 AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$metalink" == "Xyes"])

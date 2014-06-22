@@ -153,6 +153,9 @@ key_type_to_ssl_type (enum keyfile_type type)
     }
 }
 
+/* SSL has been initialized */
+static int ssl_true_initialized = 0;
+
 /* Create an SSL Context and set default paths etc.  Called the first
    time an HTTP download is attempted.
 
@@ -161,6 +164,14 @@ key_type_to_ssl_type (enum keyfile_type type)
 bool
 ssl_init (void)
 {
+#if OPENSSL_VERSION_NUMBER >= 0x00907000
+  if (ssl_true_initialized == 0)
+    {
+      OPENSSL_config (NULL);
+      ssl_true_initialized = 1;
+    }
+#endif
+
   SSL_METHOD const *meth;
 
   if (ssl_ctx)

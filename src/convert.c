@@ -511,7 +511,7 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
     converted_files = make_string_hash_table (0);
 
   /* We can get called twice on the same URL thanks to the
-     convert_all_links() call in main().  If we write the .orig file
+     convert_all_links() call in main.  If we write the .orig file
      each time in such a case, it'll end up containing the first-pass
      conversion, not the original file.  So, see if we've already been
      called on this file. */
@@ -881,7 +881,7 @@ FNNAME_WTHREADS(register_download) (const char *url, const char *file)
   hash_table_put (dl_url_file_map, xstrdup (url), xstrdup (file));
 }
 
-/* Register that FROM has been redirected to TO.  This assumes that TO
+/* Register that FROM has been redirected to "TO".  This assumes that TO
    is successfully downloaded and already registered using
    register_download() above.  */
 
@@ -1144,4 +1144,3 @@ THREAD_SAFE_VOID (convert_all_links, (void), ());
 /*
  * vim: et ts=2 sw=2
  */
-

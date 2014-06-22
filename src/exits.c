@@ -20,24 +20,6 @@
 #include "wget.h"
 #include "exits.h"
 
-/* Final exit code possibilities. Exit codes 1 and 2 are reserved
- * for situations that lead to direct exits from Wget, not using the
- * value of final_exit_status. */
-enum
-  {
-    WGET_EXIT_SUCCESS = 0,
-
-    WGET_EXIT_MINIMUM = 3,
-    WGET_EXIT_IO_FAIL = WGET_EXIT_MINIMUM,
-    WGET_EXIT_NETWORK_FAIL = 4,
-    WGET_EXIT_SSL_AUTH_FAIL = 5,
-    WGET_EXIT_SERVER_AUTH_FAIL = 6,
-    WGET_EXIT_PROTOCOL_ERROR = 7,
-    WGET_EXIT_SERVER_ERROR = 8,
-
-    WGET_EXIT_UNKNOWN
-  };
-
 static int final_exit_status = WGET_EXIT_SUCCESS;
 
 /* XXX: I don't like that newly-added uerr_t codes will doubtless fall
@@ -108,4 +90,3 @@ get_exit_status (void)
       ? 1
       : final_exit_status;
 }
-

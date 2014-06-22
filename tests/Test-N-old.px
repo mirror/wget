@@ -61,4 +61,3 @@ my $the_test = HTTPTest->new (name => "Test-N-old",
 exit $the_test->run();
 
 # vim: et ts=4 sw=4
-

@@ -1,7 +1,5 @@
 /* Command line parsing.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2014 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -427,7 +425,7 @@ print_usage (int error)
 
 /* Print the help message, describing all the available options.  If
    you add an option, be sure to update this list.  */
-static void
+static void _Noreturn
 print_help (void)
 {
   /* We split the help text this way to ease translation of individual
@@ -807,15 +805,15 @@ Recursive accept/reject:\n"),
 
   if (printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
               version_string) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
   if (print_usage (0) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
 
   for (i = 0; i < countof (help); i++)
     if (fputs (_(help[i]), stdout) < 0)
-      exit (3);
+      exit (WGET_EXIT_IO_FAIL);
 
-  exit (0);
+  exit (WGET_EXIT_SUCCESS);
 }
 
 /* Return a human-readable printed representation of INTERVAL,
@@ -903,7 +901,7 @@ format_and_print_line (const char *prefix, const char *line,
   return 0;
 }
 
-static void
+static void _Noreturn
 print_version (void)
 {
   const char *wgetrc_title  = _("Wgetrc: ");
@@ -914,7 +912,7 @@ print_version (void)
   int i;
 
   if (printf (_("GNU Wget %s built on %s.\n\n"), version_string, OS_TYPE) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
 
   for (i = 0; compiled_features[i] != NULL; )
     {
@@ -922,86 +920,86 @@ print_version (void)
       while ((line_length > 0) && (compiled_features[i] != NULL))
         {
           if (printf ("%s ", compiled_features[i]) < 0)
-            exit (3);
+            exit (WGET_EXIT_IO_FAIL);
           line_length -= strlen (compiled_features[i]) + 2;
           i++;
         }
       if (printf ("\n") < 0)
-        exit (3);
+        exit (WGET_EXIT_IO_FAIL);
     }
   if (printf ("\n") < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
 
   /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is
      absent. */
   if (printf ("%s\n", wgetrc_title) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
 
   env_wgetrc = wgetrc_env_file_name ();
   if (env_wgetrc && *env_wgetrc)
     {
       if (printf (_("    %s (env)\n"), env_wgetrc) < 0)
-        exit (3);
+        exit (WGET_EXIT_IO_FAIL);
       xfree (env_wgetrc);
     }
   user_wgetrc = wgetrc_user_file_name ();
   if (user_wgetrc)
     {
       if (printf (_("    %s (user)\n"), user_wgetrc) < 0)
-        exit (3);
+        exit (WGET_EXIT_IO_FAIL);
       xfree (user_wgetrc);
     }
 #ifdef SYSTEM_WGETRC
   if (printf (_("    %s (system)\n"), SYSTEM_WGETRC) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
 #endif
 
 #ifdef ENABLE_NLS
   if (format_and_print_line (locale_title,
                              LOCALEDIR,
                              MAX_CHARS_PER_LINE) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
 #endif /* def ENABLE_NLS */
 
   if (compilation_string != NULL)
     if (format_and_print_line (compile_title,
                                compilation_string,
                                MAX_CHARS_PER_LINE) < 0)
-      exit (3);
+      exit (WGET_EXIT_IO_FAIL);
 
   if (link_string != NULL)
     if (format_and_print_line (link_title,
                                link_string,
                                MAX_CHARS_PER_LINE) < 0)
-      exit (3);
+      exit (WGET_EXIT_IO_FAIL);
 
   if (printf ("\n") < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
 
   /* TRANSLATORS: When available, an actual copyright character
      (circle-c) should be used in preference to "(C)". */
   if (printf (_("\
 Copyright (C) %s Free Software Foundation, Inc.\n"), "2014") < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
   if (fputs (_("\
 License GPLv3+: GNU GPL version 3 or later\n\
 <http://www.gnu.org/licenses/gpl.html>.\n\
 This is free software: you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
   /* TRANSLATORS: When available, please use the proper diacritics for
      names such as this one. See en_US.po for reference. */
   if (fputs (_("\nOriginally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"),
              stdout) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
   if (fputs (_("Please send bug reports and questions to <bug-wget@gnu.org>.\n"),
              stdout) < 0)
-    exit (3);
+    exit (WGET_EXIT_IO_FAIL);
 
-  exit (0);
+  exit (WGET_EXIT_SUCCESS);
 }
 
-static char *program_name; /* Needed by lib/error.c. */
+char *program_name; /* Needed by lib/error.c. */
 char *program_argstring; /* Needed by wget_warc.c. */
 
 int
@@ -1046,7 +1044,7 @@ main (int argc, char **argv)
   if (p == NULL)
     {
       fprintf (stderr, _("Memory allocation problem\n"));
-      exit (2);
+      exit (WGET_EXIT_PARSE_ERROR);
     }
   for (i = 1; i < argc; i++)
     {
@@ -1097,7 +1095,7 @@ main (int argc, char **argv)
               else
                 {
                   fprintf (stderr, _("Exiting due to error in %s\n"), optarg);
-                  exit (2);
+                  exit (WGET_EXIT_PARSE_ERROR);
                 }
             }
         }
@@ -1127,7 +1125,7 @@ main (int argc, char **argv)
               fprintf (stderr, "\n");
               fprintf (stderr, _("Try `%s --help' for more options.\n"),
                        exec_name);
-              exit (2);
+              exit (WGET_EXIT_PARSE_ERROR);
             }
           /* Find the short option character in the mapping.  */
           longindex = optmap[ret - 32];
@@ -1197,7 +1195,7 @@ main (int argc, char **argv)
                   fprintf (stderr, "\n");
                   fprintf (stderr, _("Try `%s --help' for more options.\n"),
                            exec_name);
-                  exit (1);
+                  exit (WGET_EXIT_GENERIC_ERROR);
                 }
             break;
           }
@@ -1278,14 +1276,14 @@ main (int argc, char **argv)
     {
       fprintf (stderr, _("Can't be verbose and quiet at the same time.\n"));
       print_usage (1);
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
   if (opt.timestamping && opt.noclobber)
     {
       fprintf (stderr, _("\
 Can't timestamp and not clobber old files at the same time.\n"));
       print_usage (1);
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 #ifdef ENABLE_IPV6
   if (opt.ipv4_only && opt.ipv6_only)
@@ -1293,7 +1291,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
       fprintf (stderr,
                _("Cannot specify both --inet4-only and --inet6-only.\n"));
       print_usage (1);
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 #endif
   if (opt.output_document)
@@ -1305,7 +1303,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 Cannot specify both -k and -O if multiple URLs are given, or in combination\n\
 with -p or -r. See the manual for details.\n\n"), stderr);
           print_usage (1);
-          exit (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
       if (opt.page_requisites
           || opt.recursive)
@@ -1327,7 +1325,7 @@ for details.\n\n"));
               logprintf (LOG_VERBOSE,
                          _("File `%s' already there; not retrieving.\n"),
                          opt.output_document);
-              exit(1);
+              exit (WGET_EXIT_GENERIC_ERROR);
            }
     }
 
@@ -1351,7 +1349,7 @@ for details.\n\n"));
         {
           fprintf (stderr,
                    _("WARC output does not work with --spider.\n"));
-          exit (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
       if (opt.always_rest || opt.start_pos >= 0)
         {
@@ -1378,7 +1376,7 @@ for details.\n\n"));
       fprintf (stderr,
                _("Cannot specify both --ask-password and --password.\n"));
       print_usage (1);
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 
   if (opt.start_pos >= 0 && opt.always_rest)
@@ -1402,7 +1400,7 @@ for details.\n\n"));
       /* #### Something nicer should be printed here -- similar to the
          pre-1.5 `--help' page.  */
       fprintf (stderr, _("Try `%s --help' for more options.\n"), exec_name);
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 
   /* Compile the regular expressions.  */
@@ -1425,26 +1423,26 @@ for details.\n\n"));
     {
       opt.acceptregex = opt.regex_compile_fun (opt.acceptregex_s);
       if (!opt.acceptregex)
-        exit (1);
+        exit (WGET_EXIT_GENERIC_ERROR);
     }
   if (opt.rejectregex_s)
     {
       opt.rejectregex = opt.regex_compile_fun (opt.rejectregex_s);
       if (!opt.rejectregex)
-        exit (1);
+        exit (WGET_EXIT_GENERIC_ERROR);
     }
   if (opt.post_data || opt.post_file_name)
     {
       if (opt.post_data && opt.post_file_name)
         {
           fprintf (stderr, _("You cannot specify both --post-data and --post-file.\n"));
-          exit (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
       else if (opt.method)
         {
           fprintf (stderr, _("You cannot use --post-data or --post-file along with --method. "
                              "--method expects data through --body-data and --body-file options"));
-          exit (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
     }
   if (opt.body_data || opt.body_file)
@@ -1453,12 +1451,12 @@ for details.\n\n"));
         {
           fprintf (stderr, _("You must specify a method through --method=HTTPMethod "
                               "to use with --body-data or --body-file.\n"));
-          exit (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
       else if (opt.body_data && opt.body_file)
         {
           fprintf (stderr, _("You cannot specify both --body-data and --body-file.\n"));
-          exit (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
     }
 
@@ -1510,7 +1508,7 @@ for details.\n\n"));
     {
       /* sXXXav : be more specific... */
       fprintf (stderr, _("This version does not have support for IRIs\n"));
-      exit(1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 #endif
 
@@ -1519,7 +1517,7 @@ for details.\n\n"));
       opt.passwd = prompt_for_password ();
 
       if (opt.passwd == NULL || opt.passwd[0] == '\0')
-        exit (1);
+        exit (WGET_EXIT_GENERIC_ERROR);
     }
 
 #ifdef USE_WATT32
@@ -1541,7 +1539,7 @@ for details.\n\n"));
   if (url == NULL)
     {
       fprintf (stderr, _("Memory allocation problem\n"));
-      exit (2);
+      exit (WGET_EXIT_PARSE_ERROR);
     }
   for (i = 0; i < nurl; i++, optind++)
     {
@@ -1602,7 +1600,7 @@ for details.\n\n"));
           if (output_stream == NULL)
             {
               perror (opt.output_document);
-              exit (1);
+              exit (WGET_EXIT_GENERIC_ERROR);
             }
           if (fstat (fileno (output_stream), &st) == 0 && S_ISREG (st.st_mode))
             output_stream_regular = true;
@@ -1612,7 +1610,7 @@ for details.\n\n"));
           fprintf (stderr, _("-k can be used together with -O only if \
 outputting to a regular file.\n"));
           print_usage (1);
-          exit(1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
     }
 
@@ -1627,7 +1625,7 @@ outputting to a regular file.\n"));
         {
           fprintf (stderr, _("Username and password information not needed to \
 be specified when downloading from a metalink.\n"));
-          exit(1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
       temp_option[0] = '\0';
       if(opt.input_filename)
@@ -1656,9 +1654,9 @@ be specified when downloading from a metalink.\n"));
           sprintf(temp_option, "--force-directories");
       if(temp_option[0])
         {
-          fprintf (stderr, _("%s can not be used with --metalink.\n"), temp_option);
+          fprintf (stderr, _("%s can't be used with --metalink.\n"), temp_option);
           free(temp_option);
-          exit(1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
     }
 #endif

@@ -60,4 +60,3 @@ const char *test_dir_matches_p(void);
 /*
  * vim: et ts=2 sw=2
  */
-

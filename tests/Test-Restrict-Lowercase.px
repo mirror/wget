@@ -53,4 +53,3 @@ my $the_test = HTTPTest->new (name => "Test-Restrict-Lowercase",
 exit $the_test->run();
 
 # vim: et ts=4 sw=4
-

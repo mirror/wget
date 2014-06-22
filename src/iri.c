@@ -365,4 +365,3 @@ set_content_encoding (struct iri *i, char *charset)
 
   i->content_encoding = charset ? xstrdup (charset) : NULL;
 }
-

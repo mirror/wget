@@ -32,4 +32,3 @@ CFLAGS_SPEC = /prefix_library_entries = \
 # Object library modules.
 
 .INCLUDE DESCRIP_MODS.MMS
-

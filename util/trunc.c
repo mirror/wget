@@ -76,6 +76,14 @@ main (int argc, char *argv[])
   int        option;
   int        fd;
 
+#ifdef ENABLE_NLS
+  /* Set the current locale.  */
+  setlocale (LC_ALL, "");
+  /* Set the text message domain.  */
+  bindtextdomain ("wget", LOCALEDIR);
+  textdomain ("wget");
+#endif /* ENABLE_NLS */
+
   /* Parse options. */
   while ((option = getopt (argc, argv, "c")) != -1)
     {

@@ -46,4 +46,3 @@ my $the_test = FTPTest->new (name => "Test-ftp-iri",
 exit $the_test->run();
 
 # vim: et ts=4 sw=4
-

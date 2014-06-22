@@ -49,16 +49,6 @@ int utime( const char *path, const struct utimbuf *times);
 #endif /* __CRTL_VER < 70300000 */
 
 
-/* Emergency substitution of stat() for lstat() for VAX and VMS CRTL
-   before V7.3-1.
-*/
-#if defined(__VAX) || __CRTL_VER < 70301000
-
-#define lstat( __p1, __p2) stat( __p1, __p2)
-
-#endif /* defined(__VAX) || __CRTL_VER < 70301000 */
-
-
 /* Global storage. */
 
 /*    VMS destination file system type.  < 0: unset/unknown

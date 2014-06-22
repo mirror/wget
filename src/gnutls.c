@@ -30,7 +30,6 @@ as that of the covered work.  */
 
 #include "wget.h"
 
-#include <assert.h>
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>

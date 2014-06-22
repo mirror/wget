@@ -65,9 +65,7 @@ as that of the covered work.  */
 
 /* For TIOCGWINSZ and friends: */
 #include <sys/ioctl.h>
-#ifdef HAVE_TERMIOS_H
-# include <termios.h>
-#endif
+#include <termios.h>
 
 /* Needed for Unix version of run_with_timeout. */
 #include <signal.h>
@@ -100,7 +98,9 @@ as that of the covered work.  */
 #include "test.h"
 #endif
 
-static void
+#include "exits.h"
+
+static void _Noreturn
 memfatal (const char *context, long attempted_size)
 {
   /* Make sure we don't try to store part of the log line, and thus
@@ -123,7 +123,7 @@ memfatal (const char *context, long attempted_size)
                  exec_name, context, attempted_size);
     }
 
-  exit (1);
+  exit (WGET_EXIT_GENERIC_ERROR);
 }
 
 /* Character property table for (re-)escaping VMS ODS5 extended file
@@ -471,7 +471,7 @@ fork_to_background (void)
     {
       /* parent, error */
       perror ("fork");
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
   else if (pid != 0)
     {
@@ -479,7 +479,7 @@ fork_to_background (void)
       printf (_("Continuing in background, pid %d.\n"), (int) pid);
       if (logfile_changed)
         printf (_("Output will be written to %s.\n"), quote (opt.lfilename));
-      exit (0);                 /* #### should we use _exit()? */
+      exit (WGET_EXIT_SUCCESS);                 /* #### should we use _exit()? */
     }
 
   /* child: give up the privileges and keep running. */
@@ -1896,7 +1896,7 @@ random_float (void)
 
 static sigjmp_buf run_with_timeout_env;
 
-static void
+static void _Noreturn
 abort_run_with_timeout (int sig)
 {
   assert (sig == SIGALRM);
@@ -2178,7 +2178,7 @@ base64_encode (const void *data, size_t length, char *dest)
 
    Since DEST is assumed to contain binary data, it is not
    NUL-terminated.  The function returns the length of the data
-   written to TO.  -1 is returned in case of error caused by malformed
+   written to "TO".  -1 is returned in case of error caused by malformed
    base64 input.
 
    This function originates from Free Recode.  */
@@ -2556,4 +2556,3 @@ test_dir_matches_p(void)
 }
 
 #endif /* TESTING */
-

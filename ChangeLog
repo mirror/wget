@@ -1,3 +1,26 @@
+2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* NEWS: Remove repeated word.
+
+	* po/POTFILES.in: Add lib/regcomp.c.
+
+	* configure.ac: Do not depend on always defined macros.
+	* vms/vms.h: Likewise.
+
+	* Makefile.am: Remove @VAR@ with $FOO.
+	* util/Makefile.am: Likewise.
+
+	* ABOUT-NLS: Remove terminating empty lines.
+	* MAILING-LIST: Likewise.
+	* util/rmold.pl: Likewise.
+
+	* util/trunc.c (main): Ensure bindtextdomain is called.
+
+2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* build-aux/build_info.pl: Remove trailing whitespaces.
+	* configure.ac: Likewise.
+
 2014-05-30  Darshit Shah  <darnir@gmail.com>
 
 	* configure.ac: Allow compilation without libpsl.

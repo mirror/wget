@@ -1,6 +1,6 @@
 /* HTTP support.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -2085,13 +2085,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     request_set_header (req, "Connection", "Close", rel_none);
   else
     {
-      if (proxy == NULL)
-        request_set_header (req, "Connection", "Keep-Alive", rel_none);
-      else
-        {
-          request_set_header (req, "Connection", "Close", rel_none);
-          request_set_header (req, "Proxy-Connection", "Keep-Alive", rel_none);
-        }
+      request_set_header (req, "Connection", "Keep-Alive", rel_none);
+      if (proxy)
+        request_set_header (req, "Proxy-Connection", "Keep-Alive", rel_none);
     }
 
   if (opt.method)
@@ -3320,7 +3316,7 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   /* Reset NEWLOC parameter. */
   *newloc = NULL;
 
-  /* This used to be done in main(), but it's a better idea to do it
+  /* This used to be done in main, but it's a better idea to do it
      here so that we don't go through the hoops if we're just using
      FTP or whatever. */
   if (opt.cookies)
@@ -4368,10 +4364,12 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
 {
   char *last_period_in_local_filename = strrchr (hs->local_file, '.');
   char shortext[8];
-  int len = strlen (ext);
+  int len;
+  shortext[0] = '\0';
+  len = strlen (ext);
   if (len == 5)
     {
-      strncpy (shortext, ext, len - 1);
+      memcpy (shortext, ext, len - 1);
       shortext[len - 1] = '\0';
     }
 
@@ -4440,4 +4438,3 @@ test_parse_content_disposition(void)
 /*
  * vim: et sts=2 sw=2 cino+={s
  */
-

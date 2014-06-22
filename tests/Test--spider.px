@@ -50,4 +50,3 @@ my $the_test = HTTPTest->new (name => "Test--spider",
 exit $the_test->run();
 
 # vim: et ts=4 sw=4
-

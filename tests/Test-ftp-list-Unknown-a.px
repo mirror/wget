@@ -74,4 +74,3 @@ my $the_test = FTPTest->new (name => "Test-ftp-list-Unknown-a",
                              server_behavior => {list_dont_clean_path => 1,
                                                  syst_response => "215 Unknown ftp service"});
 exit $the_test->run();
-

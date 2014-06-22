@@ -78,35 +78,15 @@ as that of the covered work.  */
    These have to be after the above namespace tweaks, but before any
    non-preprocessor code.  */
 
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#elif defined WINDOWS
-# include <malloc.h>
-# ifndef alloca
-#  define alloca _alloca
-# endif
-#elif defined __GNUC__
-# define alloca __builtin_alloca
-#elif defined _AIX
-# define alloca __alloca
-#else
-# include <stddef.h>
-# ifdef  __cplusplus
-extern "C"
-# endif
-void *alloca (size_t);
-#endif
+#include <alloca.h>
 
 /* Must include these, so we can test for the missing stat macros and
    define them as necessary.  */
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifdef HAVE_INTTYPES_H
-  /* Compaq C V6.5-303 (dtk) on HP Tru64 UNIX V5.1B (Rev. 2650) needs: */
-# include <stdint.h>
-# include <inttypes.h>
-#endif
+#include <stdint.h>
+#include <inttypes.h>
 
 #ifdef WINDOWS
 /* Windows doesn't have some functions normally found on Unix-like
@@ -121,34 +101,6 @@ void *alloca (size_t);
 /* Provided by gnulib on systems that don't have it: */
 # include <stdbool.h>
 
-/* Needed for compilation under OS/2 and MSDOS */
-#if defined(__EMX__) || defined(MSDOS)
-# ifndef S_ISLNK
-#  define S_ISLNK(m) 0
-# endif
-# ifndef lstat
-#  define lstat stat
-# endif
-#endif /* __EMX__ || MSDOS */
-
-/* Reportedly, stat() macros are broken on some old systems.  Those
-   systems will have to fend for themselves, as I will not introduce
-   new code to handle it.
-
-   However, I will add code for *missing* macros, and the following
-   are reportedly missing from many systems.  */
-#ifndef S_ISLNK
-# define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
-#endif
-#ifndef S_ISDIR
-# define S_ISDIR(m) (((m) & (_S_IFMT)) == (_S_IFDIR))
-#endif
-#ifndef S_ISREG
-# define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
-#endif
-
-/* These are needed so we can #define struct_stat to struct _stati64
-   under Windows. */
 #ifndef struct_stat
 # define struct_stat struct stat
 #endif
@@ -156,15 +108,14 @@ void *alloca (size_t);
 # define struct_fstat struct stat
 #endif
 
+#include <intprops.h>
+
 /* For CHAR_BIT, LONG_MAX, etc. */
 #include <limits.h>
 
 #ifndef CHAR_BIT
 # define CHAR_BIT 8
 #endif
-
-/* From gnulib, simplified to assume a signed type. */
-#define TYPE_MAXIMUM(t) ((t) (~ (~ (t) 0 << (sizeof (t) * CHAR_BIT - 1))))
 
 /* These are defined in cmpt.c if missing, so we must declare
    them.  */
@@ -212,23 +163,7 @@ int vsnprintf (char *str, size_t count, const char *fmt, va_list arg);
 # define SYSTEM_FNMATCH
 #endif
 
-#ifdef SYSTEM_FNMATCH
-# include <fnmatch.h>
-#else  /* not SYSTEM_FNMATCH */
-/* Define fnmatch flags.  Undef them first to avoid warnings in case
-   an evil library include chose to include system fnmatch.h.  */
-# undef FNM_PATHNAME
-# undef FNM_NOESCAPE
-# undef FNM_PERIOD
-# undef FNM_NOMATCH
-
-# define FNM_PATHNAME   (1 << 0) /* No wildcard can ever match `/'.  */
-# define FNM_NOESCAPE   (1 << 1) /* Backslashes don't quote special chars.  */
-# define FNM_PERIOD     (1 << 2) /* Leading `.' is matched only explicitly.  */
-# define FNM_NOMATCH    1
-
-int fnmatch (const char *, const char *, int);
-#endif
+#include <fnmatch.h>
 
 /* Provide sig_atomic_t if the system doesn't.  */
 #ifndef HAVE_SIG_ATOMIC_T

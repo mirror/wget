@@ -72,12 +72,6 @@ as that of the covered work.  */
    variables.  -- explanation partly taken from GNU make.  */
 #define N_(string) string
 
-#if ! ENABLE_NLS
-# undef HAVE_WCHAR_H
-# undef HAVE_WCWIDTH
-# undef HAVE_MBTOWC
-#endif /* not ENABLE_NLS */
-
 #if HAVE_WCWIDTH && HAVE_MBTOWC
 # define USE_NLS_PROGRESS_BAR 1
 #else
@@ -375,7 +369,7 @@ struct range {
    Select an appropriate "orig" suffix and a separator character for
    adding a unique suffix to a file name.
 
-   A VMS ODS2 file system can not tolerate multiple dots.  An ODS5 file
+   A VMS ODS2 file system can't tolerate multiple dots.  An ODS5 file
    system can, but even there not all dots are equal, and heroic effort
    would be needed to get ".html^.orig" rather than (the less desirable)
    "^.html.orig".  It's more satisfactory always to use "_orig" on VMS

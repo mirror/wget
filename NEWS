@@ -17,6 +17,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Introduce --no-config.
 
 ** Introduce --start-pos to allow starting downloads from a specified position.
+
+** Fix a problem with ISA Server Proxy and keep-alive connections.
 
 * Changes in Wget 1.15
 
@@ -684,7 +686,7 @@ ASCII type transfer:
 
     wget "ftp://ftp.somewhere.com/welcome.msg;type=a"
 
-** `--help' and `--version' options have been redone to to conform to
+** `--help' and `--version' options have been redone to conform to
 standards set by other GNU utilities.
 
 ** Wget should now be compilable under MS Windows environment.  MS

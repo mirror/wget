@@ -1,6 +1,6 @@
 /* File Transfer Protocol support.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -243,7 +243,8 @@ static uerr_t ftp_get_listing (struct url *, ccon *, struct fileinfo **);
    is non-NULL, the downloaded data will be written there as well.  */
 static uerr_t
 getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
-        wgint restval, ccon *con, int count, FILE *warc_tmp)
+        wgint restval, ccon *con, int count, wgint *last_expected_bytes,
+        FILE *warc_tmp)
 {
   int csock, dtsock, local_sock, res;
   uerr_t err = RETROK;          /* appease the compiler */
@@ -1078,7 +1079,7 @@ Error in server response, closing control connection.\n"));
         logputs (LOG_VERBOSE, _("done.\n"));
 
       if (! got_expected_bytes)
-        expected_bytes = ftp_expected_bytes (ftp_last_respline);
+        expected_bytes = *last_expected_bytes;
     } /* do retrieve */
 
   if (cmd & DO_LIST)
@@ -1127,7 +1128,7 @@ Error in server response, closing control connection.\n"));
         logputs (LOG_VERBOSE, _("done.\n"));
 
       if (! got_expected_bytes)
-        expected_bytes = ftp_expected_bytes (ftp_last_respline);
+        expected_bytes = *last_expected_bytes;
     } /* cmd & DO_LIST */
 
   if (!(cmd & (DO_LIST | DO_RETR)) || (opt.spider && !(cmd & DO_LIST)))
@@ -1159,7 +1160,7 @@ Error in server response, closing control connection.\n"));
   /* Open the file -- if output_stream is set, use it instead.  */
 
   /* 2005-04-17 SMS.
-     Note that having the output_stream ("-O") file opened in main()
+     Note that having the output_stream ("-O") file opened in main
      (main.c) rather limits the ability in VMS to open the file
      differently for ASCII versus binary FTP here.  (Of course, doing it
      there allows a open failure to be detected immediately, without first
@@ -1350,6 +1351,7 @@ Error in server response, closing control connection.\n"));
 
   /* Get the server to tell us if everything is retrieved.  */
   err = ftp_response (csock, &respline);
+  *last_expected_bytes = ftp_expected_bytes (respline);
   if (err != FTPOK)
     {
       /* The control connection is decidedly closed.  Print the time
@@ -1557,6 +1559,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
   bool warc_enabled = (opt.warc_filename != NULL);
   FILE *warc_tmp = NULL;
   ip_address *warc_ip = NULL;
+  wgint last_expected_bytes = 0;
 
   /* Get the target, and set the name for the message accordingly. */
   if ((f == NULL) && (con->target))
@@ -1657,7 +1660,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
         restval = qtyread;          /* start where the previous run left off */
       else
         restval = 0;
-        
+
 
       /* Get the current time string.  */
       tms = datetime_str (time (NULL));
@@ -1694,7 +1697,8 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
 
       /* If we are working on a WARC record, getftp should also write
          to the warc_tmp file. */
-      err = getftp (u, len, &qtyread, restval, con, count, warc_tmp);
+      err = getftp (u, len, &qtyread, restval, con, count, &last_expected_bytes,
+                    warc_tmp);
 
       if (range)
         range->bytes_covered = qtyread;

@@ -100,7 +100,7 @@ EOC
 EOC
             }
                 print $fh <<EOC;
-#else 
+#else
   "-$name",
 #endif
 

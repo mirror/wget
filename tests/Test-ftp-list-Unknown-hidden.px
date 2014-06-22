@@ -66,4 +66,3 @@ my $the_test = FTPTest->new (name => "Test-ftp-list-Unknown-hidden",
                              server_behavior => {list_no_hidden_if_list => 1,
                                                  syst_response => "215 Unknown ftp service"});
 exit $the_test->run();
-

@@ -1,6 +1,6 @@
 /* Reading/parsing the initialization file.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -460,12 +460,7 @@ home_dir (void)
           assert (p);
 
           len = p - buff + 1;
-          buff = malloc (len + 1);
-          if (buff == NULL)
-            return NULL;
-
-          strncpy (buff, _w32_get_argv0 (), len);
-          buff[len] = '\0';
+          buff = strdup (_w32_get_argv0 ());
 
           home = buf;
 #elif !defined(WINDOWS)
@@ -503,7 +498,7 @@ wgetrc_env_file_name (void)
         {
           fprintf (stderr, _("%s: WGETRC points to %s, which doesn't exist.\n"),
                    exec_name, env);
-          exit (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
       return xstrdup (env);
     }
@@ -675,7 +670,7 @@ initialize (void)
 Parsing system wgetrc file (env SYSTEM_WGETRC) failed.  Please check\n\
 '%s',\n\
 or specify a different file using --config.\n"), env_sysrc);
-          exit (2);
+          exit (WGET_EXIT_PARSE_ERROR);
         }
     }
   /* Otherwise, if SYSTEM_WGETRC is defined, use it.  */
@@ -690,7 +685,7 @@ or specify a different file using --config.\n"), env_sysrc);
 Parsing system wgetrc file failed.  Please check\n\
 '%s',\n\
 or specify a different file using --config.\n"), SYSTEM_WGETRC);
-      exit (2);
+      exit (WGET_EXIT_PARSE_ERROR);
     }
 #endif
   /* Override it with your own, if one exists.  */
@@ -712,7 +707,7 @@ or specify a different file using --config.\n"), SYSTEM_WGETRC);
 
   /* If there were errors processing either `.wgetrc', abort. */
   if (!ok)
-    exit (2);
+    exit (WGET_EXIT_PARSE_ERROR);
 
   xfree (file);
   return;
@@ -853,8 +848,8 @@ setval_internal_tilde (int comind, const char *com, const char *val)
 /* Run command COM with value VAL.  If running the command produces an
    error, report the error and exit.
 
-   This is intended to be called from main() to modify Wget's behavior
-   through command-line switches.  Since COM is hard-coded in main(),
+   This is intended to be called from main to modify Wget's behavior
+   through command-line switches.  Since COM is hard-coded in main,
    it is not canonicalized, and this aborts when COM is not found.
 
    If COMIND's are exported to init.h, this function will be changed
@@ -871,7 +866,7 @@ setoptval (const char *com, const char *val, const char *optname)
 
   assert (val != NULL);
   if (!setval_internal (command_by_name (com), dd_optname, val))
-    exit (2);
+    exit (WGET_EXIT_PARSE_ERROR);
 }
 
 /* Parse OPT into command and value and run it.  For example,
@@ -887,14 +882,14 @@ run_command (const char *cmdopt)
     {
     case line_ok:
       if (!setval_internal (comind, com, val))
-        exit (2);
+        exit (WGET_EXIT_PARSE_ERROR);
       xfree (com);
       xfree (val);
       break;
     default:
       fprintf (stderr, _("%s: Invalid --execute command %s\n"),
                exec_name, quote (cmdopt));
-      exit (2);
+      exit (WGET_EXIT_PARSE_ERROR);
     }
 }
 
@@ -1405,7 +1400,7 @@ cmd_spec_progress (const char *com, const char *val, void *place_ignored _GL_UNU
   xfree_null (opt.progress_type);
 
   /* Don't call set_progress_implementation here.  It will be called
-     in main() when it becomes clear what the log output is.  */
+     in main when it becomes clear what the log output is.  */
   opt.progress_type = xstrdup (val);
   return true;
 }
@@ -1859,4 +1854,3 @@ test_cmd_spec_restrict_file_names(void)
 }
 
 #endif /* TESTING */
-

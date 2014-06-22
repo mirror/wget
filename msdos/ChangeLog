@@ -1,3 +1,9 @@
+2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Makefile.DJ: Remove terminating empty lines.
+	* Makefile.WC: Likewise.
+	* msdos.c: Likewise.
+
 2009-09-06  Gisle Vanem  <gvanem@broadpark.no>
 
 	* Makefile.WC: Added compilation of new file msdos.c.

@@ -37,9 +37,7 @@ as that of the covered work.  */
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
-#ifdef HAVE_WCHAR_H
-# include <wchar.h>
-#endif
+#include <wchar.h>
 
 #ifdef ENABLE_THREADS
 #include <pthread.h>
@@ -1041,7 +1039,7 @@ create_image (struct bar_progress *bp, char *buffer, double dl_total_time, bool 
       assert (percentage <= 100);
 
       if (percentage < 100)
-        sprintf (p, "%2d%% ", percentage);
+        sprintf (p, "%3d%%", percentage);
       else
         strcpy (p, "100%");
       p += 4;

@@ -87,4 +87,3 @@ depend: version.c
         sed -e 's/^\([a-zA-Z0-9_-]*\.o:\)/$$(OBJ_DIR)\/\1/' > depend.dj
 
 -include depend.dj
-

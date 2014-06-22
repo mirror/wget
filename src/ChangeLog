@@ -1,3 +1,120 @@
+2014-06-22  Darshit Shah  <darnir@gmail.com> (tiny change)
+
+	* progress.c (create_image): Align percentage download output better.
+
+2014-06-21  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* mswindows.c (fake_fork_child): Fix build error.
+	Reported by: Gisle Vanem <gvanem@yahoo.no>.
+
+2014-06-21  Nikita Vetrov  <admin@kanaria.ru> (tiny change)
+
+	* openssl.c: Add one-time call OPENSSL_config in ssl_init.
+
+2014-06-19  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* mswindows.c (fake_fork_child): Revert dinamic allocation of
+	info->lfilename.
+	Reported by: Gisle Vanem <gvanem@yahoo.no>.
+
+2014-06-16  Darshit Shah  <darnir@gmail.com>
+
+	* test.c: Include locale.h header for gettext.
+
+2014-06-16  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* http.c (gethttp): Set "Connection: Keep-Alive" with keep-alive
+	connections when using a proxy too.
+	Reported by: Thorsten Schroeteler <Thorsten.Schroeteler@cassidian.com>.
+
+2014-06-16  Darshit Shah  <darnir@gmail.com>
+
+	* main.c (print_help, print_version): Mark as noreturn.
+	* utils.c (memfatal, abort_run_with_timout): Same
+
+2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* ftp.c: Replace main() with main in comments.
+	* http.c: Likewise.
+	* init.c: Likewise.
+
+	* cmpt.c (day_of_the_week): Remove repeated word in a comment.
+	* utils.c: Remove repeated word in a comment.
+
+	* gnutls.c: Do not include <assert.h>.
+
+	* connect.c: Do not depend on always defined macros.
+	* convert.c: Likewise.
+	* css-url.c: Likewise.
+	* hash.c: Likewise.
+	* mswindows.h: Likewise.
+	* netrc.c: Likewise.
+	* progress.c: Likewise.
+	* sysdep.h: Likewise.
+	* utils.c: Likewise.
+	* wget.h: Likewise.
+
+	* Makefile.am: Remove @VAR@ with $FOO.
+
+	* DESCRIP_MODS.MMS: Remove terminating empty lines.
+	* DESCRIP_SRC.MMS: Likewise.
+	* convert.c: Likewise.
+	* exits.c: Likewise.
+	* http.c: Likewise.
+	* init.c: Likewise.
+	* iri.c: Likewise.
+	* res.c: Likewise.
+	* spider.c: Likewise.
+	* test.c: Likewise.
+	* test.h
+	* url.c: Likewise.
+	* utils.c: Likewise.
+	* vms.c: Likewise.
+
+	* decc_ver.c (main): Ensure bindtextdomain is called.
+	* hash.c (main): Likewise.
+	* html-parse.c: Likewise.
+	* netrc.c: Likewise.
+	* test.c: Likewise.
+	* trunc.c: Likewise.
+
+2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* wget.h: Remove trailing whitespaces.
+
+	* retr.c (getproxy): Return a dinamically allocated string and...
+	(retrieve_from_file, retrieve_url, url_uses_proxy): ...fix the caller
+	to handle it.
+	* init.c (home_dir): Replace strncpy with strdup.
+	* mswindows.c (struct fake_fork_info): Make lfilename a pointer.
+	(fake_fork_child): Replace strncpy with strdup.
+	* http.c (ensure_extension): Replace strncpy with memcpy, not much
+	better but make "make syntax-check" happy and we know the size.
+	* ftp.c (getftp): Add parameter last_expected_bytes.
+	(ftp_loop_internal): Pass parameter last_expected_bytes to getftp.
+	* ftp-basic.c: Remove declaration of ftp_last_respline.
+	(ftp_response): Do not set ftp_last_respline.
+	* css-url.c (get_uri_string): Replace strncpy with strdup.
+	* vms.c (set_vms_name): Replace strncpy with strdup.
+
+	* exits.c: Move WGET_EXIT_* definitions to...
+	* exits.h: ...here.  Add WGET_EXIT_GENERIC_ERROR, WGET_EXIT_PARSE_ERROR.
+	Remove WGET_EXIT_MINIMUM.
+	* init.c: Fix calls to exit().
+	* log.c: Likewise.
+	* main.c: Likewise.
+	* mswindows.c: Likewise.
+	* netrc.c: Likewise.
+	* utils.c: Likewise.
+	* warc.c: Likewise.
+	* Test-stdouterr.px: Likewise.
+
+2014-06-08  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* main.c: Make `program_name' not static.
+
+	* cookies.c [HAVE_PSL]: Include <libpsl.h> only when HAVE_PSL is defined.
+
 2014-05-30  Darshit Shah  <darnir@gmail.com>
 
 	* cookies.c (check_domain_match): Use libpsl to check if the cookie domain

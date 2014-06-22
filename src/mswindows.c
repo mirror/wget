@@ -1,6 +1,6 @@
 /* mswindows.c -- Windows-specific support
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -42,6 +42,7 @@ as that of the covered work.  */
 
 #include "utils.h"
 #include "url.h"
+#include "exits.h"
 
 #ifndef ES_SYSTEM_REQUIRED
 #define ES_SYSTEM_REQUIRED  0x00000001
@@ -164,8 +165,8 @@ fake_fork_child (void)
       if (new_log_fp)
         {
           info->logfile_changed = true;
-          strncpy (info->lfilename, opt.lfilename, sizeof (info->lfilename));
-          info->lfilename[sizeof (info->lfilename) - 1] = '\0';
+          snprintf (info->lfilename, sizeof (info->lfilename), "%s",
+                    opt.lfilename);
           fclose (new_log_fp);
         }
     }
@@ -308,7 +309,7 @@ cleanup:
 
   /* We're the parent.  If all is well, terminate.  */
   if (rv)
-    exit (0);
+    exit (WGET_EXIT_SUCCESS);
 
   /* We failed, return.  */
 }
@@ -461,7 +462,7 @@ ws_startup (void)
     {
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
                exec_name);
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 
   if (data.wVersion < requested)
@@ -469,7 +470,7 @@ ws_startup (void)
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
                exec_name);
       WSACleanup ();
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 
   atexit (ws_cleanup);

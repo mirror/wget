@@ -31,6 +31,9 @@ as that of the covered work.  */
 #include "wget.h"
 
 #include <stdio.h>
+#ifdef ENABLE_NLS
+# include <locale.h>
+#endif
 
 #include "test.h"
 
@@ -75,6 +78,14 @@ main (int argc _GL_UNUSED, char *argv[])
 {
   const char *result;
 
+#ifdef ENABLE_NLS
+  /* Set the current locale.  */
+  setlocale (LC_ALL, "");
+  /* Set the text message domain.  */
+  bindtextdomain ("wget", LOCALEDIR);
+  textdomain ("wget");
+#endif /* ENABLE_NLS */
+
   program_name = argv[0];
 
   result = all_tests();
@@ -96,4 +107,3 @@ main (int argc _GL_UNUSED, char *argv[])
 /*
  * vim: et ts=2 sw=2
  */
-

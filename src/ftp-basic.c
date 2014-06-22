@@ -1,6 +1,6 @@
 /* Basic FTP routines.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -44,8 +44,6 @@ as that of the covered work.  */
 #include "ftp.h"
 #include "retr.h"
 
-char ftp_last_respline[128];
-
 
 /* Get the response of FTP server and allocate enough room to handle
    it.  <CR> and <LF> characters are stripped from the line, and the
@@ -84,8 +82,6 @@ ftp_response (int fd, char **ret_line)
       if (c_isdigit (line[0]) && c_isdigit (line[1]) && c_isdigit (line[2])
           && line[3] == ' ')
         {
-          strncpy (ftp_last_respline, line, sizeof (ftp_last_respline));
-          ftp_last_respline[sizeof (ftp_last_respline) - 1] = '\0';
           *ret_line = line;
           return FTPOK;
         }
@@ -1037,6 +1033,7 @@ ftp_syst (int csock, enum stype *server_type, enum ustype *unix_type)
   char *request, *respline;
   int nwritten;
   uerr_t err;
+  char *ftp_last_respline;
 
   /* Send SYST request.  */
   request = ftp_request ("SYST", NULL);
@@ -1057,6 +1054,8 @@ ftp_syst (int csock, enum stype *server_type, enum ustype *unix_type)
       xfree (respline);
       return FTPSRVERR;
     }
+
+  ftp_last_respline = strdup (respline);
 
   /* Skip the number (215, but 200 (!!!) in case of VMS) */
   strtok (respline, " ");
@@ -1092,6 +1091,7 @@ ftp_syst (int csock, enum stype *server_type, enum ustype *unix_type)
   else
     *server_type = ST_OTHER;
 
+  xfree (ftp_last_respline);
   xfree (respline);
   /* All OK.  */
   return FTPOK;

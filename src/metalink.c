@@ -1,5 +1,5 @@
 /* Declarations for HTTP.
-   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software
+   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2014 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -170,7 +170,7 @@ parse_metalink(char *input_file)
       if((chunk_checksum = (*files)->chunk_checksum))
         {
           mlink_chunk_checksum *chunk_sum;
-          
+
           if(!chunk_checksum->type)
             logprintf (LOG_VERBOSE, "PARSE METALINK: Skipping chunk checksum"
                        " due to missing type information.\n");
@@ -373,7 +373,7 @@ lower_hex_case (unsigned char *hash, int length)
 /* Verifies file hash by comparing the file hashes found by gnulib functions
    and hashes provided by metalink file. Works by comparing strongest supported
    hash type available in the metalink file.
-   
+
    Returns;
    -1      if hashes that were compared turned out to be different.
     0      if all pairs of hashes compared turned out to be the same.

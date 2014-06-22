@@ -1,5 +1,5 @@
 /* Declarations for HTTP.
-   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software
+   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2014 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -39,6 +39,7 @@ as that of the covered work.  */
 
 #include "multi.h"
 #include "url.h"
+#include "exits.h"
 
 static struct range *ranges;
 char **files;
@@ -52,13 +53,13 @@ init_temp_files()
   if(!(files = malloc (opt.jobs * (sizeof *files))))
     {
       logprintf (LOG_VERBOSE, "Space for temporary file data could not be allocated.\n");
-      exit(1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
   for (i = 0; i < opt.jobs; ++i)
     if(!(files[i] = malloc (L_tmpnam * sizeof(char))))
       {
         logprintf (LOG_VERBOSE, "Space for temporary file names could not be allocated.\n");
-        exit(1);
+        exit (WGET_EXIT_GENERIC_ERROR);
       }
 }
 
@@ -72,7 +73,7 @@ name_temp_files()
     if(!tmpnam(files[i]))
       {
         logprintf (LOG_VERBOSE, "Temporary file name could not be assigned.\n");
-        exit(1);
+        exit (WGET_EXIT_GENERIC_ERROR);
       }
 }
 
@@ -129,13 +130,13 @@ init_ranges()
   if(!(ranges = malloc (opt.jobs * (sizeof *ranges))))
     {
       logprintf (LOG_VERBOSE, "Space for ranges data could not be allocated.\n");
-      exit(1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 }
 
-/* Assign values to the ranges. 
+/* Assign values to the ranges.
    Also allocates the resources array each struct range must have.
-   
+
    Returns the number of ranges to which values are assigned. */
 int
 fill_ranges_data(int num_of_resources, long long int file_size,
@@ -201,7 +202,7 @@ spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
 
 /* Collects the first thread to terminate and updates struct s_thread_ctx
    instance's data regarding its 'business' (i.e. being used by a thread).
-   
+
    Returns the index of the struct s_thread_ctx instance that was used in the
    terminating thread. */
 int

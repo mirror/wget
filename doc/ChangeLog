@@ -1,3 +1,15 @@
+2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Makefile.am: Remove @VAR@ with $FOO.
+
+	* fdl.texi: Remove terminating empty lines.
+
+2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* wget.texi: Remove trailing whitespaces.
+
+	* fdl.texi: Copy from gnulib.
+
 2014-05-24  Darshit Shah  <darnir@gmail.com>
 
 	* wget.texi: Document noscroll parameter to progress=bar

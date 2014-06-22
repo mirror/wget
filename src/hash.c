@@ -55,11 +55,7 @@ as that of the covered work.  */
 # endif
 # include <ctype.h>
 # define c_tolower(x) tolower ((unsigned char) (x))
-# ifdef HAVE_STDINT_H
-#  include <stdint.h>
-# else
-   typedef unsigned long uintptr_t;
-# endif
+# include <stdint.h>
 #endif
 
 #include "hash.h"
@@ -767,6 +763,15 @@ main (void)
 {
   struct hash_table *ht = make_string_hash_table (0);
   char line[80];
+
+#ifdef ENABLE_NLS
+  /* Set the current locale.  */
+  setlocale (LC_ALL, "");
+  /* Set the text message domain.  */
+  bindtextdomain ("wget", LOCALEDIR);
+  textdomain ("wget");
+#endif /* ENABLE_NLS */
+
   while ((fgets (line, sizeof (line), stdin)))
     {
       int len = strlen (line);
