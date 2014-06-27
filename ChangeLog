@@ -1,3 +1,8 @@
+2014-06-27  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* cfg.mk (VC_LIST_ALWAYS_EXCLUDE_REGEX): Ignore msdos/* and vms/* from
+	syntax-check.
+
 2014-06-22  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* configure.ac: Add check for uuid_create.
