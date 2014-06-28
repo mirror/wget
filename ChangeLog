@@ -1,3 +1,7 @@
+2014-06-28  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* cfg.mk (local-checks-to-skip): Remove some checks.
+
 2014-06-27  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* cfg.mk (VC_LIST_ALWAYS_EXCLUDE_REGEX): Ignore msdos/* and vms/* from
