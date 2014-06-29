@@ -386,9 +386,9 @@ warc_write_end_record (void)
 static bool
 warc_write_date_header (const char *timestamp)
 {
+  char current_timestamp[21];
   if (timestamp == NULL)
     {
-      char current_timestamp[21];
       warc_timestamp (current_timestamp);
       timestamp = current_timestamp;
     }

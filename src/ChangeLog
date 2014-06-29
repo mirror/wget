@@ -1,3 +1,7 @@
+2014-06-29  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* warc.c (warc_write_date_header): Avoid out-of-scope variable usage.
+
 2014-06-28  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Makefile.am (wget_SOURCES): Remove space-tab indentation.
