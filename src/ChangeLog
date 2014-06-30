@@ -1,3 +1,7 @@
+2014-06-30  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* convert.c (local_quote_string): Initialize newname.
+
 2014-06-29  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* warc.c (warc_write_date_header): Avoid out-of-scope variable usage.
