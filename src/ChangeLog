@@ -1,3 +1,8 @@
+2014-07-03  Darshit Shah  <darnir@gmail.com>
+
+	* wget.h (uerr_t): Remove unused error codes
+	* http.c: (http_loop): Remove reference to unused error code
+
 2014-06-30  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* convert.c (local_quote_string): Initialize newname.

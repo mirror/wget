@@ -3169,7 +3169,7 @@ Spider mode enabled. Check if remote file exists.\n"));
 
       switch (err)
         {
-        case HERR: case HEOF: case CONSOCKERR: case CONCLOSED:
+        case HERR: case HEOF: case CONSOCKERR:
         case CONERROR: case READERR: case WRITEFAILED:
         case RANGEERR: case FOPEN_EXCL_ERR:
           /* Non-fatal errors continue executing the loop, which will
