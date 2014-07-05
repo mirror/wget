@@ -501,7 +501,17 @@ numeric_address_p (const char *addr)
 /* Check whether COOKIE_DOMAIN is an appropriate domain for HOST.
    Originally I tried to make the check compliant with rfc2109, but
    the sites deviated too often, so I had to fall back to "tail
-   matching", as defined by the original Netscape's cookie spec.  */
+   matching", as defined by the original Netscape's cookie spec.
+
+   Wget now uses libpsl to check domain names against a public suffix
+   list to see if they are valid. However, since we don't provide a
+   psl on our own, if libpsl is compiled without a public suffix list,
+   fall back to using the original "tail matching" heuristic. Also if
+   libpsl is unable to convert the domain to lowercase, which means that
+   it doesnt have any runtime conversion support, we again fall back to
+   "tail matching" since libpsl states the results are unpredictable with
+   upper case strings.
+   */
 
 static bool
 check_domain_match (const char *cookie_domain, const char *host)
@@ -509,6 +519,8 @@ check_domain_match (const char *cookie_domain, const char *host)
 
 #ifdef HAVE_LIBPSL
   DEBUGP (("cdm: 1"));
+  char *cookie_domain_lower = NULL;
+  char *host_lower = NULL;
   const psl_ctx_t *psl;
   int is_acceptable;
 
@@ -519,7 +531,21 @@ check_domain_match (const char *cookie_domain, const char *host)
       goto no_psl;
     }
 
-  is_acceptable = psl_is_cookie_domain_acceptable (psl, host, cookie_domain);
+  if (psl_str_to_utf8lower (cookie_domain, NULL, NULL, &cookie_domain_lower) == PSL_SUCCESS &&
+      psl_str_to_utf8lower (host, NULL, NULL, &host_lower) == PSL_SUCCESS)
+    {
+      is_acceptable = psl_is_cookie_domain_acceptable (psl, host_lower, cookie_domain_lower);
+    }
+  else
+    {
+        DEBUGP (("libpsl unable to parse domain name. "
+                 "Falling back to simple heuristics.\n"));
+        goto no_psl;
+    }
+
+  xfree (cookie_domain_lower);
+  xfree (host_lower);
+
   return true ? (is_acceptable == 1) : false;
 
 no_psl:

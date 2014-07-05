@@ -1,5 +1,10 @@
 2014-07-05  Darshit Shah  <darnir@gmail.com>
 
+	* cookies.c (check_domain_match): Libpsl requires that all domain names
+	passed to it be in utf8 lower case.
+
+2014-07-05  Darshit Shah  <darnir@gmail.com>
+
 	* http.c (gethttp): Fix indentation of conditional block
 	(gethttp): Remove unneeded variable
 
