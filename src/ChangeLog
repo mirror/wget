@@ -1,3 +1,7 @@
+2014-07-07  Tomas Hozza  <thozza@redhat.com>
+
+	* iri.c (locale_to_utf8): Fix checking of iconv_open return code.
+
 2014-07-05  Darshit Shah  <darnir@gmail.com>
 
 	* cookies.c (check_domain_match): Libpsl requires that all domain names
