@@ -50,6 +50,7 @@ LIBS     += $(LIBICONV) $(LIBINTL) $(LIB_CLOCK_GETTIME)
 EXTRA_DIST = css.l css.c css_.c build_info.c.in iri.c multi.c multi.h metalink.c metalink.h
 
 bin_PROGRAMS = wget
+
 wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
 	       css_.c css-url.c						  \
 	       ftp-basic.c ftp-ls.c hash.c host.c html-parse.c html-url.c \

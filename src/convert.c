@@ -1,5 +1,5 @@
 /* Conversion of links to local files.
-   Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
+   Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2014
    Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -672,6 +672,7 @@ local_quote_string (const char *file, bool no_html_quote)
   /* Allocate space assuming the worst-case scenario, each character
      having to be quoted.  */
   to = newname = (char *)alloca (3 * strlen (file) + 1);
+  newname[0] = '\0';
   for (from = file; *from; from++)
     switch (*from)
       {

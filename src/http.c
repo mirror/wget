@@ -3196,19 +3196,18 @@ read_header:
         }
       else if (ALLOW_CLOBBER || count > 0)
         {
-      if (opt.unlink && file_exists_p (hs->local_file))
-        {
-          int res = unlink (hs->local_file);
-          if (res < 0)
+          if (opt.unlink && file_exists_p (hs->local_file))
             {
-              logprintf (LOG_NOTQUIET, "%s: %s\n", hs->local_file,
-                         strerror (errno));
-              CLOSE_INVALIDATE (sock);
-              xfree (head);
-              xfree_null (type);
-              return UNLINKERR;
+              if (unlink (hs->local_file) < 0)
+                {
+                  logprintf (LOG_NOTQUIET, "%s: %s\n", hs->local_file,
+                             strerror (errno));
+                  CLOSE_INVALIDATE (sock);
+                  xfree (head);
+                  xfree_null (type);
+                  return UNLINKERR;
+                }
             }
-        }
 
 #ifdef __VMS
           int open_id;
@@ -3484,7 +3483,7 @@ Spider mode enabled. Check if remote file exists.\n"));
 
       switch (err)
         {
-        case HERR: case HEOF: case CONSOCKERR: case CONCLOSED:
+        case HERR: case HEOF: case CONSOCKERR:
         case CONERROR: case READERR: case WRITEFAILED:
         case RANGEERR: case FOPEN_EXCL_ERR:
           /* Non-fatal errors continue executing the loop, which will

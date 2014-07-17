@@ -621,6 +621,12 @@ fi
 dnl
 dnl Check for UUID
 dnl
+AC_CHECK_HEADER(uuid.h,
+                AC_CHECK_FUNC(uuid, uuid_create,
+                  [AC_DEFINE([HAVE_UUID_CREATE], 1,
+                             [Define if uuid_create is available.])
+                  ])
+)
 
 AC_CHECK_HEADER(uuid/uuid.h,
                 AC_CHECK_LIB(uuid, uuid_generate,

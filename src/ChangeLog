@@ -1,3 +1,41 @@
+2014-07-07  Tomas Hozza  <thozza@redhat.com>
+
+	* iri.c (locale_to_utf8): Fix checking of iconv_open return code.
+
+2014-07-05  Darshit Shah  <darnir@gmail.com>
+
+	* cookies.c (check_domain_match): Libpsl requires that all domain names
+	passed to it be in utf8 lower case.
+
+2014-07-05  Darshit Shah  <darnir@gmail.com>
+
+	* http.c (gethttp): Fix indentation of conditional block
+	(gethttp): Remove unneeded variable
+
+2014-07-03  Darshit Shah  <darnir@gmail.com>
+
+	* wget.h (uerr_t): Remove unused error codes
+	* http.c: (http_loop): Remove reference to unused error code
+
+2014-06-30  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* convert.c (local_quote_string): Initialize newname.
+
+2014-06-29  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* warc.c (warc_write_date_header): Avoid out-of-scope variable usage.
+
+2014-06-28  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Makefile.am (wget_SOURCES): Remove space-tab indentation.
+
+2014-06-22  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* warc.c [HAVE_UUID_CREATE]: Include <uuid.h>
+	(warc_uuid_str) [HAVE_UUID_CREATE]: Use uuid_create and
+	uuid_to_string to generate the UUID.
+	Reported by: Alex Zimnitsky <aavzz@yandex.ru>
+
 2014-06-22  Darshit Shah  <darnir@gmail.com> (tiny change)
 
 	* progress.c (create_image): Align percentage download output better.
