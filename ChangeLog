@@ -1,3 +1,7 @@
+2014-07-21  Darshit Shah  <darnir@gmail.com>
+
+	* configure.ac: Fix check for Libpsl
+
 2014-06-28  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* cfg.mk (local-checks-to-skip): Remove some checks.

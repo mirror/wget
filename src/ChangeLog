@@ -1,3 +1,8 @@
+2014-07-21  Darshit Shah  <darnir@gmail.com>
+
+	* cookies.c (check_domain_match): Fix a potential memory leak when checking
+	cookie domain names
+
 2014-07-07  Tomas Hozza  <thozza@redhat.com>
 
 	* iri.c (locale_to_utf8): Fix checking of iconv_open return code.

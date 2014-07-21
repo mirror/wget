@@ -546,9 +546,12 @@ check_domain_match (const char *cookie_domain, const char *host)
   xfree (cookie_domain_lower);
   xfree (host_lower);
 
-  return true ? (is_acceptable == 1) : false;
+  return is_acceptable == 1;
 
 no_psl:
+  /* Cleanup the PSL pointers first */
+  xfree (cookie_domain_lower);
+  xfree (host_lower);
 #endif
 
   /* For efficiency make some elementary checks first */
