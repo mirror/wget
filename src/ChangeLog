@@ -1,3 +1,7 @@
+2014-07-21  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Makefile.am (wget_SOURCES): Remove space-tab indentation.
+
 2014-07-07  Tomas Hozza  <thozza@redhat.com>
 
 	* iri.c (locale_to_utf8): Fix checking of iconv_open return code.
