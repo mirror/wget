@@ -1,3 +1,7 @@
+2014-07-22  Darshit Shah  <darnir@gmail.com>
+
+	* (README): Remove old TODO and document SERVER_WAIT variable
+
 2014-06-22  Darshit Shah  <darnir@gmail.com>
 
 	* (conf.files_crawled): diff is a set object and needs explicit str
