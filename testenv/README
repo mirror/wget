@@ -86,7 +86,11 @@ exceptions, please file a bug report at <bug-wget@gnu.org>
 Environment Variables:
 ================================================================================
 
-TODO: Set variables for ONLY_SERVER and WGET_PATH too.
+* SERVER_WAIT: Set this environment variable with a value for the number of
+  seconds the test should sleep between invoking the server and calling the Wget
+  executable. This is used when one would like to test a different version of
+  the executable or for running the test through external utilities like gdb and
+  valgrind.
 * NO_CLEANUP: Do not remove the temporary files created by the test.
   This will prevent the ${testname}-test directory from being deleted
 
