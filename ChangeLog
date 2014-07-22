@@ -1,3 +1,7 @@
+2014-07-22  Darshit Shah  <darnir@gmail.com>
+
+	* configure.ac: Fix broken code for detecting libpsl
+
 2014-07-21  Darshit Shah  <darnir@gmail.com>
 
 	* configure.ac: Fix check for Libpsl
