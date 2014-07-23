@@ -9,8 +9,11 @@ class ExpectedRetCode:
 
     def __call__(self, test_obj):
         if test_obj.ret_code != self.expected_ret_code:
-            failure = "Return codes do not match.\n" \
-                      "Expected: %s\n" \
-                      "Actual: %s" % (self.expected_ret_code,
-                                      test_obj.ret_code)
+            if test_obj.ret_code == 45:
+                failure = "Memory Leak Found by Valgrind"
+            else:
+                failure = "Return codes do not match.\n" \
+                          "Expected: %s\n" \
+                          "Actual: %s" % (self.expected_ret_code,
+                                          test_obj.ret_code)
             raise TestFailed(failure)
