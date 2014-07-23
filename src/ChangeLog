@@ -1,3 +1,7 @@
+2014-07-21  Daniel Stenberg  <daniel@haxx.se>
+
+	* main.c (print_help): HTTP Method is a part of the Request not Header
+
 2014-07-21  Darshit Shah  <darnir@gmail.com>
 
 	* cookies.c (check_domain_match): Fix a potential memory leak when checking

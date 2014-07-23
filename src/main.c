@@ -614,7 +614,7 @@ HTTP options:\n"),
     N_("\
        --post-file=FILE            use the POST method; send contents of FILE.\n"),
     N_("\
-       --method=HTTPMethod         use method \"HTTPMethod\" in the header.\n"),
+       --method=HTTPMethod         use method \"HTTPMethod\" in the request.\n"),
     N_("\
        --body-data=STRING          Send STRING as data. --method MUST be set.\n"),
     N_("\
