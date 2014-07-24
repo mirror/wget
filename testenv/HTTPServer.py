@@ -1,10 +1,14 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from socketserver import BaseServer
 from posixpath import basename, splitext
 from base64 import b64encode
 from random import random
 from hashlib import md5
 import threading
+import socket
 import re
+import ssl
+import os
 
 
 class InvalidRangeHeader (Exception):
@@ -31,9 +35,30 @@ class StoppableHTTPServer (HTTPServer):
         self.server_configs = conf_dict
         self.fileSys = filelist
 
+    def server_sett (self, settings):
+        for settings_key in settings:
+            setattr (self.RequestHandlerClass, settings_key, settings[settings_key])
+
     def get_req_headers (self):
         return self.request_headers
 
+class HTTPSServer (StoppableHTTPServer):
+
+   def __init__ (self, address, handler):
+         BaseServer.__init__ (self, address, handler)
+         print (os.getcwd())
+         CERTFILE = os.path.abspath (os.path.join ('..', 'certs', 'wget-cert.pem'))
+         print (CERTFILE)
+         fop = open (CERTFILE)
+         print (fop.readline())
+         self.socket = ssl.wrap_socket (
+               sock = socket.socket (self.address_family, self.socket_type),
+               ssl_version = ssl.PROTOCOL_TLSv1,
+               certfile = CERTFILE,
+               server_side = True
+               )
+         self.server_bind ()
+         self.server_activate ()
 
 class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
 
@@ -264,8 +289,13 @@ class _Handler (WgetHTTPRequestHandler):
             auth_type = auth_header.split(' ')[0] if auth_header else required_auth
         else:
             auth_type = required_auth
-        assert hasattr (self, "authorize_" + auth_type)
-        is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule)
+        try:
+            assert hasattr (self, "authorize_" + auth_type)
+            is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule)
+        except AssertionError:
+            raise ServerError ("Authentication Mechanism " + auth_rule + " not supported")
+        except AttributeError as ae:
+            raise ServerError (ae.__str__())
         if is_auth is False:
             raise ServerError ("Unable to Authenticate")
 
@@ -427,4 +457,11 @@ class HTTPd (threading.Thread):
     def server_conf (self, file_list, server_rules):
         self.server_inst.server_conf (file_list, server_rules)
 
-# vim: set ts=8 sts=4 sw=3 tw=0 et :
+    def server_sett (self, settings):
+         self.server_inst.server_sett (settings)
+
+class HTTPSd (HTTPd):
+
+   server_class = HTTPSServer
+
+# vim: set ts=4 sts=4 sw=4 tw=80 et :

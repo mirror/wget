@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from sys import exit
-from WgetTest import HTTPTest, WgetFile
+from WgetTest import HTTPTest, WgetFile, HTTP, HTTPS
 
 """
     This is a Prototype Test File.
@@ -40,6 +40,8 @@ C_File = WgetFile ("File3", File3)
 WGET_OPTIONS = "-d --content-disposition --user=Sauron --password=TheEye"
 WGET_URLS = [["File1", "File2"]]
 
+Servers = [HTTP]
+
 Files = [[A_File, B_File]]
 Existing_Files = [C_File]
 
@@ -64,7 +66,8 @@ err = HTTPTest (
                 name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
-                post_hook=post_test
+                post_hook=post_test,
+                server=Servers
 ).begin ()
 
 exit (err)

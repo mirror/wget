@@ -5,9 +5,13 @@ import sys
 import traceback
 import HTTPServer
 import re
+import time
 from subprocess import call
 from ColourTerm import printer
 from difflib import unified_diff
+
+HTTP = "HTTP"
+HTTPS = "HTTPS"
 
 """ A Custom Exception raised by the Test Environment. """
 
@@ -40,7 +44,13 @@ class CommonMethods:
         cmd_line = self.get_cmd_line (options, urls, domain_list)
         params = shlex.split (cmd_line)
         print (params)
-        retcode = call (params)
+        if os.getenv ("SERVER_WAIT"):
+            time.sleep (float (os.getenv ("SERVER_WAIT")))
+        try:
+            retcode = call (params)
+        except FileNotFoundError as filenotfound:
+            raise TestFailed (
+                "The Wget Executable does not exist at the expected path")
         return retcode
 
     def get_cmd_line (self, options, urls, domain_list):
@@ -50,7 +60,8 @@ class CommonMethods:
         cmd_line = WGET_PATH + " " + options + " "
         for i in range (0, self.servers):
             for url in urls[i]:
-                cmd_line += domain_list[i] + url + " "
+                protocol = "http://" if self.server_types[i] is "HTTP" else "https://"
+                cmd_line += protocol + domain_list[i] + url + " "
 #        for url in urls:
 #            cmd_line += domain_list[0] + url + " "
         print (cmd_line)
@@ -174,6 +185,10 @@ class CommonMethods:
             file_handler.write (file_obj.content)
             file_handler.close ()
 
+    def ServerConf (self, server_settings):
+        for i in range (0, self.servers):
+            self.server_list[i].server_sett (server_settings)
+
     """ Test Option Function Calls """
 
     def WgetCommands (self, command_list):
@@ -216,10 +231,10 @@ class HTTPTest (CommonMethods):
         pre_hook=dict(),
         test_params=dict(),
         post_hook=dict(),
-        servers=1
+        servers=[HTTP]
     ):
         try:
-            self.HTTP_setup (name, pre_hook, test_params, post_hook, servers)
+            self.Server_setup (name, pre_hook, test_params, post_hook, servers)
         except TestFailed as tf:
             printer ("RED", "Error: " + tf.error)
             self.tests_passed = False
@@ -232,40 +247,53 @@ class HTTPTest (CommonMethods):
             printer ("GREEN", "Test Passed")
         finally:
             self._exit_test ()
-    def HTTP_setup (self, name, pre_hook, test_params, post_hook, servers):
+
+    def Server_setup (self, name, pre_hook, test_params, post_hook, servers):
         self.name = name
-        self.servers = servers
+        self.server_types = servers
+        self.servers = len (servers)
         printer ("BLUE", "Running Test " + self.name)
         self.init_test_env (name)
         self.server_list = list()
         self.domain_list = list()
-        for server_number in range (0, servers):
-            server_inst = self.init_HTTP_Server ()
+        for server_type in servers:
+            server_inst = getattr (self, "init_" + server_type + "_Server") ()
             self.server_list.append (server_inst)
             domain = self.get_domain_addr (server_inst.server_address)
             self.domain_list.append (domain)
         #self.server = self.init_HTTP_Server ()
         #self.domain = self.get_domain_addr (self.server.server_address)
 
+        self.pre_hook_call (pre_hook)
+        self.call_test (test_params)
+        self.post_hook_call (post_hook)
+
+    def pre_hook_call (self, pre_hook):
         for pre_hook_func in pre_hook:
             try:
                 assert hasattr (self, pre_hook_func)
             except AssertionError as ae:
-                self.stop_HTTP_Server (self.server)
+                self.stop_HTTP_Server ()
                 raise TestFailed ("Pre Test Function " + pre_hook_func + " not defined.")
             getattr (self, pre_hook_func) (pre_hook[pre_hook_func])
 
+    def call_test (self, test_params):
         for test_func in test_params:
             try:
                 assert hasattr (self, test_func)
             except AssertionError as ae:
-                self.stop_HTTP_Server (self.server)
+                self.stop_HTTP_Server ()
                 raise TestFailed ("Test Option " + test_func + " unknown.")
             getattr (self, test_func) (test_params[test_func])
 
-        self.act_retcode = self.exec_wget (self.options, self.urls, self.domain_list)
+        try:
+            self.act_retcode = self.exec_wget (self.options, self.urls, self.domain_list)
+        except TestFailed as tf:
+            self.stop_HTTP_Server ()
+            raise TestFailed (tf.__str__ ())
         self.stop_HTTP_Server ()
 
+    def post_hook_call (self, post_hook):
         for post_hook_func in post_hook:
             try:
                 assert hasattr (self, post_hook_func)
@@ -275,6 +303,11 @@ class HTTPTest (CommonMethods):
 
     def init_HTTP_Server (self):
         server = HTTPServer.HTTPd ()
+        server.start ()
+        return server
+
+    def init_HTTPS_Server (self):
+        server = HTTPServer.HTTPSd ()
         server.start ()
         return server
 
@@ -300,3 +333,5 @@ class WgetFile:
         self.content = content
         self.timestamp = timestamp
         self.rules = rules
+
+# vim: set ts=4 sts=4 sw=4 tw=80 et :
