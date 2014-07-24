@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from sys import exit
-from WgetTest import HTTPTest, WgetFile, HTTP, HTTPS
+from test.http_test import HTTPTest
+from misc.constants import HTTP, HTTPS
+from misc.wget_file import WgetFile
 
 """
     This is a Prototype Test File.
@@ -67,7 +69,7 @@ err = HTTPTest (
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test,
-                server=Servers
+                protocols=Servers
 ).begin ()
 
 exit (err)

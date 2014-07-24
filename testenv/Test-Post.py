@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from sys import exit
-from WgetTest import HTTPTest, WgetFile
+from test.http_test import HTTPTest
+from misc.wget_file import WgetFile
 
 """
     Simple test for HTTP POST Requests usiong the --method command

@@ -1,3 +1,4 @@
+from functools import partial
 import platform
 from os import getenv
 
@@ -19,5 +20,12 @@ def printer (color, string):
 
    else:
       print (string)
+
+
+print_blue = partial(printer, 'BLUE')
+print_red = partial(printer, 'RED')
+print_green = partial(printer, 'GREEN')
+print_purple = partial(printer, 'PURPLE')
+print_yellow = partial(printer, 'YELLOW')
 
 # vim: set ts=8 sw=3 tw=0 et :

@@ -1,3 +1,146 @@
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* base_test.py:
+	(CommonMethods): Rename to BaseTest.
+	(BaseTest): Implement __init__ method where the class-wide variables are
+	initialized. Also variable names like `xxx_list` is renamed to its plural
+	form, e.g. `server_list` => `servers`.
+	(BaseTest.init_test_env): Remove name argument due to its unnecessarity.
+	(BaseTest.get_test_dir): Because the path of the test directory is needed
+	in multiple methods, this method is implemented.
+	(BaseTest.get_domain_addr): Rewrite the return statement utilizing str
+	formatting (which is more Pythonic).
+	(BaseTest.get_cmd_line): Rename to gen_cmd_line. Change the variables with
+	capitcal characters to lower ones. Also, the nested for loop is rewritten
+	to a plain loop using the zip function.
+	(BaseTest.__gen_local_filesys): Rename to gen_local_fs_snapshot. Move to
+	ExpectedFiles in conf/expected_files.py and is marked as a static
+	method. Refactor to a less verbose implementation.
+	(BaseTest._check_downloaded_files): Rename to __call__ to agree with the
+	invocation in test case classes. Move to ExpectedFiles in
+	conf/expected_files.py.
+	(BaseTest.get_server_rules): Refactor to a more Pythonic form utilizing
+	dict.items() and is marked static.
+	(BaseTest.stop_server): (new method) an abstract method which should stop
+	the currently using servers.
+	(BaseTest.instantiate_server_by): (new method) an abstract method which
+	should instantiate a server instance according to the given argument.
+	(BaseTest.__enter__): (new method) method which initialize the context
+	manager
+	(BaseTest.__exit__): (new method) method that finilize the context manager
+	and deal with the exceptions during the execution of the with statement,
+	subclasses can override this method for extensibility
+	* http_test.py:
+	(HTTPTest.__init__): Add call to super.__init__. Default values of
+	pre_hook, test_params, post_hook are set to None to avoid a subtle bug of
+	Python. Argument servers is renamed to protocols.
+	(HTTPTest.Server_setup): Move to BaseTest and rename to server_setup.
+	Calls to pre_hook_call, call_test, post_hook_call are removed.
+	(HTTPTest.hook_call, pre_hook_call, call_test, post_hook_call): Move to
+	BaseTest for that both HTTP test cases and FTP test cases may use these
+	methods.
+	(HTTPTest.init_HTTP_Server, init_HTTPS_Server): Merge and rename to
+	instantiate_server_by to implement the abstract method in BaseTest.
+	(HTTPTest.stop_HTTP_Server): Rename to stop_server to implement the
+	abstract method in BaseTest. Also, pull out the part where remaining
+	requests are gathered into a new method request_remaining.
+	(BaseTest.act_retcode): Rename to ret_code because ExpectedRetCode is
+	moved out from BaseTest, so the name act_retcode is actually a bit
+	verbose.
+	* conf/expected_ret_code.py:
+	(ExpectedRetCode.__call__): Rewrite the str into a more readable form.
+	* conf/files_crawled.py:
+	(FilesCrawled.__call__): Refactor this method into a more Pythonic form
+	utilizing the zip function.
+	* conf/local_files.py:
+	(LocalFiles__call__): Rewrite this method with the recommended with
+	statement.
+	* conf/server_conf.py:
+	(ServerConf.__call__): Rewrite this method due to BaseTest.server_list is
+	renamed to BaseTest.servers.
+	* conf/server_files.py:
+	(ServerFiles.__call__): Refactor the nested for loop into a plain one
+	utilizing the zip function.
+	* conf/urls.py:
+	(URLs): Rename url_list to urls.
+	* conf/wget_commands.py:
+	(WgetCommands): Rename command_list to commands, rename test_obj.options
+	to test_obj.wget_options.
+	* Test--https.py, Test-Proto.py, Test-Parallel-Proto.py: Argument servers
+	is changed to protocols due to change in the signature of
+	HTTPTest.__init__.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* test: (new package) package for test case classes
+	* WgetTest.py: Split into test/base_test.py and test/http_test.py.
+	* Test-*.py: Optimize the imports according to changes of WgetTest.py
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* server: (new package) package for the server classes
+	* server.http: (new package) package for HTTP server
+	* server.ftp: (new package) package for FTP server
+	* HTTPServer.py: Move to server/http/http_server.py. Also change the
+	CERTFILE to '../certs/wget-cert.pem'.
+	* FTPServer.py: Move to server/ftp/ftp_server.py.
+	* WgetTest.py: Optimize import respect to the server classes.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* conf: (new package) package for rule classes and hook methods
+	* WgetTest.py:
+	(CommonMethods.Authentication): Move to conf/authentication.py.
+	(CommonMethods.ExpectHeader): Move to conf/expect_header.py.
+	(CommonMethods.RejectHeader): Move to conf/reject_header.py.
+	(CommonMethods.Response): Move to conf/response.py.
+	(CommonMethods.SendHeader): Move to conf/send_header.py.
+	(CommonMethods.ServerFiles): Move to conf/server_files.py.
+	(CommonMethods.LocalFiles): Move to conf/local_files.py.
+	(CommonMethods.ServerConf): Move to conf/server_conf.py.
+	(CommonMethods.WgetCommands): Move to conf/wget_commands.py.
+	(CommonMethods.Urls): Move to conf/urls.py.
+	(CommonMethods.ExpectedRetcode): Move to conf/expected_retcode.py.
+	(CommonMethods.ExpectedFiles): Move to conf/expected_files.py.
+	(CommonMethods.FilesCrawled): Move to conf/files_crawled.py.
+	(CommonMethods.__check_downloaded_files): Rename to
+	_check_downloaded_files, so that the method is callable from outside the
+	class.
+	(CommomMethods.get_server_rules): Modify so that it utilizes the conf
+	package.
+	(HTTPTest): Add a method hook_call(configs, name) to reduce duplications
+	in pre_hook_call, call_test and post_hook_call utilizing the conf package.
+	* conf/hook_sample.py: (new file) sample for hooks
+	* conf/rule_sample.py: (new file) sample for rules
+	* REAMDE: Update sections about customizing rules and hooks.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* exc: (new package) package for miscellaneous exceptions
+	* WgetTest.py: Move TestFailed to exc/test_failed.py.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* Test-Proto.py: Fix a typo (line 71: server to servers).
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* WgetTest.py: Move WgetFile to package misc.
+	* README: Modify documentation respect to WgetFile.
+	* Test-*.py: Optimize imports about WgetFile.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* misc: (new package) package for miscellaneous modules
+	* ColourTerm.py: Move to package misc and rename to colour_terminal.py,
+	add print_color functions to reduce the use of string literals like
+	"BLUE", "RED" etc.
+	* WgetTest.py:
+	(CommonMethods.Server_setup): Change invocation to printer to print_blue.
+	(CommonMethods.FilesCrawled): Change invocation to printer to print_red.
+	(HTTPTest.__init__): Change invocations to printer to print_red and
+	print_green respectively.
+
 2014-01-02  Darshit Shah  <darnir@gmail.com>
 	* Makefile.am: Add new Test--https.py to list of tests and EXTRA_DIST.
 	Also replace all tabs with spaces in file for conformity.
