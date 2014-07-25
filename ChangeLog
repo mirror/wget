@@ -1,3 +1,7 @@
+2014-07-25  Darshit Shah  <darnir@gmail.com>
+
+	* .gitignore: Add a gitignore file for the project.
+
 2013-08-31  Darshit Shah  <darnir@gmail.com>
 
 	* configure.ac: Add testenv/Makefile to	AC_CONFIG_FILES.
