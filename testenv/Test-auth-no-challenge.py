@@ -23,7 +23,7 @@ File1_rules = {
 }
 A_File = WgetFile ("File1", File1, rules=File1_rules)
 
-WGET_OPTIONS = "-d --auth-no-challenge --user=Pacman --password=Omnomnom"
+WGET_OPTIONS = "--auth-no-challenge --user=Pacman --password=Omnomnom"
 WGET_URLS = [["File1"]]
 
 Files = [[A_File]]

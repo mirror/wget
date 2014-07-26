@@ -13,7 +13,7 @@ File1 = "Test Contents."
 
 A_File = WgetFile ("File1", File1)
 
-WGET_OPTIONS = "-d -O NewFile.txt"
+WGET_OPTIONS = "-O NewFile.txt"
 WGET_URLS = [["File1"]]
 
 Files = [[A_File]]

@@ -13,7 +13,7 @@ File1 = "You shall not pass!"
 
 A_File = WgetFile ("File1", File1)
 
-WGET_OPTIONS = "-d --method=HEAD"
+WGET_OPTIONS = "--method=HEAD"
 WGET_URLS = [["File1"]]
 
 Files = [[A_File]]

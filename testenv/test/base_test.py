@@ -98,12 +98,13 @@ class BaseTest:
         test_path = os.path.abspath(".")
         wget_path = os.path.abspath(os.path.join(test_path,
                                                  "..", '..', 'src', "wget"))
+        wget_options = '--debug --no-config %s' % self.wget_options
 
         if os.getenv("VALGRIND_TESTS"):
             valgrind_test = "valgrind --error-exitcode=301 --leak-check=full"
         else:
             valgrind_test = ""
-        cmd_line = '%s %s %s ' % (valgrind_test, wget_path, self.wget_options)
+        cmd_line = '%s %s %s ' % (valgrind_test, wget_path, wget_options)
         for protocol, urls, domain in zip(self.protocols,
                                           self.urls,
                                           self.domains):

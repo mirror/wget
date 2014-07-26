@@ -25,7 +25,7 @@ File1_rules = {
 }
 A_File = WgetFile ("LOTR", File1, rules=File1_rules)
 
-WGET_OPTIONS = "-d --content-disposition"
+WGET_OPTIONS = "--content-disposition"
 WGET_URLS = [["LOTR"]]
 
 Files = [[A_File]]

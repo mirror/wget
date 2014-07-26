@@ -49,7 +49,7 @@ B_File = WgetFile ("File2", File2, rules=File2_rules)
 C_File = WgetFile ("File3", File3, rules=File3_rules)
 D_File = WgetFile ("File4", File4, rules=File4_rules)
 
-WGET_OPTIONS = "-d"
+WGET_OPTIONS = ""
 WGET_URLS = [["File1", "File2", "File3", "File4"]]
 
 Files = [[A_File, B_File, C_File, D_File]]

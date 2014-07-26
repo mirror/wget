@@ -20,7 +20,7 @@ File2_rules = {
 A_File = WgetFile ("HTTP.Teapot", File1)
 B_File = WgetFile ("File2", File2, rules=File2_rules)
 
-WGET_OPTIONS = "-d --content-disposition"
+WGET_OPTIONS = "--content-disposition"
 WGET_URLS = [["File2"]]
 
 Files = [[B_File]]

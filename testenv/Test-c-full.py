@@ -20,7 +20,7 @@ D_File = WgetFile ("File2", File2)
 
 E_File = WgetFile ("File3", File1)
 
-WGET_OPTIONS = "-d -c"
+WGET_OPTIONS = "-c"
 WGET_URLS = [["File1", "File2", "File3"]]
 
 Files = [[A_File, C_File, E_File]]

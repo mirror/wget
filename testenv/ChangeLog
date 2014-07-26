@@ -1,3 +1,9 @@
+2014-07-26  Darshit Shah  <darnir@gmail.com>
+
+	* Test-*.py: Remove the '-d' switch from WGET_OPTIONS.
+	* test/base_test (BaseTest.gen_cmd_line): Add --debug and --no-config to the
+	list of switches passed to wget unconditionally.
+
 2014-07-23  Darshit Shah  <darnir@gmail.com>
 
 	* test/base_test.py (BaseTest.gen_cmd_line): Add support for running all
