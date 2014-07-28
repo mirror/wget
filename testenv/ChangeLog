@@ -1,3 +1,11 @@
+2014-08-04  Darshit Shah  <darnir@gmail.com>
+
+	* conf/server_conf.py: Delete file. Server configuration is now done via the
+	server_conf() method.
+	* server/http/http_server.py (StppableHTTPServer.server_sett): Delete
+	method required by the above hook
+	(HTTPd.server_sett): Same
+
 2014-07-26  Darshit Shah  <darnir@gmail.com>
 
 	* Test-*.py: Remove the '-d' switch from WGET_OPTIONS.

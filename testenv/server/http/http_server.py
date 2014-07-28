@@ -35,10 +35,6 @@ class StoppableHTTPServer (HTTPServer):
         self.server_configs = conf_dict
         self.fileSys = filelist
 
-    def server_sett (self, settings):
-        for settings_key in settings:
-            setattr (self.RequestHandlerClass, settings_key, settings[settings_key])
-
     def get_req_headers (self):
         return self.request_headers
 
@@ -457,8 +453,6 @@ class HTTPd (threading.Thread):
     def server_conf (self, file_list, server_rules):
         self.server_inst.server_conf (file_list, server_rules)
 
-    def server_sett (self, settings):
-         self.server_inst.server_sett (settings)
 
 class HTTPSd (HTTPd):
 
