@@ -1,3 +1,7 @@
+2014-08-03  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Download Options): Fix texinfo warning.
+
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Makefile.am: Remove @VAR@ with $FOO.
