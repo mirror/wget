@@ -1,3 +1,7 @@
+2014-07-28  Ángel González <keisial@gmail.com>
+	* contrib: Created contrib folder.
+	* contrib/tsocked-wget: Added wrapper for usage with socks proxy.
+
 2014-10-28  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* configure.ac: check for strlcpy()

@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# Script that executes wget using a socks proxy if the environment variable
+# socks_proxy is set.
+#
+# The socks_proxy variable shall have one of the forms:
+#   socks://username:password@host:port
+#   socks4://username:password@host:port
+#   socks5://username:password@host:port
+# with username, password and port fields being optional
+#
+# As socksification applies to the whole process, domains defined in the
+# no_proxy setting are *not* excluded.
+#
+
+# Requisites: bash (version 3.2.3 or later), tsocks and wget
+
+####################################
+#  Copyright (C) 2014 Ángel González
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#  The above copyright notice and this permission notice shall be included in
+#  all copies or substantial portions of the Software.
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#  THE SOFTWARE.
+#
+
+set -eu
+
+# Binary to be executed. Use an absolute path if installing this script as 'wget'
+WGET=wget
+
+if [ -z "${socks_proxy:-}" ]; then
+exec "$WGET" "$@"
+fi
+
+CONFIG=""
+
+if [[ "${socks_proxy}" =~ ^socks[45]?:// ]]; then
+ if [[ "${socks_proxy:5:1}" != ":" ]]; then
+  CONFIG+="server_type = ${socks_proxy:5:1}"
+  socks_proxy="${socks_proxy:9}"
+ else
+  socks_proxy="${socks_proxy:8}"
+ fi
+elif [[ "${socks_proxy}" =~ ^[[:alnum:]]*:// ]]; then
+ echo "Bad value specified for socks_proxy: $socks_proxy" >&2
+ exit 2
+fi
+
+if [[ "${socks_proxy}" =~ ^([^@:]*)(:([^@]*))?@ ]]; then
+ unset TSOCKS_USERNAME
+ CONFIG+="
+   default_user = ${BASH_REMATCH[1]}"
+
+ if [ ! -z "${BASH_REMATCH[3]}" ]; then
+  unset TSOCKS_PASSWORD
+  CONFIG+="
+   default_pass = ${BASH_REMATCH[3]}"
+ fi
+ socks_proxy="${socks_proxy:${#BASH_REMATCH[0]}}"
+fi
+
+
+# Get rid of trailing slashes
+if [[ "${socks_proxy}" =~ ^([^/]*)/ ]]; then
+ socks_proxy="${socks_proxy:0:${#BASH_REMATCH[1]}}"
+fi
+
+if [[ "${socks_proxy}" =~ :([0-9]+)$ ]]; then
+  CONFIG+="
+   server_port = ${BASH_REMATCH[1]}"
+  socks_proxy=${socks_proxy:0:${#socks_proxy} - ${#BASH_REMATCH[0]}}
+fi
+
+CONFIG+="
+   server = ${socks_proxy}"
+
+TSOCKS_CONF_FILE=<(echo "$CONFIG") exec tsocks "$WGET" --no-proxy "$@"
+
