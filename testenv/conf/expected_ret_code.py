@@ -1,6 +1,14 @@
 from exc.test_failed import TestFailed
 from conf import hook
 
+""" Post-Test Hook: ExpectedRetCode
+This is a post-test hook which checks if the exit code of the Wget instance
+under test is the same as that expected. As a result, this is a very important
+post test hook which is checked in all the tests.
+Returns a TestFailed exception if the return code does not match the expected
+value. Else returns gracefully.
+"""
+
 
 @hook(alias='ExpectedRetcode')
 class ExpectedRetCode:

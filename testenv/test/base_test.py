@@ -28,9 +28,9 @@ class BaseTest:
         Attributes should not be defined outside __init__.
         """
         self.name = name
-        self.pre_configs = pre_hook or {} # if pre_hook == None, then
-                                          # {} (an empty dict object) is
-                                          # passed to self.pre_configs
+        self.pre_configs = pre_hook or {}  # if pre_hook == None, then
+                                           # {} (an empty dict object) is
+                                           # passed to self.pre_configs
         self.test_params = test_params or {}
         self.post_configs = post_hook or {}
         self.protocols = protocols

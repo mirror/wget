@@ -1,3 +1,40 @@
+2014-08-08  Darshit Shah  <darnir@gmail.com>
+
+	* conf/__init__.py: Add extra newline according to PEP8
+	* conf/{authentication,expect_header,expected_files,expected_ret_code,
+	files_crawled,hook_sample,local_files,reject_header,response,send_header,
+	server_files,urls,wget_commands}.py: Add docstrings explaining the conf file
+	and how it should be used
+	* server/http/http_server (InvalidRangeHeader): Clear TODO and eliminate
+	this exception. Use ServerError for all such purposes.
+	(_Handler): Remove reference to InvalidRangeHeader
+	(_handler.parse_range_header): User ServerError instead of InvalidRangeHeader
+	(_Handler.do_GET):  Add docstring
+	(_Handler.do_POST): Add docstring. Also create an empty dict for rules if
+	no rules are supplied. Send the Location header as suggested in RFC 7231
+	(_Handler.do_PUT): Don't pop the server file already. Push it to later in ..
+	(_Handler.send_put): .. Here. If the file exists respond with a 204 No
+	Content message and pop the file for replacement. Do not send the
+	Content-Length, Content-Type headers since PUT requests should not respond
+	with data.
+	(_Handler.parse_auth_header): Fit line within 80 chars
+	(_Handler.check_response): Better visual indent
+	(_Handler.authorize_digest): Better visual indent.
+	(_Handler.expect_headers): Remove unused function
+	(_Handler.guess_type): Fix indentation
+	(HTTPd): Add newline according to PEP8 guidelines
+	(HTTPSd): Fix indentation
+	(StoppableHTTPServer): Add docstring
+	(HTTPSServer): Fix indentation
+	(WgetHTTPRequestHandler): Merge class into _handler.
+	(_Handler): Add docstring
+	(_Handler.parse_range_header): Fix indentation
+	(ServerError): Split exception into separate file ...
+	* exc/server_error.py: ... Here
+	* misc/colour_terminal.py: Add docstring, fix indentation
+	* test/base_test.py: Fix visual indent
+	* test/http_test.py: Fit within 80 char lines
+
 2014-08-04  Darshit Shah  <darnir@gmail.com>
 
 	* conf/server_conf.py: Delete file. Server configuration is now done via the
