@@ -1,3 +1,8 @@
+2014-09-08  Darshit Shah  <darnir@gmail.com>
+
+	* init.c (defaults): Set retr-symlinks to true by default. This changes a
+	default setting of wget. Fixes security bug CVE-2014-4877
+
 2014-10-08 Nikolay Morozov <n.morozov@securitycode.ru>
 	   Sergey Lvov <s.lvov@securitycode.ru>
 

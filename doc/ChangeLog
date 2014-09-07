@@ -1,3 +1,9 @@
+2014-09-08  Darshit Shah  <darnir@gmail.com>
+
+	* wget.texi (symbolic links): Update documentation of retr-symlinks to
+	reflect the new default. Add warning about potential security issues with
+	--retr-symlinks=yes.
+
 2014-10-16  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* wget.texi (Download Options): update --secure-protocol description

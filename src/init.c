@@ -366,6 +366,22 @@ defaults (void)
 
   opt.dns_cache = true;
   opt.ftp_pasv = true;
+  /* 2014-09-07  Darshit Shah  <darnir@gmail.com>
+   * opt.retr_symlinks is set to true by default. Creating symbolic links on the
+   * local filesystem pose a security threat by malicious FTP Servers that
+   * server a specially crafted .listing file akin to this:
+   *
+   * lrwxrwxrwx   1 root     root           33 Dec 25  2012 JoCxl6d8rFU -> /
+   * drwxrwxr-x  15 1024     106          4096 Aug 28 02:02 JoCxl6d8rFU
+   *
+   * A .listing file in this fashion makes Wget susceptiple to a symlink attack
+   * wherein the attacker is able to create arbitrary files, directories and
+   * symbolic links on the target system and even set permissions.
+   *
+   * Hence, by default Wget attempts to retrieve the pointed-to files and does
+   * not create the symbolic links locally.
+   */
+  opt.retr_symlinks = true;
 
 #ifdef HAVE_SSL
   opt.check_cert = true;
