@@ -2211,6 +2211,29 @@ has_insecure_name_p (const char *s)
   return false;
 }
 
+/* Test if the file node is invalid. This can occur due to malformed or
+ * maliciously crafted listing files being returned by the server.
+ *
+ * Currently, this function only tests if there are multiple entries in the
+ * listing file by the same name. However this function can be expanded as more
+ * such illegal listing formats are discovered. */
+static bool
+is_invalid_entry (struct fileinfo *f)
+{
+  struct fileinfo *cur;
+  cur = f;
+  char *f_name = f->name;
+  /* If the node we're currently checking has a duplicate later, we eliminate
+   * the current node and leave the next one intact. */
+  while (cur->next)
+    {
+      cur = cur->next;
+      if (strcmp(f_name, cur->name) == 0)
+          return true;
+    }
+  return false;
+}
+
 /* A near-top-level function to retrieve the files in a directory.
    The function calls ftp_get_listing, to get a linked list of files.
    Then it weeds out the file names that do not match the pattern.
@@ -2248,11 +2271,11 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
             f = f->next;
         }
     }
-  /* Remove all files with possible harmful names */
+  /* Remove all files with possible harmful names or invalid entries. */
   f = start;
   while (f)
     {
-      if (has_insecure_name_p (f->name))
+      if (has_insecure_name_p (f->name) || is_invalid_entry (f))
         {
           logprintf (LOG_VERBOSE, _("Rejecting %s.\n"),
                      quote (f->name));

@@ -1,5 +1,12 @@
 2014-09-08  Darshit Shah  <darnir@gmail.com>
 
+	* ftp.c (ftp_retrieve_glob): Also check for invalid entries along with
+	harmful filenames
+	(is_valid_entry): New function. Check if the provided node is a valid entry
+	in a listing file.
+
+2014-09-08  Darshit Shah  <darnir@gmail.com>
+
 	* init.c (defaults): Set retr-symlinks to true by default. This changes a
 	default setting of wget. Fixes security bug CVE-2014-4877
 
