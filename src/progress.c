@@ -37,6 +37,7 @@ as that of the covered work.  */
 #include <unistd.h>
 #include <signal.h>
 #include <wchar.h>
+#include <mbiter.h>
 
 #include "progress.h"
 #include "utils.h"
@@ -812,8 +813,37 @@ count_cols (const char *mbs)
     }
   return cols;
 }
+
+static int
+cols_to_bytes (const char *mbs, const int cols, int *ncols)
+{
+  int p_cols = 0, bytes = 0;
+  mbchar_t mbc;
+  mbi_iterator_t iter;
+  mbi_init (iter, mbs, strlen(mbs));
+  while (p_cols < cols && mbi_avail (iter))
+    {
+      mbc = mbi_cur (iter);
+      p_cols += mb_width (mbc);
+      /* The multibyte character has exceeded the total number of columns we
+       * have available. The remaining bytes will be padded with a space. */
+      if (p_cols > cols)
+        {
+          p_cols -= mb_width (mbc);
+          break;
+        }
+      bytes += mb_len (mbc);
+      mbi_advance (iter);
+    }
+  *ncols = p_cols;
+  return bytes;
+}
 #else
 # define count_cols(mbs) ((int)(strlen(mbs)))
+# define cols_to_bytes(mbs, cols, *ncols) do {  \
+    *ncols = cols;                              \
+    bytes = cols;                               \
+}while (0)
 #endif
 
 static const char *
@@ -873,7 +903,7 @@ get_eta (int *bcd)
 static void
 create_image (struct bar_progress *bp, double dl_total_time, bool done)
 {
-  const int MAX_FILENAME_LEN = bp->width / 4;
+  const int MAX_FILENAME_COLS = bp->width / 4;
   char *p = bp->buffer;
   wgint size = bp->initial_length + bp->count;
 
@@ -884,7 +914,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   int size_grouped_pad; /* Used to pad the field width for size_grouped. */
 
   struct bar_progress_hist *hist = &bp->hist;
-  int orig_filename_len = strlen (bp->f_download);
+  int orig_filename_cols = count_cols (bp->f_download);
 
   /* The progress bar should look like this:
      file xx% [=======>             ] nnn.nnK 12.34KB/s  eta 36m 51s
@@ -896,7 +926,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      It would be especially bad for the progress bar to be resized
      randomly.
 
-     "file "           - Downloaded filename      - MAX_FILENAME_LEN chars + 1
+     "file "           - Downloaded filename      - MAX_FILENAME_COLS chars + 1
      "xx% " or "100%"  - percentage               - 4 chars
      "[]"              - progress bar decorations - 2 chars
      " nnn.nnK"        - downloaded bytes         - 7 chars + 1
@@ -906,7 +936,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      "=====>..."       - progress bar             - the rest
   */
 
-#define PROGRESS_FILENAME_LEN  MAX_FILENAME_LEN + 1
+#define PROGRESS_FILENAME_LEN  MAX_FILENAME_COLS + 1
 #define PROGRESS_PERCENT_LEN   4
 #define PROGRESS_DECORAT_LEN   2
 #define PROGRESS_FILESIZE_LEN  7 + 1
@@ -924,24 +954,31 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   if (progress_size < 5)
     progress_size = 0;
 
-  if (orig_filename_len <= MAX_FILENAME_LEN)
+  if (orig_filename_cols <= MAX_FILENAME_COLS)
     {
-      int padding = MAX_FILENAME_LEN - orig_filename_len;
+      int padding = MAX_FILENAME_COLS - orig_filename_cols;
       sprintf (p, "%s ", bp->f_download);
-      p += orig_filename_len + 1;
+      p += orig_filename_cols + 1;
       for (;padding;padding--)
         *p++ = ' ';
     }
   else
     {
-      int offset;
+      int offset_cols;
+      int bytes_in_filename, offset_bytes, col;
+      int *cols_ret = &col;
 
-      if (((orig_filename_len > MAX_FILENAME_LEN) && !opt.noscroll) && !done)
-        offset = ((int) bp->tick) % (orig_filename_len - MAX_FILENAME_LEN);
+      if (((orig_filename_cols > MAX_FILENAME_COLS) && !opt.noscroll) && !done)
+        offset_cols = ((int) bp->tick) % (orig_filename_cols - MAX_FILENAME_COLS);
       else
-        offset = 0;
-      memcpy (p, bp->f_download + offset, MAX_FILENAME_LEN);
-      p += MAX_FILENAME_LEN;
+        offset_cols = 0;
+      offset_bytes = cols_to_bytes (bp->f_download, offset_cols, cols_ret);
+      bytes_in_filename = cols_to_bytes (bp->f_download + offset_bytes, MAX_FILENAME_COLS, cols_ret);
+      memcpy (p, bp->f_download + offset_bytes, bytes_in_filename);
+      p += bytes_in_filename;
+      int padding = MAX_FILENAME_COLS - *cols_ret;
+      for (;padding;padding--)
+          *p++ = ' ';
       *p++ = ' ';
     }
 

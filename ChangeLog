@@ -1,3 +1,7 @@
+2014-09-12  Darshit Shah  <darnir@gmail.com>
+
+	* bootstrap.conf: Add GNULib module mbiter
+
 2014-07-25  Darshit Shah  <darnir@gmail.com>
 
 	* .gitignore: Add a gitignore file for the project.
