@@ -28,9 +28,9 @@ class BaseTest:
         Attributes should not be defined outside __init__.
         """
         self.name = name
-        self.pre_configs = pre_hook or {} # if pre_hook == None, then
-                                          # {} (an empty dict object) is
-                                          # passed to self.pre_configs
+        self.pre_configs = pre_hook or {}  # if pre_hook == None, then
+                                           # {} (an empty dict object) is
+                                           # passed to self.pre_configs
         self.test_params = test_params or {}
         self.post_configs = post_hook or {}
         self.protocols = protocols
@@ -98,12 +98,13 @@ class BaseTest:
         test_path = os.path.abspath(".")
         wget_path = os.path.abspath(os.path.join(test_path,
                                                  "..", '..', 'src', "wget"))
+        wget_options = '--debug --no-config %s' % self.wget_options
 
         if os.getenv("VALGRIND_TESTS"):
             valgrind_test = "valgrind --error-exitcode=301 --leak-check=full"
         else:
             valgrind_test = ""
-        cmd_line = '%s %s %s ' % (valgrind_test, wget_path, self.wget_options)
+        cmd_line = '%s %s %s ' % (valgrind_test, wget_path, wget_options)
         for protocol, urls, domain in zip(self.protocols,
                                           self.urls,
                                           self.domains):

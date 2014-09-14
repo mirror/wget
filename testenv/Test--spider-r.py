@@ -74,7 +74,7 @@ Request_List = [
     ]
 ]
 
-WGET_OPTIONS = "-d --spider -r"
+WGET_OPTIONS = "--spider -r"
 WGET_URLS = [[""]]
 
 Files = [[index_html, secondpage_html, thirdpage_html, dummy_txt]]

@@ -1,0 +1,91 @@
+# Project Root
+/.sc-start-sc_bindtextdomain
+/.sc-start-sc_prohibit_HAVE_MBRTOWC
+/.version
+/GNUmakefile
+/INSTALL
+/Makefile
+/Makefile.in
+/aclocal.m4
+/autom4te.cache/
+/config.cache
+/config.log
+/config.status
+/configure
+/lib/
+/maint.mk
+# Wildcard Ignores
+*~
+po/*.gmo*
+po/*.po*
+src/*.o
+testenv/*.log
+testenv/*.trs
+# build-aux/
+build-aux/.gitignore
+build-aux/compile
+build-aux/config.guess
+build-aux/config.sub
+build-aux/depcomp
+build-aux/install-sh
+build-aux/mdate-sh
+build-aux/missing
+build-aux/snippet/
+build-aux/test-driver
+build-aux/texinfo.tex
+# doc/
+doc/Makefile
+doc/Makefile.in
+doc/sample.wgetrc.munged_for_texi_inclusion
+doc/stamp-vti
+doc/version.texi
+doc/wget.1
+doc/wget.info
+doc/wget.pod
+# m4/
+m4/.gitignore
+m4/gnulib-cache.m4
+# po/
+po/.gitignore
+po/.reference/
+po/LINGUAS
+po/Makefile
+po/Makefile.in
+po/Makevars
+po/POTFILES
+po/wget.pot
+# src/
+src/.deps/
+src/Makefile
+src/Makefile.in
+src/build_info.c
+src/config.h
+src/config.h.in
+src/cscope.out
+src/css.c
+src/css_.c
+src/libunittest.a
+src/stamp-h1
+src/tags
+src/version.c
+src/wget
+# testenv/
+testenv/conf/__pycache__/
+testenv/exc/__pycache__/
+testenv/misc/__pycache__/
+testenv/server/__pycache__/
+testenv/server/http/__pycache__/
+testenv/test/__pycache__/
+testenv/Makefile
+testenv/Makefile.in
+# tests/
+tests/Makefile
+tests/Makefile.in
+tests/WgetTest.pm
+tests/unit-tests
+# util/
+util/Makefile
+util/Makefile.in
+# others
+/tags
+/cscope.out

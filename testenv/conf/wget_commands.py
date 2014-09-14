@@ -1,5 +1,10 @@
 from conf import hook
 
+""" Pre-Test Hook: WgetCommands
+This hook is used to specify the test specific switches that must be passed to
+wget on invokation. Default switches are hard coded in the test suite itself.
+"""
+
 
 @hook()
 class WgetCommands:

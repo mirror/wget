@@ -1,4 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from exc.server_error import ServerError
 from socketserver import BaseServer
 from posixpath import basename, splitext
 from base64 import b64encode
@@ -11,20 +12,12 @@ import ssl
 import os
 
 
-class InvalidRangeHeader (Exception):
-
-    """ Create an Exception for handling of invalid Range Headers. """
-    # TODO: Eliminate this exception and use only ServerError
-
-    def __init__ (self, err_message):
-        self.err_message = err_message
-
-class ServerError (Exception):
-    def __init__ (self, err_message):
-        self.err_message = err_message
-
-
 class StoppableHTTPServer (HTTPServer):
+    """ This class extends the HTTPServer class from default http.server library
+    in Python 3. The StoppableHTTPServer class is capable of starting an HTTP
+    server that serves a virtual set of files made by the WgetFile class and
+    has most of its properties configurable through the server_conf()
+    method. """
 
     request_headers = list ()
 
@@ -35,45 +28,45 @@ class StoppableHTTPServer (HTTPServer):
         self.server_configs = conf_dict
         self.fileSys = filelist
 
-    def server_sett (self, settings):
-        for settings_key in settings:
-            setattr (self.RequestHandlerClass, settings_key, settings[settings_key])
-
     def get_req_headers (self):
         return self.request_headers
 
+
 class HTTPSServer (StoppableHTTPServer):
+    """ The HTTPSServer class extends the StoppableHTTPServer class with
+    additional support for secure connections through SSL. """
 
-   def __init__ (self, address, handler):
-         BaseServer.__init__ (self, address, handler)
-         print (os.getcwd())
-         CERTFILE = os.path.abspath (os.path.join ('..', 'certs', 'wget-cert.pem'))
-         print (CERTFILE)
-         fop = open (CERTFILE)
-         print (fop.readline())
-         self.socket = ssl.wrap_socket (
-               sock = socket.socket (self.address_family, self.socket_type),
-               ssl_version = ssl.PROTOCOL_TLSv1,
-               certfile = CERTFILE,
-               server_side = True
-               )
-         self.server_bind ()
-         self.server_activate ()
+    def __init__ (self, address, handler):
+        BaseServer.__init__ (self, address, handler)
+        print (os.getcwd())
+        CERTFILE = os.path.abspath(os.path.join('..', 'certs', 'wget-cert.pem'))
+        print (CERTFILE)
+        fop = open (CERTFILE)
+        print (fop.readline())
+        self.socket = ssl.wrap_socket (
+            sock = socket.socket (self.address_family, self.socket_type),
+            ssl_version = ssl.PROTOCOL_TLSv1,
+            certfile = CERTFILE,
+            server_side = True
+        )
+        self.server_bind()
+        self.server_activate()
 
-class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
 
-    """ Define methods for handling Test Checks. """
+class _Handler (BaseHTTPRequestHandler):
+    """ This is a private class which tells the server *HOW* to handle each
+    request. For each HTTP Request Command that the server should be capable of
+    responding to, there must exist a do_REQUESTNAME() method which details the
+    steps in which such requests should be processed. The rest of the methods
+    in this class are auxilliary methods created to help in processing certain
+    requests. """
 
     def get_rule_list (self, name):
         r_list = self.rules.get (name) if name in self.rules else None
         return r_list
 
-
-class _Handler (WgetHTTPRequestHandler):
-
-    """ Define Handler Methods for different Requests. """
-
-    InvalidRangeHeader = InvalidRangeHeader
+    # The defailt protocol version of the server we run is HTTP/1.1 not
+    # HTTP/1.0 which is the default with the http.server module.
     protocol_version = 'HTTP/1.1'
 
     """ Define functions for various HTTP Requests. """
@@ -82,6 +75,11 @@ class _Handler (WgetHTTPRequestHandler):
         self.send_head ("HEAD")
 
     def do_GET (self):
+        """ Process HTTP GET requests. This is the same as processing HEAD
+        requests and then actually transmitting the data to the client. If
+        send_head() does not specify any "start" offset, we send the complete
+        data, else transmit only partial data. """
+
         content, start = self.send_head ("GET")
         if content:
             if start is None:
@@ -90,11 +88,26 @@ class _Handler (WgetHTTPRequestHandler):
                 self.wfile.write (content.encode ('utf-8')[start:])
 
     def do_POST (self):
+        """ According to RFC 7231 sec 4.3.3, if the resource requested in a POST
+        request does not exist on the server, the first POST request should
+        create that resource. PUT requests are otherwise used to create a
+        resource. Hence, we call the handle for processing PUT requests if the
+        resource requested does not already exist.
+
+        Currently, when the server recieves a POST request for a resource, we
+        simply append the body data to the existing file and return the new
+        file to the client. If the file does not exist, a new file is created
+        using the contents of the request body. """
+
         path = self.path[1:]
-        self.rules = self.server.server_configs.get (path)
-        if not self.custom_response ():
-            return (None, None)
         if path in self.server.fileSys:
+            self.rules = self.server.server_configs.get (path)
+            if not self.rules:
+                self.rules = dict ()
+
+            if not self.custom_response ():
+                return (None, None)
+
             body_data = self.get_body_data ()
             self.send_response (200)
             self.send_header ("Content-type", "text/plain")
@@ -102,6 +115,7 @@ class _Handler (WgetHTTPRequestHandler):
             total_length = len (content)
             self.server.fileSys[path] = content
             self.send_header ("Content-Length", total_length)
+            self.send_header ("Location", self.path)
             self.finish_headers ()
             try:
                 self.wfile.write (content.encode ('utf-8'))
@@ -115,7 +129,6 @@ class _Handler (WgetHTTPRequestHandler):
         self.rules = self.server.server_configs.get (path)
         if not self.custom_response ():
             return (None, None)
-        self.server.fileSys.pop (path, None)
         self.send_put (path)
 
     """ End of HTTP Request Method Handlers. """
@@ -126,12 +139,12 @@ class _Handler (WgetHTTPRequestHandler):
         if header_line is None:
             return None
         if not header_line.startswith ("bytes="):
-            raise InvalidRangeHeader ("Cannot parse header Range: %s" %
-                                     (header_line))
+            raise ServerError ("Cannot parse header Range: %s" %
+                               (header_line))
         regex = re.match (r"^bytes=(\d*)\-$", header_line)
         range_start = int (regex.group (1))
         if range_start >= length:
-            raise InvalidRangeHeader ("Range Overflow")
+            raise ServerError ("Range Overflow")
         return range_start
 
     def get_body_data (self):
@@ -141,23 +154,27 @@ class _Handler (WgetHTTPRequestHandler):
         return body_data
 
     def send_put (self, path):
+        if path in self.server.fileSys:
+            self.server.fileSys.pop (path, None)
+            self.send_response (204)
+        else:
+            self.rules = dict ()
+            self.send_response (201)
         body_data = self.get_body_data ()
-        self.send_response (201)
         self.server.fileSys[path] = body_data
-        self.send_header ("Content-type", "text/plain")
-        self.send_header ("Content-Length", len (body_data))
+        self.send_header ("Location", self.path)
         self.finish_headers ()
-        try:
-            self.wfile.write (body_data.encode ('utf-8'))
-        except Exception:
-            pass
 
+    """ This empty method is called automatically when all the rules are
+    processed for a given request. However, send_header() should only be called
+    AFTER a response has been sent. But, at the moment of processing the rules,
+    the appropriate response has not yet been identified. As a result, we defer
+    the processing of this rule till later. Each do_* request handler MUST call
+    finish_headers() instead of end_headers(). The finish_headers() method
+    takes care of sending the appropriate headers before completing the
+    response. """
     def SendHeader (self, header_obj):
         pass
-#        headers_list = header_obj.headers
-#        for header_line in headers_list:
-#            print (header_line + " : " + headers_list[header_line])
-#            self.send_header (header_line, headers_list[header_line])
 
     def send_cust_headers (self):
         header_obj = self.get_rule_list ('SendHeader')
@@ -195,11 +212,11 @@ class _Handler (WgetHTTPRequestHandler):
         if auth_type == "Basic":
             challenge_str = 'Basic realm="Wget-Test"'
         elif auth_type == "Digest" or auth_type == "Both_inline":
-            self.nonce = md5 (str (random ()).encode ('utf-8')).hexdigest ()
-            self.opaque = md5 (str (random ()).encode ('utf-8')).hexdigest ()
-            challenge_str = 'Digest realm="Test", nonce="%s", opaque="%s"' %(
-                                                                   self.nonce,
-                                                                   self.opaque)
+            self.nonce = md5 (str (random ()).encode ('utf-8')).hexdigest()
+            self.opaque = md5 (str (random ()).encode ('utf-8')).hexdigest()
+            challenge_str = 'Digest realm="Test", nonce="%s", opaque="%s"' % (
+                            self.nonce,
+                            self.opaque)
             challenge_str += ', qop="auth"'
             if auth_type == "Both_inline":
                 challenge_str = 'Basic realm="Wget-Test", ' + challenge_str
@@ -218,9 +235,9 @@ class _Handler (WgetHTTPRequestHandler):
         n = len("Digest ")
         auth_header = auth_header[n:].strip()
         items = auth_header.split(", ")
-        key_values = [i.split("=", 1) for i in items]
-        key_values = [(k.strip(), v.strip().replace('"', '')) for k, v in key_values]
-        return dict(key_values)
+        keyvals = [i.split("=", 1) for i in items]
+        keyvals = [(k.strip(), v.strip().replace('"', '')) for k, v in keyvals]
+        return dict(keyvals)
 
     def KD (self, secret, data):
         return self.H (secret + ":" + data)
@@ -237,10 +254,10 @@ class _Handler (WgetHTTPRequestHandler):
     def check_response (self, params):
         if "qop" in params:
             data_str = params['nonce'] \
-                        + ":" + params['nc'] \
-                        + ":" + params['cnonce'] \
-                        + ":" + params['qop'] \
-                        + ":" + self.H (self.A2 (params))
+               + ":" + params['nc'] \
+               + ":" + params['cnonce'] \
+               + ":" + params['qop'] \
+               + ":" + self.H (self.A2 (params))
         else:
             data_str = params['nonce'] + ":" + self.H (self.A2 (params))
         resp = self.KD (self.H (self.A1 ()), data_str)
@@ -256,11 +273,12 @@ class _Handler (WgetHTTPRequestHandler):
             params = self.parse_auth_header (auth_header)
             pass_auth = True
             if self.user != params['username'] or \
-              self.nonce != params['nonce'] or self.opaque != params['opaque']:
+               self.nonce != params['nonce'] or \
+               self.opaque != params['opaque']:
                 pass_auth = False
             req_attribs = ['username', 'realm', 'nonce', 'uri', 'response']
             for attrib in req_attribs:
-                if not attrib in params:
+                if attrib not in params:
                     pass_auth = False
             if not self.check_response (params):
                 pass_auth = False
@@ -326,19 +344,6 @@ class _Handler (WgetHTTPRequestHandler):
                 self.finish_headers ()
                 raise ServerError ("Header " + header_line + " not found")
 
-    def expect_headers (self):
-        """ This is modified code to handle a few changes. Should be removed ASAP """
-        exp_headers_obj = self.get_rule_list ('ExpectHeader')
-        if exp_headers_obj:
-            exp_headers = exp_headers_obj.headers
-            for header_line in exp_headers:
-                header_re = self.headers.get (header_line)
-                if header_re is None or header_re != exp_headers[header_line]:
-                    self.send_error (400, 'Expected Header not Found')
-                    self.end_headers ()
-                    return False
-        return True
-
     def RejectHeader (self, header_obj):
         rej_headers = header_obj.headers
         for header_line in rej_headers:
@@ -400,7 +405,7 @@ class _Handler (WgetHTTPRequestHandler):
             try:
                 self.range_begin = self.parse_range_header (
                     self.headers.get ("Range"), content_length)
-            except InvalidRangeHeader as ae:
+            except ServerError as ae:
                 # self.log_error("%s", ae.err_message)
                 if ae.err_message == "Range Overflow":
                     self.send_response (416)
@@ -431,9 +436,9 @@ class _Handler (WgetHTTPRequestHandler):
         base_name = basename ("/" + path)
         name, ext = splitext (base_name)
         extension_map = {
-        ".txt"   :   "text/plain",
-        ".css"   :   "text/css",
-        ".html"  :   "text/html"
+            ".txt"   :   "text/plain",
+            ".css"   :   "text/css",
+            ".html"  :   "text/html"
         }
         if ext in extension_map:
             return extension_map[ext]
@@ -444,6 +449,7 @@ class _Handler (WgetHTTPRequestHandler):
 class HTTPd (threading.Thread):
     server_class = StoppableHTTPServer
     handler = _Handler
+
     def __init__ (self, addr=None):
         threading.Thread.__init__ (self)
         if addr is None:
@@ -452,16 +458,14 @@ class HTTPd (threading.Thread):
         self.server_address = self.server_inst.socket.getsockname()[:2]
 
     def run (self):
-       self.server_inst.serve_forever ()
+        self.server_inst.serve_forever ()
 
     def server_conf (self, file_list, server_rules):
         self.server_inst.server_conf (file_list, server_rules)
 
-    def server_sett (self, settings):
-         self.server_inst.server_sett (settings)
 
 class HTTPSd (HTTPd):
 
-   server_class = HTTPSServer
+    server_class = HTTPSServer
 
 # vim: set ts=4 sts=4 sw=4 tw=80 et :

@@ -17,7 +17,7 @@ A_File = WgetFile ("File1", File1)
 B_File = WgetFile ("File2", File2)
 C_File = WgetFile ("File3", File3)
 
-WGET_OPTIONS = "-d --no-check-certificate"
+WGET_OPTIONS = "--no-check-certificate"
 WGET_URLS = [["File1", "File2"]]
 
 Files = [[A_File, B_File]]

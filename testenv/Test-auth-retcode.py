@@ -19,7 +19,7 @@ File1_rules = {
 
 A_File = WgetFile ("File1", File1, rules=File1_rules)
 
-WGET_OPTIONS = "-d"
+WGET_OPTIONS = ""
 WGET_URLS = [["File1"]]
 
 Files = [[A_File]]

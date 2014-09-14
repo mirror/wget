@@ -956,7 +956,8 @@ Don't use proxies, even if the appropriate @code{*_proxy} environment
 variable is defined.
 
 @c man end
-@xref{Proxies} for more information about the use of proxies with Wget.
+@xref{Proxies}, for more information about the use of proxies with
+Wget.
 @c man begin OPTIONS
 
 @cindex quota
@@ -1306,8 +1307,8 @@ really important, do not leave them lying in those files either---edit
 the files and delete them after Wget has started the download.
 
 @iftex
-@xref{Security Considerations} for more information about security issues
-with Wget.
+@xref{Security Considerations}, for more information about security
+issues with Wget.
 @end iftex
 
 @cindex Keep-Alive, turning off
@@ -1843,8 +1844,8 @@ really important, do not leave them lying in those files either---edit
 the files and delete them after Wget has started the download.
 
 @iftex
-@xref{Security Considerations} for more information about security issues
-with Wget.
+@xref{Security Considerations}, for more information about security
+issues with Wget.
 @end iftex
 
 @cindex .listing files, removing

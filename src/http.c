@@ -2702,6 +2702,7 @@ read_header:
                   resp_free (resp);
                   xfree (head);
                   xfree (auth_stat);
+                  xfree (hs->message);
                   goto retry_with_auth;
                 }
               else
@@ -2762,6 +2763,8 @@ read_header:
                   local_file));
           hs->local_file = url_file_name (u, local_file);
         }
+
+      xfree_null (local_file);
     }
 
   /* TODO: perform this check only once. */
@@ -3726,6 +3729,8 @@ Remote file exists.\n\n"));
               got_name = true;
               *dt &= ~HEAD_ONLY;
               count = 0;          /* the retrieve count for HEAD is reset */
+              xfree_null (hstat.message);
+              xfree_null (hstat.error);
               continue;
             } /* send_head_first */
         } /* !got_head */
@@ -3873,7 +3878,10 @@ Remote file exists.\n\n"));
 
 exit:
   if (ret == RETROK && local_file && !(*local_file))
-    *local_file = xstrdup (hstat.local_file);
+    {
+      xfree_null (*local_file);
+      *local_file = xstrdup (hstat.local_file);
+    }
   free_hstat (&hstat);
 
   return ret;

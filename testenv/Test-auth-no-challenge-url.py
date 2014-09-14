@@ -23,7 +23,7 @@ File1_rules = {
 }
 A_File = WgetFile ("File1", File1, rules=File1_rules)
 
-WGET_OPTIONS = "-d --auth-no-challenge http://Pacman:Omnomnom@localhost:{{port}}/File1"
+WGET_OPTIONS = "--auth-no-challenge http://Pacman:Omnomnom@localhost:{{port}}/File1"
 WGET_URLS = [[]]
 
 Files = [[A_File]]

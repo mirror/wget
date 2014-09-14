@@ -2,6 +2,23 @@
 
 	* Makefile.am (wget_SOURCES): Remove space-tab indentation.
 
+2014-07-23  Darshit Shah  <darnir@gmail.com>
+
+	* http.c (gethttp): Fix a memory leak when retrying authorization
+	(gethttp): Fix memory leak when trying to parse content disposition headers
+	(http_loop): Assigning a new value to *local)file without freeing the old
+	one causes a memory leak
+	(http_loop): Free the HTTP message and error strings before continuing loop
+
+2014-07-21  Daniel Stenberg  <daniel@haxx.se>
+
+	* main.c (print_help): HTTP Method is a part of the Request not Header
+
+2014-07-21  Darshit Shah  <darnir@gmail.com>
+
+	* cookies.c (check_domain_match): Fix a potential memory leak when checking
+	cookie domain names
+
 2014-07-07  Tomas Hozza  <thozza@redhat.com>
 
 	* iri.c (locale_to_utf8): Fix checking of iconv_open return code.

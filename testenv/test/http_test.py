@@ -7,9 +7,10 @@ class HTTPTest(BaseTest):
 
     """ Class for HTTP Tests. """
 
-    # Temp Notes: It is expected that when pre-hook functions are executed, only an empty test-dir exists.
-    # pre-hook functions are executed just prior to the call to Wget is made.
-    # post-hook functions will be executed immediately after the call to Wget returns.
+    # Temp Notes: It is expected that when pre-hook functions are executed,
+    # only an empty test-dir exists. pre-hook functions are executed just prior
+    # to the call to Wget is made. post-hook functions will be executed
+    # immediately after the call to Wget returns.
 
     def __init__(self,
                  name="Unnamed Test",
