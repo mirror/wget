@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use FTPServer;
-use WgetTest;
+use WgetTests;
 
 our @ISA = qw(WgetTest);
 my $VERSION = 0.01;

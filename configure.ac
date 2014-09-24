@@ -578,7 +578,7 @@ dnl
 dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
-                 po/Makefile.in tests/Makefile tests/WgetTest.pm
+                 po/Makefile.in tests/Makefile
                  lib/Makefile testenv/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT

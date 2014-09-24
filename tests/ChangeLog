@@ -1,3 +1,11 @@
+2014-09-25  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* Makefile.am: Modified to use parallel test harness
+	* Test-proxied-https-auth.px: get $top_srcdir from ENV
+	* run-px: removed
+	* WgetTest.pm.in: removed
+	* WgetTest.pm: get $top_srcdir from ENV
+
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Makefile.am: Remove @VAR@ with $FOO.

@@ -27,20 +27,12 @@
 # shall include the source code for the parts of OpenSSL used as well
 # as that of the covered work.
 
+# see http://www.gnu.org/software/automake/manual/html_node/Parallel-Test-Harness.html#Parallel-Test-Harness
+
 #
 # Version: $(VERSION)
 #
 
-PERL     = perl
-PERLRUN = $(PERL) -I$(srcdir)
-
-LIBS     += $(LIBICONV) $(LIBINTL) $(LIB_CLOCK_GETTIME)
-
-.PHONY: test run-unit-tests run-px-tests
-
-check-local: test
-
-test: ../src/wget$(EXEEXT) run-unit-tests run-px-tests
 
 ../src/wget$(EXEEXT):
 	cd ../src && $(MAKE) $(AM_MAKEFLAGS)
@@ -53,14 +45,7 @@ test: ../src/wget$(EXEEXT) run-unit-tests run-px-tests
 ../lib/libgnu.a:
 	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
 
-run-unit-tests: unit-tests$(EXEEXT) ../src/libunittest.a
-	./unit-tests$(EXEEXT)
-
-run-px-tests: WgetTest.pm ../src/wget$(EXEEXT)
-	$(srcdir)/run-px $(top_srcdir)
-
-EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
-             WgetFeature.pm WgetFeature.cfg \
+PX_TESTS = \
              Test-auth-basic.px \
              Test-auth-no-challenge.px \
              Test-auth-no-challenge-url.px \
@@ -142,7 +127,10 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test--start-pos.px \
              Test--start-pos--continue.px \
              Test--httpsonly-r.px \
-             Test-204.px \
+             Test-204.px
+
+EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
+             WgetTests.pm WgetFeature.pm WgetFeature.cfg $(PX_TESTS) \
              run-px certs
 
 check_PROGRAMS = unit-tests
@@ -150,3 +138,9 @@ unit_tests_SOURCES =
 LDADD = ../src/libunittest.a ../lib/libgnu.a $(LIBS)
 
 CLEANFILES = *~ *.bak core core.[0-9]*
+
+TESTS = ./unit-tests$(EXEEXT) $(PX_TESTS)
+TEST_EXTENSIONS = .px
+AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; export SYSTEM_WGETRC=/dev/null;
+PX_LOG_COMPILER = $(PERL)
+AM_PX_LOG_FLAGS = -I$(srcdir)

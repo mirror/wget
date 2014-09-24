@@ -1,7 +1,3 @@
-# WARNING!
-# WgetTest.pm is a generated file! Do not edit! Edit WgetTest.pm.in
-# instead.
-
 package WgetTest;
 $VERSION = 0.01;
 
@@ -10,8 +6,10 @@ use warnings;
 
 use Cwd;
 use File::Path;
+use POSIX qw(locale_h);
+use locale;
 
-our $WGETPATH = "@abs_top_builddir@/src/wget";
+our $WGETPATH = "../src/wget";
 
 my @unexpected_downloads = ();
 
@@ -94,7 +92,7 @@ sub run {
     $errcode =
         ($cmdline =~ m{^/.*})
             ? system ($cmdline)
-            : system ("$self->{_workdir}/../src/$cmdline");
+            : system ("$self->{_workdir}/$cmdline");
     $errcode >>= 8; # XXX: should handle abnormal error codes.
 
     # Shutdown server
@@ -307,6 +305,8 @@ sub _fork_and_launch_server
     } elsif ($pid == 0) {
         # child
         close FROM_CHILD;
+        # FTP Server has to start with english locale due to use of strftime month names in LIST command
+        setlocale(LC_ALL,"C");
         $self->_launch_server(sub { print TO_PARENT "SYNC\n"; close TO_PARENT });
     } else {
         # father

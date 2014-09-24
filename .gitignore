@@ -19,6 +19,8 @@
 po/*.gmo*
 po/*.po*
 src/*.o
+tests/*.log
+tests/*.trs
 testenv/*.log
 testenv/*.trs
 # build-aux/
@@ -81,7 +83,6 @@ testenv/Makefile.in
 # tests/
 tests/Makefile
 tests/Makefile.in
-tests/WgetTest.pm
 tests/unit-tests
 # util/
 util/Makefile

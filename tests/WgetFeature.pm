@@ -3,7 +3,7 @@ package WgetFeature;
 use strict;
 use warnings;
 
-use WgetTest;
+use WgetTests;
 
 our %skip_messages;
 require 'WgetFeature.cfg';

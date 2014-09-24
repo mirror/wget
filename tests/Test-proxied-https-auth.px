@@ -4,16 +4,26 @@ use strict;
 use warnings;
 
 use WgetFeature qw(https);
-use WgetTest;  # For $WGETPATH.
+use WgetTests;  # For $WGETPATH.
 
 my $cert_path;
 my $key_path;
+my $srcdir;
 
 if (@ARGV) {
-    my $top_srcdir = shift @ARGV;
-    $key_path = "$top_srcdir/tests/certs/server-key.pem";
-    $cert_path = "$top_srcdir/tests/certs/server-cert.pem";
+    $srcdir = shift @ARGV;
+} elsif (defined $ENV{srcdir}) {
+    $srcdir = $ENV{srcdir};
 }
+print "srcdir=",$ENV{srcdir},"\n";
+if (defined $srcdir) {
+    $key_path = "$srcdir/certs/server-key.pem";
+    $cert_path = "$srcdir/certs/server-cert.pem";
+} else {
+    $key_path = "certs/server-key.pem";
+    $cert_path = "certs/server-cert.pem";
+}
+
 
 use HTTP::Daemon;
 use HTTP::Request;
