@@ -101,7 +101,7 @@ class BaseTest:
         wget_options = '--debug --no-config %s' % self.wget_options
 
         if os.getenv("VALGRIND_TESTS"):
-            valgrind_test = "valgrind --error-exitcode=301 --leak-check=full"
+            valgrind_test = "valgrind --error-exitcode=301 --leak-check=full --track-origins=yes"
         else:
             valgrind_test = ""
         cmd_line = '%s %s %s ' % (valgrind_test, wget_path, wget_options)

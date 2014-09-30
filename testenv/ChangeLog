@@ -1,3 +1,7 @@
+2014-09-30  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* test/base_test.py: Add --track-origins=yes to valgrind testing
+
 2014-08-08  Darshit Shah  <darnir@gmail.com>
 
 	* conf/__init__.py: Add extra newline according to PEP8
