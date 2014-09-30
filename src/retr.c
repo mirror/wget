@@ -913,6 +913,10 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
 
       goto redirected;
     }
+  else
+    {
+      xfree(mynewloc);
+    }
 
   /* Try to not encode in UTF-8 if fetching failed */
   if (!(*dt & RETROKF) && iri->utf8_encode)

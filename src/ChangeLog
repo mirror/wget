@@ -1,3 +1,7 @@
+2014-05-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* retr.c (retrieve_url): fixed memory leak
+
 2014-07-23  Darshit Shah  <darnir@gmail.com>
 
 	* http.c (gethttp): Fix a memory leak when retrying authorization
