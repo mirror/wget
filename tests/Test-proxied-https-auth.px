@@ -15,7 +15,7 @@ if (@ARGV) {
 } elsif (defined $ENV{srcdir}) {
     $srcdir = $ENV{srcdir};
 }
-print "srcdir=",$ENV{srcdir},"\n";
+
 if (defined $srcdir) {
     $key_path = "$srcdir/certs/server-key.pem";
     $cert_path = "$srcdir/certs/server-cert.pem";

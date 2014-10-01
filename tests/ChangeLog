@@ -1,3 +1,17 @@
+2014-10-01  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* Test--post-file.px: name => "Test--post-file", fixing race
+	condition.
+	* Test-N-no-info.px: name => "Test-N-no-info", fixing race
+	condition.
+	* Test-N-smaller.px: name => "Test-N-smaller", fixing race
+	condition.
+	* Test-c-shorter.px: name => "Test-c-shorter", fixing race
+	condition.
+	* Test-proxy-auth-basic.px: name => "Test-proxy-auth-basic",
+	fixing race condition.
+	* Test-proxied-https-auth.px: removed debug print line.
+
 2014-09-25  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* Makefile.am: Modified to use parallel test harness

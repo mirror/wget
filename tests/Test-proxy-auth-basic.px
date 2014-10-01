@@ -38,7 +38,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test-auth-basic",
+my $the_test = HTTPTest->new (name => "Test-proxy-auth-basic",
                               input => \%urls,
                               cmdline => $cmdline,
                               errcode => $expected_error_code,

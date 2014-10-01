@@ -55,7 +55,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test-N-current",
+my $the_test = HTTPTest->new (name => "Test-N-smaller",
                               input => \%urls,
                               cmdline => $cmdline,
                               errcode => $expected_error_code,
