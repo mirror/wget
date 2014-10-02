@@ -53,8 +53,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test-c-shorter",
-                              input => \%urls,
+my $the_test = HTTPTest->new (input => \%urls,
                               cmdline => $cmdline,
                               errcode => $expected_error_code,
                               existing => \%existing_files,

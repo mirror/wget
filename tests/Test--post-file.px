@@ -15,8 +15,7 @@ my $expected_error_code = 3;
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test--post-file",
-                              cmdline => $cmdline,
+my $the_test = HTTPTest->new (cmdline => $cmdline,
                               errcode => $expected_error_code);
 exit $the_test->run();
 

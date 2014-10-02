@@ -69,7 +69,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = FTPTest->new (name => "Test-i-ftp",
+my $the_test = FTPTest->new (
                              input => \%urls,
                              cmdline => $cmdline,
                              errcode => $expected_error_code,

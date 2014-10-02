@@ -1,3 +1,8 @@
+2014-10-02  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* tests/WgetTests.pm: use filename as default test name
+	* tests/Test-*.px: removed redundant 'name => ...'
+
 2014-10-01  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* tests/Makefile.am: remove run-px, fixing dist-check

@@ -20,7 +20,7 @@ my @unexpected_downloads = ();
         _errcode      => 0,
         _existing     => {},
         _input        => {},
-        _name         => "",
+        _name         => $0,
         _output       => {},
         _server_behavior => {},
     );
@@ -70,6 +70,8 @@ sub run {
     my $result_message = "Test successful.\n";
     my $errcode;
 
+    $self->{_name} =~ s{.*/}{}; # remove path
+    $self->{_name} =~ s{\.[^.]+$}{}; # remove extension
     printf "Running test $self->{_name}\n";
 
     # Setup

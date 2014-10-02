@@ -37,8 +37,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test-O-HTTP-Content-Disposition",
-                              input => \%urls,
+my $the_test = HTTPTest->new (input => \%urls,
                               cmdline => $cmdline,
                               errcode => $expected_error_code,
                               output => \%expected_downloaded_files);

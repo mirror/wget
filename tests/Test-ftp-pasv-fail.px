@@ -46,7 +46,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = FTPTest->new (name => "Test-ftp-pasv-fail",
+my $the_test = FTPTest->new (
                              server_behavior => {fail_on_pasv => 1},
                              input => \%urls,
                              cmdline => $cmdline,
