@@ -1,5 +1,9 @@
 2014-10-01  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* tests/Makefile.am: remove run-px, fixing dist-check
+
+2014-10-01  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* Test--post-file.px: name => "Test--post-file", fixing race
 	condition.
 	* Test-N-no-info.px: name => "Test-N-no-info", fixing race
