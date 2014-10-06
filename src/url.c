@@ -681,7 +681,6 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
   char *user = NULL, *passwd = NULL;
 
   const char *url_encoded = NULL;
-  char *new_url = NULL;
 
   int error_code;
 
@@ -695,29 +694,29 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
       goto error;
     }
 
+  url_encoded = url;
+
   if (iri && iri->utf8_encode)
     {
+      char *new_url = NULL;
+
       iri->utf8_encode = remote_to_utf8 (iri, iri->orig_url ? iri->orig_url : url, (const char **) &new_url);
       if (!iri->utf8_encode)
         new_url = NULL;
       else
         {
           iri->orig_url = xstrdup (url);
-          percent_encode = true;
+          url_encoded = reencode_escapes (new_url);
+          if (url_encoded != new_url)
+            xfree (new_url);
+          percent_encode = false;
         }
     }
 
-  /* XXX XXX Could that change introduce (security) bugs ???  XXX XXX*/
   if (percent_encode)
-    url_encoded = reencode_escapes (new_url ? new_url : url);
-  else
-    url_encoded = new_url ? new_url : url;
+    url_encoded = reencode_escapes (url);
 
   p = url_encoded;
-
-  if (new_url && url_encoded != new_url)
-    xfree (new_url);
-
   p += strlen (supported_schemes[scheme].leading_string);
   uname_b = p;
   p = url_skip_credentials (p);

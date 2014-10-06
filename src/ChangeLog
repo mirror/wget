@@ -1,5 +1,11 @@
 2014-10-16  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
+	* url.c (url_parse): little code cleanup
+	* html-url.c (get_urls_html): HTTP header Content-Type charset preceeds http-equiv
+	* iri.c (do_conversion): moved iconv code completely into the function
+	* iri.c (do_conversion): call url_unescape to fix charset conversion
+	* iri.c (remote_to_utf8): use strcasecmp to compare encoding
+
 	* gnutls.c (ssl_connect_wget): do not use SSLv3 except explicitely requested
 	* openssl.c (ssl_init): do not use SSLv3 except explicitely requested
 

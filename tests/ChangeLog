@@ -1,3 +1,10 @@
+2014-10-06  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* Test-iri.px: fixed encodings
+	* Test-iri-forced-remote.px: fixed encodings
+	* Test-iri-percent.px: fixed encodings
+	* Test-idn-meta.px: fixed encodings
+
 2014-10-02  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* tests/WgetTests.pm: use filename as default test name
