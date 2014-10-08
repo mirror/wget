@@ -11,7 +11,6 @@ import re
 import ssl
 import os
 
-
 class StoppableHTTPServer (HTTPServer):
     """ This class extends the HTTPServer class from default http.server library
     in Python 3. The StoppableHTTPServer class is capable of starting an HTTP
@@ -38,9 +37,8 @@ class HTTPSServer (StoppableHTTPServer):
 
     def __init__ (self, address, handler):
         BaseServer.__init__ (self, address, handler)
-        print (os.getcwd())
-        CERTFILE = os.path.abspath(os.path.join('..', 'certs', 'wget-cert.pem'))
-        print (CERTFILE)
+        # step one up because test suite change directory away from $srcdir (don't do that !!!)
+        CERTFILE = os.path.abspath(os.path.join('..', os.getenv('srcdir', '.'), 'certs', 'wget-cert.pem'))
         fop = open (CERTFILE)
         print (fop.readline())
         self.socket = ssl.wrap_socket (

@@ -1,3 +1,9 @@
+2014-10-08  Darshit Shah  <darnir@gmail.com>
+
+	* Makefile.am: Fix EXTRA_DIST variable for make distcheck
+	* server/http/http_server.py (HTTPServer.__init__):  Fix how CERTFILE is
+	found when running make dist / make distcheck.
+
 2014-09-30  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* test/base_test.py: Add --track-origins=yes to valgrind testing
