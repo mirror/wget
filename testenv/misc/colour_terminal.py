@@ -25,14 +25,12 @@ T_COLORS = {
     'ENDC'   : '\033[0m'
 }
 
+system = True if platform.system() == 'Linux' else False
+check = False if getenv("MAKE_CHECK") == 'True' else True
 
 def printer (color, string):
-    if platform.system () == 'Linux':
-        if getenv ("MAKE_CHECK", "False") == "True":
-            print (string)
-        else:
-            print (T_COLORS.get (color) + string + T_COLORS.get ('ENDC'))
-
+    if system and check:
+        print (T_COLORS.get (color) + string + T_COLORS.get ('ENDC'))
     else:
         print (string)
 

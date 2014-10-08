@@ -7,9 +7,8 @@ from random import random
 from hashlib import md5
 import threading
 import socket
-import re
-import ssl
 import os
+
 
 class StoppableHTTPServer (HTTPServer):
     """ This class extends the HTTPServer class from default http.server library
@@ -36,6 +35,7 @@ class HTTPSServer (StoppableHTTPServer):
     additional support for secure connections through SSL. """
 
     def __init__ (self, address, handler):
+        import ssl
         BaseServer.__init__ (self, address, handler)
         # step one up because test suite change directory away from $srcdir (don't do that !!!)
         CERTFILE = os.path.abspath(os.path.join('..', os.getenv('srcdir', '.'), 'certs', 'wget-cert.pem'))
@@ -60,8 +60,7 @@ class _Handler (BaseHTTPRequestHandler):
     requests. """
 
     def get_rule_list (self, name):
-        r_list = self.rules.get (name) if name in self.rules else None
-        return r_list
+        return self.rules.get(name)
 
     # The defailt protocol version of the server we run is HTTP/1.1 not
     # HTTP/1.0 which is the default with the http.server module.
@@ -134,6 +133,7 @@ class _Handler (BaseHTTPRequestHandler):
     """ Helper functions for the Handlers. """
 
     def parse_range_header (self, header_line, length):
+        import re
         if header_line is None:
             return None
         if not header_line.startswith ("bytes="):
@@ -315,23 +315,6 @@ class _Handler (BaseHTTPRequestHandler):
         if is_auth is False:
             raise ServerError ("Unable to Authenticate")
 
-    def is_authorized (self):
-        is_auth = True
-        auth_rule = self.get_rule_list ('Authentication')
-        if auth_rule:
-            auth_header = self.headers.get ("Authorization")
-            req_auth = auth_rule.auth_type
-            if req_auth == "Both" or req_auth == "Both_inline":
-                auth_type = auth_header.split(' ')[0] if auth_header else req_auth
-            else:
-                auth_type = req_auth
-            assert hasattr (self, "authorize_" + auth_type)
-            is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule)
-            if is_auth is False:
-                self.send_response (401)
-                self.send_challenge (auth_type)
-                self.finish_headers ()
-        return is_auth
 
     def ExpectHeader (self, header_obj):
         exp_headers = header_obj.headers
@@ -342,6 +325,7 @@ class _Handler (BaseHTTPRequestHandler):
                 self.finish_headers ()
                 raise ServerError ("Header " + header_line + " not found")
 
+
     def RejectHeader (self, header_obj):
         rej_headers = header_obj.headers
         for header_line in rej_headers:
@@ -350,18 +334,6 @@ class _Handler (BaseHTTPRequestHandler):
                 self.send_error (400, 'Blackisted Header ' + header_line + ' received')
                 self.finish_headers ()
                 raise ServerError ("Header " + header_line + ' received')
-
-    def reject_headers (self):
-        rej_headers = self.get_rule_list ("RejectHeader")
-        if rej_headers:
-            rej_headers = rej_headers.headers
-            for header_line in rej_headers:
-                header_re = self.headers.get (header_line)
-                if header_re is not None and header_re == rej_headers[header_line]:
-                    self.send_error (400, 'Blacklisted Header was Sent')
-                    self.end_headers ()
-                    return False
-        return True
 
     def __log_request (self, method):
         req = method + " " + self.path
@@ -438,11 +410,7 @@ class _Handler (BaseHTTPRequestHandler):
             ".css"   :   "text/css",
             ".html"  :   "text/html"
         }
-        if ext in extension_map:
-            return extension_map[ext]
-        else:
-            return "text/plain"
-
+        return extension_map.get(ext, "text/plain")
 
 class HTTPd (threading.Thread):
     server_class = StoppableHTTPServer

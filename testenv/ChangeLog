@@ -1,3 +1,18 @@
+2014-10-01  Darshit Shah  <darnir@gmail.com>
+
+	* Makefile.am: Run the tests in Python's Optimizedmode
+	* conf/__init__.py (gen_hook): Use try..except instead of if..else
+	* misc/color_terminal.py: System and check will not change while a test is
+	run. Do not test for them on every invokation of printer()
+	* server/http/http_server.py: The ssl and re modules are required by
+	specific functions. Load them lazily
+	(HTTPSServer.__init__): Lazy load ssl module here
+	(_handler.parse_range_header): Lazy load re module here
+	(_Handler.get_rule_list): get() can return a default value. Use it
+	(_Handler.guess_type): Same
+	(_Handler.is_authorized): Unused function artefact. Remove
+	(_Handler.reject_headers): Unused function artefact. Remove
+
 2014-10-08  Darshit Shah  <darnir@gmail.com>
 
 	* Makefile.am: Fix EXTRA_DIST variable for make distcheck

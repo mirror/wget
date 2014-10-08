@@ -3,7 +3,6 @@ import os
 # this file implements the mechanism of conf class auto-registration,
 # don't modify this file if you have no idea what you're doing
 
-
 def gen_hook():
     hook_table = {}
 
@@ -24,9 +23,9 @@ def gen_hook():
             return cls
 
     def find_hook(name):
-        if name in hook_table:
+        try:
             return hook_table[name]
-        else:
+        except:
             raise AttributeError
 
     return Wrapper, find_hook

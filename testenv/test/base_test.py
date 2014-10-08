@@ -116,9 +116,8 @@ class BaseTest:
             # 1 a
             # 5 e
             # 3 c
-            protocol = protocol.lower()
             for url in urls:
-                cmd_line += '%s://%s/%s ' % (protocol, domain, url)
+                cmd_line += '%s://%s/%s ' % (protocol.lower(), domain, url)
 
         print(cmd_line)
 
