@@ -88,13 +88,22 @@ sub run {
 
     # Call wget
     chdir ("$self->{_workdir}/$self->{_name}/output");
+
     my $cmdline = $self->{_cmdline};
     $cmdline = $self->_substitute_port($cmdline);
+    $cmdline = ($cmdline =~ m{^/.*}) ? $cmdline : "$self->{_workdir}/$cmdline";
+
+    my $valgrind = $ENV{VALGRIND_TESTS};
+    if (!defined $valgrind || $valgrind == "" || $valgrind == "0") {
+        # Valgrind not requested - leave $cmdline as it is
+	 } elsif ($valgrind == "1") {
+        $cmdline = "valgrind --error-exitcode=301 --leak-check=yes --track-origins=yes " . $cmdline;
+    } else {
+        $cmdline = $valgrind . " " . $cmdline;
+    }
+
     print "Calling $cmdline\n";
-    $errcode =
-        ($cmdline =~ m{^/.*})
-            ? system ($cmdline)
-            : system ("$self->{_workdir}/$cmdline");
+    $errcode = system($cmdline);
     $errcode >>= 8; # XXX: should handle abnormal error codes.
 
     # Shutdown server

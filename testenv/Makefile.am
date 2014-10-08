@@ -27,7 +27,8 @@
 
 
 AUTOMAKE_OPTIONS = parallel-tests
-AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; MAKE_CHECK=True; export MAKE_CHECK; export PYTHONPATH=$$PYTHONPATH:$(srcdir);
+AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; MAKE_CHECK=True; export MAKE_CHECK;\
+ export PYTHONPATH=$$PYTHONPATH:$(srcdir); export VALGRIND_TESTS="@VALGRIND_TESTS@";
 TESTS = Test-auth-basic-fail.py             \
     Test-auth-basic.py                      \
     Test-auth-both.py                       \

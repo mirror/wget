@@ -140,6 +140,7 @@ CLEANFILES = *~ *.bak core core.[0-9]*
 
 TESTS = ./unit-tests$(EXEEXT) $(PX_TESTS)
 TEST_EXTENSIONS = .px
-AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; export SYSTEM_WGETRC=/dev/null;
 PX_LOG_COMPILER = $(PERL)
 AM_PX_LOG_FLAGS = -I$(srcdir)
+AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; export SYSTEM_WGETRC=/dev/null;\
+ export VALGRIND_TESTS="@VALGRIND_TESTS@";

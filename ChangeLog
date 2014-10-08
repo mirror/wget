@@ -1,3 +1,7 @@
+2014-10-28  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* configure.ac: add --enable-valgrind-tests
+
 2014-10-28  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* cfg.mk (local-checks-to-skip): Add sc_makefile_at_at_check.

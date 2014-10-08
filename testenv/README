@@ -93,8 +93,10 @@ Environment Variables:
   valgrind.
 * NO_CLEANUP: Do not remove the temporary files created by the test.
   This will prevent the ${testname}-test directory from being deleted
-* VALGRIND_TESTS: If this variable is set, the test suite will execute all the
-  tests through valgrind's memcheck tool.
+* VALGRIND_TESTS: If this variable is set and contains the valgrind command line,
+  the test suite will execute all the tests via this command.
+  If it is set to "1", valgrind memcheck is enabled with hard coded options.
+  This variable is set by ./configure --enable-valgrind-tests.
 
 
 File Structure:

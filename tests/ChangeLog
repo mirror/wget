@@ -1,3 +1,8 @@
+2014-10-25  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* WgetTests.pm (run): generate valgrind command line if requested
+	* Makefile.am: set/export VALGRIND_TESTS
+
 2014-10-28  Tim Ruehsen <tim.ruehsen@gmx.de>
 
         * tests/Test-proxied-https-auth.px: synchronize client and server

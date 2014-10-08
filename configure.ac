@@ -101,6 +101,25 @@ test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE([ENABLE_DEBUG], 1,
    [Define if you want the debug output support compiled in.])
 
 dnl
+dnl Check for valgrind
+dnl
+AC_ARG_ENABLE(valgrind-tests,
+  AS_HELP_STRING([--enable-valgrind-tests], [enable using Valgrind for tests]),
+  [ac_enable_valgrind=$enableval], [ac_enable_valgrind=no])
+if test "${ac_enable_valgrind}" != "no" ; then
+  AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
+  if test "$HAVE_VALGRIND" = "yes" ; then
+    VALGRIND_TESTS="1"
+    AC_SUBST(VALGRIND_TESTS)
+    VALGRIND_INFO="Test suite will be run under Valgrind"
+  else
+    VALGRIND_INFO="Valgrind not found"
+  fi
+else
+  VALGRIND_INFO="Valgrind testing not enabled"
+fi
+
+dnl
 dnl Find the compiler
 dnl
 
@@ -599,4 +618,5 @@ AC_MSG_NOTICE([Summary of build options:
   NTLM:              $ENABLE_NTLM
   OPIE:              $ENABLE_OPIE
   Debugging:         $ENABLE_DEBUG
+  Valgrind:          $VALGRIND_INFO
 ])

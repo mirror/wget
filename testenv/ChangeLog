@@ -1,3 +1,9 @@
+2014-10-25  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* test/base_test.py (gen_cmd_line): generate valgrind command line if requested
+	* README: amend description of VALGRIND_TESTS
+	* Makefile.am: set/export VALGRIND_TESTS
+
 2014-10-01  Darshit Shah  <darnir@gmail.com>
 
 	* Makefile.am: Run the tests in Python's Optimizedmode
