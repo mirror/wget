@@ -761,7 +761,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       pi->utf8_encode = false;
 
       /* Parse the proxy URL.  */
-      proxy_url = url_parse (proxy, &up_error_code, NULL, true);
+      proxy_url = url_parse (proxy, &up_error_code, pi, true);
       if (!proxy_url)
         {
           char *error = url_error (proxy, up_error_code);
@@ -782,6 +782,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           result = PROXERR;
           goto bail;
         }
+      iri_free(pi);
       free (proxy);
     }
 
@@ -930,6 +931,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       if (u)
         {
           DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
+          xfree (url);
           url = xstrdup (u->url);
           iri_fallbacked = 1;
           goto redirected;

@@ -1756,7 +1756,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   hs->res = -1;
   hs->rderrmsg = NULL;
   hs->newloc = NULL;
-  hs->remote_time = NULL;
+  xfree(hs->remote_time); hs->remote_time = NULL;
   hs->error = NULL;
   hs->message = NULL;
 
@@ -1868,6 +1868,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                 {
                   logprintf (LOG_NOTQUIET, _("BODY data file %s missing: %s\n"),
                              quote (opt.body_file), strerror (errno));
+                  request_free (req);
                   return FILEBADFILE;
                 }
             }

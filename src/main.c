@@ -1455,11 +1455,13 @@ for details.\n\n"));
         if (opt.post_data)
           {
             setoptval ("bodydata", opt.post_data, "body-data");
+            xfree(opt.post_data);
             opt.post_data = NULL;
           }
         else
           {
             setoptval ("bodyfile", opt.post_file_name, "body-file");
+            xfree(opt.post_file_name);
             opt.post_file_name = NULL;
           }
     }

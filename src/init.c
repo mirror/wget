@@ -69,6 +69,7 @@ as that of the covered work.  */
 #include "retr.h"               /* for output_stream */
 #include "warc.h"               /* for warc_close */
 #include "spider.h"             /* for spider_cleanup */
+#include "html-url.h"           /* for cleanup_html_url */
 
 #ifdef TESTING
 #include "test.h"
@@ -1747,10 +1748,7 @@ cleanup (void)
   spider_cleanup ();
   host_cleanup ();
   log_cleanup ();
-  netrc_cleanup (netrc_list);
-
-  for (i = 0; i < nurl; i++)
-    xfree (url[i]);
+  netrc_cleanup ();
 
   xfree_null (opt.choose_config);
   xfree_null (opt.lfilename);
@@ -1759,8 +1757,8 @@ cleanup (void)
   xfree_null (opt.output_document);
   free_vec (opt.accepts);
   free_vec (opt.rejects);
-  free_vec (opt.excludes);
-  free_vec (opt.includes);
+  free_vec ((char **)opt.excludes);
+  free_vec ((char **)opt.includes);
   free_vec (opt.domains);
   free_vec (opt.follow_tags);
   free_vec (opt.ignore_tags);
@@ -1792,6 +1790,10 @@ cleanup (void)
   xfree_null (opt.passwd);
   xfree_null (opt.base_href);
   xfree_null (opt.method);
+  xfree_null (opt.post_file_name);
+  xfree_null (opt.post_data);
+  xfree_null (opt.body_data);
+  xfree_null (opt.body_file);
 
 #endif /* DEBUG_MALLOC */
 }

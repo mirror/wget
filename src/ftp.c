@@ -1560,6 +1560,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
   else
     {
       /* URL-derived file.  Consider "-O file" name. */
+      xfree (con->target);
       con->target = url_file_name (u, NULL);
       if (!opt.output_document)
         locf = con->target;

@@ -705,6 +705,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
         new_url = NULL;
       else
         {
+          xfree_null (iri->orig_url);
           iri->orig_url = xstrdup (url);
           url_encoded = reencode_escapes (new_url);
           if (url_encoded != new_url)
