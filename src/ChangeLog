@@ -1,3 +1,14 @@
+2014-10-28  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* ftp.c (ftp_loop_internal): Fix memory leak
+	* http.c (gethttp): Fix two memory leaks
+	* init.c (cleanup): Fix compile errors and warnings
+	* init.c (cleanup): Free more opt variables
+	* main.c (main): Fix two memory leaks
+	* retr.c (retrieve_url): Fix two memory leaks
+	* retr.c (retrieve_url): Add iri to call to url_parse()
+	* url.c (url_parse): Fix memory leak
+
 2014-10-28  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Makefile.am: Replace $FOO with @VAR@.
