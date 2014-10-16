@@ -3513,7 +3513,7 @@ Remote file exists.\n\n"));
 
       if (hstat.len == hstat.contlen)
         {
-          if (*dt & RETROKF)
+          if (*dt & RETROKF || opt.content_on_error)
             {
               bool write_to_stdout = (opt.output_document && HYPHENP (opt.output_document));
 
@@ -3549,7 +3549,7 @@ Remote file exists.\n\n"));
           if (hstat.contlen == -1)  /* We don't know how much we were supposed
                                        to get, so assume we succeeded. */
             {
-              if (*dt & RETROKF)
+              if (*dt & RETROKF || opt.content_on_error)
                 {
                   bool write_to_stdout = (opt.output_document && HYPHENP (opt.output_document));
 
@@ -3627,7 +3627,7 @@ Remote file exists.\n\n"));
   while (!opt.ntry || (count < opt.ntry));
 
 exit:
-  if (ret == RETROK && local_file)
+  if ((ret == RETROK || opt.content_on_error) && local_file)
     {
       xfree (*local_file);
       *local_file = xstrdup (hstat.local_file);

@@ -941,7 +941,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           DEBUGP (("[Couldn't fallback to non-utf8 for %s\n", quote (url)));
     }
 
-  if (local_file && u && *dt & RETROKF)
+  if (local_file && u && (*dt & RETROKF || opt.content_on_error))
     {
       register_download (u->url, local_file);
 
