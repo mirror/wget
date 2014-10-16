@@ -194,9 +194,6 @@ ssl_init (void)
 
   switch (opt.secure_protocol)
     {
-    case secure_protocol_auto:
-      meth = SSLv23_client_method ();
-      break;
 #ifndef OPENSSL_NO_SSL2
     case secure_protocol_sslv2:
       meth = SSLv2_client_method ();
@@ -205,6 +202,7 @@ ssl_init (void)
     case secure_protocol_sslv3:
       meth = SSLv3_client_method ();
       break;
+    case secure_protocol_auto:
     case secure_protocol_pfs:
     case secure_protocol_tlsv1:
       meth = TLSv1_client_method ();

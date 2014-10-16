@@ -1643,8 +1643,8 @@ without SSL support, none of these options are available.
 Choose the secure protocol to be used.  Legal values are @samp{auto},
 @samp{SSLv2}, @samp{SSLv3}, @samp{TLSv1} and @samp{PFS}.  If @samp{auto}
 is used, the SSL library is given the liberty of choosing the appropriate
-protocol automatically, which is achieved by sending an SSLv2 greeting
-and announcing support for SSLv3 and TLSv1.  This is the default.
+protocol automatically, which is achieved by sending an TLSv1 greeting.
+This is the default.
 
 Specifying @samp{SSLv2}, @samp{SSLv3}, or @samp{TLSv1} forces the use
 of the corresponding protocol.  This is useful when talking to old and

@@ -1,3 +1,8 @@
+2014-10-16  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (ssl_connect_wget): do not use SSLv3 except explicitely requested
+	* openssl.c (ssl_init): do not use SSLv3 except explicitely requested
+
 2014-05-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* retr.c (retrieve_url): fixed memory leak

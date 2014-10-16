@@ -1,3 +1,7 @@
+2014-10-16  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* wget.texi (Download Options): update --secure-protocol description
+
 2014-08-03  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Download Options): Fix texinfo warning.
