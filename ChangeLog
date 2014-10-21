@@ -1,3 +1,7 @@
+2013-10-22  Ángel González <keisial@gmail.com>
+
+	* bootstrap.conf (gnulib_modules): Add module xstrndup.
+
 2014-09-25  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* configure.ac: removed WgetTest.pm.in

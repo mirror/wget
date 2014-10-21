@@ -1,3 +1,7 @@
+2013-10-22  Ángel González <keisial@gmail.com>
+
+	* css-url.c (get_uri_string): Honor the specified length argument.
+
 2014-10-16  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* url.c (url_parse): little code cleanup

@@ -52,6 +52,7 @@ as that of the covered work.  */
 #include "html-url.h"
 #include "css-tokens.h"
 #include "css-url.h"
+#include "xstrndup.h"
 
 /* from lex.yy.c */
 extern char *yytext;
@@ -97,7 +98,7 @@ get_uri_string (const char *at, int *pos, int *length)
       *length -= 2;
     }
 
-  return xstrdup (at + *pos);
+  return xstrndup (at + *pos, *length);
 }
 
 void
