@@ -40,6 +40,9 @@ as that of the covered work.  */
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#if OPENSSL_VERSION_NUMBER >= 0x00907000
+#include <openssl/conf.h>
+#endif
 
 #include "utils.h"
 #include "connect.h"
@@ -187,6 +190,12 @@ ssl_init (void)
       goto error;
     }
 
+#if OPENSSL_VERSION_NUMBER >= 0x00907000
+  OPENSSL_load_builtin_modules();
+  ENGINE_load_builtin_engines();
+  CONF_modules_load_file(NULL, NULL,
+      CONF_MFLAGS_DEFAULT_SECTION|CONF_MFLAGS_IGNORE_MISSING_FILE);
+#endif
   SSL_library_init ();
   SSL_load_error_strings ();
   SSLeay_add_all_algorithms ();
@@ -207,6 +216,14 @@ ssl_init (void)
     case secure_protocol_tlsv1:
       meth = TLSv1_client_method ();
       break;
+#if OPENSSL_VERSION_NUMBER >= 0x01001000
+    case secure_protocol_tlsv1_1:
+      meth = TLSv1_1_client_method ();
+      break;
+    case secure_protocol_tlsv1_2:
+      meth = TLSv1_2_client_method ();
+      break;
+#endif
     default:
       abort ();
     }

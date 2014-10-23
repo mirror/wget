@@ -1,4 +1,10 @@
-2013-10-22  Ángel González <keisial@gmail.com>
+2014-10-08 Nikolay Morozov <n.morozov@securitycode.ru> and Sergey Lvov <s.lvov@securitycode.ru>
+
+	* init.c (cmd_spec_secure_protocol): Add support for
+	TLS v1.1 and TLS v1.2 protocols
+	* openssl.c (ssl_init): Add support for OpenSSL engines
+
+2014-10-22  Ángel González <keisial@gmail.com>
 
 	* css-url.c (get_uri_string): Honor the specified length argument.
 
