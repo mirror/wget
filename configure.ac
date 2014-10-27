@@ -263,9 +263,17 @@ dnl
 dnl Checks for libraries.
 dnl
 
+PKG_PROG_PKG_CONFIG
+
 AS_IF([test x"$with_zlib" != xno], [
   with_zlib=yes
-  AC_CHECK_LIB(z, compress)
+  PKG_CHECK_MODULES([ZLIB], zlib, [
+    LIBS="$ZLIB_LIBS $LIBS"
+    CFLAGS="$ZLIB_CFLAGS $CFLAGS"
+    AC_DEFINE([HAVE_LIBZ], [1], [Define if using zlib.])
+  ], [
+    AC_CHECK_LIB(z, compress)
+  ])
 ])
 
 AS_IF([test x"$with_ssl" = xopenssl], [
