@@ -1,4 +1,5 @@
-2014-10-08 Nikolay Morozov <n.morozov@securitycode.ru> and Sergey Lvov <s.lvov@securitycode.ru>
+2014-10-08 Nikolay Morozov <n.morozov@securitycode.ru>
+	   Sergey Lvov <s.lvov@securitycode.ru>
 
 	* init.c (cmd_spec_secure_protocol): Add support for
 	TLS v1.1 and TLS v1.2 protocols
