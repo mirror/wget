@@ -1,7 +1,19 @@
 # Project Root
+# Wildcard Ignores
+# build-aux/
+# doc/
+# m4/
+# others
+# po/
+# src/
+# testenv/
+# tests/
+# util/
+*~
 /.sc-start-sc_bindtextdomain
 /.sc-start-sc_prohibit_HAVE_MBRTOWC
 /.version
+/ABOUT-NLS~
 /GNUmakefile
 /INSTALL
 /Makefile
@@ -12,18 +24,10 @@
 /config.log
 /config.status
 /configure
+/cscope.out
 /lib/
 /maint.mk
-# Wildcard Ignores
-*~
-po/*.gmo*
-po/*.po*
-src/*.o
-tests/*.log
-tests/*.trs
-testenv/*.log
-testenv/*.trs
-# build-aux/
+/tags
 build-aux/.gitignore
 build-aux/compile
 build-aux/config.guess
@@ -35,7 +39,6 @@ build-aux/missing
 build-aux/snippet/
 build-aux/test-driver
 build-aux/texinfo.tex
-# doc/
 doc/Makefile
 doc/Makefile.in
 doc/sample.wgetrc.munged_for_texi_inclusion
@@ -44,10 +47,10 @@ doc/version.texi
 doc/wget.1
 doc/wget.info
 doc/wget.pod
-# m4/
 m4/.gitignore
 m4/gnulib-cache.m4
-# po/
+po/*.gmo*
+po/*.po*
 po/.gitignore
 po/.reference/
 po/LINGUAS
@@ -56,7 +59,7 @@ po/Makefile.in
 po/Makevars
 po/POTFILES
 po/wget.pot
-# src/
+src/*.o
 src/.deps/
 src/Makefile
 src/Makefile.in
@@ -71,22 +74,20 @@ src/stamp-h1
 src/tags
 src/version.c
 src/wget
-# testenv/
+testenv/*.log
+testenv/*.trs
+testenv/Makefile
+testenv/Makefile.in
 testenv/conf/__pycache__/
 testenv/exc/__pycache__/
 testenv/misc/__pycache__/
 testenv/server/__pycache__/
 testenv/server/http/__pycache__/
 testenv/test/__pycache__/
-testenv/Makefile
-testenv/Makefile.in
-# tests/
+tests/*.log
+tests/*.trs
 tests/Makefile
 tests/Makefile.in
 tests/unit-tests
-# util/
 util/Makefile
 util/Makefile.in
-# others
-/tags
-/cscope.out

@@ -6,15 +6,17 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.Y.Z
+* Changes in Wget 1.16
 
-** Use libpsl for verifying cookie domains
+** No longer create local symbolic links by default.  Closes CVE-2014-4877.
 
-** Default progress bar output changed
+** Use libpsl for verifying cookie domains.
 
-** Introduce --show-progress to force display the progress bar
+** Default progress bar output changed.
 
-** Introduce --no-config.
+** Introduce --show-progress to force display the progress bar.
+
+** Introduce --no-config.  The wgetrc files will not be read.
 
 ** Introduce --start-pos to allow starting downloads from a specified position.
 
