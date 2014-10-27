@@ -569,20 +569,32 @@ fi
 dnl
 dnl Check for UUID
 dnl
-AC_CHECK_HEADER(uuid.h,
-                AC_CHECK_FUNC(uuid, uuid_create,
-                  [AC_DEFINE([HAVE_UUID_CREATE], 1,
-                             [Define if uuid_create is available.])
-                  ])
-)
 
-AC_CHECK_HEADER(uuid/uuid.h,
-                AC_CHECK_LIB(uuid, uuid_generate,
-                  [LIBS="${LIBS} -luuid"
-                   AC_DEFINE([HAVE_LIBUUID], 1,
-                             [Define if libuuid is available.])
-                  ])
-)
+AC_ARG_WITH(libuuid, AC_HELP_STRING([--without-libuuid],
+                                    [Generate UUIDs for WARC files via libuuid]))
+
+AS_IF([test "X$with_libuuid" != "Xno"],[
+  PKG_CHECK_MODULES([UUID], uuid, [
+    LIBS="$UUID_LIBS $LIBS"
+    CFLAGS="$UUID_CFLAGS $CFLAGS"
+    AC_DEFINE([HAVE_LIBUUID], [1], [Define if using libuuid.])
+  ], [
+    AC_CHECK_HEADER(uuid.h,
+                    AC_CHECK_FUNC(uuid, uuid_create,
+                      [AC_DEFINE([HAVE_UUID_CREATE], 1,
+                                 [Define if uuid_create is available.])
+                      ])
+    )
+
+    AC_CHECK_HEADER(uuid/uuid.h,
+                    AC_CHECK_LIB(uuid, uuid_generate,
+                      [LIBS="${LIBS} -luuid"
+                       AC_DEFINE([HAVE_LIBUUID], 1,
+                                 [Define if libuuid is available.])
+                      ])
+    )
+  ])
+])
 
 dnl
 dnl Check for PCRE
