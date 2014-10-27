@@ -600,13 +600,24 @@ dnl
 dnl Check for PCRE
 dnl
 
-AC_CHECK_HEADER(pcre.h,
-                AC_CHECK_LIB(pcre, pcre_compile,
-                  [LIBS="${LIBS} -lpcre"
-                   AC_DEFINE([HAVE_LIBPCRE], 1,
-                             [Define if libpcre is available.])
-                  ])
-)
+AC_ARG_ENABLE(pcre, AC_HELP_STRING([--disable-pcre],
+                                   [Disable PCRE style regular expressions]))
+
+AS_IF([test "X$enable_pcre" != "Xno"],[
+  PKG_CHECK_MODULES([PCRE], libpcre, [
+    LIBS="$PCRE_LIBS $LIBS"
+    CFLAGS="$PCRE_CFLAGS $CFLAGS"
+    AC_DEFINE([HAVE_LIBPCRE], [1], [Define if using libpcre.])
+  ], [
+    AC_CHECK_HEADER(pcre.h,
+                    AC_CHECK_LIB(pcre, pcre_compile,
+                      [LIBS="${LIBS} -lpcre"
+                       AC_DEFINE([HAVE_LIBPCRE], 1,
+                                 [Define if libpcre is available.])
+                      ])
+    )
+  ])
+])
 
 
 dnl Needed by src/Makefile.am
