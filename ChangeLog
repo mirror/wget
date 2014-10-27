@@ -12,6 +12,9 @@
 	* configure.ac: Use pkg-config to check for openssl presence and
 	fallback to the previous code if that doesn't work.
 
+	* configure.ac: Use pkg-config to check for gnutls presence and
+	fallback to the previous code if that doesn't work.
+
 2014-07-28  Ángel González <keisial@gmail.com>
 	* contrib: Created contrib folder.
 	* contrib/tsocked-wget: Added wrapper for usage with socks proxy.

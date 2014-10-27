@@ -348,18 +348,26 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     with_ssl=gnutls
 
     dnl Now actually check for -lgnutls
-    AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
-#include <gnutls/gnutls.h>
-    ], [gnutls_global_init()])
-    if test x"$LIBGNUTLS" != x
-    then
-      ssl_found=yes
+    PKG_CHECK_MODULES([GNUTLS], [gnutls], [
       AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
       AC_LIBOBJ([gnutls])
-      LIBS="$LIBGNUTLS $LIBS"
-    else
-      AC_MSG_ERROR([--with-ssl=gnutls was given, but GNUTLS is not available.])
-    fi
+      LIBS="$GNUTLS_LIBS $LIBS"
+      CFLAGS="$GNUTLS_CFLAGS -DHAVE_LIBGNUTLS $CFLAGS"
+      AC_DEFINE([HAVE_LIBGNUTLS], [1], [Define if using gnutls.])
+    ], [
+      AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
+#include <gnutls/gnutls.h>
+      ], [gnutls_global_init()])
+      if test x"$LIBGNUTLS" != x
+      then
+        ssl_found=yes
+        AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
+        AC_LIBOBJ([gnutls])
+        LIBS="$LIBGNUTLS $LIBS"
+      else
+        AC_MSG_ERROR([--with-ssl=gnutls was given, but GNUTLS is not available.])
+      fi
+    ])
 
     AC_CHECK_FUNCS(gnutls_priority_set_direct)
   ]) # endif: --with-ssl != no?
