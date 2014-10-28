@@ -349,6 +349,32 @@ aprintf (const char *fmt, ...)
 #endif /* not HAVE_VASPRINTF */
 }
 
+#ifndef HAVE_STRLCPY
+/* strlcpy() is a BSD function that sometimes is really handy.
+ * It is the same as snprintf(dst,dstsize,"%s",src), but much faster. */
+
+size_t
+strlcpy (char *dst, const char *src, size_t size)
+{
+  const char *old = src;
+
+  /* Copy as many bytes as will fit */
+  if (size)
+    {
+      while (--size)
+        {
+          if (!(*dst++ = *src++))
+            return src - old - 1;
+        }
+
+      *dst = 0;
+    }
+
+  while (*src++);
+  return src - old - 1;
+}
+#endif
+
 /* Concatenate the NULL-terminated list of string arguments into
    freshly allocated space.  */
 
@@ -356,47 +382,30 @@ char *
 concat_strings (const char *str0, ...)
 {
   va_list args;
-  int saved_lengths[5];         /* inspired by Apache's apr_pstrcat */
-  char *ret, *p;
+  const char *arg;
+  size_t length = 0, pos = 0;
+  char *s;
 
-  const char *next_str;
-  int total_length = 0;
-  size_t argcount;
+  if (!str0)
+    return NULL;
 
-  /* Calculate the length of and allocate the resulting string. */
-
-  argcount = 0;
+  /* calculate the length of the resulting string */
   va_start (args, str0);
-  for (next_str = str0; next_str != NULL; next_str = va_arg (args, char *))
-    {
-      int len = strlen (next_str);
-      if (argcount < countof (saved_lengths))
-        saved_lengths[argcount++] = len;
-      total_length += len;
-    }
+  for (arg = str0; arg; arg = va_arg (args, const char *))
+    length += strlen(arg);
   va_end (args);
-  p = ret = xmalloc (total_length + 1);
 
-  /* Copy the strings into the allocated space. */
+  s = xmalloc (length + 1);
 
-  argcount = 0;
+  /* concatenate strings */
   va_start (args, str0);
-  for (next_str = str0; next_str != NULL; next_str = va_arg (args, char *))
-    {
-      int len;
-      if (argcount < countof (saved_lengths))
-        len = saved_lengths[argcount++];
-      else
-        len = strlen (next_str);
-      memcpy (p, next_str, len);
-      p += len;
-    }
+  for (arg = str0; arg; arg = va_arg (args, const char *))
+    pos += strlcpy(s + pos, arg, length - pos + 1);
   va_end (args);
-  *p = '\0';
 
-  return ret;
+  return s;
 }
-
+
 /* Format the provided time according to the specified format.  The
    format is a string with format elements supported by strftime.  */
 

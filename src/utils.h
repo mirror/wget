@@ -156,6 +156,10 @@ const char *print_decimal (double);
 
 long get_max_length (const char *path, int length, int name);
 
+#ifndef HAVE_STRLCPY
+size_t strlcpy (char *dst, const char *src, size_t size);
+#endif
+
 extern unsigned char char_prop[];
 
 #endif /* UTILS_H */

@@ -226,7 +226,7 @@ AC_FUNC_MMAP
 AC_FUNC_FSEEKO
 AC_CHECK_FUNCS(strptime timegm vsnprintf vasprintf drand48 pathconf)
 AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr wcwidth mbtowc)
-AC_CHECK_FUNCS(sleep symlink utime)
+AC_CHECK_FUNCS(sleep symlink utime strlcpy)
 
 if test x"$ENABLE_OPIE" = xyes; then
   AC_LIBOBJ([ftp-opie])
