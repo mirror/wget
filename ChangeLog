@@ -1,3 +1,7 @@
+2014-10-28  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Makefile.am: Replace $FOO with @VAR@.
+
 2013-10-22  Ángel González <keisial@gmail.com>
 
 	* bootstrap.conf (gnulib_modules): Add module xstrndup.

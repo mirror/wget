@@ -1,3 +1,7 @@
+2014-10-28  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Makefile.am: Replace $FOO with @VAR@.
+
 2014-09-08  Darshit Shah  <darnir@gmail.com>
 
 	* wget.texi (symbolic links): Update documentation of retr-symlinks to

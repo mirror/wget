@@ -30,9 +30,8 @@
 # see http://www.gnu.org/software/automake/manual/html_node/Parallel-Test-Harness.html#Parallel-Test-Harness
 
 #
-# Version: $(VERSION)
+# Version: @VERSION@
 #
-
 
 ../src/wget$(EXEEXT):
 	cd ../src && $(MAKE) $(AM_MAKEFLAGS)
