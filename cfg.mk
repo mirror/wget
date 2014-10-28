@@ -19,6 +19,7 @@ local-checks-to-skip = \
     sc_prohibit_S_IS_definition \
     \
     sc_program_name \
+    sc_makefile_at_at_check \
 
 
 #SHELL=bash -x

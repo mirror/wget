@@ -1,5 +1,7 @@
 2014-10-28  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* cfg.mk (local-checks-to-skip): Add sc_makefile_at_at_check.
+
 	* Makefile.am: Replace $FOO with @VAR@.
 
 2013-10-22  Ángel González <keisial@gmail.com>
