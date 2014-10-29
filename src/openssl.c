@@ -208,9 +208,11 @@ ssl_init (void)
       meth = SSLv2_client_method ();
       break;
 #endif
+#ifndef OPENSSL_NO_SSL3
     case secure_protocol_sslv3:
       meth = SSLv3_client_method ();
       break;
+#endif
     case secure_protocol_auto:
     case secure_protocol_pfs:
     case secure_protocol_tlsv1:

@@ -1,3 +1,8 @@
+2014-10-29  Peter Meiser <meiser@gmx-topmail.de> (tiny change)
+
+	* openssl.c (ssl_init) [! OPENSSL_NO_SSL3]: Add guard for OpenSSL
+	without SSLv3.
+
 2014-10-28  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* ftp.c (ftp_loop_internal): Fix memory leak
