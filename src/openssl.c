@@ -40,6 +40,7 @@ as that of the covered work.  */
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#include <openssl/bio.h>
 #if OPENSSL_VERSION_NUMBER >= 0x00907000
 #include <openssl/conf.h>
 #endif
@@ -572,6 +573,27 @@ pattern_match (const char *pattern, const char *string)
   return *n == '\0';
 }
 
+char *_get_rfc2253_formatted (X509_NAME *name)
+{
+  int len;
+  char *out = NULL;
+  BIO* b;
+
+  if ((b = BIO_new (BIO_s_mem ())))
+    {
+      if (X509_NAME_print_ex (b, name, 0, XN_FLAG_RFC2253) >= 0
+          && (len = BIO_number_written (b)) > 0)
+        {
+          out = xmalloc (len + 1);
+          BIO_read (b, out, len);
+          out[len] = 0;
+        }
+      BIO_free (b);
+    }
+
+  return out ? out : xstrdup("");
+}
+
 /* Verify the validity of the certificate presented by the server.
    Also check that the "common name" of the server, as presented by
    its certificate, corresponds to HOST.  (HOST typically comes from
@@ -615,23 +637,25 @@ ssl_check_certificate (int fd, const char *host)
 
   IF_DEBUG
     {
-      char *subject = X509_NAME_oneline (X509_get_subject_name (cert), 0, 0);
-      char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
+      char *subject = _get_rfc2253_formatted (X509_get_subject_name (cert));
+      char *issuer = _get_rfc2253_formatted (X509_get_issuer_name (cert));
       DEBUGP (("certificate:\n  subject: %s\n  issuer:  %s\n",
                quotearg_n_style (0, escape_quoting_style, subject),
                quotearg_n_style (1, escape_quoting_style, issuer)));
-      OPENSSL_free (subject);
-      OPENSSL_free (issuer);
+      xfree (subject);
+      xfree (issuer);
     }
 
   vresult = SSL_get_verify_result (conn);
   if (vresult != X509_V_OK)
     {
-      char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
+      char *issuer = _get_rfc2253_formatted (X509_get_issuer_name (cert));
       logprintf (LOG_NOTQUIET,
                  _("%s: cannot verify %s's certificate, issued by %s:\n"),
                  severity, quotearg_n_style (0, escape_quoting_style, host),
                  quote_n (1, issuer));
+      xfree(issuer);
+
       /* Try to print more user-friendly (and translated) messages for
          the frequent verification errors.  */
       switch (vresult)

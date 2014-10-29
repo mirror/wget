@@ -3,6 +3,16 @@
 	* openssl.c (ssl_init) [! OPENSSL_NO_SSL3]: Add guard for OpenSSL
 	without SSLv3.
 
+2014-10-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* openssl.c: print cert subject and issuer RFC2253 compliant
+	* openssl.c (ssl_check_certificate): removed memory leak
+
+2014-10-28  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* utils.c: added strlcpy(), concat_strings() rewritten
+	* utils.h: added strlcpy()
+
 2014-10-28  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* ftp.c (ftp_loop_internal): Fix memory leak
