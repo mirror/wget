@@ -2071,6 +2071,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
               request_free (req);
               return HERR;
             }
+          xfree_null(hs->message);
           hs->message = xstrdup (message);
           resp_free (resp);
           xfree (head);
@@ -2249,6 +2250,7 @@ read_header:
       goto read_header;
     }
 
+  xfree_null(hs->message);
   hs->message = xstrdup (message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
@@ -2423,6 +2425,7 @@ read_header:
                   xfree (head);
                   xfree (auth_stat);
                   xfree (hs->message);
+                  hs->message = NULL;
                   goto retry_with_auth;
                 }
               else
@@ -3415,6 +3418,7 @@ Remote file exists.\n\n"));
               count = 0;          /* the retrieve count for HEAD is reset */
               xfree_null (hstat.message);
               xfree_null (hstat.error);
+              hstat.message = NULL;
               continue;
             } /* send_head_first */
         } /* !got_head */

@@ -5,6 +5,10 @@
 
 2014-10-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
+	* http.c (gethttp): fix memory leak
+
+2014-10-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
 	* http.c (gethttp): use CLOSE_INVALIDATE instead of fd_close
 
 2014-10-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
