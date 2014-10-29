@@ -5,6 +5,10 @@
 
 2014-10-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
+	* http.c (gethttp): use CLOSE_INVALIDATE instead of fd_close
+
+2014-10-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
 	* http.c (CLOSE_FINISH): always set fd invalid after close
 
 2014-10-29  Tim Ruehsen  <tim.ruehsen@gmx.de>

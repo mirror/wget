@@ -2095,13 +2095,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         {
           if (!ssl_connect_wget (sock, u->host))
             {
-              fd_close (sock);
+              CLOSE_INVALIDATE (sock);
               request_free (req);
               return CONSSLERR;
             }
           else if (!ssl_check_certificate (sock, u->host))
             {
-              fd_close (sock);
+              CLOSE_INVALIDATE (sock);
               request_free (req);
               return VERIFCERTERR;
             }
