@@ -1428,10 +1428,8 @@ persistent_available_p (const char *host, int port, bool ssl,
       if (pconn_active && (fd) == pconn.socket) \
         invalidate_persistent ();               \
       else                                      \
-        {                                       \
           fd_close (fd);                        \
-          fd = -1;                              \
-        }                                       \
+      fd = -1;                                  \
     }                                           \
 } while (0)
 
