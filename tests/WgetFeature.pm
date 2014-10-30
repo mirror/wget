@@ -22,7 +22,7 @@ sub import
 
     unless ($have_features{$feature}) {
         print $skip_messages{$feature}, "\n";
-        exit 2; # skip
+        exit 77; # skip
     }
 }
 

@@ -1,3 +1,7 @@
+2014-10-30  Mike Frysinger <vapier@gentoo.org>
+
+	* WgetFeature.pm: fix skip exit code to 77
+
 2014-10-25  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* WgetTests.pm (run): generate valgrind command line if requested
