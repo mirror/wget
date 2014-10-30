@@ -43,6 +43,7 @@ as that of the covered work.  */
 #include <openssl/bio.h>
 #if OPENSSL_VERSION_NUMBER >= 0x00907000
 #include <openssl/conf.h>
+#include <openssl/engine.h>
 #endif
 
 #include "utils.h"
