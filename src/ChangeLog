@@ -1,3 +1,7 @@
+2014-10-31  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* openssl.c: make _get_rfc2253_formatted() static
+
 2014-10-30  Mike Frysinger <vapier@gentoo.org>
 
 	* openssl.c: fix implicit decl warning

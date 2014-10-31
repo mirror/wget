@@ -574,7 +574,7 @@ pattern_match (const char *pattern, const char *string)
   return *n == '\0';
 }
 
-char *_get_rfc2253_formatted (X509_NAME *name)
+static char *_get_rfc2253_formatted (X509_NAME *name)
 {
   int len;
   char *out = NULL;
