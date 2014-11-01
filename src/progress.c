@@ -907,10 +907,6 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   char *p = bp->buffer;
   wgint size = bp->initial_length + bp->count;
 
-  const char *size_grouped = with_thousand_seps (size);
-  int size_grouped_len = count_cols (size_grouped);
-  /* Difference between num cols and num bytes: */
-  int size_grouped_diff = strlen (size_grouped) - size_grouped_len;
   int size_grouped_pad; /* Used to pad the field width for size_grouped. */
 
   struct bar_progress_hist *hist = &bp->hist;
@@ -1159,9 +1155,10 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       move_to_end (p);
     }
 
-  while (p - bp->buffer - bytes_cols_diff - size_grouped_diff < bp->width)
+  while (p - bp->buffer - bytes_cols_diff < bp->width)
     *p++ = ' ';
   *p = '\0';
+  assert (count_cols (bp->buffer) <= bp->width);
 }
 
 /* Print the contents of the buffer as a one-line ASCII "image" so
