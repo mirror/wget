@@ -165,9 +165,11 @@ dnl   if compiler is gcc, then
 dnl     use -O2 and some warning flags
 dnl   else
 dnl     use os-specific flags or -O
+dnl
+dnl For these tests, the system considers clang to be gcc
 if test -n "$auto_cflags"; then
   if test -n "$GCC"; then
-    CFLAGS="$CFLAGS -O2 -Wall"
+    CFLAGS="$CFLAGS -O2 -Wall -Wextra"
   else
     case "$host_os" in
       *hpux*)  CFLAGS="$CFLAGS +O3"                      ;;
