@@ -1,3 +1,8 @@
+2014-11-01  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* http.c (gethttp): Do not check for "Connection: close" header
+	only when the Content-Length is specified.
+
 2014-10-31  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* openssl.c: make _get_rfc2253_formatted() static

@@ -2287,7 +2287,7 @@ read_header:
     }
 
   /* Check for keep-alive related responses. */
-  if (!inhibit_keep_alive && contlen != -1)
+  if (!inhibit_keep_alive)
     {
       if (resp_header_copy (resp, "Connection", hdrval, sizeof (hdrval)))
         {
