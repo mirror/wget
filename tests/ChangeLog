@@ -1,3 +1,12 @@
+2014-10-31  Pär Karlsson <feinorgh@gmail.com>
+	* WgetTests.pm: Proper conditional operators, tidied up code, idiomatic
+	improvements as per modern Perl best practices.
+	* WgetFeature.pm: Tidied up code, idiomatic improvements for readability
+	* FTPServer.pm: Tidied up code (perltidy -gnu)
+	* FTPTest.pm: Likewise
+	* HTTPServer.pm: Likewise
+	* HTTPTest.pm: Likewise
+
 2014-10-30  Mike Frysinger <vapier@gentoo.org>
 
 	* WgetFeature.pm: fix skip exit code to 77
