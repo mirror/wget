@@ -9,6 +9,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+** Use pkg-config to check for libraries presence.
+
 
 * Changes in Wget 1.16
 
