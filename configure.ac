@@ -61,15 +61,17 @@ dnl
 dnl Process features.
 dnl
 
-ENABLE_PSL=no
 AC_ARG_WITH(libpsl,
     AS_HELP_STRING([--without-libpsl],
                    [disable support for libpsl cookie checking.]),
     [],
+    [with_libpsl=yes])
+
+AS_IF([test "x$with_libpsl" = xyes],
     [AC_SEARCH_LIBS(psl_builtin, psl,
                     [ENABLE_PSL=yes; AC_DEFINE([HAVE_LIBPSL], [1], [PSL Support Enabled])],
-                    [AC_MSG_WARN(*** libpsl not found. Falling back to Wget builtin cookie checking.)])
-    ])
+                    [ENABLE_PSL=no; AC_MSG_WARN(*** libpsl not found. Falling back to Wget builtin cookie checking.)])],
+    [ENABLE_PSL=no])
 
 AC_ARG_WITH(ssl,
 [[  --without-ssl           disable SSL autodetection
