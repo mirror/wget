@@ -881,7 +881,7 @@ map_html_tags (const char *text, int size,
     if (*p == '!')
       {
         if (!(flags & MHT_STRICT_COMMENTS)
-            && p < end + 3 && p[1] == '-' && p[2] == '-')
+            && p + 3 < end && p[1] == '-' && p[2] == '-')
           {
             /* If strict comments are not enforced and if we know
                we're looking at a comment, simply look for the
