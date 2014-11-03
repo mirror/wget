@@ -1,5 +1,9 @@
 2014-11-03  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* added new test Test-proxied-https-auth-keepalive.px
+
+2014-11-03  Tim Ruehsen <tim.ruehsen@gmx.de>
+
        * Test-proxied-https-auth.px: add valgrind support,
          sync parent / child (client / server)
 

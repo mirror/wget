@@ -112,6 +112,7 @@ PX_TESTS = \
              Test-O.px \
              Test--post-file.px \
              Test-proxied-https-auth.px \
+             Test-proxied-https-auth-keepalive.px \
              Test-proxy-auth-basic.px \
              Test-restrict-ascii.px \
              Test-Restrict-Lowercase.px \
