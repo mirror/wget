@@ -385,7 +385,7 @@ struct logvprintf_state {
    (An alternative approach would be to use va_copy, but that's not
    portable.)  */
 
-static bool
+static bool GCC_FORMAT_ATTR (2, 0)
 log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
                       va_list args)
 {
