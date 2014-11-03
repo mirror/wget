@@ -1,3 +1,9 @@
+2014-11-03  Jakub Čajka  <jcajka@redhat.com>
+
+	* iri.c (remote_to_utf8): Fixed assumption that char is signed. Fixes
+	fellowing test case failures idn-cmd-utf8, idn-robots-utf8, if char is
+	unsigned.
+
 2014-11-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* log.c: turn on automatic format check for log_vprintf_internal()

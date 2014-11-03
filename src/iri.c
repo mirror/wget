@@ -279,7 +279,7 @@ remote_to_utf8 (struct iri *iri, const char *str, const char **new)
     {
       const char *p = str;
       for (p = str; *p; p++)
-        if (*p < 0)
+        if (*p < 0 || *p > 127)
           {
             *new = strdup (str);
             return true;
