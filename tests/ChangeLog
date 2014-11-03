@@ -1,3 +1,8 @@
+2014-11-03  Pär Karlsson <feinorgh@gmail.com>
+	* WgetFeature.pm: Fixed finding of WgetFeature.cfg when using separate
+	build dirs.
+	* WgetFeature.pm: Fixed warning from BLOCK eval, made it indo EXPR eval
+
 2014-11-03  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* added new test Test-proxied-https-auth-keepalive.px

@@ -7,18 +7,18 @@ our $VERSION = 0.01;
 
 use Carp;
 use English qw(-no_match_vars);
+use FindBin;
 use WgetTests;
 
 our %SKIP_MESSAGES;
 {
-    open my $fh, '<', 'WgetFeature.cfg'
-      or croak "Cannot open 'WgetFeature.cfg': $ERRNO";
+    my $cfgfile = "$FindBin::Bin/WgetFeature.cfg";
+    open my $fh, '<', $cfgfile
+      or croak "Cannot open '$cfgfile': $ERRNO";
     my @lines = <$fh>;
-    close $fh or carp "Cannot close 'WgetFeature.cfg': $ERRNO";
-    eval {
-        @lines;
-        1;
-    } or carp "Cannot eval 'WgetFeature.cfg': $ERRNO";
+    close $fh or carp "Cannot close '$cfgfile': $ERRNO";
+    my $evalstr = join q{}, @lines;
+    eval { $evalstr } or carp "Cannot eval '$cfgfile': $ERRNO";
 }
 
 sub import
