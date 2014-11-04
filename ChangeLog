@@ -1,3 +1,7 @@
+2014-11-04  Darshit Shah  <darnir@gmail.com>
+
+	* README.checkout: Bootstrap script is ./bootstrap not ./bootstrap.sh
+
 2014-11-01  Darshit Shah  <darnir@gmail.com>
 
 	* configure.ac: Fix check for libpsl

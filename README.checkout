@@ -73,8 +73,8 @@ Compiling From Repository Sources
 
    For those who might be confused as to what to do once they check out
    the source code, considering configure and Makefile do not yet exist at
-   that point, a shell script called bootstrap.sh has been provided. After
-   calling ./bootstrap.sh you're ready to build GNU Wget in the normal
+   that point, a shell script called bootstrap has been provided. After
+   calling ./bootstrap you're ready to build GNU Wget in the normal
    fashion, with ./configure and make.
 
    So, to sum up, after checking out the source code as described above,
@@ -83,7 +83,7 @@ Compiling From Repository Sources
  $  cd wget        # assumes you've cloned a repository to "./wget"
     2. Generate all the automatically-generated files required prior to
        configuring the package:
- $  ./bootstrap.sh
+ $  ./bootstrap
     3. Configure the package and compile it:
  $  ./configure [some_parameters]
  $  make
