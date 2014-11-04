@@ -1,5 +1,11 @@
 2014-11-05  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* Makefile.am: added $(LIB_CLOCK_GETTIME) to unit test linkage
+
+	Reported-by: kdevel@vogtner.de
+
+2014-11-05  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* Test-stdouterr.px: fix skip exit code to 77
 
 2014-11-03  Pär Karlsson <feinorgh@gmail.com>
