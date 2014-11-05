@@ -123,8 +123,9 @@ do_conversion (const char *tocode, const char *fromcode, char *in, size_t inlen,
   cd = iconv_open (tocode, fromcode);
   if (cd == (iconv_t)(-1))
     {
-      logprintf (LOG_VERBOSE, _("Conversion from %s to %s isn't supported\n"),
-                 quote (opt.locale), quote ("UTF-8"));
+      logprintf (LOG_VERBOSE, _("Conversion from %s to UTF-8 isn't supported\n"),
+                 quote (opt.locale));
+      *out = NULL;
       return false;
     }
 
@@ -146,7 +147,7 @@ do_conversion (const char *tocode, const char *fromcode, char *in, size_t inlen,
           *(s + len - outlen - done) = '\0';
           xfree(in_save);
           iconv_close(cd);
-          logprintf (LOG_VERBOSE, _("converted '%s' (%s) -> '%s' (%s)\n"), in_org, fromcode, *out, tocode);
+          DEBUGP (("converted '%s' (%s) -> '%s' (%s)\n", in_org, fromcode, *out, tocode));
           return true;
         }
 
@@ -187,7 +188,7 @@ do_conversion (const char *tocode, const char *fromcode, char *in, size_t inlen,
 
     xfree(in_save);
     iconv_close(cd);
-    logprintf (LOG_VERBOSE, _("converted '%s' (%s) -> '%s' (%s)\n"), in_org, fromcode, *out, tocode);
+    DEBUGP (("converted '%s' (%s) -> '%s' (%s)\n", in_org, fromcode, *out, tocode));
     return false;
 }
 
@@ -291,7 +292,7 @@ remote_to_utf8 (struct iri *iri, const char *str, const char **new)
     ret = true;
 
   /* Test if something was converted */
-  if (!strcmp (str, *new))
+  if (*new && !strcmp (str, *new))
     {
       xfree ((char *) *new);
       return false;
