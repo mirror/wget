@@ -88,4 +88,3 @@ CONFIG+="
    server = ${socks_proxy}"
 
 TSOCKS_CONF_FILE=<(echo "$CONFIG") exec tsocks "$WGET" --no-proxy "$@"
-
