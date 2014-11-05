@@ -1,3 +1,8 @@
+2014-11-05  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* configure.ac: check for python3
+	* Makefile.am: only use python test suite if python3 found
+
 2014-11-05  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* contrib/tsocked-wget (TSOCKS_CONF_FILE): Remove empty new-line.

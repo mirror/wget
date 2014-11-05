@@ -136,6 +136,12 @@ AC_AIX
 gl_EARLY
 
 dnl
+dnl Find python3
+dnl
+AM_PATH_PYTHON([3.0],,[:])
+AM_CONDITIONAL([HAVE_PYTHON3], [test "$PYTHON" != :])
+
+dnl
 dnl Gettext
 dnl
 AM_GNU_GETTEXT([external],[need-ngettext])
