@@ -1,3 +1,9 @@
+2014-10-21  Matthew Atkinson  <mutley456@ntlworld.com> (tiny change)
+
+	* http.c (gethttp): Always send Content-Length header when method is POST,
+	PUT, or PATCH even with no post body, as some servers will reject the
+	request otherwise.
+
 2014-11-03  Jakub Čajka  <jcajka@redhat.com>
 
 	* iri.c (remote_to_utf8): Fixed assumption that char is signed. Fixes

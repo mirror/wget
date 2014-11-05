@@ -1874,6 +1874,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                               xstrdup (number_to_static_string (body_data_size)),
                               rel_value);
         }
+      else if (strcasecmp (opt.method, "post") == 0
+               || strcasecmp (opt.method, "put") == 0
+               || strcasecmp (opt.method, "patch") == 0)
+        request_set_header (req, "Content-Length", "0", rel_none);
     }
 
  retry_with_auth:
