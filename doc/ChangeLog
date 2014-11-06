@@ -1,3 +1,7 @@
+2014-11-06  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* wget.texi: added description for --crl-file
+
 2014-10-28  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Makefile.am: Replace $FOO with @VAR@.

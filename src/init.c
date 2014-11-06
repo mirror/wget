@@ -91,6 +91,7 @@ CMD_DECLARE (cmd_number_inf);
 CMD_DECLARE (cmd_string);
 CMD_DECLARE (cmd_string_uppercase);
 CMD_DECLARE (cmd_file);
+CMD_DECLARE (cmd_file_once);
 CMD_DECLARE (cmd_directory);
 CMD_DECLARE (cmd_time);
 CMD_DECLARE (cmd_vector);
@@ -158,6 +159,9 @@ static const struct {
   { "continue",         &opt.always_rest,       cmd_boolean },
   { "convertlinks",     &opt.convert_links,     cmd_boolean },
   { "cookies",          &opt.cookies,           cmd_boolean },
+#ifdef HAVE_SSL
+  { "crlfile",      &opt.crl_file,          cmd_file_once },
+#endif
   { "cutdirs",          &opt.cut_dirs,          cmd_number },
   { "debug",            &opt.debug,             cmd_boolean },
   { "defaultpage",      &opt.default_page,      cmd_string },
@@ -1026,6 +1030,20 @@ cmd_file (const char *com _GL_UNUSED, const char *val, void *place)
   return true;
 }
 
+/* like cmd_file, but insist on just a single option usage */
+static bool
+cmd_file_once (const char *com _GL_UNUSED, const char *val, void *place)
+{
+  if (*(char **)place)
+    {
+      fprintf (stderr, _("%s: %s must only be used once\n"),
+               exec_name, com);
+      return false;
+    }
+
+  return cmd_file(com, val, place);
+}
+
 /* Like cmd_file, but strips trailing '/' characters.  */
 static bool
 cmd_directory (const char *com, const char *val, void *place)
@@ -1780,6 +1798,7 @@ cleanup (void)
   xfree_null (opt.private_key);
   xfree_null (opt.ca_directory);
   xfree_null (opt.ca_cert);
+  xfree_null (opt.crl_file);
   xfree_null (opt.random_file);
   xfree_null (opt.egd_file);
 # endif

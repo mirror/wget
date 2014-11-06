@@ -218,6 +218,7 @@ struct options
 
   char *ca_directory;           /* CA directory (hash files) */
   char *ca_cert;                /* CA certificate file to use */
+  char *crl_file;               /* file with CRLs */
 
   char *random_file;            /* file with random data to seed the PRNG */
   char *egd_file;               /* file name of the egd daemon socket */

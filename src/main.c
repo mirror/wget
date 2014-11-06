@@ -175,6 +175,7 @@ static struct cmdline_option option_data[] =
     { "content-disposition", 0, OPT_BOOLEAN, "contentdisposition", -1 },
     { "content-on-error", 0, OPT_BOOLEAN, "contentonerror", -1 },
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
+    { IF_SSL ("crl-file"), 0, OPT_VALUE, "crlfile", -1 },
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
     { "debug", 'd', OPT_BOOLEAN, "debug", -1 },
     { "default-page", 0, OPT_VALUE, "defaultpage", -1 },
@@ -652,6 +653,8 @@ HTTPS (SSL/TLS) options:\n"),
        --ca-certificate=FILE       file with the bundle of CA's.\n"),
     N_("\
        --ca-directory=DIR          directory where hash list of CA's is stored.\n"),
+    N_("\
+       --crl-file=FILE             file with bundle of CRL's.\n"),
     N_("\
        --random-file=FILE          file with random data for seeding the SSL PRNG.\n"),
     N_("\

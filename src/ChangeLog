@@ -1,3 +1,11 @@
+2014-11-06  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* init.c, main.c, options.h: added new option --crl-file
+	 for specifying a CRL (Certificate Revocation List) file.
+	* gnutls.c: load CRL file given by --crl-file
+
+	Reported-by: Noël Köthe <noel@debian.org>
+
 2014-11-09  Darshit Shah  <darnir@gmail.com>
 
 	* http.c (gethttps): Honour keep-alive when server responds with a 416 Range

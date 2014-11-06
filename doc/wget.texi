@@ -1725,6 +1725,11 @@ it allows Wget to fetch certificates on demand.
 Without this option Wget looks for CA certificates at the
 system-specified locations, chosen at OpenSSL installation time.
 
+@cindex SSL CRL, certificate revocation list
+@item --crl-file=@var{file}
+Specifies a CRL file in @var{file}.  This is needed for certificates
+that have been revocated by the CAs.
+
 @cindex entropy, specifying source of
 @cindex randomness, specifying source of
 @item --random-file=@var{file}
