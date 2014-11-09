@@ -2776,7 +2776,10 @@ read_header:
       /* Mark as successfully retrieved. */
       *dt |= RETROKF;
       xfree_null (type);
-      CLOSE_INVALIDATE (sock);        /* would be CLOSE_FINISH, but there
+      if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE)
+        CLOSE_FINISH (sock);
+      else
+        CLOSE_INVALIDATE (sock);        /* would be CLOSE_FINISH, but there
                                    might be more bytes in the body. */
       xfree (head);
       return RETRUNNEEDED;

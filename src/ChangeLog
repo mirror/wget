@@ -1,5 +1,10 @@
 2014-11-09  Darshit Shah  <darnir@gmail.com>
 
+	* http.c (gethttps): Honour keep-alive when server responds with a 416 Range
+	not Satisfiable
+
+2014-11-09  Darshit Shah  <darnir@gmail.com>
+
 	* http.c (gethttp): Remove redundant condition evaluation
 
 2014-11-04  Tim Ruehsen  <tim.ruehsen@gmx.de>
