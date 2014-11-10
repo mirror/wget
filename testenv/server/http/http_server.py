@@ -38,13 +38,15 @@ class HTTPSServer (StoppableHTTPServer):
         import ssl
         BaseServer.__init__ (self, address, handler)
         # step one up because test suite change directory away from $srcdir (don't do that !!!)
-        CERTFILE = os.path.abspath(os.path.join('..', os.getenv('srcdir', '.'), 'certs', 'wget-cert.pem'))
+        CERTFILE = os.path.abspath(os.path.join('..', os.getenv('srcdir', '.'), 'certs', 'server-cert.pem'))
+        KEYFILE = os.path.abspath(os.path.join('..', os.getenv('srcdir', '.'), 'certs', 'server-key.pem'))
         fop = open (CERTFILE)
         print (fop.readline())
         self.socket = ssl.wrap_socket (
             sock = socket.socket (self.address_family, self.socket_type),
             ssl_version = ssl.PROTOCOL_TLSv1,
             certfile = CERTFILE,
+            keyfile = KEYFILE,
             server_side = True
         )
         self.server_bind()

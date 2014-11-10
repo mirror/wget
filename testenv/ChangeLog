@@ -1,3 +1,14 @@
+2014-11-10  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* removed certs/wget-cert.pem
+	* added certs/ca-cert.pem, certs/ca-key.pem, certs/server-cert.pem,
+	  certs/server-key.pem and certs/server-crl.pem
+	* added certs/README for description how to generate the certs and keys
+	* server/http/http_server.py: amended to work with new certs/ files
+	* added Test--https-crl.py to test --crl-file
+	* Makefile.am: added Test--https-crl.py
+	* Test--https.py: use --ca-certificate of --no-check-certificates
+
 2014-10-25  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* test/base_test.py (gen_cmd_line): generate valgrind command line if requested

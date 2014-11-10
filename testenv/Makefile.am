@@ -47,6 +47,7 @@ if HAVE_PYTHON3
     Test-cookie.py                          \
     Test-Head.py                            \
     Test--https.py                          \
+    Test--https-crl.py                      \
     Test-O.py                               \
     Test-Post.py                            \
     Test--spider-r.py
