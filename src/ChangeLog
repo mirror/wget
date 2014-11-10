@@ -1,3 +1,9 @@
+2014-11-10  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* openssl.c: Fix compile-time check for TLSv1.1 and TLSv1.2
+
+	Reported-by: Velemas Vosak <velemas@gmail.com>
+
 2014-11-06  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* init.c, main.c, options.h: added new option --crl-file
