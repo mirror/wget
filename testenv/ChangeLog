@@ -1,3 +1,7 @@
+2014-11-11  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* recreated the certs and the CRL file, also amended certs/README
+
 2014-11-10  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* removed certs/wget-cert.pem

@@ -1,6 +1,7 @@
 To create the server RSA private key:
 $ certtool --generate-privkey --outfile server-key.pem --rsa
 
+
 To create a self signed CA certificate:
 $ certtool --generate-privkey --outfile ca-key.pem
 $ certtool --generate-self-signed --load-privkey ca-key.pem --outfile ca-cert.pem
@@ -14,7 +15,7 @@ Country name (2 chars):
 Enter the subject's domain component (DC): 
 This field should not be used in new certificates.
 E-mail: 
-Enter the certificate's serial number in decimal (default: 6079996172146959675): 
+Enter the certificate's serial number in decimal (default: 6080487640893163573): 
 
 Activation/Expiration time.
 The certificate will expire in (days): -1
@@ -24,13 +25,11 @@ Does the certificate belong to an authority? (y/N): y
 Path length constraint (decimal, -1 for no constraint): 
 Is this a TLS web client certificate? (y/N): 
 Will the certificate be used for IPsec IKE operations? (y/N): 
-Is this a TLS web server certificate? (y/N): y
-Enter a dnsName of the subject of the certificate: 127.0.0.1
+Is this a TLS web server certificate? (y/N): 
 Enter a dnsName of the subject of the certificate: 
 Enter a URI of the subject of the certificate: 
 Enter the IP address of the subject of the certificate: 
-Will the certificate be used for signing (DHE and RSA-EXPORT ciphersuites)? (Y/n): 
-Will the certificate be used for encryption (RSA ciphersuites)? (Y/n): 
+Enter the e-mail of the subject of the certificate: 
 Will the certificate be used to sign other certificates? (y/N): y
 Will the certificate be used to sign CRLs? (y/N): y
 Will the certificate be used to sign code? (y/N): 
@@ -51,24 +50,23 @@ Country name (2 chars):
 Enter the subject's domain component (DC): 
 This field should not be used in new certificates.
 E-mail: 
-Enter the certificate's serial number in decimal (default: 6079998890988883856): 
+Enter the certificate's serial number in decimal (default: 6080488276853553635): 
 
 Activation/Expiration time.
 The certificate will expire in (days): -1
 
 Extensions.
 Does the certificate belong to an authority? (y/N): 
-Is this a TLS web client certificate? (y/N): y
+Is this a TLS web client certificate? (y/N): 
 Will the certificate be used for IPsec IKE operations? (y/N): 
-Is this a TLS web server certificate? (y/N): 
-Enter a dnsName of the subject of the certificate: localhost
+Is this a TLS web server certificate? (y/N): y
 Enter a dnsName of the subject of the certificate: 127.0.0.1
+Enter a dnsName of the subject of the certificate: localhost
 Enter a dnsName of the subject of the certificate: 
 Enter a URI of the subject of the certificate: 
 Enter the IP address of the subject of the certificate: 
-Enter the e-mail of the subject of the certificate: 
-Will the certificate be used for signing (required for TLS)? (Y/n): 
-Will the certificate be used for encryption (not required for TLS)? (Y/n): 
+Will the certificate be used for signing (DHE and RSA-EXPORT ciphersuites)? (Y/n): 
+Will the certificate be used for encryption (RSA ciphersuites)? (Y/n): 
 
 
 To create a CRL for the server certificate:
@@ -77,5 +75,4 @@ Generating a signed CRL...
 Update times.
 The certificate will expire in (days): -1
 CRL Number (default: 6080006793650397145):
-
 

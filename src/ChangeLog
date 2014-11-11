@@ -1,4 +1,8 @@
 2014-11-11  Tim Ruehsen  <tim.ruehsen@gmx.de>
+ 
+	* openssl.c (ssl_init): Load CRL file given by --crl-file
+
+2014-11-11  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* http.c (gethttp): Always add Accept-Encoding: identity
 
