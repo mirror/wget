@@ -117,8 +117,8 @@ i18n_initialize (void)
 
 /* Definition of command-line options. */
 
-static void print_help (void);
-static void print_version (void);
+static void _Noreturn print_help (void);
+static void _Noreturn print_version (void);
 
 #ifdef HAVE_SSL
 # define IF_SSL(x) x

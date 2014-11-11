@@ -1,3 +1,9 @@
+2014-11-11  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* main.c: Fix missing _Noreturn declaration specifiers
+
+	Reported-by: Gisle Vanem <gvanem@yahoo.no>
+
 2014-11-10  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* openssl.c: Fix compile-time check for TLSv1.1 and TLSv1.2
