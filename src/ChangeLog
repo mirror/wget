@@ -1,5 +1,12 @@
 2014-11-11  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
+	* http.c (gethttp): Always add Accept-Encoding: identity
+
+	Fixes bug #40819
+	Reported-by: Noël Köthe <noel@debian.org>
+
+2014-11-11  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
 	* main.c: Fix missing _Noreturn declaration specifiers
 
 	Reported-by: Gisle Vanem <gvanem@yahoo.no>

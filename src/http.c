@@ -1801,6 +1801,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                         rel_value);
   SET_USER_AGENT (req);
   request_set_header (req, "Accept", "*/*", rel_none);
+  request_set_header (req, "Accept-Encoding", "identity", rel_none);
 
   /* Find the username and password for authentication. */
   user = u->user;
