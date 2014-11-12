@@ -1,3 +1,7 @@
+2014-11-12  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* openssl.c (ssl_init): Fix error handling for CRL loading
+
 2014-11-12  Witchakorn Kamolpornwijit <witchakk@mit.edu> (tiny change)
 
 	* html-parse.c (map_html_tags): Fix range check
