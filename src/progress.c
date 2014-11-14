@@ -1158,7 +1158,15 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   while (p - bp->buffer - bytes_cols_diff < bp->width)
     *p++ = ' ';
   *p = '\0';
-  assert (count_cols (bp->buffer) <= bp->width);
+
+  /* 2014-11-14  Darshit Shah  <darnir@gmail.com>
+   * Assert that the length of the progress bar is lesser than the size of the
+   * screen with which we are dealing. This assertion *MUST* always be removed
+   * from the release code since we do not want Wget to crash and burn when the
+   * assertion fails. Instead Wget should continue downloading and display a
+   * horrible and irritating progress bar that spams the screen with newlines.
+   */
+  assert (count_cols (bp->buffer) <= bp->width + 1);
 }
 
 /* Print the contents of the buffer as a one-line ASCII "image" so
