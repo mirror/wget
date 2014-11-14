@@ -1,3 +1,6 @@
+2014-11-15  Darshit Shah  <darnir@gmail.com>
+	* configure.ac: Add AC_HEADER_ASSERT. Enables --disable-assert option
+
 2014-11-05  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* configure.ac: check for python3

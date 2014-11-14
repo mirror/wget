@@ -58,6 +58,13 @@ AC_DEFINE_UNQUOTED([OS_TYPE], "$host_os",
                    [Define to be the name of the operating system.])
 
 dnl
+dnl Add option to disable Assertions
+dnl
+dnl Adds a --disable-assert option to ./configure which can be used by distro
+dnl maintainers to compile without assertions.
+AC_HEADER_ASSERT
+
+dnl
 dnl Process features.
 dnl
 
