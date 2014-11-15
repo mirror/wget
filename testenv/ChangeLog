@@ -1,3 +1,7 @@
+2014-11-15  Darshit Shah  <darnir@gmail.com>
+
+	* certs/README: Remove trailing whitespaces
+
 2014-11-11  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* recreated the certs and the CRL file, also amended certs/README
