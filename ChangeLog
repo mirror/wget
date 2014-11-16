@@ -1,3 +1,7 @@
+2014-11-16  Darshit Shah  <darnir@gmail.com>
+
+	* .gitignore: Sort gitignore file based on directories
+
 2014-11-15  Darshit Shah  <darnir@gmail.com>
 	* configure.ac: Add AC_HEADER_ASSERT. Enables --disable-assert option
 
