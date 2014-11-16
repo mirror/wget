@@ -965,7 +965,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       int *cols_ret = &col;
 
       if (((orig_filename_cols > MAX_FILENAME_COLS) && !opt.noscroll) && !done)
-        offset_cols = ((int) bp->tick) % (orig_filename_cols - MAX_FILENAME_COLS);
+        offset_cols = ((int) bp->tick) % (orig_filename_cols - MAX_FILENAME_COLS + 1);
       else
         offset_cols = 0;
       offset_bytes = cols_to_bytes (bp->f_download, offset_cols, cols_ret);
