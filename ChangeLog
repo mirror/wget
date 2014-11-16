@@ -1,6 +1,7 @@
 2014-11-16  Darshit Shah  <darnir@gmail.com>
 
 	* gnulib: Update submodule
+	* bootstrap: Update script from latest gnulib
 
 2014-11-16  Darshit Shah  <darnir@gmail.com>
 
