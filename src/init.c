@@ -1844,7 +1844,7 @@ test_cmd_spec_restrict_file_names(void)
   static const struct {
     const char *val;
     int expected_restrict_files_os;
-    int expected_restrict_files_ctrl;
+    bool expected_restrict_files_ctrl;
     int expected_restrict_files_case;
     bool result;
   } test_array[] = {
@@ -1869,9 +1869,9 @@ test_cmd_spec_restrict_file_names(void)
       */
       mu_assert ("test_cmd_spec_restrict_file_names: wrong result",
                  res == test_array[i].result
-                 && opt.restrict_files_os   == test_array[i].expected_restrict_files_os
+                 && (int) opt.restrict_files_os   == test_array[i].expected_restrict_files_os
                  && opt.restrict_files_ctrl == test_array[i].expected_restrict_files_ctrl
-                 && opt.restrict_files_case == test_array[i].expected_restrict_files_case);
+                 && (int) opt.restrict_files_case == test_array[i].expected_restrict_files_case);
     }
 
   return NULL;

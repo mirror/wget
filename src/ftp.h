@@ -53,8 +53,6 @@ enum ustype
   UST_OTHER
 };
 
-extern char ftp_last_respline[];
-
 uerr_t ftp_response (int, char **);
 uerr_t ftp_login (int, const char *, const char *);
 uerr_t ftp_port (int, int *);
