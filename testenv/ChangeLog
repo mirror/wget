@@ -1,3 +1,8 @@
+2014-11-17  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* server/http/http_server.py: allow case-insensitive auth-type,
+          send BasIc and DIgest to provoke Wget failures with turkish locales
+
 2014-11-15  Darshit Shah  <darnir@gmail.com>
 
 	* certs/README: Remove trailing whitespaces

@@ -59,6 +59,7 @@ as that of the covered work.  */
 #include "convert.h"
 #include "spider.h"
 #include "warc.h"
+#include "c-strcase.h"
 
 #ifdef TESTING
 #include "test.h"
@@ -1631,7 +1632,7 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
 }
 
 #define BEGINS_WITH(line, string_constant)                               \
-  (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)    \
+  (!c_strncasecmp (line, string_constant, sizeof (string_constant) - 1)    \
    && (c_isspace (line[sizeof (string_constant) - 1])                      \
        || !line[sizeof (string_constant) - 1]))
 
@@ -3958,7 +3959,7 @@ digest_authentication_encode (const char *au, const char *user,
 #define STARTS(literal, b, e)                           \
   ((e > b) \
    && ((size_t) ((e) - (b))) >= STRSIZE (literal)   \
-   && 0 == strncasecmp (b, literal, STRSIZE (literal))  \
+   && 0 == c_strncasecmp (b, literal, STRSIZE (literal))  \
    && ((size_t) ((e) - (b)) == STRSIZE (literal)          \
        || c_isspace (b[STRSIZE (literal)])))
 
