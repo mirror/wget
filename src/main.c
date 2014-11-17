@@ -88,10 +88,6 @@ extern const char *compiled_features[];
 #define MAX_CHARS_PER_LINE      72
 #define TABULATION              4
 
-#if defined(SIGHUP) || defined(SIGUSR1)
-static void redirect_output_signal (int);
-#endif
-
 const char *exec_name;
 
 /* Number of successfully downloaded URLs */
@@ -101,6 +97,31 @@ int numurls = 0;
 /* Initialize I18N/L10N.  That amounts to invoking setlocale, and
    setting up gettext's message catalog using bindtextdomain and
    textdomain.  Does nothing if NLS is disabled or missing.  */
+
+#if defined(SIGHUP) || defined(SIGUSR1)
+/* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
+   will proceed operation as usual, trying to write into a log file.
+   If that is impossible, the output will be turned off.  */
+
+static void
+redirect_output_signal (int sig)
+{
+  const char *signal_name = "WTF?!";
+
+#ifdef SIGHUP
+  if (sig == SIGHUP)
+    signal_name = "SIGHUP";
+#endif
+#ifdef SIGUSR1
+  if (sig == SIGUSR1)
+    signal_name = "SIGUSR1";
+#endif
+
+  log_request_redirect_output (signal_name);
+  progress_schedule_redirect ();
+  signal (sig, redirect_output_signal);
+}
+#endif /* defined(SIGHUP) || defined(SIGUSR1) */
 
 static void
 i18n_initialize (void)
@@ -1740,33 +1761,8 @@ outputting to a regular file.\n"));
 
   exit (get_exit_status ());
 }
+
 #endif /* TESTING */
-
-#if defined(SIGHUP) || defined(SIGUSR1)
-
-/* So the signal_name check doesn't blow when only one is available. */
-#ifndef SIGHUP
-# define SIGHUP -1
-#endif
-#ifndef SIGUSR1
-# define SIGUSR1 -1
-#endif
-
-/* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
-   will proceed operation as usual, trying to write into a log file.
-   If that is impossible, the output will be turned off.  */
-
-static void
-redirect_output_signal (int sig)
-{
-  const char *signal_name = (sig == SIGHUP ? "SIGHUP" :
-                             (sig == SIGUSR1 ? "SIGUSR1" :
-                              "WTF?!"));
-  log_request_redirect_output (signal_name);
-  progress_schedule_redirect ();
-  signal (sig, redirect_output_signal);
-}
-#endif
 
 /*
  * vim: et ts=2 sw=2

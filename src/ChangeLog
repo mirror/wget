@@ -1,5 +1,9 @@
 2014-11-17  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
+	* main.c: code cleanup for redirect_output_signal()
+
+2014-11-17  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
 	* ftp.h: removed unused variable ftp_last_respline
 	* init.c, test.c, warc.c: removed 'make check'compiler warnings
 
