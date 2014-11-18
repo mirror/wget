@@ -1,3 +1,8 @@
+2014-11-19  Tim Ruehsen  <tim.ruehsen@gmx.de>
+ 
+	* gnutls.c (ssl_init): Report load failure of cert files from
+        cert directory only with --debug. Fixes #41331.
+
 2014-11-18  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* Fix warnings from clang-analyzer 3.6
