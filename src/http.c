@@ -3428,6 +3428,7 @@ Remote file exists.\n\n"));
               xfree_null (hstat.message);
               xfree_null (hstat.error);
               hstat.message = NULL;
+              hstat.error = NULL;
               continue;
             } /* send_head_first */
         } /* !got_head */

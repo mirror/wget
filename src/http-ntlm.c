@@ -474,82 +474,82 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
 
     /* Create the big type-3 message binary blob */
 
-    size = (size_t) snprintf (ntlmbuf, sizeof(ntlmbuf),
-                     "NTLMSSP%c"
-                     "\x03%c%c%c" /* type-3, 32 bits */
+    snprintf (ntlmbuf, sizeof (ntlmbuf),
+              "NTLMSSP%c"
+              "\x03%c%c%c" /* type-3, 32 bits */
 
-                     "%c%c%c%c" /* LanManager length + allocated space */
-                     "%c%c" /* LanManager offset */
-                     "%c%c" /* 2 zeroes */
+              "%c%c%c%c" /* LanManager length + allocated space */
+              "%c%c" /* LanManager offset */
+              "%c%c" /* 2 zeroes */
 
-                     "%c%c" /* NT-response length */
-                     "%c%c" /* NT-response allocated space */
-                     "%c%c" /* NT-response offset */
-                     "%c%c" /* 2 zeroes */
+              "%c%c" /* NT-response length */
+              "%c%c" /* NT-response allocated space */
+              "%c%c" /* NT-response offset */
+              "%c%c" /* 2 zeroes */
 
-                     "%c%c"  /* domain length */
-                     "%c%c"  /* domain allocated space */
-                     "%c%c"  /* domain name offset */
-                     "%c%c"  /* 2 zeroes */
+              "%c%c" /* domain length */
+              "%c%c" /* domain allocated space */
+              "%c%c" /* domain name offset */
+              "%c%c" /* 2 zeroes */
 
-                     "%c%c"  /* user length */
-                     "%c%c"  /* user allocated space */
-                     "%c%c"  /* user offset */
-                     "%c%c"  /* 2 zeroes */
+              "%c%c" /* user length */
+              "%c%c" /* user allocated space */
+              "%c%c" /* user offset */
+              "%c%c" /* 2 zeroes */
 
-                     "%c%c"  /* host length */
-                     "%c%c"  /* host allocated space */
-                     "%c%c"  /* host offset */
-                     "%c%c%c%c%c%c"  /* 6 zeroes */
+              "%c%c" /* host length */
+              "%c%c" /* host allocated space */
+              "%c%c" /* host offset */
+              "%c%c%c%c%c%c" /* 6 zeroes */
 
-                     "\xff\xff"  /* message length */
-                     "%c%c"  /* 2 zeroes */
+              "\xff\xff" /* message length */
+              "%c%c" /* 2 zeroes */
 
-                     "\x01\x82" /* flags */
-                     "%c%c"  /* 2 zeroes */
+              "\x01\x82" /* flags */
+              "%c%c" /* 2 zeroes */
 
-                     /* domain string */
-                     /* user string */
-                     /* host string */
-                     /* LanManager response */
-                     /* NT response */
-                     ,
-                     0, /* zero termination */
-                     0,0,0, /* type-3 long, the 24 upper bits */
+              /* domain string */
+              /* user string */
+              /* host string */
+              /* LanManager response */
+              /* NT response */
+              ,
+              0, /* zero termination */
+              0, 0, 0, /* type-3 long, the 24 upper bits */
 
-                     SHORTPAIR(0x18),  /* LanManager response length, twice */
-                     SHORTPAIR(0x18),
-                     SHORTPAIR(lmrespoff),
-                     0x0, 0x0,
+              SHORTPAIR (0x18), /* LanManager response length, twice */
+              SHORTPAIR (0x18),
+              SHORTPAIR (lmrespoff),
+              0x0, 0x0,
 
 #ifdef USE_NTRESPONSES
-                     SHORTPAIR(0x18),  /* NT-response length, twice */
-                     SHORTPAIR(0x18),
+                SHORTPAIR (0x18), /* NT-response length, twice */
+              SHORTPAIR (0x18),
 #else
-                     0x0, 0x0,
-                     0x0, 0x0,
+                0x0, 0x0,
+              0x0, 0x0,
 #endif
-                     SHORTPAIR(ntrespoff),
-                     0x0, 0x0,
+                SHORTPAIR (ntrespoff),
+              0x0, 0x0,
 
-                     SHORTPAIR(domlen),
-                     SHORTPAIR(domlen),
-                     SHORTPAIR(domoff),
-                     0x0, 0x0,
+              SHORTPAIR (domlen),
+              SHORTPAIR (domlen),
+              SHORTPAIR (domoff),
+              0x0, 0x0,
 
-                     SHORTPAIR(userlen),
-                     SHORTPAIR(userlen),
-                     SHORTPAIR(useroff),
-                     0x0, 0x0,
+              SHORTPAIR (userlen),
+              SHORTPAIR (userlen),
+              SHORTPAIR (useroff),
+              0x0, 0x0,
 
-                     SHORTPAIR(hostlen),
-                     SHORTPAIR(hostlen),
-                     SHORTPAIR(hostoff),
-                     0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+              SHORTPAIR (hostlen),
+              SHORTPAIR (hostlen),
+              SHORTPAIR (hostoff),
+              0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
 
-                     0x0, 0x0,
+              0x0, 0x0,
 
-                     0x0, 0x0);
+              0x0, 0x0);
 
     /* size is now 64 */
     size=64;

@@ -454,7 +454,6 @@ ssl_connect_wget (int fd, const char *hostname)
   gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) FD_TO_SOCKET (fd));
 #endif
 
-  err = 0;
 #if HAVE_GNUTLS_PRIORITY_SET_DIRECT
   switch (opt.secure_protocol)
     {
