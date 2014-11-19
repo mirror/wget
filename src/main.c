@@ -891,7 +891,10 @@ format_and_print_line (const char *prefix, const char *line,
           remaining_chars = line_length - TABULATION;
         }
       if (printf ("%s ", token) < 0)
-        return -1;
+        {
+          xfree_null (line_dup);
+          return -1;
+        }
       remaining_chars -= strlen (token) + 1;  /* account for " " */
       token = strtok (NULL, " ");
     }

@@ -1,5 +1,9 @@
 2014-11-19  Darshit Shah  <darnir@gmail.com>
 
+	* main.c (format_and_print_line): Fix potential memory leak
+
+2014-11-19  Darshit Shah  <darnir@gmail.com>
+
 	* utils.c (compile_posix_regex): Fix memory leak due to unfreed regex
 	pointer
 
