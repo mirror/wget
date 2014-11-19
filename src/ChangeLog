@@ -1,4 +1,8 @@
 2014-11-19  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* openssl.c (ssl_check_certificate): Fix memory leak
+
+2014-11-19  Tim Ruehsen  <tim.ruehsen@gmx.de>
  
 	* gnutls.c (ssl_init): Report load failure of cert files from
         cert directory only with --debug. Fixes #41331.

@@ -771,7 +771,7 @@ ssl_check_certificate (int fd, const char *host)
                 }
             }
         }
-      sk_GENERAL_NAME_free (subjectAltNames);
+      sk_GENERAL_NAME_pop_free(subjectAltNames, GENERAL_NAME_free);
       if (host_in_octet_string)
         ASN1_OCTET_STRING_free(host_in_octet_string);
 
