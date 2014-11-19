@@ -265,11 +265,16 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
 
   if (opt.show_progress)
     {
+      const char *filename_progress;
       /* If we're skipping STARTPOS bytes, pass 0 as the INITIAL
          argument to progress_create because the indicator doesn't
          (yet) know about "skipping" data.  */
       wgint start = skip ? 0 : startpos;
-      progress = progress_create (downloaded_filename, start, start + toread);
+      if (opt.dir_prefix)
+        filename_progress = downloaded_filename + strlen (opt.dir_prefix) + 1;
+      else
+        filename_progress = downloaded_filename;
+      progress = progress_create (filename_progress, start, start + toread);
       progress_interactive = progress_interactive_p (progress);
     }
 

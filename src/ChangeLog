@@ -1,3 +1,10 @@
+2014-11-19  Darshit Shah  <darnir@gmail.com>
+
+	* progress.c (create_image): Do not scroll filename if amount of scrolling
+	is less than MIN_SCROLL_TEXT
+	* retr.c (fd_read_body): Do not print the directory prefix in the progress
+	bar
+
 2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* cookies.c, ftp-basic.c, ftp-ls.c, ftp.c, html-url.c,

@@ -968,12 +968,17 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       int *cols_ret = &col;
       int padding;
 
-      if (((orig_filename_cols > MAX_FILENAME_COLS) && !opt.noscroll) && !done)
+#define MIN_SCROLL_TEXT 5
+      if ((orig_filename_cols > MAX_FILENAME_COLS + MIN_SCROLL_TEXT) &&
+          !opt.noscroll &&
+          !done)
         offset_cols = ((int) bp->tick) % (orig_filename_cols - MAX_FILENAME_COLS + 1);
       else
         offset_cols = 0;
       offset_bytes = cols_to_bytes (bp->f_download, offset_cols, cols_ret);
-      bytes_in_filename = cols_to_bytes (bp->f_download + offset_bytes, MAX_FILENAME_COLS, cols_ret);
+      bytes_in_filename = cols_to_bytes (bp->f_download + offset_bytes,
+                                         MAX_FILENAME_COLS,
+                                         cols_ret);
       memcpy (p, bp->f_download + offset_bytes, bytes_in_filename);
       p += bytes_in_filename;
       padding = MAX_FILENAME_COLS - *cols_ret;
