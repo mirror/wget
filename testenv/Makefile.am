@@ -50,6 +50,7 @@ if HAVE_PYTHON3
     Test--https-crl.py                      \
     Test-O.py                               \
     Test-Post.py                            \
+    Test-504.py                             \
     Test--spider-r.py
 
   XFAIL_TESTS = Test-auth-both.py

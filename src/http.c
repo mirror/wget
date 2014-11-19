@@ -130,6 +130,7 @@ static struct cookie_jar *wget_cookie_jar;
 #define HTTP_STATUS_NOT_IMPLEMENTED       501
 #define HTTP_STATUS_BAD_GATEWAY           502
 #define HTTP_STATUS_UNAVAILABLE           503
+#define HTTP_STATUS_GATEWAY_TIMEOUT       504
 
 enum rp {
   rel_none, rel_name, rel_value, rel_both
@@ -2461,6 +2462,24 @@ read_header:
         pconn.authorized = true;
     }
 
+  if (statcode == HTTP_STATUS_GATEWAY_TIMEOUT)
+    {
+      hs->len = 0;
+      hs->res = 0;
+      hs->restval = 0;
+
+      CLOSE_FINISH (sock);
+      request_free (req);
+      xfree (hs->message);
+      hs->message = NULL;
+      xfree_null (message);
+      resp_free (resp);
+      xfree (head);
+
+      return GATEWAYTIMEOUT;
+    }
+
+
   /* Determine the local filename if needed. Notice that if -O is used
    * hstat.local_file is set by http_loop to the argument of -O. */
   if (!hs->local_file)
@@ -3184,7 +3203,7 @@ Spider mode enabled. Check if remote file exists.\n"));
         {
         case HERR: case HEOF: case CONSOCKERR:
         case CONERROR: case READERR: case WRITEFAILED:
-        case RANGEERR: case FOPEN_EXCL_ERR:
+        case RANGEERR: case FOPEN_EXCL_ERR: case GATEWAYTIMEOUT:
           /* Non-fatal errors continue executing the loop, which will
              bring them to "while" statement at the end, to judge
              whether the number of tries was exceeded.  */

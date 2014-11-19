@@ -1,7 +1,13 @@
+2014-11-19  Darshit Shah  <darnir@gmail.com>
+
+	* Test-504.py: Add new test case to show how Wget handles 504 Gateway
+	Timeouts
+	* Makefile.am: Add Test-504.py to TESTS
+
 2014-11-17  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* server/http/http_server.py: allow case-insensitive auth-type,
-          send BasIc and DIgest to provoke Wget failures with turkish locales
+	send BasIc and DIgest to provoke Wget failures with turkish locales
 
 2014-11-15  Darshit Shah  <darnir@gmail.com>
 

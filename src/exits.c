@@ -56,7 +56,7 @@ get_status_for_err (uerr_t err)
     case FTPNSFOD: case FTPUNKNOWNTYPE: case FTPSRVERR:
     case FTPRETRINT: case FTPRESTFAIL: case FTPNOPASV:
     case CONTNOTSUPPORTED: case RANGEERR: case RETRBADPATTERN:
-    case PROXERR:
+    case PROXERR: case GATEWAYTIMEOUT:
       return WGET_EXIT_SERVER_ERROR;
     case URLERROR: case QUOTEXC: case SSLINITFAILED: case UNKNOWNATTR:
     default:
