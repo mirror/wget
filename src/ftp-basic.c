@@ -784,15 +784,13 @@ ftp_epsv (int csock, ip_address *ip, int *port)
     }
 
   /* Finally, get the port number */
-  tport = 0;
-  for (i = 1; c_isdigit (*s); s++)
-    {
-      if (i > 5)
-        {
-          xfree (respline);
-          return FTPINVPASV;
-        }
+  for (tport = 0, i = 0; i < 5 && c_isdigit (*s); i++, s++)
       tport = (*s - '0') + 10 * tport;
+
+  if (i >= 5)
+    {
+      xfree (respline);
+      return FTPINVPASV;
     }
 
   /* Make sure that the response terminates correcty */
