@@ -1,5 +1,12 @@
 2014-11-19  Tim Ruehsen  <tim.ruehsen@gmx.de>
  
+	* utils.c (random_float, random_number): Use random() and
+	srandom() if available.
+
+	Reported-by: Coverity scanner
+
+2014-11-19  Tim Ruehsen  <tim.ruehsen@gmx.de>
+ 
 	* ftp-basic.c (ftp_epsv): Fix loop check
 
 	Reported-by: Coverity scanner

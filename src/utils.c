@@ -1846,7 +1846,14 @@ static int rnd_seeded;
 int
 random_number (int max)
 {
-#ifdef HAVE_DRAND48
+#ifdef HAVE_RANDOM
+  if (!rnd_seeded)
+    {
+      srandom ((long) time (NULL) ^ (long) getpid ());
+      rnd_seeded = 1;
+    }
+  return random () % max;
+#elif defined HAVE_DRAND48
   if (!rnd_seeded)
     {
       srand48 ((long) time (NULL) ^ (long) getpid ());
@@ -1881,7 +1888,9 @@ random_number (int max)
 double
 random_float (void)
 {
-#ifdef HAVE_DRAND48
+#ifdef HAVE_RANDOM
+    return ((double) random_number (RAND_MAX)) / RAND_MAX;
+#elif defined HAVE_DRAND48
   if (!rnd_seeded)
     {
       srand48 ((long) time (NULL) ^ (long) getpid ());

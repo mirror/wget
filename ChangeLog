@@ -1,3 +1,7 @@
+2014-11-19  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* configure.ac: Check for random()
+
 2014-11-17  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* bootstrap.conf (gnulib_modules): Add module c-strcase
