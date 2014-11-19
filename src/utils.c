@@ -2310,6 +2310,7 @@ compile_posix_regex (const char *str)
       fprintf (stderr, _("Invalid regular expression %s, %s\n"),
                quote (str), errbuf);
       xfree (errbuf);
+      xfree (regex);
       return NULL;
     }
 
