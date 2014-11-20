@@ -70,10 +70,7 @@ dnl
 
 dnl Libpsl: Public Suffix List checking
 AC_ARG_WITH([libpsl],
-  [AS_HELP_STRING([--without-libpsl], [disable support for libpsl cookie checking.])],
-  [],
-  [with_libpsl=yes]
-)
+  [AS_HELP_STRING([--without-libpsl], [disable support for libpsl cookie checking.])])
 
 dnl SSL: Configure SSL backend to use
 AC_ARG_WITH([ssl],
@@ -308,6 +305,8 @@ PKG_PROG_PKG_CONFIG
 AS_IF([test "x$with_libpsl" != xno], [
   PKG_CHECK_MODULES([LIBPSL], libpsl, [
     with_libpsl=yes
+    # correct $LIBPSL_LIBS (in libpsl <= 0.6.0)
+    AS_IF([test "x$LIBPSL_LIBS" = "x-llibpsl "], [LIBPSL_LIBS="-lpsl"])
     LIBS="$LIBPSL_LIBS $LIBS"
     CFLAGS="$LIBPSL_CFLAGS $CFLAGS"
     AC_DEFINE([HAVE_LIBPSL], [1], [PSL support enabled])

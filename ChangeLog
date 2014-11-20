@@ -1,5 +1,9 @@
 2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* configure.ac: Fix libpsl<0.6.0 detection
+
+2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* NEWS: remove form feeds
 
 2014-11-20  Darshit Shah  <darnir@gmail.com>
