@@ -840,11 +840,13 @@ cols_to_bytes (const char *mbs, const int cols, int *ncols)
   return bytes;
 }
 #else
-# define count_cols(mbs) ((int)(strlen(mbs)))
-# define cols_to_bytes(mbs, cols, *ncols) do {  \
-    *ncols = cols;                              \
-    bytes = cols;                               \
-}while (0)
+static int count_cols (const char *mbs) { return (int) strlen(mbs); }
+static int
+cols_to_bytes (const char *mbs _GL_UNUSED, const int cols, int *ncols)
+{
+  *ncols = cols;
+  return cols;
+}
 #endif
 
 static const char *

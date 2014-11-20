@@ -1,3 +1,9 @@
+2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* progress.c: Fix code for undefined USE_NLS_PROGRESS_BAR
+
+	Reported-by: Gisle Vanem
+
 2014-11-20  Gisle Vanem  <gvanem@yahoo.no>
 
 	* build_info.c.in: Assume large file for WINDOWS
