@@ -93,7 +93,7 @@ const char *exec_name;
 
 /* Number of successfully downloaded URLs */
 int numurls = 0;
-
+
 #ifndef TESTING
 /* Initialize I18N/L10N.  That amounts to invoking setlocale, and
    setting up gettext's message catalog using bindtextdomain and
@@ -136,7 +136,7 @@ i18n_initialize (void)
   textdomain ("wget");
 #endif /* ENABLE_NLS */
 }
-
+
 /* Definition of command-line options. */
 
 static void _Noreturn print_help (void);

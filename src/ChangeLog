@@ -1,3 +1,7 @@
+2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* Removed form feeds (\014) from *.c and *.h
+
 2014-11-20  Gisle Vanem  <gvanem@yahoo.no>
 
 	* http.c (parse_content_disposition): Fix C89 issue found by MSVC 16

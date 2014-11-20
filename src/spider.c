@@ -51,7 +51,7 @@ spider_cleanup (void)
   if (nonexisting_urls_set)
     string_set_free (nonexisting_urls_set);
 }
-
+
 /* Remembers broken links.  */
 void
 nonexisting_url (const char *url)

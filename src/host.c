@@ -309,7 +309,7 @@ address_list_release (struct address_list *al)
       address_list_delete (al);
     }
 }
-
+
 /* Versions of gethostbyname and getaddrinfo that support timeout. */
 
 #ifndef ENABLE_IPV6
@@ -408,7 +408,7 @@ getaddrinfo_with_timeout (const char *node, const char *service,
 }
 
 #endif /* ENABLE_IPV6 */
-
+
 /* Return a textual representation of ADDR, i.e. the dotted quad for
    IPv4 addresses, and the colon-separated list of hex words (with all
    zeros omitted, etc.) for IPv6 addresses.  */
@@ -570,7 +570,7 @@ is_valid_ipv6_address (const char *str, const char *end)
 
   return true;
 }
-
+
 /* Simple host cache, used by lookup_host to speed up resolving.  The
    cache doesn't handle TTL because Wget is a fairly short-lived
    application.  Refreshing is attempted when connect fails, though --
@@ -637,7 +637,7 @@ cache_remove (const char *host)
       hash_table_remove (host_name_addresses_map, host);
     }
 }
-
+
 /* Look up HOST in DNS and return a list of IP addresses.
 
    This function caches its result so that, if the same host is passed
@@ -848,7 +848,7 @@ lookup_host (const char *host, int flags)
 
   return al;
 }
-
+
 /* Determine whether a URL is acceptable to be followed, according to
    a list of domains to accept.  */
 bool

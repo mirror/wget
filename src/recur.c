@@ -50,7 +50,7 @@ as that of the covered work.  */
 #include "html-url.h"
 #include "css-url.h"
 #include "spider.h"
-
+
 /* Functions for maintaining the URL queue.  */
 
 struct queue_element {
@@ -159,7 +159,7 @@ url_dequeue (struct url_queue *queue, struct iri **i,
   xfree (qel);
   return true;
 }
-
+
 static bool download_child_p (const struct urlpos *, struct url *, int,
                               struct url *, struct hash_table *, struct iri *);
 static bool descend_redirect_p (const char *, struct url *, int,

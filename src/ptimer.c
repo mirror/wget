@@ -291,7 +291,7 @@ windows_resolution (void)
     return 10;                  /* according to MSDN */
 }
 #endif  /* PTIMER_WINDOWS */
-
+
 /* The code below this point is independent of timer implementation. */
 
 struct ptimer {

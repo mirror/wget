@@ -98,7 +98,7 @@ struct robot_specs {
   int size;
   struct path_info *paths;
 };
-
+
 /* Parsing the robot spec. */
 
 /* Check whether AGENT (a string of length LENGTH) equals "wget" or
@@ -407,7 +407,7 @@ free_specs (struct robot_specs *specs)
   xfree_null (specs->paths);
   xfree (specs);
 }
-
+
 /* Matching of a path according to the specs. */
 
 /* If C is '%' and (ptr[1], ptr[2]) form a hexadecimal number, and if
@@ -472,7 +472,7 @@ res_match_path (const struct robot_specs *specs, const char *path)
       }
   return true;
 }
-
+
 /* Registering the specs. */
 
 static struct hash_table *registered_specs;
@@ -522,7 +522,7 @@ res_get_specs (const char *host, int port)
     return NULL;
   return hash_table_get (registered_specs, hp);
 }
-
+
 /* Loading the robots file.  */
 
 #define RES_SPECS_LOCATION "/robots.txt"
@@ -583,7 +583,7 @@ res_retrieve_file (const char *url, char **file, struct iri *iri)
     }
   return err == RETROK;
 }
-
+
 bool
 is_robots_txt_url (const char *url)
 {
@@ -594,7 +594,7 @@ is_robots_txt_url (const char *url)
 
   return ret;
 }
-
+
 void
 res_cleanup (void)
 {
@@ -612,7 +612,7 @@ res_cleanup (void)
       registered_specs = NULL;
     }
 }
-
+
 #ifdef TESTING
 
 const char *

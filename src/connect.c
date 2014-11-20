@@ -168,7 +168,7 @@ sockaddr_size (const struct sockaddr *sa)
       abort ();
     }
 }
-
+
 /* Resolve the bind address specified via --bind-address and store it
    to SA.  The resolved value is stored in a static variable and
    reused after the first invocation of this function.
@@ -213,7 +213,7 @@ resolve_bind_address (struct sockaddr *sa)
   should_bind = true;
   return true;
 }
-
+
 struct cwt_context {
   int fd;
   const struct sockaddr *addr;
@@ -250,7 +250,7 @@ connect_with_timeout (int fd, const struct sockaddr *addr, socklen_t addrlen,
     errno = ETIMEDOUT;
   return ctx.result;
 }
-
+
 /* Connect via TCP to the specified address and port.
 
    If PRINT is non-NULL, it is the host name to print that we're
@@ -429,7 +429,7 @@ connect_to_host (const char *host, int port)
 
   return -1;
 }
-
+
 /* Create a socket, bind it to local interface BIND_ADDRESS on port
    *PORT, set up a listen backlog, and return the resulting socket, or
    -1 in case of error.
@@ -746,7 +746,7 @@ wget uses blocking sockets so we must convert them back to blocking
        or EOF/error. */
     return false;
 }
-
+
 /* Basic socket operations, mostly EINTR wrappers.  */
 
 static int
@@ -794,7 +794,7 @@ sock_close (int fd)
 #undef read
 #undef write
 #undef close
-
+
 /* Reading and writing from the network.  We build around the socket
    (file descriptor) API, but support "extended" operations for things
    that are not mere file descriptors under the hood, such as SSL

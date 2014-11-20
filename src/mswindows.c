@@ -85,7 +85,7 @@ windows_main (char **exec_name)
   if (p)
     *p = '\0';
 }
-
+
 static void
 ws_cleanup (void)
 {
@@ -477,7 +477,7 @@ ws_startup (void)
   set_sleep_mode ();
   SetConsoleCtrlHandler (ws_handler, TRUE);
 }
-
+
 /* run_with_timeout Windows implementation.  */
 
 /* Stack size 0 uses default thread stack-size (reserve+commit).

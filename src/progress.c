@@ -196,7 +196,7 @@ progress_finish (void *progress, double dltime)
 {
   current_impl->finish (progress, dltime);
 }
-
+
 /* Dot-printing. */
 
 struct dot_progress {
@@ -466,7 +466,7 @@ dot_set_params (char *params)
              _("Invalid dot style specification %s; leaving unchanged.\n"),
              quote (params));
 }
-
+
 /* "Thermometer" (bar) progress. */
 
 /* Assumed screen width if we can't find the real value.  */

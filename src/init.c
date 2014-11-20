@@ -331,7 +331,7 @@ command_by_name (const char *cmdname)
     }
   return -1;
 }
-
+
 /* Reset the variables to default values.  */
 void
 defaults (void)
@@ -437,7 +437,7 @@ defaults (void)
   opt.show_progress = false;
   opt.noscroll = false;
 }
-
+
 /* Return the user's home directory (strdup-ed), or NULL if none is
    found.  */
 char *
@@ -899,7 +899,7 @@ run_command (const char *cmdopt)
       exit (WGET_EXIT_PARSE_ERROR);
     }
 }
-
+
 /* Generic helper functions, for use with `commands'. */
 
 /* Forward declarations: */
@@ -1294,7 +1294,7 @@ cmd_cert_type (const char *com, const char *val, void *place)
   return ok;
 }
 #endif
-
+
 /* Specialized helper functions, used by `commands' to handle some
    options specially.  */
 
@@ -1589,7 +1589,7 @@ cmd_spec_verbose (const char *com, const char *val, void *place_ignored _GL_UNUS
     }
   return false;
 }
-
+
 /* Miscellaneous useful routines.  */
 
 /* A very simple atoi clone, more useful than atoi because it works on
@@ -1817,7 +1817,7 @@ cleanup (void)
 
 #endif /* DEBUG_MALLOC */
 }
-
+
 /* Unit testing routines.  */
 
 #ifdef TESTING

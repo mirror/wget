@@ -86,7 +86,7 @@ static struct scheme_data supported_schemes[] =
 /* Forward declarations: */
 
 static bool path_simplify (enum url_scheme, char *);
-
+
 /* Support for escaping and unescaping of URL strings.  */
 
 /* Table of "reserved" and "unsafe" characters.  Those terms are
@@ -273,7 +273,7 @@ url_escape_allow_passthrough (const char *s)
 {
   return url_escape_1 (s, urlchr_unsafe, true);
 }
-
+
 /* Decide whether the char at position P needs to be encoded.  (It is
    not enough to pass a single char *P because the function may need
    to inspect the surrounding context.)
@@ -419,7 +419,7 @@ reencode_escapes (const char *s)
   assert (p2 - newstr == newlen);
   return newstr;
 }
-
+
 /* Returns the scheme type if the scheme is supported, or
    SCHEME_INVALID if not.  */
 
@@ -586,7 +586,7 @@ rewrite_shorthand_url (const char *url)
     }
   return ret;
 }
-
+
 static void split_path (const char *, char **, char **);
 
 /* Like strpbrk, with the exception that it returns the pointer to the
@@ -1188,7 +1188,7 @@ url_free (struct url *url)
 
   xfree (url);
 }
-
+
 /* Create all the necessary directories for PATH (a file).  Calls
    make_directory internally.  */
 int
@@ -1240,7 +1240,7 @@ mkalldirs (const char *path)
   xfree (t);
   return res;
 }
-
+
 /* Functions for constructing the file name out of URL components.  */
 
 /* A growable string structure, used by url_file_name and friends.
@@ -1696,7 +1696,7 @@ url_file_name (const struct url *u, char *replaced_filename)
 
   return unique;
 }
-
+
 /* Resolve "." and ".." elements of PATH by destructively modifying
    PATH and return true if PATH has been modified, false otherwise.
 
@@ -1782,7 +1782,7 @@ path_simplify (enum url_scheme scheme, char *path)
 
   return t != h;
 }
-
+
 /* Return the length of URL's path.  Path is considered to be
    terminated by one or more of the ?query or ;params or #fragment,
    depending on the scheme.  */
@@ -1993,7 +1993,7 @@ uri_merge (const char *base, const char *link)
 
   return merge;
 }
-
+
 #define APPEND(p, s) do {                       \
   int len = strlen (s);                         \
   memcpy (p, s, len);                           \
@@ -2110,7 +2110,7 @@ url_string (const struct url *url, enum url_auth_mode auth_mode)
 
   return result;
 }
-
+
 /* Return true if scheme a is similar to scheme b.
 
    Schemes are similar if they are equal.  If SSL is supported, schemes
@@ -2128,7 +2128,7 @@ schemes_are_similar_p (enum url_scheme a, enum url_scheme b)
 #endif
   return false;
 }
-
+
 static int
 getchar_from_escaped_string (const char *str, char *c)
 {
@@ -2189,7 +2189,7 @@ are_urls_equal (const char *u1, const char *u2)
 
   return (*p == 0 && *q == 0 ? true : false);
 }
-
+
 #ifdef TESTING
 /* Debugging and testing support for path_simplify. */
 

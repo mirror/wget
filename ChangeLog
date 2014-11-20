@@ -1,3 +1,7 @@
+2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* NEWS: remove form feeds
+
 2014-11-20  Darshit Shah  <darnir@gmail.com>
 
 	* .gitignore: po/stamp-po should be ignored

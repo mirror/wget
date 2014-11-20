@@ -59,7 +59,7 @@ as that of the covered work.  */
 #include "cookies.h"
 #include "http.h"               /* for http_atotm */
 #include "c-strcase.h"
-
+
 
 /* Declarations of `struct cookie' and the most basic functions. */
 
@@ -159,7 +159,7 @@ delete_cookie (struct cookie *cookie)
   xfree_null (cookie->value);
   xfree (cookie);
 }
-
+
 /* Functions for storing cookies.
 
    All cookies can be reached beginning with jar->chains.  The key in
@@ -319,7 +319,7 @@ discard_matching_cookie (struct cookie_jar *jar, struct cookie *cookie)
       DEBUGP (("Discarded old cookie.\n"));
     }
 }
-
+
 /* Functions for parsing the `Set-Cookie' header, and creating new
    cookies from the wire.  */
 
@@ -458,7 +458,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
 
 #undef TOKEN_IS
 #undef TOKEN_NON_EMPTY
-
+
 /* Sanity checks.  These are important, otherwise it is possible for
    mailcious attackers to destroy important cookie information and/or
    violate your privacy.  */
@@ -694,7 +694,7 @@ check_path_match (const char *cookie_path, const char *path)
   s = PS_newstr;                                                \
 } while (0)
 
-
+
 /* Process the HTTP `Set-Cookie' header.  This results in storing the
    cookie or discarding a matching one, or ignoring it completely, all
    depending on the contents.  */
@@ -778,7 +778,7 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
   if (cookie)
     delete_cookie (cookie);
 }
-
+
 /* Support for sending out cookies in HTTP requests, based on
    previously stored cookies.  Entry point is
    `build_cookies_request'.  */
@@ -1109,7 +1109,7 @@ cookie_header (struct cookie_jar *jar, const char *host,
   assert (pos == result_size);
   return result;
 }
-
+
 /* Support for loading and saving cookies.  The format used for
    loading and saving should be the format of the `cookies.txt' file
    used by Netscape and Mozilla, at least the Unix versions.
@@ -1348,7 +1348,7 @@ cookie_jar_save (struct cookie_jar *jar, const char *file)
 
   DEBUGP (("Done saving cookies.\n"));
 }
-
+
 /* Clean up cookie-related data. */
 
 void
@@ -1371,7 +1371,7 @@ cookie_jar_delete (struct cookie_jar *jar)
   hash_table_destroy (jar->chains);
   xfree (jar);
 }
-
+
 /* Test cases.  Currently this is only tests parse_set_cookies.  To
    use, recompile Wget with -DTEST_COOKIES and call test_cookies()
    from main.  */

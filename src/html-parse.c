@@ -253,7 +253,7 @@ struct pool {
       (sizevar) = ga_newsize;                                                   \
     }                                                                           \
 } while (0)
-
+
 /* Test whether n+1-sized entity name fits in P.  We don't support
    IE-style non-terminated entities, e.g. "&ltfoo" -> "<foo".
    However, "&lt;foo" will work, as will "&lt!foo", "&lt", etc.  In
@@ -517,7 +517,7 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
         *p = c_tolower (*p);
     }
 }
-
+
 /* Originally we used to adhere to rfc 1866 here, and allowed only
    letters, digits, periods, and hyphens as names (of tags or
    attributes).  However, this broke too many pages which used
@@ -770,7 +770,7 @@ find_comment_end (const char *beg, const char *end)
       }
   return NULL;
 }
-
+
 /* Return true if the string containing of characters inside [b, e) is
    present in hash table HT.  */
 
@@ -1167,7 +1167,7 @@ map_html_tags (const char *text, int size,
 #undef ADVANCE
 #undef SKIP_WS
 #undef SKIP_NON_WS
-
+
 #ifdef STANDALONE
 static void
 test_mapper (struct taginfo *taginfo, void *arg)

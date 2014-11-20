@@ -585,7 +585,7 @@ hash_table_count (const struct hash_table *ht)
 {
   return ht->count;
 }
-
+
 /* Functions from this point onward are meant for convenience and
    don't strictly belong to this file.  However, this is as good a
    place for them as any.  */
@@ -740,7 +740,7 @@ cmp_pointer (const void *ptr1, const void *ptr2)
 {
   return ptr1 == ptr2;
 }
-
+
 #ifdef TEST
 
 #include <stdio.h>

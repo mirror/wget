@@ -379,7 +379,7 @@ append_url (const char *link_uri, int position, int size,
 
   return newel;
 }
-
+
 static void
 check_style_attr (struct taginfo *tag, struct map_context *ctx)
 {
@@ -702,7 +702,7 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
                   tag->contents_end - tag->contents_begin);
   }
 }
-
+
 /* Analyze HTML tags FILE and construct a list of URLs referenced from
    it.  It merges relative links in FILE with URL.  It is aware of
    <base href=...> and does the right thing.  */
