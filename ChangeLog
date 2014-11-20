@@ -1,5 +1,10 @@
 2014-11-20  Darshit Shah  <darnir@gmail.com>
 
+	* configure.ac: Use pkg-config for libpsl detection
+	config status for libpsl is reflected by $with_libpsl
+
+2014-11-20  Darshit Shah  <darnir@gmail.com>
+
 	* configure.ac: Use autoconf macros where available
 
 2014-11-20  Darshit Shah  <darnir@gmail.com>

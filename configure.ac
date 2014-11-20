@@ -75,14 +75,6 @@ AC_ARG_WITH([libpsl],
   [with_libpsl=yes]
 )
 
-AS_IF([test "x$with_libpsl" = xyes],
-  [AC_SEARCH_LIBS(psl_builtin, psl,
-    [ENABLE_PSL=yes; AC_DEFINE([HAVE_LIBPSL], [1], [PSL Support Enabled])],
-    [ENABLE_PSL=no; AC_MSG_WARN(*** libpsl not found. Falling back to Wget builtin cookie checking.)])],
-  [ENABLE_PSL=no]
-)
-
-
 dnl SSL: Configure SSL backend to use
 AC_ARG_WITH([ssl],
   [AS_HELP_STRING([--with-ssl={gnutls,openssl}], [specify SSL backend. GNU TLS is the default.])])
@@ -312,6 +304,19 @@ dnl Checks for libraries.
 dnl
 
 PKG_PROG_PKG_CONFIG
+
+AS_IF([test "x$with_libpsl" != xno], [
+  PKG_CHECK_MODULES([LIBPSL], libpsl, [
+    with_libpsl=yes
+    LIBS="$LIBPSL_LIBS $LIBS"
+    CFLAGS="$LIBPSL_CFLAGS $CFLAGS"
+    AC_DEFINE([HAVE_LIBPSL], [1], [PSL support enabled])
+  ], [
+    AC_SEARCH_LIBS(psl_builtin, psl,
+      [with_libpsl=yes; AC_DEFINE([HAVE_LIBPSL], [1], [PSL support enabled])],
+      [with_libpsl=no;  AC_MSG_WARN(*** libpsl was not found. Fallback to builtin cookie checking.)])
+  ])
+])
 
 AS_IF([test x"$with_zlib" != xno], [
   with_zlib=yes
@@ -708,7 +713,7 @@ AC_MSG_NOTICE([Summary of build options:
   Libs:              $LIBS
   SSL:               $with_ssl
   Zlib:              $with_zlib
-  PSL:               $ENABLE_PSL
+  PSL:               $with_libpsl
   Digest:            $ENABLE_DIGEST
   NTLM:              $ENABLE_NTLM
   OPIE:              $ENABLE_OPIE
