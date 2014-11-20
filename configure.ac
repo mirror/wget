@@ -65,68 +65,99 @@ dnl maintainers to compile without assertions.
 AC_HEADER_ASSERT
 
 dnl
-dnl Process features.
+dnl Process External Libraries
 dnl
 
-AC_ARG_WITH(libpsl,
-    AS_HELP_STRING([--without-libpsl],
-                   [disable support for libpsl cookie checking.]),
-    [],
-    [with_libpsl=yes])
+dnl Libpsl: Public Suffix List checking
+AC_ARG_WITH([libpsl],
+  [AS_HELP_STRING([--without-libpsl], [disable support for libpsl cookie checking.])],
+  [],
+  [with_libpsl=yes]
+)
 
 AS_IF([test "x$with_libpsl" = xyes],
-    [AC_SEARCH_LIBS(psl_builtin, psl,
-                    [ENABLE_PSL=yes; AC_DEFINE([HAVE_LIBPSL], [1], [PSL Support Enabled])],
-                    [ENABLE_PSL=no; AC_MSG_WARN(*** libpsl not found. Falling back to Wget builtin cookie checking.)])],
-    [ENABLE_PSL=no])
+  [AC_SEARCH_LIBS(psl_builtin, psl,
+    [ENABLE_PSL=yes; AC_DEFINE([HAVE_LIBPSL], [1], [PSL Support Enabled])],
+    [ENABLE_PSL=no; AC_MSG_WARN(*** libpsl not found. Falling back to Wget builtin cookie checking.)])],
+  [ENABLE_PSL=no]
+)
 
-AC_ARG_WITH(ssl,
-[[  --without-ssl           disable SSL autodetection
-  --with-ssl={gnutls,openssl} specify the SSL backend.  GNU TLS is the default.]])
 
-AC_ARG_WITH(zlib,
-[[  --without-zlib          disable zlib ]])
+dnl SSL: Configure SSL backend to use
+AC_ARG_WITH([ssl],
+  [AS_HELP_STRING([--with-ssl={gnutls,openssl}], [specify SSL backend. GNU TLS is the default.])])
 
-AC_ARG_ENABLE(opie,
-[  --disable-opie          disable support for opie or s/key FTP login],
-ENABLE_OPIE=$enableval, ENABLE_OPIE=yes)
-test x"${ENABLE_OPIE}" = xyes && AC_DEFINE([ENABLE_OPIE], 1,
-   [Define if you want the Opie support for FTP compiled in.])
 
-AC_ARG_ENABLE(digest,
-[  --disable-digest        disable support for HTTP digest authorization],
-ENABLE_DIGEST=$enableval, ENABLE_DIGEST=yes)
-test x"${ENABLE_DIGEST}" = xyes && AC_DEFINE([ENABLE_DIGEST], 1,
-   [Define if you want the HTTP Digest Authorization compiled in.])
+dnl Zlib: Configure use iof zlib for compression
+AC_ARG_WITH([zlib],
+  [AS_HELP_STRING([--without-zlib], [disable zlib.])])
 
-AC_ARG_ENABLE(ntlm,
-[  --disable-ntlm          disable support for NTLM authorization],
-[ENABLE_NTLM=$enableval], [ENABLE_NTLM=auto])
-
-AC_ARG_ENABLE(debug,
-[  --disable-debug         disable support for debugging output],
-ENABLE_DEBUG=$enableval, ENABLE_DEBUG=yes)
-test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE([ENABLE_DEBUG], 1,
-   [Define if you want the debug output support compiled in.])
 
 dnl
-dnl Check for valgrind
+dnl Process features
 dnl
+
+dnl Opie: Support for opie s/key FTP logins
+AC_ARG_ENABLE([opie],
+  [AS_HELP_STRING([--disable-opie], [disable support for opie or s/key FTP login])],
+  [ENABLE_OPIE=$enableval],
+  [ENABLE_OPIE=yes])
+
+AS_IF([test "x$ENABLE_OPIE" = xyes],
+  [AC_DEFINE([ENABLE_OPIE], [1], [Define if you want Opie support for FTP compiled in.])],
+  []
+)
+
+
+dnl Digest: Support for HTTP Digest Authentication
+AC_ARG_ENABLE([digest],
+  [AS_HELP_STRING([--disable-digest], [disable support for HTTP digest authorization])],
+  [ENABLE_DIGEST=$enableval],
+  [ENABLE_DIGEST=yes])
+
+AS_IF([test "x$ENABLE_DIGEST" = xyes],
+  [AC_DEFINE([ENABLE_DIGEST], [1], [Define if you want the HTTP Digest Authorization compiled in.])],
+  []
+)
+
+
+dnl NTLM: Support for HTTP NTLM Authentication
+AC_ARG_ENABLE([ntlm],
+  [AS_HELP_STRING([--disable-ntlm], [disable support for NTLM authorization])],
+  [ENABLE_NTLM=$enableval],
+  [ENABLE_NTLM=auto]
+)
+
+
+dnl Debug: Support for printing debugging output
+AC_ARG_ENABLE([debug],
+  [AS_HELP_STRING([--disable-debug], [disable support for debugging output])],
+  [ENABLE_DEBUG=$enableval],
+  [ENABLE_DEBUG=yes])
+
+AS_IF([test "x$ENABLE_DEBUG" = xyes],
+  [AC_DEFINE([ENABLE_DEBUG], [1], [Define if you want the debug output support compiled in.])],
+  []
+)
+
+dnl Valgrind-tests: Should test suite be run under valgrind?
 AC_ARG_ENABLE(valgrind-tests,
-  AS_HELP_STRING([--enable-valgrind-tests], [enable using Valgrind for tests]),
-  [ac_enable_valgrind=$enableval], [ac_enable_valgrind=no])
-if test "${ac_enable_valgrind}" != "no" ; then
+  [AS_HELP_STRING([--enable-valgrind-tests], [enable using Valgrind for tests])],
+  [ENABLE_VALGRIND=$enableval],
+  [ENABLE_VALGRIND=no])
+
+AS_IF([test "x$ENABLE_VALGRIND" != xno], [
   AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
-  if test "$HAVE_VALGRIND" = "yes" ; then
+  AS_IF([test "x$HAVE_VALGRIND" = xyes], [
     VALGRIND_TESTS="1"
     AC_SUBST(VALGRIND_TESTS)
     VALGRIND_INFO="Test suite will be run under Valgrind"
-  else
+  ], [
     VALGRIND_INFO="Valgrind not found"
-  fi
-else
+  ])
+], [
   VALGRIND_INFO="Valgrind testing not enabled"
-fi
+])
 
 dnl
 dnl Find the compiler

@@ -1,5 +1,9 @@
 2014-11-20  Darshit Shah  <darnir@gmail.com>
 
+	* configure.ac: Use autoconf macros where available
+
+2014-11-20  Darshit Shah  <darnir@gmail.com>
+
 	* configure.ac: Add the -Wextra flag when no CFLAGS are set
 
 2014-11-19  Tim Ruehsen <tim.ruehsen@gmx.de>
