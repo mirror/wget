@@ -1,3 +1,7 @@
+2014-11-20  Gisle Vanem  <gvanem@yahoo.no>
+
+	* http.c (parse_content_disposition): Fix C89 issue found by MSVC 16
+
 2014-11-19  Darshit Shah  <darnir@gmail.com>
 
 	* progress.c (create_image): Do not scroll filename if amount of scrolling

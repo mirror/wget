@@ -1191,8 +1191,9 @@ static bool
 parse_content_disposition (const char *hdr, char **filename)
 {
   param_token name, value;
-  *filename = NULL;
   bool is_url_encoded = false;
+
+  *filename = NULL;
   for ( ; extract_param (&hdr, &name, &value, ';', &is_url_encoded);
         is_url_encoded = false)
     {
