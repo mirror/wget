@@ -1,5 +1,9 @@
 2014-11-20  Darshit Shah  <darnir@gmail.com>
 
+	* .gitignore: po/stamp-po should be ignored
+
+2014-11-20  Darshit Shah  <darnir@gmail.com>
+
 	* configure.ac: Use pkg-config for libpsl detection
 	config status for libpsl is reflected by $with_libpsl
 
