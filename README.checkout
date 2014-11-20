@@ -85,11 +85,19 @@ Compiling From Repository Sources
        configuring the package:
  $  ./bootstrap
     3. Configure the package and compile it:
- $  ./configure [some_parameters]
+ $  ./configure --enable-assert [some_parameters]
  $  make
     4. Hack, compile, test, hack, compile, test...
  $  src/wget --version
  GNU Wget 1.12-devel (9cb2563197bc)
+
+ All developers are requested to enable the assertions on their development
+ builds to ensure a stable codebase. Assertions are added to state certain
+ assumptions about the code and its data which all developers should be mindful
+ of. To enable assertions, run the configure command with the --enable-assert
+ option, like this:
+
+ $ ./configure --enable-assert [other configure options]
 
  Copyright © 2008,2010 Free Software Foundation, Inc.
  License GPLv3+: GNU GPL version 3 or later

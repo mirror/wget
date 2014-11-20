@@ -57,12 +57,6 @@ AC_CANONICAL_HOST
 AC_DEFINE_UNQUOTED([OS_TYPE], "$host_os",
                    [Define to be the name of the operating system.])
 
-dnl
-dnl Add option to disable Assertions
-dnl
-dnl Adds a --disable-assert option to ./configure which can be used by distro
-dnl maintainers to compile without assertions.
-AC_HEADER_ASSERT
 
 dnl
 dnl Process External Libraries
@@ -147,6 +141,17 @@ AS_IF([test "x$ENABLE_VALGRIND" != xno], [
 ], [
   VALGRIND_INFO="Valgrind testing not enabled"
 ])
+
+AC_ARG_ENABLE(assert,
+  [AS_HELP_STRING([--enable-assert], [enable assertions in code base])],
+  [ENABLE_ASSERTION=$enableval],
+  [ENABLE_ASSERTION=no]
+)
+
+AS_IF([test "x$ENABLE_ASSERTION" != xyes], [
+  CFLAGS="-DNDEBUG $CFLAGS"
+  ],
+  [])
 
 dnl
 dnl Find the compiler
@@ -717,5 +722,6 @@ AC_MSG_NOTICE([Summary of build options:
   NTLM:              $ENABLE_NTLM
   OPIE:              $ENABLE_OPIE
   Debugging:         $ENABLE_DEBUG
+  Assertions:        $ENABLE_ASSERTION
   Valgrind:          $VALGRIND_INFO
 ])

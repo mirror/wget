@@ -1,3 +1,10 @@
+2014-11-20  Darshit Shah  <darnir@gmail.com>
+
+	* configure.ac: Change option to --enable-assert. Assertions are disabled by
+	default.
+	* NEWS: Edit to reflect default option.
+	* README.checkout: Document --enable-assert for developers
+
 2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* configure.ac: Fix libpsl<0.6.0 detection

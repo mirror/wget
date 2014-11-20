@@ -9,7 +9,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
-** Add --disable-assert configure option. Recommended for distro maintainers.
+** Add --enable-assert configure option.
 
 ** Use pkg-config to check for libraries presence.
 
