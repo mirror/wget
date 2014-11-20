@@ -2,7 +2,7 @@ digest          defined ENABLE_DIGEST
 https           defined HAVE_SSL
 ipv6            defined ENABLE_IPV6
 iri             defined ENABLE_IRI
-large-file      SIZEOF_OFF_T >= 8
+large-file      SIZEOF_OFF_T >= 8 || defined WINDOWS
 
 nls             defined ENABLE_NLS
 ntlm            defined ENABLE_NTLM
