@@ -592,7 +592,7 @@ cache_query (const char *host)
   al = hash_table_get (host_name_addresses_map, host);
   if (al)
     {
-      DEBUGP (("Found %s in host_name_addresses_map (%p)\n", host, al));
+      DEBUGP (("Found %s in host_name_addresses_map (%p)\n", host, (void *) al));
       ++al->refcount;
       return al;
     }

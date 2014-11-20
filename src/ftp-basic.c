@@ -963,16 +963,18 @@ ftp_list (int csock, const char *file, bool avoid_list_a, bool avoid_list,
   bool ok = false;
   size_t i = 0;
 
-  *list_a_used = false;
-
   /* 2013-10-12 Andrea Urbani (matfanjol)
      For more information about LIST and "LIST -a" please look at ftp.c,
      function getftp, text "__LIST_A_EXPLANATION__".
 
      If somebody changes the following commands, please, checks also the
      later "i" variable.  */
-  const char *list_commands[] = { "LIST -a",
-                                  "LIST" };
+  static const char *list_commands[] = {
+    "LIST -a",
+    "LIST"
+  };
+
+  *list_a_used = false;
 
   if (avoid_list_a)
     {

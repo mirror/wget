@@ -378,8 +378,10 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
 
       if (ret > 0)
         {
+          int write_res;
+
           sum_read += ret;
-          int write_res = write_data (out, out2, dlbuf, ret, &skip, &sum_written);
+          write_res = write_data (out, out2, dlbuf, ret, &skip, &sum_written);
           if (write_res < 0)
             {
               ret = (write_res == -3) ? -3 : -2;
@@ -1056,7 +1058,7 @@ retrieve_from_file (const char *file, bool html, int *count)
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {
-      char *filename = NULL, *new_file = NULL;
+      char *filename = NULL, *new_file = NULL, *proxy;
       int dt;
       struct iri *tmpiri = iri_dup (iri);
       struct url *parsed_url = NULL;
@@ -1072,7 +1074,7 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       parsed_url = url_parse (cur_url->url->url, NULL, tmpiri, true);
 
-      char *proxy = getproxy (cur_url->url);
+      proxy = getproxy (cur_url->url);
       if ((opt.recursive || opt.page_requisites)
           && (cur_url->url->scheme != SCHEME_FTP || proxy))
         {
@@ -1285,9 +1287,11 @@ bool
 url_uses_proxy (struct url * u)
 {
   bool ret;
+  char *proxy;
+
   if (!u)
     return false;
-  char *proxy = getproxy (u);
+  proxy = getproxy (u);
   ret = proxy != NULL;
   free(proxy);
   return ret;

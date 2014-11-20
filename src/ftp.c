@@ -2221,9 +2221,9 @@ has_insecure_name_p (const char *s)
 static bool
 is_invalid_entry (struct fileinfo *f)
 {
-  struct fileinfo *cur;
-  cur = f;
+  struct fileinfo *cur = f;
   char *f_name = f->name;
+
   /* If the node we're currently checking has a duplicate later, we eliminate
    * the current node and leave the next one intact. */
   while (cur->next)

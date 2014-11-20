@@ -1010,17 +1010,20 @@ char *program_argstring; /* Needed by wget_warc.c. */
 int
 main (int argc, char **argv)
 {
-  char **url, **t;
+  char **url, **t, *p;
   int i, ret, longindex;
   int nurl;
+  int retconf;
+  int argstring_length;
+  bool use_userconfig = false;
+  bool noconfig = false;
   bool append_to_log = false;
-
-  total_downloaded_bytes = 0;
-
-  program_name = argv[0];
 
   struct ptimer *timer = ptimer_new ();
   double start_time = ptimer_measure (timer);
+
+  total_downloaded_bytes = 0;
+  program_name = argv[0];
 
   i18n_initialize ();
 
@@ -1042,10 +1045,9 @@ main (int argc, char **argv)
 #endif
 
   /* Construct the arguments string. */
-  int argstring_length = 1;
-  for (i = 1; i < argc; i++)
+  for (argstring_length = 1, i = 1; i < argc; i++)
     argstring_length += strlen (argv[i]) + 2 + 1;
-  char *p = program_argstring = malloc (argstring_length * sizeof (char));
+  p = program_argstring = malloc (argstring_length * sizeof (char));
   if (p == NULL)
     {
       fprintf (stderr, _("Memory allocation problem\n"));
@@ -1053,8 +1055,10 @@ main (int argc, char **argv)
     }
   for (i = 1; i < argc; i++)
     {
+      int arglen;
+
       *p++ = '"';
-      int arglen = strlen (argv[i]);
+      arglen = strlen (argv[i]);
       memcpy (p, argv[i], arglen);
       p += arglen;
       *p++ = '"';
@@ -1070,9 +1074,6 @@ main (int argc, char **argv)
   /* This separate getopt_long is needed to find the user config file
      option ("--config") and parse it before the other user options. */
   longindex = -1;
-  int retconf;
-  bool use_userconfig = false;
-  bool noconfig = false;
 
   while ((retconf = getopt_long (argc, argv,
                                 short_options, long_options, &longindex)) != -1)
@@ -1731,10 +1732,11 @@ outputting to a regular file.\n"));
       total_downloaded_bytes != 0)
     {
       double end_time = ptimer_measure (timer);
-      ptimer_destroy (timer);
-
       char *wall_time = xstrdup (secs_to_human_time (end_time - start_time));
       char *download_time = xstrdup (secs_to_human_time (total_download_time));
+
+      ptimer_destroy (timer);
+
       logprintf (LOG_NOTQUIET,
                  _("FINISHED --%s--\nTotal wall clock time: %s\n"
                    "Downloaded: %d files, %s in %s (%s)\n"),

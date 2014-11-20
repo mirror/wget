@@ -1532,6 +1532,7 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
   int warc_payload_offset = 0;
   FILE *warc_tmp = NULL;
   int warcerr = 0;
+  int flags = 0;
 
   if (opt.warc_filename != NULL)
     {
@@ -1568,7 +1569,6 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
     }
 
   /* Read the response body.  */
-  int flags = 0;
   if (contlen != -1)
     /* If content-length is present, read that much; otherwise, read
        until EOF.  The HTTP spec doesn't require the server to
@@ -2147,11 +2147,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           write_error = fd_write (sock, opt.body_data, body_data_size, -1);
           if (write_error >= 0 && warc_tmp != NULL)
             {
+              int warc_tmp_written;
+
               /* Remember end of headers / start of payload. */
               warc_payload_offset = ftello (warc_tmp);
 
               /* Write a copy of the data to the WARC record. */
-              int warc_tmp_written = fwrite (opt.body_data, 1, body_data_size, warc_tmp);
+              warc_tmp_written = fwrite (opt.body_data, 1, body_data_size, warc_tmp);
               if (warc_tmp_written != body_data_size)
                 write_error = -2;
             }
@@ -2334,6 +2336,7 @@ read_header:
   if (statcode == HTTP_STATUS_UNAUTHORIZED)
     {
       /* Authorization is required.  */
+      uerr_t auth_err = RETROK;
 
       /* Normally we are not interested in the response body.
          But if we are writing a WARC file we are: we like to keep everyting.  */
@@ -2371,7 +2374,6 @@ read_header:
         }
 
       pconn.authorized = false;
-      uerr_t auth_err = RETROK;
       if (!auth_finished && (user && passwd))
         {
           /* IIS sends multiple copies of WWW-Authenticate, one with
@@ -3864,7 +3866,7 @@ digest_authentication_encode (const char *au, const char *user,
         snprintf (cnonce, sizeof (cnonce), "%08x", random_number(INT_MAX));
 
         md5_init_ctx (&ctx);
-        // md5_process_bytes (hash, MD5_DIGEST_SIZE, &ctx);
+        /* md5_process_bytes (hash, MD5_DIGEST_SIZE, &ctx); */
         md5_process_bytes (a1buf, MD5_DIGEST_SIZE * 2, &ctx);
         md5_process_bytes ((unsigned char *)":", 1, &ctx);
         md5_process_bytes ((unsigned char *)nonce, strlen (nonce), &ctx);

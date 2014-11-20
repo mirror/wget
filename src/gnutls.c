@@ -122,9 +122,10 @@ ssl_init (void)
           while ((dent = readdir (dir)) != NULL)
             {
               struct stat st;
-              char ca_file[dirlen + strlen(dent->d_name) + 2];
+              size_t ca_file_length = dirlen + strlen(dent->d_name) + 2;
+              char *ca_file = alloca(ca_file_length);
 
-              snprintf (ca_file, sizeof(ca_file), "%s/%s", ca_directory, dent->d_name);
+              snprintf (ca_file, ca_file_length, "%s/%s", ca_directory, dent->d_name);
               if (stat (ca_file, &st) != 0)
                 continue;
 
@@ -432,8 +433,9 @@ ssl_connect_wget (int fd, const char *hostname)
   struct wgnutls_transport_context *ctx;
   gnutls_session_t session;
   int err,alert;
-  gnutls_init (&session, GNUTLS_CLIENT);
   const char *str;
+
+  gnutls_init (&session, GNUTLS_CLIENT);
 
   /* We set the server name but only if it's not an IP address. */
   if (! is_valid_ip_address (hostname))

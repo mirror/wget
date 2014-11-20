@@ -518,12 +518,12 @@ check_domain_match (const char *cookie_domain, const char *host)
 {
 
 #ifdef HAVE_LIBPSL
-  DEBUGP (("cdm: 1"));
   char *cookie_domain_lower = NULL;
   char *host_lower = NULL;
   const psl_ctx_t *psl;
   int is_acceptable;
 
+  DEBUGP (("cdm: 1"));
   if (!(psl = psl_builtin()))
     {
       DEBUGP (("\nlibpsl not built with a public suffix list. "

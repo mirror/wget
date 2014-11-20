@@ -788,6 +788,7 @@ get_urls_file (const char *file)
     {
       int up_error_code;
       char *url_text;
+      char *new_url;
       struct urlpos *entry;
       struct url *url;
 
@@ -822,7 +823,7 @@ get_urls_file (const char *file)
           url_text = merged;
         }
 
-      char *new_url = rewrite_shorthand_url (url_text);
+      new_url = rewrite_shorthand_url (url_text);
       if (new_url)
         {
           xfree (url_text);

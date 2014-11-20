@@ -169,6 +169,8 @@ static int ssl_true_initialized = 0;
 bool
 ssl_init (void)
 {
+  SSL_METHOD const *meth;
+
 #if OPENSSL_VERSION_NUMBER >= 0x00907000
   if (ssl_true_initialized == 0)
     {
@@ -176,8 +178,6 @@ ssl_init (void)
       ssl_true_initialized = 1;
     }
 #endif
-
-  SSL_METHOD const *meth;
 
   if (ssl_ctx)
     /* The SSL has already been initialized. */

@@ -946,6 +946,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   /* The difference between the number of bytes used,
      and the number of columns used. */
   int bytes_cols_diff = 0;
+  int cols_diff;
+  const char *down_size;
 
   if (progress_size < 5)
     progress_size = 0;
@@ -963,6 +965,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       int offset_cols;
       int bytes_in_filename, offset_bytes, col;
       int *cols_ret = &col;
+      int padding;
 
       if (((orig_filename_cols > MAX_FILENAME_COLS) && !opt.noscroll) && !done)
         offset_cols = ((int) bp->tick) % (orig_filename_cols - MAX_FILENAME_COLS + 1);
@@ -972,7 +975,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       bytes_in_filename = cols_to_bytes (bp->f_download + offset_bytes, MAX_FILENAME_COLS, cols_ret);
       memcpy (p, bp->f_download + offset_bytes, bytes_in_filename);
       p += bytes_in_filename;
-      int padding = MAX_FILENAME_COLS - *cols_ret;
+      padding = MAX_FILENAME_COLS - *cols_ret;
       for (;padding;padding--)
           *p++ = ' ';
       *p++ = ' ';
@@ -1055,8 +1058,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
  ++bp->tick;
 
   /* " 234.56M" */
-  const char * down_size = human_readable (size, 1000, 2);
-  int cols_diff = 7 - count_cols (down_size);
+  down_size = human_readable (size, 1000, 2);
+  cols_diff = 7 - count_cols (down_size);
   while (cols_diff > 0)
   {
     *p++=' ';
