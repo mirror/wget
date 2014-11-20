@@ -43,6 +43,7 @@ as that of the covered work.  */
 #include "host.h"
 #include "ftp.h"
 #include "retr.h"
+#include "c-strcase.h"
 
 
 /* Get the response of FTP server and allocate enough room to handle
@@ -190,7 +191,7 @@ ftp_login (int csock, const char *acc, const char *pass)
     for (i = 0; i < countof (skey_head); i++)
       {
         int l = strlen (skey_head[i]);
-        if (0 == strncasecmp (skey_head[i], respline, l))
+        if (0 == c_strncasecmp (skey_head[i], respline, l))
           {
             seed = respline + l;
             break;
@@ -1068,25 +1069,25 @@ ftp_syst (int csock, enum stype *server_type, enum ustype *unix_type)
 
   if (request == NULL)
     *server_type = ST_OTHER;
-  else if (!strcasecmp (request, "VMS"))
+  else if (!c_strcasecmp (request, "VMS"))
     *server_type = ST_VMS;
-  else if (!strcasecmp (request, "UNIX"))
+  else if (!c_strcasecmp (request, "UNIX"))
     {
       *server_type = ST_UNIX;
       /* 2013-10-17 Andrea Urbani (matfanjol)
          I check more in depth the system type */
-      if (!strncasecmp (ftp_last_respline, "215 UNIX Type: L8", 17))
+      if (!c_strncasecmp (ftp_last_respline, "215 UNIX Type: L8", 17))
         *unix_type = UST_TYPE_L8;
-      else if (!strncasecmp (ftp_last_respline,
+      else if (!c_strncasecmp (ftp_last_respline,
                              "215 UNIX MultiNet Unix Emulation V5.3(93)", 41))
         *unix_type = UST_MULTINET;
     }
-  else if (!strcasecmp (request, "WINDOWS_NT")
-           || !strcasecmp (request, "WINDOWS2000"))
+  else if (!c_strcasecmp (request, "WINDOWS_NT")
+           || !c_strcasecmp (request, "WINDOWS2000"))
     *server_type = ST_WINNT;
-  else if (!strcasecmp (request, "MACOS"))
+  else if (!c_strcasecmp (request, "MACOS"))
     *server_type = ST_MACOS;
-  else if (!strcasecmp (request, "OS/400"))
+  else if (!c_strcasecmp (request, "OS/400"))
     *server_type = ST_OS400;
   else
     *server_type = ST_OTHER;

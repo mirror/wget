@@ -58,7 +58,9 @@ as that of the covered work.  */
 #include "hash.h"
 #include "cookies.h"
 #include "http.h"               /* for http_atotm */
+#include "c-strcase.h"
 
+
 /* Declarations of `struct cookie' and the most basic functions. */
 
 /* Cookie jar serves as cookie storage and a means of retrieving

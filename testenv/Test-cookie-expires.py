@@ -30,7 +30,8 @@ File2_rules = {
 }
 File3_rules = {
     "SendHeader"        : {
-        "Set-Cookie"    : "sess-id=0213; path=/; Expires=Sun, 06 Nov 2001 12:32:43 GMT"
+        # use upper case 'I' to provoke Wget failure with turkish locale
+        "Set-Cookie"    : "sess-id=0213; path=/; ExPIRes=Sun, 06 Nov 2001 12:32:43 GMT"
     },
     "ExpectHeader"      : {
         "Cookie"        : "new-sess=N; sess-id=0213"

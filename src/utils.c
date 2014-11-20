@@ -99,6 +99,7 @@ as that of the covered work.  */
 #endif
 
 #include "exits.h"
+#include "c-strcase.h"
 
 static void _Noreturn
 memfatal (const char *context, long attempted_size)
@@ -1121,11 +1122,11 @@ has_html_suffix_p (const char *fname)
 
   if ((suf = suffix (fname)) == NULL)
     return false;
-  if (!strcasecmp (suf, "html"))
+  if (!c_strcasecmp (suf, "html"))
     return true;
-  if (!strcasecmp (suf, "htm"))
+  if (!c_strcasecmp (suf, "htm"))
     return true;
-  if (suf[0] && !strcasecmp (suf + 1, "html"))
+  if (suf[0] && !c_strcasecmp (suf + 1, "html"))
     return true;
   return false;
 }

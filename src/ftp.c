@@ -50,6 +50,7 @@ as that of the covered work.  */
 #include "convert.h"            /* for downloaded_file */
 #include "recur.h"              /* for INFINITE_RECURSION */
 #include "warc.h"
+#include "c-strcase.h"
 
 #ifdef __VMS
 # include "vms.h"
@@ -102,7 +103,7 @@ ftp_expected_bytes (const char *s)
         return 0;
       if (c_tolower (*s) != 'b')
         continue;
-      if (strncasecmp (s, "byte", 4))
+      if (c_strncasecmp (s, "byte", 4))
         continue;
       else
         break;

@@ -81,6 +81,7 @@ as that of the covered work.  */
 #include "url.h"
 #include "retr.h"
 #include "res.h"
+#include "c-strcase.h"
 
 #ifdef TESTING
 #include "test.h"

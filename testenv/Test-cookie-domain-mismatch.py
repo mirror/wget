@@ -14,7 +14,8 @@ File2 = "Anyone for chocochip cookies?"
 
 File1_rules = {
     "SendHeader"        : {
-        "Set-Cookie"    : "sess-id=0213; path=/; domain=.example.com"
+        # use upper case 'I' to provoke Wget failure with turkish locale
+        "Set-Cookie"    : "sess-id=0213; path=/; DoMAIn=.example.com"
     }
 }
 File2_rules = {

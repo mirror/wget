@@ -70,6 +70,7 @@ as that of the covered work.  */
 #include "warc.h"               /* for warc_close */
 #include "spider.h"             /* for spider_cleanup */
 #include "html-url.h"           /* for cleanup_html_url */
+#include "c-strcase.h"
 
 #ifdef TESTING
 #include "test.h"
@@ -320,7 +321,7 @@ command_by_name (const char *cmdname)
   while (lo <= hi)
     {
       int mid = (lo + hi) >> 1;
-      int cmp = strcasecmp (cmdname, commands[mid].name);
+      int cmp = c_strcasecmp (cmdname, commands[mid].name);
       if (cmp < 0)
         hi = mid - 1;
       else if (cmp > 0)
@@ -966,7 +967,7 @@ cmd_number (const char *com, const char *val, void *place)
 static bool
 cmd_number_inf (const char *com, const char *val, void *place)
 {
-  if (!strcasecmp (val, "inf"))
+  if (!c_strcasecmp (val, "inf"))
     {
       *(int *) place = 0;
       return true;
@@ -1518,7 +1519,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
 static bool
 cmd_spec_report_speed (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
-  opt.report_bps = strcasecmp (val, "bits") == 0;
+  opt.report_bps = c_strcasecmp (val, "bits") == 0;
   if (!opt.report_bps)
     fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
   return opt.report_bps;
@@ -1723,7 +1724,7 @@ decode_string (const char *val, const struct decode_item *items, int itemcount,
 {
   int i;
   for (i = 0; i < itemcount; i++)
-    if (0 == strcasecmp (val, items[i].name))
+    if (0 == c_strcasecmp (val, items[i].name))
       {
         *place = items[i].code;
         return true;
@@ -1828,7 +1829,7 @@ test_commands_sorted(void)
 
   for (i = 1; i < countof(commands); ++i)
     {
-      if (strcasecmp (commands[i - 1].name, commands[i].name) > 0)
+      if (c_strcasecmp (commands[i - 1].name, commands[i].name) > 0)
         {
           mu_assert ("FAILED", false);
           break;

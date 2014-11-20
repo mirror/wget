@@ -266,7 +266,7 @@ typedef double SUM_SIZE_INT;
 /* The same as above, except the comparison is case-insensitive. */
 #define BOUNDED_EQUAL_NO_CASE(beg, end, string_literal)         \
   ((end) - (beg) == sizeof (string_literal) - 1                 \
-   && !strncasecmp (beg, string_literal, sizeof (string_literal) - 1))
+   && !c_strncasecmp (beg, string_literal, sizeof (string_literal) - 1))
 
 /* Like ptr=strdup(str), but allocates the space for PTR on the stack.
    This cannot be an expression because this is not portable:

@@ -1,3 +1,19 @@
+2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* cookies.c, ftp-basic.c, ftp-ls.c, ftp.c, html-url.c,
+	http.c, init.c, iri.c, main.c, progress.c, res.c, url.c,
+	utils.c, wget.h: Replaced strcasecmp and strncasecmp by
+	c_strcasecmp and c_strncasecmp where only ASCII string
+	comparison is wanted (instead of locale dependent).
+
+	Fixes possible issues with Wget running in a turkish locale.
+
+2014-11-20  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* cookies.c, ftp-basic.c, ftp.c, gnutls.c, host.c,
+	html-url.c, http.c, main.c, progress.c, retr.c, warc.c:
+	Trivial fixes for C89 compliancy.
+
 2014-11-19  Darshit Shah  <darnir@gmail.com>
 
 	* main.c (format_and_print_line): Fix potential memory leak

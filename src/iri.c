@@ -39,6 +39,7 @@ as that of the covered work.  */
 
 #include "utils.h"
 #include "url.h"
+#include "c-strcase.h"
 
 /* RFC3987 section 3.1 mandates STD3 ASCII RULES */
 #define IDNA_FLAGS  IDNA_USE_STD3_ASCII_RULES
@@ -206,7 +207,7 @@ locale_to_utf8 (const char *str)
       opt.locale = find_locale ();
     }
 
-  if (!opt.locale || !strcasecmp (opt.locale, "utf-8"))
+  if (!opt.locale || !c_strcasecmp (opt.locale, "utf-8"))
     return str;
 
   if (do_conversion ("UTF-8", opt.locale, (char *) str, strlen ((char *) str), &new))
@@ -276,7 +277,7 @@ remote_to_utf8 (struct iri *iri, const char *str, const char **new)
   /* When `i->uri_encoding' == "UTF-8" there is nothing to convert.  But we must
      test for non-ASCII symbols for correct hostname processing in `idn_encode'
      function. */
-  if (!strcasecmp (iri->uri_encoding, "UTF-8"))
+  if (!c_strcasecmp (iri->uri_encoding, "UTF-8"))
     {
       const char *p = str;
       for (p = str; *p; p++)
@@ -344,7 +345,7 @@ set_uri_encoding (struct iri *i, char *charset, bool force)
     return;
   if (i->uri_encoding)
     {
-      if (charset && !strcasecmp (i->uri_encoding, charset))
+      if (charset && !c_strcasecmp (i->uri_encoding, charset))
         return;
       xfree (i->uri_encoding);
     }
@@ -361,7 +362,7 @@ set_content_encoding (struct iri *i, char *charset)
     return;
   if (i->content_encoding)
     {
-      if (charset && !strcasecmp (i->content_encoding, charset))
+      if (charset && !c_strcasecmp (i->content_encoding, charset))
         return;
       xfree (i->content_encoding);
     }

@@ -42,6 +42,7 @@ as that of the covered work.  */
 #include "progress.h"
 #include "utils.h"
 #include "retr.h"
+#include "c-strcase.h"
 
 struct progress_implementation {
   const char *name;
@@ -427,7 +428,7 @@ dot_set_params (char *params)
     return;
 
   /* We use this to set the retrieval style.  */
-  if (!strcasecmp (params, "default"))
+  if (!c_strcasecmp (params, "default"))
     {
       /* Default style: 1K dots, 10 dots in a cluster, 50 dots in a
          line.  */
@@ -435,7 +436,7 @@ dot_set_params (char *params)
       opt.dot_spacing = 10;
       opt.dots_in_line = 50;
     }
-  else if (!strcasecmp (params, "binary"))
+  else if (!c_strcasecmp (params, "binary"))
     {
       /* "Binary" retrieval: 8K dots, 16 dots in a cluster, 48 dots
          (384K) in a line.  */
@@ -443,7 +444,7 @@ dot_set_params (char *params)
       opt.dot_spacing = 16;
       opt.dots_in_line = 48;
     }
-  else if (!strcasecmp (params, "mega"))
+  else if (!c_strcasecmp (params, "mega"))
     {
       /* "Mega" retrieval, for retrieving very long files; each dot is
          64K, 8 dots in a cluster, 6 clusters (3M) in a line.  */
@@ -451,7 +452,7 @@ dot_set_params (char *params)
       opt.dot_spacing = 8;
       opt.dots_in_line = 48;
     }
-  else if (!strcasecmp (params, "giga"))
+  else if (!c_strcasecmp (params, "giga"))
     {
       /* "Giga" retrieval, for retrieving very very *very* long files;
          each dot is 1M, 8 dots in a cluster, 4 clusters (32M) in a

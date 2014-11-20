@@ -244,7 +244,7 @@ request_set_header (struct request *req, const char *name, const char *value,
   for (i = 0; i < req->hcount; i++)
     {
       hdr = &req->headers[i];
-      if (0 == strcasecmp (name, hdr->name))
+      if (0 == c_strcasecmp (name, hdr->name))
         {
           /* Replace existing header. */
           release_header (hdr);
@@ -297,7 +297,7 @@ request_remove_header (struct request *req, const char *name)
   for (i = 0; i < req->hcount; i++)
     {
       struct request_header *hdr = &req->headers[i];
-      if (0 == strcasecmp (name, hdr->name))
+      if (0 == c_strcasecmp (name, hdr->name))
         {
           release_header (hdr);
           /* Move the remaining headers by one. */
@@ -682,7 +682,7 @@ resp_header_locate (const struct response *resp, const char *name, int start,
       const char *e = headers[i + 1];
       if (e - b > name_len
           && b[name_len] == ':'
-          && 0 == strncasecmp (b, name, name_len))
+          && 0 == c_strncasecmp (b, name, name_len))
         {
           b += name_len + 1;
           while (b < e && c_isspace (*b))
@@ -1877,9 +1877,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                               xstrdup (number_to_static_string (body_data_size)),
                               rel_value);
         }
-      else if (strcasecmp (opt.method, "post") == 0
-               || strcasecmp (opt.method, "put") == 0
-               || strcasecmp (opt.method, "patch") == 0)
+      else if (c_strcasecmp (opt.method, "post") == 0
+               || c_strcasecmp (opt.method, "put") == 0
+               || c_strcasecmp (opt.method, "patch") == 0)
         request_set_header (req, "Content-Length", "0", rel_none);
     }
 
@@ -2300,14 +2300,14 @@ read_header:
     {
       if (resp_header_copy (resp, "Connection", hdrval, sizeof (hdrval)))
         {
-          if (0 == strcasecmp (hdrval, "Close"))
+          if (0 == c_strcasecmp (hdrval, "Close"))
             keep_alive = false;
         }
     }
 
   chunked_transfer_encoding = false;
   if (resp_header_copy (resp, "Transfer-Encoding", hdrval, sizeof (hdrval))
-      && 0 == strcasecmp (hdrval, "chunked"))
+      && 0 == c_strcasecmp (hdrval, "chunked"))
     chunked_transfer_encoding = true;
 
   /* Handle (possibly multiple instances of) the Set-Cookie header. */
@@ -2737,11 +2737,11 @@ read_header:
             case HTTP_STATUS_TEMPORARY_REDIRECT:
               return NEWLOCATION_KEEP_POST;
             case HTTP_STATUS_MOVED_PERMANENTLY:
-              if (opt.method && strcasecmp (opt.method, "post") != 0)
+              if (opt.method && c_strcasecmp (opt.method, "post") != 0)
                 return NEWLOCATION_KEEP_POST;
               break;
             case HTTP_STATUS_MOVED_TEMPORARILY:
-              if (opt.method && strcasecmp (opt.method, "post") != 0)
+              if (opt.method && c_strcasecmp (opt.method, "post") != 0)
                 return NEWLOCATION_KEEP_POST;
               break;
             default:

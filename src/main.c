@@ -54,6 +54,7 @@ as that of the covered work.  */
 #include "http.h"               /* for save_cookies */
 #include "ptimer.h"
 #include "warc.h"
+#include "c-strcase.h"
 #include <getopt.h>
 #include <getpass.h>
 #include <quote.h>
@@ -1466,7 +1467,7 @@ for details.\n\n"));
 
   /* When user specifies HEAD as the method, we do not wish to download any
      files. Hence, set wget to run in spider mode.  */
-  if (opt.method && strcasecmp (opt.method, "HEAD") == 0)
+  if (opt.method && c_strcasecmp (opt.method, "HEAD") == 0)
     setoptval ("spider", "1", "spider");
 
   /* Convert post_data to body-data and post_file_name to body-file options.

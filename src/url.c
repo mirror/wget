@@ -41,6 +41,7 @@ as that of the covered work.  */
 #include "utils.h"
 #include "url.h"
 #include "host.h"  /* for is_valid_ipv6_address */
+#include "c-strcase.h"
 
 #ifdef __VMS
 #include "vms.h"
@@ -956,7 +957,7 @@ url_error (const char *url, int error_code)
 
       if ((p = strchr (scheme, ':')))
         *p = '\0';
-      if (!strcasecmp (scheme, "https"))
+      if (!c_strcasecmp (scheme, "https"))
         error = aprintf (_("HTTPS support not compiled in"));
       else
         error = aprintf (_(parse_errors[error_code]), quote (scheme));

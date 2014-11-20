@@ -42,6 +42,7 @@ as that of the covered work.  */
 #include "url.h"
 #include "convert.h"            /* for html_quote_string prototype */
 #include "retr.h"               /* for output_stream */
+#include "c-strcase.h"
 
 /* Converts symbolic permissions to number-style ones, e.g. string
    rwxr-xr-x to 755.  For now, it knows nothing of
@@ -121,7 +122,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
     {
       len = clean_line (line, len);
       /* Skip if total...  */
-      if (!strncasecmp (line, "total", 5))
+      if (!c_strncasecmp (line, "total", 5))
         continue;
       /* Get the first token (permissions).  */
       tok = strtok (line, " ");
@@ -199,7 +200,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
           if (next < 0)         /* a month name was not encountered */
             {
               for (i = 0; i < 12; i++)
-                if (!strcasecmp (tok, months[i]))
+                if (!c_strcasecmp (tok, months[i]))
                   break;
               /* If we got a month, it means the token before it is the
                  size, and the filename is three tokens away.  */
@@ -775,14 +776,14 @@ ftp_parse_vms_ls (const char *file)
          what will work in a CWD command.
       */
       len = strlen (tok);
-      if (!strncasecmp((tok + (len - 4)), ".DIR", 4))
+      if (!c_strncasecmp((tok + (len - 4)), ".DIR", 4))
         {
           *(tok+ (len - 4)) = '\0'; /* Discard ".DIR". */
           cur.type  = FT_DIRECTORY;
           cur.perms = VMS_DEFAULT_PROT_DIR;
           DEBUGP (("Directory (nv)\n"));
         }
-      else if (!strncasecmp ((tok + (len - 6)), ".DIR;1", 6))
+      else if (!c_strncasecmp ((tok + (len - 6)), ".DIR;1", 6))
         {
           *(tok+ (len - 6)) = '\0'; /* Discard ".DIR;1". */
           cur.type  = FT_DIRECTORY;

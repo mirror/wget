@@ -12,9 +12,10 @@ TEST_NAME = "Content Disposition Clobber"
 File1 = "Teapot"
 File2 = "The Teapot Protocol"
 
+# use upper case 'I' to provoke Wget failure with turkish locale
 File2_rules = {
     "SendHeader"        : {
-        "Content-Disposition" : "Attachment; filename=HTTP.Teapot"
+        "Content-DIsposition" : "Attachment; FILENAME=HTTP.Teapot"
     }
 }
 A_File = WgetFile ("HTTP.Teapot", File1)
