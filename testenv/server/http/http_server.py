@@ -336,7 +336,7 @@ class _Handler (BaseHTTPRequestHandler):
         for header_line in rej_headers:
             header_recd = self.headers.get (header_line)
             if header_recd is not None and header_recd == rej_headers[header_line]:
-                self.send_error (400, 'Blackisted Header ' + header_line + ' received')
+                self.send_error (400, 'Blacklisted Header ' + header_line + ' received')
                 self.finish_headers ()
                 raise ServerError ("Header " + header_line + ' received')
 

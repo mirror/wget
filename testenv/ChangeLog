@@ -1,3 +1,7 @@
+2014-11-21  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* server/http/http_server.py: Fixed typo Blackisted to Blacklisted
+
 2014-11-19  Darshit Shah  <darnir@gmail.com>
 
 	* Test-504.py: Add new test case to show how Wget handles 504 Gateway
