@@ -279,9 +279,9 @@ remote_to_utf8 (struct iri *iri, const char *str, const char **new)
      function. */
   if (!c_strcasecmp (iri->uri_encoding, "UTF-8"))
     {
-      const char *p = str;
-      for (p = str; *p; p++)
-        if (*p < 0 || *p > 127)
+      const unsigned char *p;
+      for (p = (unsigned char *) str; *p; p++)
+        if (*p > 127)
           {
             *new = strdup (str);
             return true;
