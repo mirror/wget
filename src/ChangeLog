@@ -1,3 +1,7 @@
+2014-11-21  Daniel Stenberg  <daniel@haxx.se>
+
+	* iri.c (remote_to_utf8): Remove condition that is always false
+
 2014-11-20  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* progress.c: Fix code for undefined USE_NLS_PROGRESS_BAR
