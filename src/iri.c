@@ -1,5 +1,5 @@
 /* IRI related functions.
-   Copyright (C) 2008, 2009, 2010, 2011, 2014 Free Software Foundation, Inc.
+   Copyright (C) 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -281,7 +281,7 @@ remote_to_utf8 (struct iri *iri, const char *str, const char **new)
     {
       const char *p = str;
       for (p = str; *p; p++)
-        if (*p < 0)
+        if (*p < 0 || *p > 127)
           {
             *new = strdup (str);
             return true;
