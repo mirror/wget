@@ -1,5 +1,9 @@
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
+	* wget.h: Make extern declaration for program_name
+
+2014-11-22  Darshit Shah  <darnir@gmail.com>
+
 	* retr.h: Declare extern variable numurls
 	* http.c: Remove extern declaration for numurls
 	* ftp.c: Same
