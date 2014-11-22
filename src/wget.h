@@ -314,6 +314,7 @@ typedef double SUM_SIZE_INT;
 
 extern const char *exec_name;
 extern char *program_name;
+extern char *program_argstring;
 
 /* Document type ("dt") flags */
 enum

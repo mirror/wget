@@ -1,5 +1,11 @@
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
+	* wget.h: Make extern declaration for program_argstring.
+	* warc.c: Remove extern declaration
+	* test.c: Make program_argstring a char *, instead of const char *.
+
+2014-11-22  Darshit Shah  <darnir@gmail.com>
+
 	* wget.h: Make extern declaration for program_name
 
 2014-11-22  Darshit Shah  <darnir@gmail.com>

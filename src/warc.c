@@ -68,10 +68,6 @@ as that of the covered work.  */
 #endif
 
 
-/* Set by main in main.c */
-extern char *program_argstring;
-
-
 /* The log file (a temporary file that contains a copy
    of the wget log). */
 static FILE *warc_log_fp;
