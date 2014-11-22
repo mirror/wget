@@ -31,3 +31,6 @@ as that of the covered work.  */
 extern const char *version_string;
 extern const char *compilation_string;
 extern const char *link_string;
+
+/* Extern declaration for string in build_info.c */
+extern const char *compiled_features[];

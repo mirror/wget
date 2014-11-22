@@ -81,8 +81,6 @@ struct options opt;
 
 /* defined in version.c */
 extern char *system_getrc;
-/* defined in build_info.c */
-extern const char *compiled_features[];
 /* Used for --version output in print_version */
 #define MAX_CHARS_PER_LINE      72
 #define TABULATION              4

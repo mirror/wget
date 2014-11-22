@@ -1,5 +1,10 @@
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
+	* version.h: Add extern for compilation_string
+	* main: Remove declaration for compilation_String
+
+2014-11-22  Darshit Shah  <darnir@gmail.com>
+
 	* version.h: New file. Add extern declarations for globally shared strings
 	* Makefile.am: Have version.c import version.h
 	* main.c: Import version.h and remove old extern declarations

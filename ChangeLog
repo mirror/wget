@@ -1,3 +1,8 @@
+2014-11-22  Darshit Shah  <darnir@gmail.com>
+
+	* build-aux/build_info.pl: Include version.h in the final C file generated
+	by the script.
+
 2014-11-20  Darshit Shah  <darnir@gmail.com>
 
 	* configure.ac: Change option to --enable-assert. Assertions are disabled by
