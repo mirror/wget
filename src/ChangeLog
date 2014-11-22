@@ -1,5 +1,10 @@
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
+	* cookies.c (discard_matching_cookie): Replace defensive assert with a
+	logical check and error message
+
+2014-11-22  Darshit Shah  <darnir@gmail.com>
+
 	* wget.h: Make extern declaration for program_argstring.
 	* warc.c: Remove extern declaration
 	* test.c: Make program_argstring a char *, instead of const char *.
