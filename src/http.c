@@ -60,6 +60,7 @@ as that of the covered work.  */
 #include "spider.h"
 #include "warc.h"
 #include "c-strcase.h"
+#include "version.h"
 
 #ifdef TESTING
 #include "test.h"
@@ -69,7 +70,6 @@ as that of the covered work.  */
 # include "vms.h"
 #endif /* def __VMS */
 
-extern char *version_string;
 
 /* Forward decls. */
 struct http_stat;

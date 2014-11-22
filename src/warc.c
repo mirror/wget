@@ -34,6 +34,7 @@ as that of the covered work.  */
 #include "wget.h"
 #include "hash.h"
 #include "utils.h"
+#include "version.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,7 +67,6 @@ as that of the covered work.  */
 #define O_TEMPORARY 0
 #endif
 
-extern char *version_string;
 
 /* Set by main in main.c */
 extern char *program_argstring;

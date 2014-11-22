@@ -54,6 +54,7 @@ as that of the covered work.  */
 #include "http.h"               /* for save_cookies */
 #include "ptimer.h"
 #include "warc.h"
+#include "version.h"
 #include "c-strcase.h"
 #include <getopt.h>
 #include <getpass.h>
@@ -79,10 +80,7 @@ struct iri dummy_iri;
 struct options opt;
 
 /* defined in version.c */
-extern char *version_string;
-extern char *compilation_string;
 extern char *system_getrc;
-extern char *link_string;
 /* defined in build_info.c */
 extern const char *compiled_features[];
 /* Used for --version output in print_version */

@@ -1,5 +1,13 @@
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
+	* version.h: New file. Add extern declarations for globally shared strings
+	* Makefile.am: Have version.c import version.h
+	* main.c: Import version.h and remove old extern declarations
+	* http.c: Same
+	* warc.c: Same
+
+2014-11-22  Darshit Shah  <darnir@gmail.com>
+
 	* utils.c (abort_run_with_timeout): The sig parameter is not used. Mark it
 	as such.
 	(abort_run_with_timeout): One implementation of this function did not
