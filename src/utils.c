@@ -1916,7 +1916,7 @@ random_float (void)
 static sigjmp_buf run_with_timeout_env;
 
 static void _Noreturn
-abort_run_with_timeout (int sig)
+abort_run_with_timeout (int sig _GL_UNUSED)
 {
   assert (sig == SIGALRM);
   siglongjmp (run_with_timeout_env, -1);
@@ -1926,8 +1926,8 @@ abort_run_with_timeout (int sig)
 
 static jmp_buf run_with_timeout_env;
 
-static void
-abort_run_with_timeout (int sig)
+static void _Noreturn
+abort_run_with_timeout (int sig _GL_UNUSED)
 {
   assert (sig == SIGALRM);
   /* We don't have siglongjmp to preserve the set of blocked signals;
