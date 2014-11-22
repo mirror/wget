@@ -1,5 +1,10 @@
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
+	* hosts.c (address_list_set_faulty): Add a helpful error message for when a
+	logical assumption fails
+
+2014-11-22  Darshit Shah  <darnir@gmail.com>
+
 	* cookies.c (discard_matching_cookie): Replace defensive assert with a
 	logical check and error message
 
