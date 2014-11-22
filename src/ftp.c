@@ -77,7 +77,6 @@ typedef struct
   struct url *proxy;            /* FTWK-style proxy */
 } ccon;
 
-extern int numurls;
 
 /* Look for regexp "( *[0-9]+ *byte" (literal parenthesis) anywhere in
    the string S, and return the number converted to wgint, if found, 0

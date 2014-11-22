@@ -1,5 +1,11 @@
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
+	* retr.h: Declare extern variable numurls
+	* http.c: Remove extern declaration for numurls
+	* ftp.c: Same
+
+2014-11-22  Darshit Shah  <darnir@gmail.com>
+
 	* version.h: Add extern for compilation_string
 	* main: Remove declaration for compilation_String
 

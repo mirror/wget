@@ -147,7 +147,6 @@ struct request {
   int hcount, hcapacity;
 };
 
-extern int numurls;
 
 /* Create a new, empty request. Set the request's method and its
    arguments.  METHOD should be a literal string (or it should outlive
