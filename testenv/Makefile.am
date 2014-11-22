@@ -53,7 +53,8 @@ if HAVE_PYTHON3
     Test-504.py                             \
     Test--spider-r.py
 
-  XFAIL_TESTS = Test-auth-both.py
+  # added test cases expected to fail here and under TESTS
+  XFAIL_TESTS =
 endif
 
 EXTRA_DIST = certs conf exc misc server test README $(TESTS) $(XFAIL_TESTS)

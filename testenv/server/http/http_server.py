@@ -207,8 +207,8 @@ class _Handler (BaseHTTPRequestHandler):
     def send_challenge (self, auth_type):
         auth_type = auth_type.lower()
         if auth_type == "both":
-            self.send_challenge ("digest")
             self.send_challenge ("basic")
+            self.send_challenge ("digest")
             return
         if auth_type == "basic":
             challenge_str = 'BasIc realm="Wget-Test"'

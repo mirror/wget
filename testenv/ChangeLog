@@ -1,3 +1,7 @@
+2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* Makefile.am: Removed Test-auth-both.py from XFAIL_TESTS
+
 2014-11-21  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* server/http/http_server.py: Fixed typo Blackisted to Blacklisted

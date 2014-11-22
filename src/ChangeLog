@@ -1,5 +1,10 @@
 2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* http.c: Select strongest challenge from WWW-Authenticate,
+	support multiple challenges per header line.
+
+2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* gnutls.c (ssl_connect_wget): Implement missing code for
 	--secure-protocol=TLSv1_1|TLSv1_2, print message before abort()
 	for missing protocol implementations.
