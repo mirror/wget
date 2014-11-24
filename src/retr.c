@@ -1064,7 +1064,7 @@ retrieve_from_file (const char *file, bool html, int *count)
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {
       char *filename = NULL, *new_file = NULL, *proxy;
-      int dt;
+      int dt = 0;
       struct iri *tmpiri = iri_dup (iri);
       struct url *parsed_url = NULL;
 
