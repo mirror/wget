@@ -1,5 +1,13 @@
 2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* gnutls.c (ssl_connect_wget): Implement missing code for
+	--secure-protocol=TLSv1_1|TLSv1_2, print message before abort()
+	for missing protocol implementations.
+	* openssl.c (ssl_init): Print message before abort() for
+	missing protocol implementations.
+
+2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* recur.c: Add space after function names
 
 2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
