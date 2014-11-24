@@ -1,3 +1,7 @@
+2014-11-24  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* warc.c: Fix C89 compile errors using ./configure --without-libuuid
+
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
 	* hosts.c (address_list_set_faulty): Add a helpful error message for when a

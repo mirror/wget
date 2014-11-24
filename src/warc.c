@@ -633,19 +633,19 @@ warc_uuid_str (char *urn_str)
 void
 warc_uuid_str (char *urn_str)
 {
-  // RFC 4122, a version 4 UUID with only random numbers
+  /* RFC 4122, a version 4 UUID with only random numbers */
 
   unsigned char uuid_data[16];
   int i;
   for (i=0; i<16; i++)
     uuid_data[i] = random_number (255);
 
-  // Set the four most significant bits (bits 12 through 15) of the
-  // time_hi_and_version field to the 4-bit version number
+  /* Set the four most significant bits (bits 12 through 15) of the
+	*  time_hi_and_version field to the 4-bit version number */
   uuid_data[6] = (uuid_data[6] & 0x0F) | 0x40;
 
-  // Set the two most significant bits (bits 6 and 7) of the
-  // clock_seq_hi_and_reserved to zero and one, respectively.
+  /* Set the two most significant bits (bits 6 and 7) of the
+	*  clock_seq_hi_and_reserved to zero and one, respectively. */
   uuid_data[8] = (uuid_data[8] & 0xBF) | 0x80;
 
   sprintf (urn_str,
