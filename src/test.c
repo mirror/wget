@@ -51,7 +51,7 @@ const char *test_append_uri_pathel(void);
 const char *test_are_urls_equal(void);
 const char *test_is_robots_txt_url(void);
 
-char *program_argstring = "TEST";
+const char *program_argstring = "TEST";
 
 int tests_run;
 
@@ -71,10 +71,10 @@ all_tests(void)
   return NULL;
 }
 
-char *program_name; /* Needed by lib/error.c. */
+const char *program_name; /* Needed by lib/error.c. */
 
 int
-main (int argc _GL_UNUSED, char *argv[])
+main (int argc _GL_UNUSED, const char *argv[])
 {
   const char *result;
 

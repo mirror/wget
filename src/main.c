@@ -1001,8 +1001,8 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
   exit (WGET_EXIT_SUCCESS);
 }
 
-char *program_name; /* Needed by lib/error.c. */
-char *program_argstring; /* Needed by wget_warc.c. */
+const char *program_name; /* Needed by lib/error.c. */
+const char *program_argstring; /* Needed by wget_warc.c. */
 
 int
 main (int argc, char **argv)
@@ -1044,7 +1044,7 @@ main (int argc, char **argv)
   /* Construct the arguments string. */
   for (argstring_length = 1, i = 1; i < argc; i++)
     argstring_length += strlen (argv[i]) + 2 + 1;
-  p = program_argstring = malloc (argstring_length * sizeof (char));
+  p = malloc (argstring_length * sizeof (char));
   if (p == NULL)
     {
       fprintf (stderr, _("Memory allocation problem\n"));
@@ -1062,6 +1062,7 @@ main (int argc, char **argv)
       *p++ = ' ';
     }
   *p = '\0';
+  program_argstring = p;
 
   /* Load the hard-coded defaults.  */
   defaults ();

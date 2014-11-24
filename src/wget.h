@@ -313,8 +313,8 @@ typedef double SUM_SIZE_INT;
 #define MAX_INT_TO_STRING_LEN(x) ((sizeof(x) * 24082 / 10000) + 2)
 
 extern const char *exec_name;
-extern char *program_name;
-extern char *program_argstring;
+extern const char *program_name;
+extern const char *program_argstring;
 
 /* Document type ("dt") flags */
 enum
