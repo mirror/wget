@@ -1,5 +1,9 @@
 2014-11-24  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* warc.c, warc.h, http.c: Add size of buffer to warc_timestamp()
+
+2014-11-24  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* wget.h, test.c, main.c: Make program_name and program_argstring const
 
 2014-11-24  Tim Ruehsen <tim.ruehsen@gmx.de>

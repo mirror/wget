@@ -391,12 +391,9 @@ static bool
 warc_write_date_header (const char *timestamp)
 {
   char current_timestamp[21];
-  if (timestamp == NULL)
-    {
-      warc_timestamp (current_timestamp);
-      timestamp = current_timestamp;
-    }
-  return warc_write_header ("WARC-Date", timestamp);
+
+  return warc_write_header ("WARC-Date", timestamp ? timestamp :
+                            warc_timestamp (current_timestamp, sizeof(current_timestamp)));
 }
 
 /* Writes the WARC-IP-Address header for the given IP to
@@ -591,14 +588,16 @@ warc_write_digest_headers (FILE *file, long payload_offset)
    The UTC time is formatted following ISO 8601, as required
    for use in the WARC-Date header.
    The timestamp will be 21 characters long. */
-void
-warc_timestamp (char *timestamp)
+char *
+warc_timestamp (char *timestamp, size_t timestamp_size)
 {
-  time_t rawtime;
-  struct tm * timeinfo;
-  time ( &rawtime );
-  timeinfo = gmtime (&rawtime);
-  strftime (timestamp, 21, "%Y-%m-%dT%H:%M:%SZ", timeinfo);
+  time_t rawtime = time (NULL);
+  struct tm * timeinfo = gmtime (&rawtime);
+
+  if (strftime (timestamp, timestamp_size, "%Y-%m-%dT%H:%M:%SZ", timeinfo) == 0 && timestamp_size > 0)
+    *timestamp = 0;
+
+  return timestamp;
 }
 
 #if HAVE_LIBUUID || HAVE_UUID_CREATE
@@ -672,7 +671,7 @@ warc_write_warcinfo_record (char *filename)
   warc_current_warcinfo_uuid_str = (char *) malloc (48);
   warc_uuid_str (warc_current_warcinfo_uuid_str);
 
-  warc_timestamp (timestamp);
+  warc_timestamp (timestamp, sizeof(timestamp));
 
   filename_copy = strdup (filename);
   filename_basename = strdup (basename (filename_copy));

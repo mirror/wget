@@ -2191,8 +2191,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   if (warc_enabled)
     {
       bool warc_result;
+
       /* Generate a timestamp and uuid for this request. */
-      warc_timestamp (warc_timestamp_str);
+      warc_timestamp (warc_timestamp_str, sizeof(warc_timestamp_str));
       warc_uuid_str (warc_request_uuid);
 
       /* Create a request record and store it in the WARC file. */
