@@ -1,3 +1,8 @@
+2014-11-25  Darshit Shah  <darnir@gmail.com>
+
+	* bootstrap.conf: Add flex as a prerequisite to building Wget from the
+	repository sources
+
 2014-11-22  Darshit Shah  <darnir@gmail.com>
 
 	* build-aux/build_info.pl: Include version.h in the final C file generated
