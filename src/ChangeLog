@@ -1,3 +1,7 @@
+2014-11-25  Pär Karlsson <feinorgh@gmail.com>
+
+	* Makefile.am: Added missing version.h to wget_SOURCES
+
 2014-11-24  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* retrc.c: Fix possibly uninitialized variable
