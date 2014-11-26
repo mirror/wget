@@ -1,6 +1,10 @@
 2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
 
-	* src/recur.c: Fix blacklisting of URLs to download
+	* recur.c: Add space after function names
+
+2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* recur.c: Fix blacklisting of URLs to download
 
 	Fixes a reported crash and prevents multiple downloads of the
 	same file in case the URL is escaped in different ways.
