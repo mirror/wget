@@ -160,6 +160,27 @@ url_dequeue (struct url_queue *queue, struct iri **i,
   return true;
 }
 
+static void blacklist_add(struct hash_table *blacklist, const char *url)
+{
+  char *url_unescaped = xstrdup(url);
+
+  url_unescape (url_unescaped);
+  string_set_add (blacklist, url_unescaped);
+  xfree (url_unescaped);
+}
+
+static int blacklist_contains(struct hash_table *blacklist, const char *url)
+{
+  char *url_unescaped = xstrdup(url);
+  int ret;
+
+  url_unescape (url_unescaped);
+  ret = string_set_contains (blacklist, url_unescaped);
+  xfree (url_unescaped);
+
+  return ret;
+}
+
 static bool download_child_p (const struct urlpos *, struct url *, int,
                               struct url *, struct hash_table *, struct iri *);
 static bool descend_redirect_p (const char *, struct url *, int,
@@ -220,7 +241,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
      just URL so we enqueue the canonical form of the URL.  */
   url_enqueue (queue, i, xstrdup (start_url_parsed->url), NULL, 0, true,
                false);
-  string_set_add (blacklist, start_url_parsed->url);
+  blacklist_add(blacklist, start_url_parsed->url);
 
   while (1)
     {
@@ -311,7 +332,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                   else
                     /* Make sure that the old pre-redirect form gets
                        blacklisted. */
-                    string_set_add (blacklist, url);
+                    blacklist_add(blacklist, url);
                 }
 
               xfree (url);
@@ -404,7 +425,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                       /* We blacklist the URL we have enqueued, because we
                          don't want to enqueue (and hence download) the
                          same URL twice.  */
-                      string_set_add (blacklist, child->url->url);
+                      blacklist_add(blacklist, child->url->url);
                     }
                 }
 
@@ -476,7 +497,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
    URL is to be descended to.  This is only ever called from
    retrieve_tree, but is in a separate function for clarity.
 
-   The most expensive checks (such as those for robots) are memoized
+   The most expensive checks (such as those for robots) are memorized
    by storing these URLs to BLACKLIST.  This may or may not help.  It
    will help if those URLs are encountered many times.  */
 
@@ -491,7 +512,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   DEBUGP (("Deciding whether to enqueue \"%s\".\n", url));
 
-  if (string_set_contains (blacklist, url))
+  if (blacklist_contains(blacklist, url))
     {
       if (opt.spider)
         {
@@ -670,7 +691,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       if (!res_match_path (specs, u->path))
         {
           DEBUGP (("Not following %s because robots.txt forbids it.\n", url));
-          string_set_add (blacklist, url);
+          blacklist_add(blacklist, url);
           goto out;
         }
     }
@@ -712,11 +733,13 @@ descend_redirect_p (const char *redirected, struct url *orig_parsed, int depth,
   success = download_child_p (upos, orig_parsed, depth,
                               start_url_parsed, blacklist, iri);
 
+  if (success)
+    blacklist_add(blacklist, upos->url->url);
+  else
+    DEBUGP (("Redirection \"%s\" failed the test.\n", redirected));
+
   url_free (new_parsed);
   xfree (upos);
-
-  if (!success)
-    DEBUGP (("Redirection \"%s\" failed the test.\n", redirected));
 
   return success;
 }

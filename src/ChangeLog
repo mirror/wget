@@ -1,3 +1,13 @@
+2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* src/recur.c: Fix blacklisting of URLs to download
+
+	Fixes a reported crash and prevents multiple downloads of the
+	same file in case the URL is escaped in different ways.
+
+	The crash has been
+	Reported-by: Frédéric <vfrederix@gmail.com>
+
 2014-11-25  Pär Karlsson <feinorgh@gmail.com>
 
 	* Makefile.am: Added missing version.h to wget_SOURCES
