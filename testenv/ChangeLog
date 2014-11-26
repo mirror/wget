@@ -1,6 +1,11 @@
+2014-11-26  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Makefile.am (TESTS): Add Test-redirect-crash.py.
+	* Test-redirect-crash.py: New File.
+
 2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
 
-	* Makefile.am: Removed Test-auth-both.py from XFAIL_TESTS
+       * Makefile.am: Removed Test-auth-both.py from XFAIL_TESTS
 
 2014-11-21  Tim Ruehsen <tim.ruehsen@gmx.de>
 
