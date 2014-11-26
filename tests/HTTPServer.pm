@@ -98,6 +98,7 @@ sub send_response
     while (my ($name, $value) = each %{$headers})
     {
         # print STDERR "setting header: $name = $value\n";
+        $value = $self->_substitute_port($value);
         $resp->header($name => $value);
     }
     print STDERR "HTTP::Response with headers: \n", $resp->as_string if $log;

@@ -1,3 +1,11 @@
+2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* HTTPServer.pm: Substitue server port in HTTP headers
+
+	This allows us to use references like
+	  "Location" => "http://localhost:{{port}}/whatever
+	in test cases.
+
 2014-11-05  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* Makefile.am: added $(LIB_CLOCK_GETTIME) to unit test linkage
