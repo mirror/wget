@@ -1445,8 +1445,8 @@ test_cookies (void)
               printf ("Invalid value %d for '%s' (expected '%s', got '%s')\n",
                       j / 2 + 1, data, expected[j + 1], v);
             j += 2;
-            free (n);
-            free (v);
+            xfree (n);
+            xfree (v);
           }
         if (expected[j])
           printf ("Too few parameters for '%s'\n", data);

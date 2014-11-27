@@ -441,7 +441,7 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
   if (qtywritten)
     *qtywritten += sum_written;
 
-  free (dlbuf);
+  xfree (dlbuf);
 
   return ret;
 }
@@ -790,7 +790,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           goto bail;
         }
       iri_free(pi);
-      free (proxy);
+      xfree (proxy);
     }
 
   if (u->scheme == SCHEME_HTTP
@@ -1099,7 +1099,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                                cur_url->url->url, &filename,
                                &new_file, NULL, &dt, opt.recursive, tmpiri,
                                true);
-      free(proxy);
+      xfree (proxy);
 
       if (parsed_url)
           url_free (parsed_url);
@@ -1298,7 +1298,7 @@ url_uses_proxy (struct url * u)
     return false;
   proxy = getproxy (u);
   ret = proxy != NULL;
-  free(proxy);
+  xfree (proxy);
   return ret;
 }
 

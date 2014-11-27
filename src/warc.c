@@ -469,7 +469,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
                  or EWOULDBLOCK.  */
               if (ferror (stream))
                 {
-                  free (buffer);
+                  xfree (buffer);
                   return 1;
                 }
               goto process_partial_block;
@@ -529,7 +529,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
   sha1_finish_ctx (&ctx_block,   res_block);
   if (payload_offset >= 0)
     sha1_finish_ctx (&ctx_payload, res_payload);
-  free (buffer);
+  xfree (buffer);
   return 0;
 
 #undef BLOCKSIZE
@@ -571,13 +571,13 @@ warc_write_digest_headers (FILE *file, long payload_offset)
 
           digest = warc_base32_sha1_digest (sha1_res_block);
           warc_write_header ("WARC-Block-Digest", digest);
-          free (digest);
+          xfree (digest);
 
           if (payload_offset >= 0)
             {
               digest = warc_base32_sha1_digest (sha1_res_payload);
               warc_write_header ("WARC-Payload-Digest", digest);
-              free (digest);
+              xfree (digest);
             }
         }
     }
@@ -687,8 +687,8 @@ warc_write_warcinfo_record (char *filename)
   warc_tmp = warc_tempfile ();
   if (warc_tmp == NULL)
     {
-      free (filename_copy);
-      free (filename_basename);
+      xfree (filename_copy);
+      xfree (filename_basename);
       return false;
     }
 
@@ -714,8 +714,8 @@ warc_write_warcinfo_record (char *filename)
   if (! warc_write_ok)
     logprintf (LOG_NOTQUIET, _("Error writing warcinfo record to WARC file.\n"));
 
-  free (filename_copy);
-  free (filename_basename);
+  xfree (filename_copy);
+  xfree (filename_basename);
   fclose (warc_tmp);
   return warc_write_ok;
 }
@@ -755,8 +755,8 @@ warc_start_new_file (bool meta)
   if (warc_current_file != NULL)
     fclose (warc_current_file);
 
-  free (warc_current_warcinfo_uuid_str);
-  free (warc_current_filename);
+  xfree (warc_current_warcinfo_uuid_str);
+  xfree (warc_current_filename);
 
   warc_current_file_number++;
 
@@ -917,7 +917,7 @@ warc_process_cdx_line (char *lineptr, int field_num_original_url,
       char * checksum_v;
       base32_decode_alloc (checksum, strlen (checksum), &checksum_v,
                            &checksum_l);
-      free (checksum);
+      xfree (checksum);
 
       if (checksum_v != NULL && checksum_l == SHA1_DIGEST_SIZE)
         {
@@ -928,13 +928,13 @@ warc_process_cdx_line (char *lineptr, int field_num_original_url,
           rec->uuid = record_id;
           memcpy (rec->digest, checksum_v, SHA1_DIGEST_SIZE);
           hash_table_put (warc_cdx_dedup_table, rec->digest, rec);
-          free (checksum_v);
+          xfree (checksum_v);
         }
       else
         {
-          free (original_url);
-          free (checksum_v);
-          free (record_id);
+          xfree (original_url);
+          xfree (checksum_v);
+          xfree (record_id);
         }
     }
   else
@@ -1015,7 +1015,7 @@ _("CDX file does not list record ids. (Missing column 'u'.)\n"));
                               nrecords);
     }
 
-  free (lineptr);
+  xfree (lineptr);
   fclose (f);
 
   return true;
@@ -1156,7 +1156,7 @@ warc_close (void)
   if (warc_current_file != NULL)
     {
       warc_write_metadata ();
-      free (warc_current_warcinfo_uuid_str);
+      xfree (warc_current_warcinfo_uuid_str);
       fclose (warc_current_file);
     }
   if (warc_current_cdx_file != NULL)
@@ -1338,7 +1338,7 @@ warc_write_revisit_record (char *url, char *timestamp_str,
   warc_write_end_record ();
 
   fclose (body);
-  free (block_digest);
+  xfree (block_digest);
 
   return warc_write_ok;
 }
@@ -1400,7 +1400,7 @@ warc_write_response_record (char *url, char *timestamp_str,
               result = warc_write_revisit_record (url, timestamp_str,
                          concurrent_to_uuid, payload_digest, rec_existing->uuid,
                          ip, body);
-              free (payload_digest);
+              xfree (payload_digest);
 
               return result;
             }
@@ -1441,8 +1441,8 @@ warc_write_response_record (char *url, char *timestamp_str,
       response_uuid);
     }
 
-  free (block_digest);
-  free (payload_digest);
+  xfree (block_digest);
+  xfree (payload_digest);
 
   return warc_write_ok;
 }

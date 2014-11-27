@@ -1,3 +1,8 @@
+2014-11-27  Darshit Shah  <darnir@gmail.com>
+
+	* cookies.c, gettext.h, init.c, retr.c, url.c, warc.c: Replace usage of
+	free() with xfree() macro.
+
 2014-11-26  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* http.c: Select strongest challenge from WWW-Authenticate,

@@ -215,7 +215,7 @@ dcpgettext_expr (const char *domain,
       translation = dcgettext (domain, msg_ctxt_id, category);
 #if !_LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS
       if (msg_ctxt_id != buf)
-        free (msg_ctxt_id);
+        xfree (msg_ctxt_id);
 #endif
       if (translation != msg_ctxt_id)
         return translation;
@@ -261,7 +261,7 @@ dcnpgettext_expr (const char *domain,
       translation = dcngettext (domain, msg_ctxt_id, msgid_plural, n, category);
 #if !_LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS
       if (msg_ctxt_id != buf)
-        free (msg_ctxt_id);
+        xfree (msg_ctxt_id);
 #endif
       if (!(translation == msg_ctxt_id || translation == msgid_plural))
         return translation;

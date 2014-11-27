@@ -486,7 +486,7 @@ home_dir (void)
     }
 
   ret = home ? xstrdup (home) : NULL;
-  free (buf);
+  xfree (buf);
 
   return ret;
 }

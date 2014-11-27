@@ -1643,7 +1643,7 @@ url_file_name (const struct url *u, char *replaced_filename)
       logprintf (LOG_NOTQUIET, "New name is %s.\n", temp_fnres.base);
     }
 
-  free (fname_len_check);
+  xfree (fname_len_check);
 
   /* The filename has already been 'cleaned' by append_uri_pathel() above.  So,
    * just append it. */
@@ -1656,7 +1656,7 @@ url_file_name (const struct url *u, char *replaced_filename)
   /* Make a final check that the path length is acceptable? */
   /* TODO: check fnres.base for path length problem */
 
-  free (temp_fnres.base);
+  xfree (temp_fnres.base);
 
   /* Check the cases in which the unique extensions are not used:
      1) Clobbering is turned off (-nc).
