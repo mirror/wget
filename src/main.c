@@ -1043,8 +1043,8 @@ main (int argc, char **argv)
 
   /* Construct the arguments string. */
   for (argstring_length = 1, i = 1; i < argc; i++)
-    argstring_length += strlen (argv[i]) + 2 + 1;
-  p = malloc (argstring_length * sizeof (char));
+    argstring_length += strlen (argv[i]) + 3 + 1;
+  program_argstring = p = malloc (argstring_length);
   if (p == NULL)
     {
       fprintf (stderr, _("Memory allocation problem\n"));
@@ -1062,7 +1062,6 @@ main (int argc, char **argv)
       *p++ = ' ';
     }
   *p = '\0';
-  program_argstring = p;
 
   /* Load the hard-coded defaults.  */
   defaults ();

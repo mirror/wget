@@ -1,5 +1,11 @@
 2014-11-28  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* main.c: Fix length of program_argstring,
+	fix regression introduced with commit
+	9217b864d865cf1766e1589d138c8fc17d3d3d5c.
+
+2014-11-28  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* Makefile.am: Removed gettext.h
 
 2014-11-28  Tim Ruehsen <tim.ruehsen@gmx.de>
