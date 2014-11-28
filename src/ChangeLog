@@ -1,3 +1,11 @@
+2014-11-28  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* gettext.h: Removed this file
+	* wget.h: Do not include gettext.h, include libintl.h directly,
+	define _() as gettext() shortcut.
+
+	The header file gettext.h is simply not needed.
+
 2014-11-27  Darshit Shah  <darnir@gmail.com>
 
 	* cookies.c, gettext.h, init.c, retr.c, url.c, warc.c: Replace usage of

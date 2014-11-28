@@ -58,8 +58,13 @@ as that of the covered work.  */
 
 /* `gettext (FOO)' is long to write, so we use `_(FOO)'.  If NLS is
    unavailable, _(STRING) simply returns STRING.  */
-#include "gettext.h"
-#define _(string)   gettext (string)
+#if ENABLE_NLS
+#	include <libintl.h>
+#	define _(STRING) gettext(STRING)
+#else
+#	define _(STRING) STRING
+#	define ngettext(STRING1,STRING2,N) STRING2
+#endif
 
 /* A pseudo function call that serves as a marker for the automated
    extraction of messages, but does not call gettext().  The run-time
