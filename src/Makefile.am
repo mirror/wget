@@ -53,7 +53,7 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c	\
 		http.h http-ntlm.h init.h log.h mswindows.h netrc.h	\
 		options.h progress.h ptimer.h recur.h res.h retr.h	\
 		spider.h ssl.h sysdep.h url.h warc.h utils.h wget.h iri.h	\
-		exits.h gettext.h version.h
+		exits.h version.h
 nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = iri.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a

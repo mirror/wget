@@ -1,5 +1,9 @@
 2014-11-28  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* Makefile.am: Removed gettext.h
+
+2014-11-28  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* gettext.h: Removed this file
 	* wget.h: Do not include gettext.h, include libintl.h directly,
 	define _() as gettext() shortcut.
