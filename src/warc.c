@@ -939,9 +939,9 @@ warc_process_cdx_line (char *lineptr, int field_num_original_url,
     }
   else
     {
-      xfree_null(checksum);
-      xfree_null(original_url);
-      xfree_null(record_id);
+      xfree(checksum);
+      xfree(original_url);
+      xfree(record_id);
     }
 }
 

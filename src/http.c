@@ -236,7 +236,7 @@ request_set_header (struct request *req, const char *name, const char *value,
       /* A NULL value is a no-op; if freeing the name is requested,
          free it now to avoid leaks.  */
       if (release_policy == rel_name || release_policy == rel_both)
-        xfree ((void *)name);
+        xfree (name);
       return;
     }
 
@@ -387,10 +387,10 @@ static void
 request_free (struct request *req)
 {
   int i;
-  xfree_null (req->arg);
+  xfree (req->arg);
   for (i = 0; i < req->hcount; i++)
     release_header (&req->headers[i]);
-  xfree_null (req->headers);
+  xfree (req->headers);
   xfree (req);
 }
 
@@ -818,7 +818,7 @@ resp_status (const struct response *resp, char **message)
 static void
 resp_free (struct response *resp)
 {
-  xfree_null (resp->headers);
+  xfree (resp->headers);
   xfree (resp);
 }
 
@@ -948,7 +948,7 @@ skip_short_body (int fd, wgint contlen, bool chunked)
               if (remaining_chunk_size == 0)
                 {
                   line = fd_read_line (fd);
-                  xfree_null (line);
+                  xfree (line);
                   break;
                 }
             }
@@ -1475,18 +1475,13 @@ struct http_stat
 static void
 free_hstat (struct http_stat *hs)
 {
-  xfree_null (hs->newloc);
-  xfree_null (hs->remote_time);
-  xfree_null (hs->error);
-  xfree_null (hs->rderrmsg);
-  xfree_null (hs->local_file);
-  xfree_null (hs->orig_file_name);
-  xfree_null (hs->message);
-
-  /* Guard against being called twice. */
-  hs->newloc = NULL;
-  hs->remote_time = NULL;
-  hs->error = NULL;
+  xfree (hs->newloc);
+  xfree (hs->remote_time);
+  xfree (hs->error);
+  xfree (hs->rderrmsg);
+  xfree (hs->local_file);
+  xfree (hs->orig_file_name);
+  xfree (hs->message);
 }
 
 static void
@@ -1756,7 +1751,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   hs->res = -1;
   hs->rderrmsg = NULL;
   hs->newloc = NULL;
-  xfree(hs->remote_time); hs->remote_time = NULL;
+  xfree(hs->remote_time);
   hs->error = NULL;
   hs->message = NULL;
 
@@ -2078,7 +2073,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
               request_free (req);
               return HERR;
             }
-          xfree_null(hs->message);
+          xfree(hs->message);
           hs->message = xstrdup (message);
           resp_free (resp);
           xfree (head);
@@ -2087,11 +2082,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
             failed_tunnel:
               logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
                          message ? quotearg_style (escape_quoting_style, message) : "?");
-              xfree_null (message);
+              xfree (message);
               request_free (req);
               return CONSSLERR;
             }
-          xfree_null (message);
+          xfree (message);
 
           /* SOCK is now *really* connected to u->host, so update CONN
              to reflect this.  That way register_persistent will
@@ -2260,7 +2255,7 @@ read_header:
       goto read_header;
     }
 
-  xfree_null(hs->message);
+  xfree(hs->message);
   hs->message = xstrdup (message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
@@ -2350,13 +2345,13 @@ read_header:
                                     u->url, warc_timestamp_str,
                                     warc_request_uuid, warc_ip, type,
                                     statcode, head);
-          xfree_null (type);
+          xfree (type);
 
           if (_err != RETRFINISHED || hs->res < 0)
             {
               CLOSE_INVALIDATE (sock);
               request_free (req);
-              xfree_null (message);
+              xfree (message);
               resp_free (resp);
               xfree (head);
               return _err;
@@ -2477,12 +2472,11 @@ read_header:
                     }
 
                   xfree (pth);
-                  xfree_null (message);
+                  xfree (message);
                   resp_free (resp);
                   xfree (head);
                   xfree (auth_stat);
                   xfree (hs->message);
-                  hs->message = NULL;
                   goto retry_with_auth;
                 }
               else
@@ -2497,7 +2491,7 @@ read_header:
             }
         }
       request_free (req);
-      xfree_null (message);
+      xfree (message);
       resp_free (resp);
       xfree (head);
       if (auth_err == RETROK)
@@ -2521,8 +2515,7 @@ read_header:
       CLOSE_FINISH (sock);
       request_free (req);
       xfree (hs->message);
-      hs->message = NULL;
-      xfree_null (message);
+      xfree (message);
       resp_free (resp);
       xfree (head);
 
@@ -2553,7 +2546,7 @@ read_header:
           hs->local_file = url_file_name (u, local_file);
         }
 
-      xfree_null (local_file);
+      xfree (local_file);
     }
 
   /* TODO: perform this check only once. */
@@ -2568,7 +2561,7 @@ read_header:
           request_free (req);
           resp_free (resp);
           xfree (head);
-          xfree_null (message);
+          xfree (message);
           return RETRUNNEEDED;
         }
       else if (!ALLOW_CLOBBER)
@@ -2651,7 +2644,7 @@ read_header:
     hs->error = xstrdup (_("(no description)"));
   else
     hs->error = xstrdup (message);
-  xfree_null (message);
+  xfree (message);
 
   type = resp_header_strdup (resp, "Content-Type");
   if (type)
@@ -2672,7 +2665,7 @@ read_header:
               tmp = parse_charset (tmp2);
               if (tmp)
                 set_content_encoding (iri, tmp);
-              xfree_null(tmp);
+              xfree(tmp);
             }
         }
     }
@@ -2705,7 +2698,7 @@ read_header:
       hs->restval = 0;
 
       CLOSE_FINISH (sock);
-      xfree_null (type);
+      xfree (type);
       xfree (head);
 
       return RETRFINISHED;
@@ -2746,7 +2739,7 @@ read_header:
               if (_err != RETRFINISHED || hs->res < 0)
                 {
                   CLOSE_INVALIDATE (sock);
-                  xfree_null (type);
+                  xfree (type);
                   xfree (head);
                   return _err;
                 }
@@ -2763,7 +2756,7 @@ read_header:
                 CLOSE_INVALIDATE (sock);
             }
 
-          xfree_null (type);
+          xfree (type);
           xfree (head);
           /* From RFC2616: The status codes 303 and 307 have
              been added for servers that wish to make unambiguously
@@ -2846,7 +2839,7 @@ read_header:
       hs->res = 0;
       /* Mark as successfully retrieved. */
       *dt |= RETROKF;
-      xfree_null (type);
+      xfree (type);
       if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE)
         CLOSE_FINISH (sock);
       else
@@ -2860,7 +2853,7 @@ read_header:
     {
       /* The Range request was somehow misunderstood by the server.
          Bail out.  */
-      xfree_null (type);
+      xfree (type);
       CLOSE_INVALIDATE (sock);
       xfree (head);
       return RANGEERR;
@@ -2927,7 +2920,7 @@ read_header:
             {
               CLOSE_INVALIDATE (sock);
               xfree (head);
-              xfree_null (type);
+              xfree (type);
               return _err;
             }
           else
@@ -2952,7 +2945,7 @@ read_header:
         }
 
       xfree (head);
-      xfree_null (type);
+      xfree (type);
       return RETRFINISHED;
     }
 
@@ -2993,7 +2986,7 @@ read_header:
                              strerror (errno));
                   CLOSE_INVALIDATE (sock);
                   xfree (head);
-                  xfree_null (type);
+                  xfree (type);
                   return UNLINKERR;
                 }
             }
@@ -3021,7 +3014,7 @@ read_header:
                          hs->local_file);
               CLOSE_INVALIDATE (sock);
               xfree (head);
-              xfree_null (type);
+              xfree (type);
               return FOPEN_EXCL_ERR;
             }
         }
@@ -3030,7 +3023,7 @@ read_header:
           logprintf (LOG_NOTQUIET, "%s: %s\n", hs->local_file, strerror (errno));
           CLOSE_INVALIDATE (sock);
           xfree (head);
-          xfree_null (type);
+          xfree (type);
           return FOPENERR;
         }
     }
@@ -3050,7 +3043,7 @@ read_header:
 
   /* Now we no longer need to store the response header. */
   xfree (head);
-  xfree_null (type);
+  xfree (type);
 
   if (hs->res >= 0)
     CLOSE_FINISH (sock);
@@ -3370,7 +3363,7 @@ Remote file does not exist -- broken link!!!\n"));
             }
           logputs (LOG_VERBOSE, "\n");
           ret = WRONGCODE;
-          xfree_null (hurl);
+          xfree (hurl);
           goto exit;
         }
 
@@ -3494,10 +3487,8 @@ Remote file exists.\n\n"));
               got_name = true;
               *dt &= ~HEAD_ONLY;
               count = 0;          /* the retrieve count for HEAD is reset */
-              xfree_null (hstat.message);
-              xfree_null (hstat.error);
-              hstat.message = NULL;
-              hstat.error = NULL;
+              xfree (hstat.message);
+              xfree (hstat.error);
               continue;
             } /* send_head_first */
         } /* !got_head */
@@ -3646,7 +3637,7 @@ Remote file exists.\n\n"));
 exit:
   if (ret == RETROK && local_file)
     {
-      xfree_null (*local_file);
+      xfree (*local_file);
       *local_file = xstrdup (hstat.local_file);
     }
   free_hstat (&hstat);
@@ -3866,23 +3857,21 @@ digest_authentication_encode (const char *au, const char *user,
   if (qop != NULL && strcmp(qop,"auth"))
     {
       logprintf (LOG_NOTQUIET, _("Unsupported quality of protection '%s'.\n"), qop);
-      xfree_null (qop); /* force freeing mem and return */
-      qop = NULL;
+      xfree (qop); /* force freeing mem and return */
     }
   else if (algorithm != NULL && strcmp (algorithm,"MD5") && strcmp (algorithm,"MD5-sess"))
     {
       logprintf (LOG_NOTQUIET, _("Unsupported algorithm '%s'.\n"), algorithm);
-      xfree_null (qop); /* force freeing mem and return */
-      qop = NULL;
+      xfree (qop); /* force freeing mem and return */
     }
 
   if (!realm || !nonce || !user || !passwd || !path || !method || !qop)
     {
-      xfree_null (realm);
-      xfree_null (opaque);
-      xfree_null (nonce);
-      xfree_null (qop);
-      xfree_null (algorithm);
+      xfree (realm);
+      xfree (opaque);
+      xfree (nonce);
+      xfree (qop);
+      xfree (algorithm);
       if (!qop)
         *auth_err = UNKNOWNATTR;
       else
@@ -4009,11 +3998,11 @@ digest_authentication_encode (const char *au, const char *user,
       }
   }
 
-  xfree_null (realm);
-  xfree_null (opaque);
-  xfree_null (nonce);
-  xfree_null (qop);
-  xfree_null (algorithm);
+  xfree (realm);
+  xfree (opaque);
+  xfree (nonce);
+  xfree (qop);
+  xfree (algorithm);
 
   return res;
 }
@@ -4108,7 +4097,7 @@ save_cookies (void)
 void
 http_cleanup (void)
 {
-  xfree_null (pconn.host);
+  xfree (pconn.host);
   if (wget_cookie_jar)
     cookie_jar_delete (wget_cookie_jar);
 }

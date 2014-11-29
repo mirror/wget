@@ -156,11 +156,7 @@ static void
 free_log_line (int num)
 {
   struct log_ln *ln = log_lines + num;
-  if (ln->malloced_line)
-    {
-      xfree (ln->malloced_line);
-      ln->malloced_line = NULL;
-    }
+  xfree (ln->malloced_line);
   ln->content = NULL;
 }
 
@@ -451,8 +447,7 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
   FPUTS (write_ptr, fp);
   if (warcfp != NULL)
     FPUTS (write_ptr, warcfp);
-  if (state->bigmsg)
-    xfree (state->bigmsg);
+  xfree (state->bigmsg);
 
  flush:
   if (flush_log_p)
@@ -847,7 +842,7 @@ log_cleanup (void)
 {
   size_t i;
   for (i = 0; i < countof (ring); i++)
-    xfree_null (ring[i].buffer);
+    xfree (ring[i].buffer);
 }
 
 /* When SIGHUP or SIGUSR1 are received, the output is redirected

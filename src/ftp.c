@@ -449,7 +449,7 @@ Error in server response, closing control connection.\n"));
           return err;
         case FTPSRVERR :
           /* PWD unsupported -- assume "/". */
-          xfree_null (con->id);
+          xfree (con->id);
           con->id = xstrdup ("/");
           break;
         case FTPOK:
@@ -1703,7 +1703,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
           if (err == FOPEN_EXCL_ERR)
             {
               /* Re-determine the file name. */
-              xfree_null (con->target);
+              xfree (con->target);
               con->target = url_file_name (u, NULL);
               locf = con->target;
             }
@@ -2473,10 +2473,8 @@ ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
   /* If a connection was left, quench it.  */
   if (con.csock != -1)
     fd_close (con.csock);
-  xfree_null (con.id);
-  con.id = NULL;
-  xfree_null (con.target);
-  con.target = NULL;
+  xfree (con.id);
+  xfree (con.target);
   return res;
 }
 
@@ -2490,7 +2488,7 @@ delelement (struct fileinfo *f, struct fileinfo **start)
   struct fileinfo *next = f->next;
 
   xfree (f->name);
-  xfree_null (f->linkto);
+  xfree (f->linkto);
   xfree (f);
 
   if (next)

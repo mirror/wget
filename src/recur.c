@@ -461,8 +461,8 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
         }
 
       xfree (url);
-      xfree_null (referer);
-      xfree_null (file);
+      xfree (referer);
+      xfree (file);
       iri_free (i);
     }
 
@@ -478,7 +478,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
       {
         iri_free (d6);
         xfree (d1);
-        xfree_null (d2);
+        xfree (d2);
       }
   }
   url_queue_delete (queue);

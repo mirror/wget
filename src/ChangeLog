@@ -1,3 +1,12 @@
+2014-11-29  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* utils.h: xfree() sets argument to NULL after freeing,
+	removed xfree_null()
+	* connect.c, cookies.c, ftp-basic.c, ftp-ls.c, ftp.c hash.c,
+	host.c, html-url.c, http.c, init.c, iri.c, log.c, main.c,
+	mswindows.c, netrc.c, openssl.c, recur.c, res.c, retr.c,
+	url.c, warc.c: Replaced xfree_null() by xfree()
+
 2014-11-28  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* main.c: Fix length of program_argstring,

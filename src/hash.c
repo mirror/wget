@@ -46,10 +46,11 @@ as that of the covered work.  */
 # include "utils.h"
 #else
 /* Make do without them. */
-# define xnew(x) xmalloc (sizeof (x))
-# define xnew_array(type, x) xmalloc (sizeof (type) * (x))
-# define xmalloc malloc
-# define xfree free
+# define xnew(type) (xmalloc (sizeof (type)))
+# define xnew0(type) (xcalloc (1, sizeof (type)))
+# define xnew_array(type, len) (xmalloc ((len) * sizeof (type)))
+# define xfree(p) do { free ((void *) (p)); p = NULL; } while (0)
+
 # ifndef countof
 #  define countof(x) (sizeof (x) / sizeof ((x)[0]))
 # endif

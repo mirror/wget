@@ -488,8 +488,7 @@ tag_handle_base (int tagid _GL_UNUSED, struct taginfo *tag, struct map_context *
   base_urlpos->ignore_when_downloading = 1;
   base_urlpos->link_base_p = 1;
 
-  if (ctx->base)
-    xfree (ctx->base);
+  xfree (ctx->base);
   if (ctx->parent_base)
     ctx->base = uri_merge (ctx->parent_base, newbase);
   else
@@ -630,7 +629,7 @@ tag_handle_meta (int tagid _GL_UNUSED, struct taginfo *tag, struct map_context *
       if (!mcharset)
         return;
 
-      xfree_null (meta_charset);
+      xfree (meta_charset);
       meta_charset = mcharset;
     }
   else if (name && 0 == c_strcasecmp (name, "robots"))
@@ -758,7 +757,7 @@ get_urls_html (const char *file, const char *url, bool *meta_disallow_follow,
   if (meta_disallow_follow)
     *meta_disallow_follow = ctx.nofollow;
 
-  xfree_null (ctx.base);
+  xfree (ctx.base);
   wget_read_file_free (fm);
   return ctx.head;
 }

@@ -747,8 +747,7 @@ lookup_host (const char *host, int flags)
       logprintf (LOG_VERBOSE, _("Resolving %s... "),
                  quotearg_style (escape_quoting_style, str ? str : host));
 
-      if (str)
-        xfree (str);
+      xfree (str);
     }
 
 #ifdef ENABLE_IPV6

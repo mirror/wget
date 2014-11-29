@@ -1136,7 +1136,7 @@ ftp_pwd (int csock, char **pwd)
     goto err;
 
   /* Has the `pwd' been already allocated?  Free! */
-  xfree_null (*pwd);
+  xfree (*pwd);
 
   *pwd = xstrdup (request);
 

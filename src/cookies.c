@@ -153,10 +153,10 @@ cookie_expired_p (const struct cookie *c)
 static void
 delete_cookie (struct cookie *cookie)
 {
-  xfree_null (cookie->domain);
-  xfree_null (cookie->path);
-  xfree_null (cookie->attr);
-  xfree_null (cookie->value);
+  xfree (cookie->domain);
+  xfree (cookie->path);
+  xfree (cookie->attr);
+  xfree (cookie->value);
   xfree (cookie);
 }
 
@@ -376,7 +376,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
         {
           if (!TOKEN_NON_EMPTY (value))
             goto error;
-          xfree_null (cookie->domain);
+          xfree (cookie->domain);
           /* Strictly speaking, we should set cookie->domain_exact if the
              domain doesn't begin with a dot.  But many sites set the
              domain to "foo.com" and expect "subhost.foo.com" to get the
@@ -389,7 +389,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
         {
           if (!TOKEN_NON_EMPTY (value))
             goto error;
-          xfree_null (cookie->path);
+          xfree (cookie->path);
           cookie->path = strdupdelim (value.b, value.e);
         }
       else if (TOKEN_IS (name, "expires"))

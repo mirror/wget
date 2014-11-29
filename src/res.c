@@ -404,7 +404,7 @@ free_specs (struct robot_specs *specs)
   int i;
   for (i = 0; i < specs->count; i++)
     xfree (specs->paths[i].path);
-  xfree_null (specs->paths);
+  xfree (specs->paths);
   xfree (specs);
 }
 
@@ -579,7 +579,6 @@ res_retrieve_file (const char *url, char **file, struct iri *iri)
          allocated the file name, deallocate is here so that the
          caller doesn't have to worry about it.  */
       xfree (*file);
-      *file = NULL;
     }
   return err == RETROK;
 }

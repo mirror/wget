@@ -550,7 +550,7 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
       rdlen = fd_read (fd, hunk + tail, remain, 0);
       if (rdlen < 0)
         {
-          xfree_null (hunk);
+          xfree (hunk);
           return NULL;
         }
       tail += rdlen;
@@ -839,8 +839,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
 
       assert (mynewloc != NULL);
 
-      if (local_file)
-        xfree (local_file);
+      xfree (local_file);
 
       /* The HTTP specs only allow absolute URLs to appear in
          redirects, but a ton of boneheaded webservers and CGIs out
@@ -854,8 +853,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
          the content encoding. */
       iri->utf8_encode = opt.enable_iri;
       set_content_encoding (iri, NULL);
-      xfree_null (iri->orig_url);
-      iri->orig_url = NULL;
+      xfree (iri->orig_url);
 
       /* Now, see if this new location makes sense. */
       newloc_parsed = url_parse (mynewloc, &up_error_code, iri, true);
@@ -964,7 +962,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   if (file)
     *file = local_file ? local_file : NULL;
   else
-    xfree_null (local_file);
+    xfree (local_file);
 
   if (orig_parsed != u)
     {
@@ -1048,8 +1046,7 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       /* Reset UTF-8 encode status */
       iri->utf8_encode = opt.enable_iri;
-      xfree_null (iri->orig_url);
-      iri->orig_url = NULL;
+      xfree (iri->orig_url);
 
       input_file = url_file;
     }
@@ -1059,7 +1056,7 @@ retrieve_from_file (const char *file, bool html, int *count)
   url_list = (html ? get_urls_html (input_file, NULL, NULL, iri)
               : get_urls_file (input_file));
 
-  xfree_null (url_file);
+  xfree (url_file);
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {
@@ -1114,8 +1111,8 @@ Removing file due to --delete-after in retrieve_from_file():\n"));
           dt &= ~RETROKF;
         }
 
-      xfree_null (new_file);
-      xfree_null (filename);
+      xfree (new_file);
+      xfree (filename);
       iri_free (tmpiri);
     }
 
@@ -1191,7 +1188,7 @@ free_urlpos (struct urlpos *l)
       struct urlpos *next = l->next;
       if (l->url)
         url_free (l->url);
-      xfree_null (l->local_name);
+      xfree (l->local_name);
       xfree (l);
       l = next;
     }

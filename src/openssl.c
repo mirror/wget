@@ -416,7 +416,7 @@ openssl_errstr (int fd _GL_UNUSED, void *arg)
     return NULL;
 
   /* Get rid of previous contents of ctx->last_error, if any.  */
-  xfree_null (ctx->last_error);
+  xfree (ctx->last_error);
 
   /* Iterate over OpenSSL's error stack and accumulate errors in the
      last_error buffer, separated by "; ".  This is better than using
@@ -460,7 +460,7 @@ openssl_close (int fd, void *arg)
 
   SSL_shutdown (conn);
   SSL_free (conn);
-  xfree_null (ctx->last_error);
+  xfree (ctx->last_error);
   xfree (ctx);
 
   close (fd);

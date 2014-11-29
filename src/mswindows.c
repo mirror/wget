@@ -367,8 +367,8 @@ static int old_percentage = -1;
 void
 ws_changetitle (const char *url)
 {
-  xfree_null (title_buf);
-  xfree_null (curr_url);
+  xfree (title_buf);
+  xfree (curr_url);
   title_buf = xmalloc (strlen (url) + 20);
   curr_url = xstrdup (url);
   old_percentage = -1;

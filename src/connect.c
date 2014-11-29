@@ -284,8 +284,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
           logprintf (LOG_VERBOSE, _("Connecting to %s|%s|:%d... "),
                      str ? str : escnonprint_uri (print), txt_addr, port);
 
-          if (str)
-              xfree (str);
+          xfree (str);
         }
       else
         {

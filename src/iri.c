@@ -295,7 +295,7 @@ remote_to_utf8 (struct iri *iri, const char *str, const char **new)
   /* Test if something was converted */
   if (*new && !strcmp (str, *new))
     {
-      xfree ((char *) *new);
+      xfree (*new);
       return false;
     }
 
@@ -329,9 +329,9 @@ struct iri *iri_dup (const struct iri *src)
 void
 iri_free (struct iri *i)
 {
-  xfree_null (i->uri_encoding);
-  xfree_null (i->content_encoding);
-  xfree_null (i->orig_url);
+  xfree (i->uri_encoding);
+  xfree (i->content_encoding);
+  xfree (i->orig_url);
   xfree (i);
 }
 

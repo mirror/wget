@@ -363,8 +363,8 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
       if (error || ignore)
         {
           DEBUGP (("Skipping.\n"));
-          xfree_null (cur.name);
-          xfree_null (cur.linkto);
+          xfree (cur.name);
+          xfree (cur.linkto);
           continue;
         }
 
@@ -1089,7 +1089,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
       else
         upwd = concat_strings (tmpu, "@", (char *) 0);
       xfree (tmpu);
-      xfree_null (tmpp);
+      xfree (tmpp);
     }
   else
     upwd = xstrdup ("");

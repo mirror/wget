@@ -706,7 +706,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
         new_url = NULL;
       else
         {
-          xfree_null (iri->orig_url);
+          xfree (iri->orig_url);
           iri->orig_url = xstrdup (url);
           url_encoded = reencode_escapes (new_url);
           if (url_encoded != new_url)
@@ -917,7 +917,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
       u->url = url_string (u, URL_AUTH_SHOW);
 
       if (url_encoded != url)
-        xfree ((char *) url_encoded);
+        xfree (url_encoded);
     }
   else
     {
@@ -932,7 +932,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
  error:
   /* Cleanup in case of error: */
   if (url_encoded && url_encoded != url)
-    xfree ((char *) url_encoded);
+    xfree (url_encoded);
 
   /* Transmit the error code to the caller, if the caller wants to
      know.  */
@@ -1177,11 +1177,11 @@ url_free (struct url *url)
   xfree (url->path);
   xfree (url->url);
 
-  xfree_null (url->params);
-  xfree_null (url->query);
-  xfree_null (url->fragment);
-  xfree_null (url->user);
-  xfree_null (url->passwd);
+  xfree (url->params);
+  xfree (url->query);
+  xfree (url->fragment);
+  xfree (url->user);
+  xfree (url->passwd);
 
   xfree (url->dir);
   xfree (url->file);

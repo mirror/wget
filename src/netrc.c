@@ -163,7 +163,7 @@ search_netrc (const char *host, const char **acc, const char **passwd,
 
 /* Normally, these functions would be defined by your package.  */
 # define xmalloc malloc
-# define xfree free
+# define xfree(p) do { free ((void *) (p)); p = NULL; } while (0)
 # define xstrdup strdup
 
 # define xrealloc realloc
@@ -183,9 +183,9 @@ maybe_add_to_list (acc_t **newentry, acc_t **list)
   if (a && ! a->acc)
     {
       /* Free any allocated space.  */
-      xfree_null (a->host);
-      xfree_null (a->acc);
-      xfree_null (a->passwd);
+      xfree (a->host);
+      xfree (a->acc);
+      xfree (a->passwd);
     }
   else
     {
@@ -424,9 +424,9 @@ free_netrc(acc_t *l)
   while (l)
     {
       t = l->next;
-      xfree_null (l->acc);
-      xfree_null (l->passwd);
-      xfree_null (l->host);
+      xfree (l->acc);
+      xfree (l->passwd);
+      xfree (l->host);
       xfree (l);
       l = t;
     }

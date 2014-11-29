@@ -889,7 +889,7 @@ format_and_print_line (const char *prefix, const char *line,
         }
       if (printf ("%s ", token) < 0)
         {
-          xfree_null (line_dup);
+          xfree (line_dup);
           return -1;
         }
       remaining_chars -= strlen (token) + 1;  /* account for " " */
@@ -1481,13 +1481,11 @@ for details.\n\n"));
           {
             setoptval ("bodydata", opt.post_data, "body-data");
             xfree(opt.post_data);
-            opt.post_data = NULL;
           }
         else
           {
             setoptval ("bodyfile", opt.post_file_name, "body-file");
             xfree(opt.post_file_name);
-            opt.post_file_name = NULL;
           }
     }
 
@@ -1698,8 +1696,8 @@ outputting to a regular file.\n"));
               if (unlink (filename))
                 logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
             }
-          xfree_null (redirected_URL);
-          xfree_null (filename);
+          xfree (redirected_URL);
+          xfree (filename);
           url_free (url_parsed);
         }
       iri_free (iri);

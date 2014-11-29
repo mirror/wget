@@ -527,7 +527,7 @@ wgetrc_user_file_name (void)
   home = home_dir ();
   if (home)
     file = aprintf ("%s/.wgetrc", home);
-  xfree_null (home);
+  xfree (home);
 #endif /* def __VMS [else] */
 
   if (!file)
@@ -562,8 +562,7 @@ wgetrc_file_name (void)
   if (!file)
     {
       char *home = home_dir ();
-      xfree_null (file);
-      file = NULL;
+      xfree (file);
       home = ws_mypath ();
       if (home)
         {
@@ -571,7 +570,6 @@ wgetrc_file_name (void)
           if (!file_exists_p (file))
             {
               xfree (file);
-              file = NULL;
             }
           xfree (home);
         }
@@ -645,8 +643,8 @@ run_wgetrc (const char *file)
         default:
           abort ();
         }
-      xfree_null (com);
-      xfree_null (val);
+      xfree (com);
+      xfree (val);
       ++ln;
     }
   xfree (line);
@@ -982,7 +980,7 @@ cmd_string (const char *com _GL_UNUSED, const char *val, void *place)
 {
   char **pstring = (char **)place;
 
-  xfree_null (*pstring);
+  xfree (*pstring);
   *pstring = xstrdup (val);
   return true;
 }
@@ -993,7 +991,7 @@ cmd_string_uppercase (const char *com _GL_UNUSED, const char *val, void *place)
 {
   char *q, **pstring;
   pstring = (char **)place;
-  xfree_null (*pstring);
+  xfree (*pstring);
 
   *pstring = xmalloc (strlen (val) + 1);
 
@@ -1013,7 +1011,7 @@ cmd_file (const char *com _GL_UNUSED, const char *val, void *place)
 {
   char **pstring = (char **)place;
 
-  xfree_null (*pstring);
+  xfree (*pstring);
 
   /* #### If VAL is empty, perhaps should set *PLACE to NULL.  */
 
@@ -1418,7 +1416,7 @@ cmd_spec_progress (const char *com, const char *val, void *place_ignored _GL_UNU
                exec_name, com, quote (val));
       return false;
     }
-  xfree_null (opt.progress_type);
+  xfree (opt.progress_type);
 
   /* Don't call set_progress_implementation here.  It will be called
      in main when it becomes clear what the log output is.  */
@@ -1569,7 +1567,7 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored _GL_UN
                exec_name, com, quote (val));
       return false;
     }
-  xfree_null (opt.useragent);
+  xfree (opt.useragent);
   opt.useragent = xstrdup (val);
   return true;
 }
@@ -1769,11 +1767,11 @@ cleanup (void)
   log_cleanup ();
   netrc_cleanup ();
 
-  xfree_null (opt.choose_config);
-  xfree_null (opt.lfilename);
-  xfree_null (opt.dir_prefix);
-  xfree_null (opt.input_filename);
-  xfree_null (opt.output_document);
+  xfree (opt.choose_config);
+  xfree (opt.lfilename);
+  xfree (opt.dir_prefix);
+  xfree (opt.input_filename);
+  xfree (opt.output_document);
   free_vec (opt.accepts);
   free_vec (opt.rejects);
   free_vec ((char **)opt.excludes);
@@ -1781,39 +1779,39 @@ cleanup (void)
   free_vec (opt.domains);
   free_vec (opt.follow_tags);
   free_vec (opt.ignore_tags);
-  xfree_null (opt.progress_type);
-  xfree_null (opt.ftp_user);
-  xfree_null (opt.ftp_passwd);
-  xfree_null (opt.ftp_proxy);
-  xfree_null (opt.https_proxy);
-  xfree_null (opt.http_proxy);
+  xfree (opt.progress_type);
+  xfree (opt.ftp_user);
+  xfree (opt.ftp_passwd);
+  xfree (opt.ftp_proxy);
+  xfree (opt.https_proxy);
+  xfree (opt.http_proxy);
   free_vec (opt.no_proxy);
-  xfree_null (opt.useragent);
-  xfree_null (opt.referer);
-  xfree_null (opt.http_user);
-  xfree_null (opt.http_passwd);
+  xfree (opt.useragent);
+  xfree (opt.referer);
+  xfree (opt.http_user);
+  xfree (opt.http_passwd);
   free_vec (opt.user_headers);
   free_vec (opt.warc_user_headers);
 # ifdef HAVE_SSL
-  xfree_null (opt.cert_file);
-  xfree_null (opt.private_key);
-  xfree_null (opt.ca_directory);
-  xfree_null (opt.ca_cert);
-  xfree_null (opt.crl_file);
-  xfree_null (opt.random_file);
-  xfree_null (opt.egd_file);
+  xfree (opt.cert_file);
+  xfree (opt.private_key);
+  xfree (opt.ca_directory);
+  xfree (opt.ca_cert);
+  xfree (opt.crl_file);
+  xfree (opt.random_file);
+  xfree (opt.egd_file);
 # endif
-  xfree_null (opt.bind_address);
-  xfree_null (opt.cookies_input);
-  xfree_null (opt.cookies_output);
-  xfree_null (opt.user);
-  xfree_null (opt.passwd);
-  xfree_null (opt.base_href);
-  xfree_null (opt.method);
-  xfree_null (opt.post_file_name);
-  xfree_null (opt.post_data);
-  xfree_null (opt.body_data);
-  xfree_null (opt.body_file);
+  xfree (opt.bind_address);
+  xfree (opt.cookies_input);
+  xfree (opt.cookies_output);
+  xfree (opt.user);
+  xfree (opt.passwd);
+  xfree (opt.base_href);
+  xfree (opt.method);
+  xfree (opt.post_file_name);
+  xfree (opt.post_data);
+  xfree (opt.body_data);
+  xfree (opt.body_file);
 
 #endif /* DEBUG_MALLOC */
 }
