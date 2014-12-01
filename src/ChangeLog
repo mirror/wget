@@ -1,3 +1,11 @@
+2014-12-01  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* connect.c, iri.c, url.c, warc.c: Fix issues reported
+	by static code analysis tool 'parfait'.
+
+	Closes: #41235
+	Reported-by: Jiri Kukacka
+
 2014-11-29  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* utils.h: xfree() sets argument to NULL after freeing,

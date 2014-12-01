@@ -575,8 +575,8 @@ rewrite_shorthand_url (const char *url)
         goto http;
 
       /* Turn "foo.bar.com:path" to "ftp://foo.bar.com/path". */
-      ret = aprintf ("ftp://%s", url);
-      ret[6 + (p - url)] = '/';
+      if ((ret = aprintf ("ftp://%s", url)) != NULL)
+        ret[6 + (p - url)] = '/';
     }
   else
     {
@@ -1173,20 +1173,23 @@ url_set_file (struct url *url, const char *newfile)
 void
 url_free (struct url *url)
 {
-  xfree (url->host);
-  xfree (url->path);
-  xfree (url->url);
+  if (url)
+    {
+      xfree (url->host);
+      xfree (url->path);
+      xfree (url->url);
 
-  xfree (url->params);
-  xfree (url->query);
-  xfree (url->fragment);
-  xfree (url->user);
-  xfree (url->passwd);
+      xfree (url->params);
+      xfree (url->query);
+      xfree (url->fragment);
+      xfree (url->user);
+      xfree (url->passwd);
 
-  xfree (url->dir);
-  xfree (url->file);
+      xfree (url->dir);
+      xfree (url->file);
 
-  xfree (url);
+      xfree (url);
+    }
 }
 
 /* Create all the necessary directories for PATH (a file).  Calls

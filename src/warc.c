@@ -1201,7 +1201,10 @@ warc_tempfile (void)
 
 #if !O_TEMPORARY
   if (unlink (filename) < 0)
-    return NULL;
+    {
+      close(fd);
+      return NULL;
+    }
 #endif
 
   return fdopen (fd, "wb+");

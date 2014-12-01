@@ -329,10 +329,13 @@ struct iri *iri_dup (const struct iri *src)
 void
 iri_free (struct iri *i)
 {
-  xfree (i->uri_encoding);
-  xfree (i->content_encoding);
-  xfree (i->orig_url);
-  xfree (i);
+  if (i)
+    {
+      xfree (i->uri_encoding);
+      xfree (i->content_encoding);
+      xfree (i->orig_url);
+      xfree (i);
+    }
 }
 
 /* Set uri_encoding of struct iri i. If a remote encoding was specified, use

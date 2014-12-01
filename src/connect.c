@@ -844,7 +844,7 @@ void *
 fd_transport_context (int fd)
 {
   struct transport_info *info = hash_table_get (transport_map, (void *)(intptr_t) fd);
-  return info->ctx;
+  return info ? info->ctx : NULL;
 }
 
 /* When fd_read/fd_write are called multiple times in a loop, they should
