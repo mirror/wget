@@ -203,6 +203,8 @@ ssl_init (void)
   SSLeay_add_all_algorithms ();
   SSLeay_add_ssl_algorithms ();
 
+  long ssl_options = 0;
+
   switch (opt.secure_protocol)
     {
 #ifndef OPENSSL_NO_SSL2
@@ -219,6 +221,9 @@ ssl_init (void)
 
     case secure_protocol_auto:
     case secure_protocol_pfs:
+      meth = SSLv23_client_method ();
+      ssl_options |= SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3;
+      break;
     case secure_protocol_tlsv1:
       meth = TLSv1_client_method ();
       break;
@@ -252,6 +257,9 @@ ssl_init (void)
   ssl_ctx = SSL_CTX_new ((SSL_METHOD *)meth);
   if (!ssl_ctx)
     goto error;
+
+  if (ssl_options)
+    SSL_CTX_set_options (ssl_ctx, ssl_options);
 
   /* OpenSSL ciphers: https://www.openssl.org/docs/apps/ciphers.html
    * Since we want a good protection, we also use HIGH (that excludes MD4 ciphers and some more)

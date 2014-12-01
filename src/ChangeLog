@@ -1,3 +1,8 @@
+2014-12-03  Jérémie Courrèges-Anglas  <jca@wxcvbn.org> (tiny change)
+
+	* openssl.c (ssl_init): Allow pfs to be used with protocols other than
+	TLSv1.
+
 2014-12-01  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* connect.c, iri.c, url.c, warc.c: Fix issues reported
