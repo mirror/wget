@@ -91,9 +91,11 @@ init_prng (void)
   if (RAND_status ())
     return;
 
+#ifdef HAVE_RAND_EGD
   /* Get random data from EGD if opt.egd_file was used.  */
   if (opt.egd_file && *opt.egd_file)
     RAND_egd (opt.egd_file);
+#endif
 
   if (RAND_status ())
     return;

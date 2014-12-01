@@ -392,6 +392,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
         AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
         AC_LIBOBJ([openssl])
         LIBS="$LIBSSL $LIBS"
+        AC_CHECK_FUNCS([RAND_egd])
       elif test x"$with_ssl" != x
       then
         AC_MSG_ERROR([--with-ssl=openssl was given, but SSL is not available.])
