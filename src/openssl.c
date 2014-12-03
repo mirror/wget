@@ -170,6 +170,7 @@ bool
 ssl_init (void)
 {
   SSL_METHOD const *meth;
+  long ssl_options = 0;
 
 #if OPENSSL_VERSION_NUMBER >= 0x00907000
   if (ssl_true_initialized == 0)
@@ -202,8 +203,6 @@ ssl_init (void)
   SSL_load_error_strings ();
   SSLeay_add_all_algorithms ();
   SSLeay_add_ssl_algorithms ();
-
-  long ssl_options = 0;
 
   switch (opt.secure_protocol)
     {

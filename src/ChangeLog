@@ -1,4 +1,8 @@
-2014-11-20  Gisle Vanem  <gvanem@yahoo.no>
+2014-12-03  Gisle Vanem  <gvanem@yahoo.no>
+
+	* openssl.c (ssl_init): Fix C89 warning
+
+2014-12-03  Gisle Vanem  <gvanem@yahoo.no>
 
 	* mswindows.c (ws_cleanup): Fix compiler error
 
