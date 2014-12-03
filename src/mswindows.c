@@ -89,7 +89,7 @@ windows_main (char **exec_name)
 static void
 ws_cleanup (void)
 {
-  xfree ((char*)exec_name);
+  xfree (exec_name);
   WSACleanup ();
 }
 

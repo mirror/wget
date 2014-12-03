@@ -5,7 +5,7 @@ from misc.wget_file import WgetFile
 import os
 
 # This test caused wget up to 1.16 to crash
-os.environ["LC_ALL"] = "en_US.UTF-8"
+#os.environ["LC_ALL"] = "en_US.UTF-8"
 
 urls = [
     "File%20formats/Images/SVG,%20Scalable%20Vector%20Graphics/html,%20W3C%20v1.2%20rec%20(tiny)/directory",
