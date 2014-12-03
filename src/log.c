@@ -536,6 +536,7 @@ logprintf (enum log_options o, const char *fmt, ...)
   CHECK_VERBOSE (o);
 
   xzero (lpstate);
+  errno = 0;
   do
     {
       va_start (args, fmt);
