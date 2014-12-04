@@ -1,6 +1,7 @@
 2014-12-04  Darshit Shah  <darnir@gmail.com>
 
 	* ftp.c (getftp): Remove a call to assert(1) and replace with error message
+					  Also fix indentation
 
 2014-12-04  Darshit Shah  <darnir@gmail.com>
 
