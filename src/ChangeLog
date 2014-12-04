@@ -1,5 +1,9 @@
 2014-12-04  Darshit Shah  <darnir@gmail.com>
 
+	* ftp.c (getftp): Remove a call to assert(1) and replace with error message
+
+2014-12-04  Darshit Shah  <darnir@gmail.com>
+
 	* wget.h: Define MIX and MAX macros globally for all files
 	* gnutls.c, retr.c: Delete declaration of MIN macro
 	* http.c, progress.c: Delete declaration of MIN and MAX macros
