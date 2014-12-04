@@ -896,13 +896,6 @@ get_eta (int *bcd)
    are confused when they see strchr (s, '\0') in the code.  */
 #define move_to_end(s) s = strchr (s, '\0');
 
-#ifndef MAX
-# define MAX(a, b) ((a) >= (b) ? (a) : (b))
-#endif
-#ifndef MIN
-# define MIN(a, b) ((a) <= (b) ? (a) : (b))
-#endif
-
 static void
 create_image (struct bar_progress *bp, double dl_total_time, bool done)
 {

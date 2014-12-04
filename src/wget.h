@@ -317,6 +317,11 @@ typedef double SUM_SIZE_INT;
    in base 10. 24082 / 10000 = 8*log_{10}(2).  */
 #define MAX_INT_TO_STRING_LEN(x) ((sizeof(x) * 24082 / 10000) + 2)
 
+/* Find the minimum or maximum of two provided values */
+# define MIN(i, j) ((i) <= (j) ? (i) : (j))
+# define MAX(i, j) ((i) >= (j) ? (i) : (j))
+
+
 extern const char *exec_name;
 extern const char *program_name;
 extern const char *program_argstring;

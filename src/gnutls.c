@@ -229,11 +229,6 @@ struct wgnutls_transport_context
   int peeklen;
 };
 
-#ifndef MIN
-# define MIN(i, j) ((i) <= (j) ? (i) : (j))
-#endif
-
-
 static int
 wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 {

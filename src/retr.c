@@ -136,10 +136,6 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
   limit_data.chunk_start = ptimer_read (timer);
 }
 
-#ifndef MIN
-# define MIN(i, j) ((i) <= (j) ? (i) : (j))
-#endif
-
 /* Write data in BUF to OUT.  However, if *SKIP is non-zero, skip that
    amount of data and decrease SKIP.  Increment *TOTAL by the amount
    of data written.  If OUT2 is not NULL, also write BUF to OUT2.

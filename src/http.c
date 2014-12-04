@@ -81,11 +81,6 @@ static bool known_authentication_scheme_p (const char *, const char *);
 static void ensure_extension (struct http_stat *, const char *, int *);
 static void load_cookies (void);
 
-#ifndef MIN
-# define MIN(x, y) ((x) > (y) ? (y) : (x))
-#endif
-
-
 static bool cookies_loaded_p;
 static struct cookie_jar *wget_cookie_jar;
 
@@ -1160,9 +1155,6 @@ append_value_to_filename (char **filename, param_token const * const value,
   if (is_url_encoded)
     url_unescape (*filename + original_length);
 }
-
-#undef MAX
-#define MAX(p, q) ((p) > (q) ? (p) : (q))
 
 /* Parse the contents of the `Content-Disposition' header, extracting
    the information useful to Wget.  Content-Disposition is a header

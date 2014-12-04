@@ -1,3 +1,9 @@
+2014-12-04  Darshit Shah  <darnir@gmail.com>
+
+	* wget.h: Define MIX and MAX macros globally for all files
+	* gnutls.c, retr.c: Delete declaration of MIN macro
+	* http.c, progress.c: Delete declaration of MIN and MAX macros
+
 2014-12-03  Gisle Vanem  <gvanem@yahoo.no>
 
 	* openssl.c (ssl_init): Fix C89 warning
