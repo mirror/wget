@@ -1,3 +1,10 @@
+2014-12-05  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* bootstrap.conf: Add modules fnmatch, memrchr, strcase, strptime,
+	strtoll, timegm
+	Remove module strcasecmp
+	Use module spawn-pipe instead of deprecated module pipe
+
 2014-11-25  Darshit Shah  <darnir@gmail.com>
 
 	* bootstrap.conf: Add flex as a prerequisite to building Wget from the

@@ -1,3 +1,7 @@
+2014-12-05  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* Makefile.am: Removed reference to cmpt.c
+
 2014-12-04  Darshit Shah  <darnir@gmail.com>
 
 	* ftp.c (getftp): Remove a call to assert(1) and replace with error message
