@@ -422,7 +422,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
         AC_LIBOBJ([gnutls])
         LIBS="$LIBGNUTLS $LIBS"
       else
-        AC_MSG_ERROR([--with-ssl=gnutls was given, but GNUTLS is not available.])
+        AC_MSG_ERROR([GnuTLS has not been found. Use --with-ssl=openssl if you explicitly want OpenSSL.])
       fi
     ])
 

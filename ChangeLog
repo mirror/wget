@@ -1,5 +1,9 @@
 2014-12-05  Tim Ruehsen <tim.ruehsen@gmx.de>
 
+	* configure.ac: Fix message for when GnuTLS has not been found.
+
+2014-12-05  Tim Ruehsen <tim.ruehsen@gmx.de>
+
 	* bootstrap.conf: Add modules fnmatch, memrchr, strcase, strptime,
 	strtoll, timegm
 	Remove module strcasecmp
