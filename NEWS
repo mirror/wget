@@ -7,12 +7,29 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.Y.Z
+* Changes in Wget 16.1
 
 ** Add --enable-assert configure option.
 
 ** Use pkg-config to check for libraries presence.
 
+** Do not limit --secure-protocol=auto|pfs to TLSv1.0.
+
+** Add --secure-protocol=TLSv1_1|TLSv1_2 .
+
+** Full C89 source code compliance.
+
+** Select and use the most secure authentication scheme with HTTP connections.
+
+** Fix issues with turkish locales.
+
+** Handle 504 Gateway Timeout.
+
+** New option --crl-file to load Certificate Revocation Lists.
+
+** Add valgrind support to tests suite.
+
+** Fix an off-by-one problem in the progress bar (introduced in 1.16).
 
 * Changes in Wget 1.16
 
