@@ -1,3 +1,7 @@
+2014-12-08  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* cfg.mk (local-checks-to-skip): Add sc_cast_of_argument_to_free.
+
 2014-12-05  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* configure.ac: Fix message for when GnuTLS has not been found.

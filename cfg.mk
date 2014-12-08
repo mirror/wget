@@ -20,7 +20,7 @@ local-checks-to-skip = \
     \
     sc_program_name \
     sc_makefile_at_at_check \
-
+    sc_cast_of_argument_to_free \
 
 #SHELL=bash -x
 show-vc-list-except:
