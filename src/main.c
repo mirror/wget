@@ -484,7 +484,7 @@ Logging and input file:\n"),
   -F,  --force-html                treat input file as HTML\n"),
     N_("\
   -B,  --base=URL                  resolves HTML input-file links (-i -F)\n\
-                                   relative to URL\n"),
+                                     relative to URL\n"),
     N_("\
        --config=FILE               specify config file to use\n"),
     N_("\
@@ -501,7 +501,7 @@ Download:\n"),
   -O,  --output-document=FILE      write documents to FILE\n"),
     N_("\
   -nc, --no-clobber                skip downloads that would download to\n\
-                                   existing files (overwriting them)\n"),
+                                     existing files (overwriting them)\n"),
     N_("\
   -c,  --continue                  resume getting a partially-downloaded file\n"),
     N_("\
@@ -512,10 +512,10 @@ Download:\n"),
        --show-progress             display the progress bar in any verbosity mode\n"),
     N_("\
   -N,  --timestamping              don't re-retrieve files unless newer than\n\
-                                   local\n"),
+                                     local\n"),
     N_("\
   --no-use-server-timestamps       don't set the local file's timestamp by\n\
-                                   the one on the server\n"),
+                                     the one on the server\n"),
     N_("\
   -S,  --server-response           print server response\n"),
     N_("\
@@ -555,7 +555,7 @@ Download:\n"),
   -6,  --inet6-only                connect only to IPv6 addresses\n"),
     N_("\
        --prefer-family=FAMILY      connect first to addresses of specified family,\n\
-                                   one of IPv6, IPv4, or none\n"),
+                                     one of IPv6, IPv4, or none\n"),
 #endif
     N_("\
        --user=USER                 set both ftp and http user to USER\n"),
@@ -599,7 +599,7 @@ HTTP options:\n"),
        --no-cache                  disallow server-cached data\n"),
     N_ ("\
        --default-page=NAME         change the default page name (normally\n\
-                                   this is 'index.html'.)\n"),
+                                     this is 'index.html'.)\n"),
     N_("\
   -E,  --adjust-extension          save HTML/CSS documents with proper extensions\n"),
     N_("\
@@ -640,13 +640,13 @@ HTTP options:\n"),
        --body-file=FILE            send contents of FILE. --method MUST be set\n"),
     N_("\
        --content-disposition       honor the Content-Disposition header when\n\
-                                   choosing local file names (EXPERIMENTAL)\n"),
+                                     choosing local file names (EXPERIMENTAL)\n"),
     N_("\
        --content-on-error          output the received content on server errors\n"),
     N_("\
        --auth-no-challenge         send Basic HTTP authentication information\n\
-                                   without first waiting for the server's\n\
-                                   challenge\n"),
+                                     without first waiting for the server's\n\
+                                     challenge\n"),
     "\n",
 
 #ifdef HAVE_SSL
@@ -654,7 +654,7 @@ HTTP options:\n"),
 HTTPS (SSL/TLS) options:\n"),
     N_("\
        --secure-protocol=PR        choose secure protocol, one of auto, SSLv2,\n\
-                                   SSLv3, TLSv1 and PFS\n"),
+                                     SSLv3, TLSv1 and PFS\n"),
     N_("\
        --https-only                only follow secure HTTPS links\n"),
     N_("\
@@ -728,7 +728,7 @@ WARC options:\n"),
        --no-warc-keep-log          do not store the log file in a WARC record\n"),
     N_("\
        --warc-tempdir=DIRECTORY    location for temporary files created by the\n\
-                                   WARC writer\n"),
+                                     WARC writer\n"),
     "\n",
 
     N_("\
@@ -741,7 +741,7 @@ Recursive download:\n"),
        --delete-after              delete files locally after downloading them\n"),
     N_("\
   -k,  --convert-links             make links in downloaded HTML or CSS point to\n\
-                                   local files\n"),
+                                     local files\n"),
     N_("\
        --backups=N                 before writing file X, rotate up to N backup files\n"),
 
@@ -795,7 +795,7 @@ Recursive accept/reject:\n"),
   -I,  --include-directories=LIST  list of allowed directories\n"),
     N_("\
        --trust-server-names        use the name specified by the redirection\n\
-                                   URL's last component\n"),
+                                     URL's last component\n"),
     N_("\
   -X,  --exclude-directories=LIST  list of excluded directories\n"),
     N_("\
