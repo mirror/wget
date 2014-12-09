@@ -477,7 +477,7 @@ Logging and input file:\n"),
     N_("\
   -nv, --no-verbose                turn off verboseness, without being quiet.\n"),
     N_("\
-       --report-speed=TYPE         Output bandwidth as TYPE.  TYPE can be bits.\n"),
+       --report-speed=TYPE         output bandwidth as TYPE.  TYPE can be bits.\n"),
     N_("\
   -i,  --input-file=FILE           download URLs found in local or external FILE.\n"),
     N_("\
@@ -486,9 +486,9 @@ Logging and input file:\n"),
   -B,  --base=URL                  resolves HTML input-file links (-i -F)\n\
                                    relative to URL.\n"),
     N_("\
-       --config=FILE               Specify config file to use.\n"),
+       --config=FILE               specify config file to use.\n"),
     N_("\
-       --no-config                 Do not read any config file.\n"),
+       --no-config                 do not read any config file.\n"),
     "\n",
 
     N_("\
@@ -598,7 +598,7 @@ HTTP options:\n"),
     N_("\
        --no-cache                  disallow server-cached data.\n"),
     N_ ("\
-       --default-page=NAME         Change the default page name (normally\n\
+       --default-page=NAME         change the default page name (normally\n\
                                    this is `index.html'.).\n"),
     N_("\
   -E,  --adjust-extension          save HTML/CSS documents with proper extensions.\n"),
@@ -635,9 +635,9 @@ HTTP options:\n"),
     N_("\
        --method=HTTPMethod         use method \"HTTPMethod\" in the request.\n"),
     N_("\
-       --body-data=STRING          Send STRING as data. --method MUST be set.\n"),
+       --body-data=STRING          send STRING as data. --method MUST be set.\n"),
     N_("\
-       --body-file=FILE            Send contents of FILE. --method MUST be set.\n"),
+       --body-file=FILE            send contents of FILE. --method MUST be set.\n"),
     N_("\
        --content-disposition       honor the Content-Disposition header when\n\
                                    choosing local file names (EXPERIMENTAL).\n"),
@@ -688,7 +688,7 @@ HTTPS (SSL/TLS) options:\n"),
 FTP options:\n"),
 #ifdef __VMS
     N_("\
-       --ftp-stmlf                 Use Stream_LF format for all binary FTP files.\n"),
+       --ftp-stmlf                 use Stream_LF format for all binary FTP files.\n"),
 #endif /* def __VMS */
     N_("\
        --ftp-user=USER             set ftp user to USER.\n"),
@@ -795,7 +795,7 @@ Recursive accept/reject:\n"),
   -I,  --include-directories=LIST  list of allowed directories.\n"),
     N_("\
        --trust-server-names        use the name specified by the redirection\n\
-                                   url last component.\n"),
+                                   URL's last component.\n"),
     N_("\
   -X,  --exclude-directories=LIST  list of excluded directories.\n"),
     N_("\
