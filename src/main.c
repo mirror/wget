@@ -599,11 +599,11 @@ HTTP options:\n"),
        --no-cache                  disallow server-cached data\n"),
     N_ ("\
        --default-page=NAME         change the default page name (normally\n\
-                                   this is `index.html'.)\n"),
+                                   this is 'index.html'.)\n"),
     N_("\
   -E,  --adjust-extension          save HTML/CSS documents with proper extensions\n"),
     N_("\
-       --ignore-length             ignore `Content-Length' header field\n"),
+       --ignore-length             ignore 'Content-Length' header field\n"),
     N_("\
        --header=STRING             insert STRING among the headers\n"),
     N_("\
@@ -613,7 +613,7 @@ HTTP options:\n"),
     N_("\
        --proxy-password=PASS       set PASS as proxy password\n"),
     N_("\
-       --referer=URL               include `Referer: URL' header in HTTP request\n"),
+       --referer=URL               include 'Referer: URL' header in HTTP request\n"),
     N_("\
        --save-headers              save the HTTP headers to file\n"),
     N_("\
@@ -695,7 +695,7 @@ FTP options:\n"),
     N_("\
        --ftp-password=PASS         set ftp password to PASS\n"),
     N_("\
-       --no-remove-listing         don't remove `.listing' files\n"),
+       --no-remove-listing         don't remove '.listing' files\n"),
     N_("\
        --no-glob                   turn off FTP file name globbing\n"),
     N_("\
