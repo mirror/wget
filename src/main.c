@@ -668,11 +668,11 @@ HTTPS (SSL/TLS) options:\n"),
     N_("\
        --private-key-type=TYPE     private key type, PEM or DER\n"),
     N_("\
-       --ca-certificate=FILE       file with the bundle of CA's\n"),
+       --ca-certificate=FILE       file with the bundle of CAs\n"),
     N_("\
-       --ca-directory=DIR          directory where hash list of CA's is stored\n"),
+       --ca-directory=DIR          directory where hash list of CAs is stored\n"),
     N_("\
-       --crl-file=FILE             file with bundle of CRL's\n"),
+       --crl-file=FILE             file with bundle of CRLs\n"),
 #if defined(HAVE_LIBSSL) || defined(HAVE_LIBSSL32)
     N_("\
        --random-file=FILE          file with random data for seeding the SSL PRNG\n"),
