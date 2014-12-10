@@ -1,3 +1,7 @@
+2014-12-10  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* configure.ac: Check for pcre.h
+
 2014-12-08  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* cfg.mk (local-checks-to-skip): Add sc_cast_of_argument_to_free.
