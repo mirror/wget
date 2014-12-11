@@ -1,3 +1,7 @@
+2014-12-11  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+        * Makefile.am: Support older versions of flex
+
 2014-12-05  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* Makefile.am: Removed reference to cmpt.c

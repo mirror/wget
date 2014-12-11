@@ -83,7 +83,7 @@ version.c:  $(wget_SOURCES) ../lib/libgnu.a
 	    | $(ESCAPEQUOTE) >> $@
 
 css.c: $(srcdir)/css.l
-	$(LEX) $(LFLAGS) -o $@ $^
+	$(LEX) $(LFLAGS) -o$@ $^
 
 css_.c: css.c
 	echo '#include "wget.h"' > $@
