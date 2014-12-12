@@ -41,6 +41,7 @@ as that of the covered work.  */
 #include "url.h"
 #include "c-strcase.h"
 #include "c-strcasestr.h"
+#include "xstrndup.h"
 
 /* RFC3987 section 3.1 mandates STD3 ASCII RULES */
 #define IDNA_FLAGS  IDNA_USE_STD3_ASCII_RULES
@@ -133,7 +134,7 @@ do_conversion (const char *tocode, const char *fromcode, char *in, size_t inlen,
 
   /* iconv() has to work on an unescaped string */
   in_org = in;
-  in_save = in = strndup(in, inlen);
+  in_save = in = xstrndup(in, inlen);
   url_unescape(in);
   inlen = strlen(in);
 
