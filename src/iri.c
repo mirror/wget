@@ -40,6 +40,7 @@ as that of the covered work.  */
 #include "utils.h"
 #include "url.h"
 #include "c-strcase.h"
+#include "c-strcasestr.h"
 
 /* RFC3987 section 3.1 mandates STD3 ASCII RULES */
 #define IDNA_FLAGS  IDNA_USE_STD3_ASCII_RULES
@@ -56,7 +57,7 @@ parse_charset (char *str)
   if (!str || !*str)
     return NULL;
 
-  str = strcasestr (str, "charset=");
+  str = c_strcasestr (str, "charset=");
   if (!str)
     return NULL;
 
