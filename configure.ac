@@ -652,13 +652,6 @@ AS_IF([test "X$with_libuuid" != "Xno"],[
     CFLAGS="$UUID_CFLAGS $CFLAGS"
     AC_DEFINE([HAVE_LIBUUID], [1], [Define if using libuuid.])
   ], [
-    AC_CHECK_HEADER(uuid.h,
-                    AC_CHECK_FUNC(uuid, uuid_create,
-                      [AC_DEFINE([HAVE_UUID_CREATE], 1,
-                                 [Define if uuid_create is available.])
-                      ])
-    )
-
     AC_CHECK_HEADER(uuid/uuid.h,
                     AC_CHECK_LIB(uuid, uuid_generate,
                       [LIBS="${LIBS} -luuid"
@@ -668,6 +661,12 @@ AS_IF([test "X$with_libuuid" != "Xno"],[
     )
   ])
 ])
+
+AC_CHECK_HEADER(uuid.h,
+  AC_CHECK_FUNC(uuid_create,
+    [AC_DEFINE([HAVE_UUID_CREATE], 1, [Define if uuid_create is available.])]
+  )
+)
 
 dnl
 dnl Check for PCRE
