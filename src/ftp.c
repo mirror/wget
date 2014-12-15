@@ -1350,7 +1350,6 @@ Error in server response, closing control connection.\n"));
 
   /* Get the server to tell us if everything is retrieved.  */
   err = ftp_response (csock, &respline);
-  *last_expected_bytes = ftp_expected_bytes (respline);
   if (err != FTPOK)
     {
       /* The control connection is decidedly closed.  Print the time
@@ -1366,6 +1365,7 @@ Error in server response, closing control connection.\n"));
       con->csock = -1;
       return FTPRETRINT;
     } /* err != FTPOK */
+  *last_expected_bytes = ftp_expected_bytes (respline);
   /* If retrieval failed for any reason, return FTPRETRINT, but do not
      close socket, since the control connection is still alive.  If
      there is something wrong with the control connection, it will
