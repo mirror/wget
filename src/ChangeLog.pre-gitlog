@@ -3369,7 +3369,7 @@
 
 2008-06-14  Xavier Saint  <wget@sxav.eu>
 
- 	* iri.c, iri.h : New files.
+	* iri.c, iri.h : New files.
 
 	* Makefile.am : Add files iri.h and conditional iri.c.
 

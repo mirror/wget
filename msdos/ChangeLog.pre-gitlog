@@ -53,7 +53,7 @@
 	now wget.exe.
 
 	* Makefile.WC: Added for building with OpenWatcom targeting
-	32-bit DOS (DOS32A extender). 
+	32-bit DOS (DOS32A extender).
 
 2007-09-24  Gisle Vanem  <giva@bgnett.no>
 

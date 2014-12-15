@@ -3294,4 +3294,3 @@
 
 	* aclocal.m4 (AM_WITH_NLS, AM_GNU_GETTEXT, AM_LC_MESSAGES,
 	AM_PATH_PROG_WITH_TEST): from gettext-0.10.32.
-
