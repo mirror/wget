@@ -340,6 +340,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     LIBS="$OPENSSL_LIBS $LIBS"
     CFLAGS="$OPENSSL_CFLAGS -DHAVE_LIBSSL $CFLAGS"
     LIBSSL=" " # ntlm check below wants this
+    AC_CHECK_FUNCS([RAND_egd])
     AC_DEFINE([HAVE_LIBSSL], [1], [Define if using openssl.])
   ], [
     dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
