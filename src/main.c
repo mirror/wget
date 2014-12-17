@@ -673,10 +673,14 @@ HTTPS (SSL/TLS) options:\n"),
        --ca-directory=DIR          directory where hash list of CA's is stored.\n"),
     N_("\
        --crl-file=FILE             file with bundle of CRL's.\n"),
+#if defined(HAVE_LIBSSL) || defined(HAVE_LIBSSL32)
     N_("\
        --random-file=FILE          file with random data for seeding the SSL PRNG.\n"),
+#endif
+#if (defined(HAVE_LIBSSL) || defined(HAVE_LIBSSL32)) && defined(HAVE_RAND_EGD)
     N_("\
        --egd-file=FILE             file naming the EGD socket with random data.\n"),
+#endif
     "\n",
 #endif /* HAVE_SSL */
 
