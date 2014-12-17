@@ -1733,16 +1733,15 @@ that have been revocated by the CAs.
 @cindex entropy, specifying source of
 @cindex randomness, specifying source of
 @item --random-file=@var{file}
+[OpenSSL and LibreSSL only]
 Use @var{file} as the source of random data for seeding the
-pseudo-random number generator on systems without @file{/dev/random}.
+pseudo-random number generator on systems without @file{/dev/urandom}.
 
 On such systems the SSL library needs an external source of randomness
 to initialize.  Randomness may be provided by EGD (see
 @samp{--egd-file} below) or read from an external source specified by
 the user.  If this option is not specified, Wget looks for random data
-in @code{$RANDFILE} or, if that is unset, in @file{$HOME/.rnd}.  If
-none of those are available, it is likely that SSL encryption will not
-be usable.
+in @code{$RANDFILE} or, if that is unset, in @file{$HOME/.rnd}.
 
 If you're getting the ``Could not seed OpenSSL PRNG; disabling SSL.'' 
 error, you should provide random data using some of the methods
@@ -1750,6 +1749,7 @@ described above.
 
 @cindex EGD
 @item --egd-file=@var{file}
+[OpenSSL only]
 Use @var{file} as the EGD socket.  EGD stands for @dfn{Entropy
 Gathering Daemon}, a user-space program that collects data from
 various unpredictable system sources and makes it available to other
@@ -1764,7 +1764,7 @@ read random data from EGD socket specified using this option.
 
 If this option is not specified (and the equivalent startup command is
 not used), EGD is never contacted.  EGD is not needed on modern Unix
-systems that support @file{/dev/random}.
+systems that support @file{/dev/urandom}.
 @end table
 
 @cindex WARC
