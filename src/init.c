@@ -161,7 +161,7 @@ static const struct {
   { "convertlinks",     &opt.convert_links,     cmd_boolean },
   { "cookies",          &opt.cookies,           cmd_boolean },
 #ifdef HAVE_SSL
-  { "crlfile",      &opt.crl_file,          cmd_file_once },
+  { "crlfile",          &opt.crl_file,          cmd_file_once },
 #endif
   { "cutdirs",          &opt.cut_dirs,          cmd_number },
   { "debug",            &opt.debug,             cmd_boolean },
