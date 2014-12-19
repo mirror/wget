@@ -2898,10 +2898,10 @@ variable = value
 The @dfn{variable} will also be called @dfn{command}.  Valid
 @dfn{values} are different for different commands.
 
-The commands are case-insensitive and underscore-insensitive.  Thus
-@samp{DIr__PrefiX} is the same as @samp{dirprefix}.  Empty lines, lines
-beginning with @samp{#} and lines containing white-space only are
-discarded.
+The commands are case-, underscore- and minus-insensitive.  Thus
+@samp{DIr__PrefiX}, @samp{DIr-PrefiX} and @samp{dirprefix} are the same.
+Empty lines, lines beginning with @samp{#} and lines containing white-space
+only are discarded.
 
 Commands that expect a comma-separated list will clear the list on an
 empty command.  So, if you wish to reset the rejection list specified in
