@@ -56,6 +56,7 @@ as that of the covered work.  */
 #include "warc.h"
 #include "version.h"
 #include "c-strcase.h"
+#include "dirname.h"
 #include <getopt.h>
 #include <getpass.h>
 #include <quote.h>
@@ -1033,11 +1034,7 @@ main (int argc, char **argv)
   /* On VMS, lose the "dev:[dir]" prefix and the ".EXE;nnn" suffix. */
   exec_name = vms_basename (argv[0]);
 #else /* def __VMS */
-  exec_name = strrchr (argv[0], PATH_SEPARATOR);
-  if (!exec_name)
-    exec_name = argv[0];
-  else
-    ++exec_name;
+  exec_name = basename (argv[0]);
 #endif /* def __VMS [else] */
 
 #ifdef WINDOWS

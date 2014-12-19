@@ -35,6 +35,7 @@ as that of the covered work.  */
 #include "hash.h"
 #include "utils.h"
 #include "version.h"
+#include "dirname.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,18 +55,20 @@ as that of the covered work.  */
 #include <uuid.h>
 #endif
 
-#ifndef WINDOWS
-#include <libgen.h>
-#else
-#include <fcntl.h>
-#endif
-
 #include "warc.h"
 #include "exits.h"
+
+#ifdef WINDOWS
+/* we need this on Windows to have O_TEMPORARY defined */
+#include <fcntl.h>
+#endif
 
 #ifndef O_TEMPORARY
 #define O_TEMPORARY 0
 #endif
+
+#include "warc.h"
+#include "exits.h"
 
 
 /* The log file (a temporary file that contains a copy
@@ -671,7 +674,7 @@ warc_write_warcinfo_record (char *filename)
 {
   FILE *warc_tmp;
   char timestamp[22];
-  char *filename_copy, *filename_basename;
+  char *filename_basename;
 
   /* Write warc-info record as the first record of the file. */
   /* We add the record id of this info record to the other records in the
@@ -681,8 +684,7 @@ warc_write_warcinfo_record (char *filename)
 
   warc_timestamp (timestamp, sizeof(timestamp));
 
-  filename_copy = strdup (filename);
-  filename_basename = strdup (basename (filename_copy));
+  filename_basename = basename (filename);
 
   warc_write_start_record ();
   warc_write_header ("WARC-Type", "warcinfo");
@@ -695,8 +697,6 @@ warc_write_warcinfo_record (char *filename)
   warc_tmp = warc_tempfile ();
   if (warc_tmp == NULL)
     {
-      xfree (filename_copy);
-      xfree (filename_basename);
       return false;
     }
 
@@ -722,8 +722,6 @@ warc_write_warcinfo_record (char *filename)
   if (! warc_write_ok)
     logprintf (LOG_NOTQUIET, _("Error writing warcinfo record to WARC file.\n"));
 
-  xfree (filename_copy);
-  xfree (filename_basename);
   fclose (warc_tmp);
   return warc_write_ok;
 }
