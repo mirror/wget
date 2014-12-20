@@ -3131,6 +3131,9 @@ environment.
 Set @sc{http} user to @var{string}, equivalent to
 @samp{--http-user=@var{string}}.
 
+@item https_only = on/off
+When in recursive mode, only HTTPS links are followed (defaults to off).
+
 @item https_proxy = @var{string}
 Use @var{string} as @sc{https} proxy, instead of the one specified in
 environment.
