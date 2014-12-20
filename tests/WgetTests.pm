@@ -319,7 +319,7 @@ sub _verify_download
               = stat $filename;
 
             $mtime == $filedata->{'timestamp'}
-              or return "Test failed: wrong timestamp for file $filename\n";
+              or return "Test failed: wrong timestamp for file $filename: expected = $filedata->{'timestamp'}, actual = $mtime\n";
         }
 
     }
