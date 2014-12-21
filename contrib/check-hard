@@ -1,5 +1,5 @@
 #!/bin/sh
-# 
+#
 # Do some checking before 'git push'.
 
 CORES=`grep -c ^processor /proc/cpuinfo 2>/dev/null || echo 0`
@@ -14,7 +14,7 @@ export CFLAGS="-std=c89 -pedantic -O2 -g -Wall -Wextra -Wstrict-prototypes -Wold
 
 CACHEFILE=$PWD/config_check.cache
 
-# measure time consumed and and print it at the end of the script
+# measure time consumed and print it at the end of the script
 START=$(date +%s.%N)
 
 echo "./bootstrap"
