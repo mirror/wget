@@ -43,8 +43,8 @@ ACLOCAL_AMFLAGS = -I m4
 # subdirectories in the distribution
 SUBDIRS = lib src doc po tests util testenv
 
-EXTRA_DIST = ChangeLog.README MAILING-LIST \
-             msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
+EXTRA_DIST = ChangeLog-2014-12-10 MAILING-LIST \
+             msdos/config.h msdos/Makefile.DJ \
              msdos/Makefile.WC ABOUT-NLS \
              build-aux/build_info.pl build-aux/git-version-gen .version
 
