@@ -918,7 +918,7 @@ sub _format_for_list
             $size = 0;
         }
     }
-    my $date = strftime("%b %e %H:%M", localtime);
+    my $date = strftime("%b %d %H:%M", localtime);
     return "$mode_str 1  0  0  $size $date $name";
 }
 
