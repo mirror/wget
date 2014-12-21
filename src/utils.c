@@ -64,8 +64,10 @@ as that of the covered work.  */
 #include <sys/stat.h>
 
 /* For TIOCGWINSZ and friends: */
-#include <sys/ioctl.h>
-#include <termios.h>
+#ifndef WINDOWS
+# include <sys/ioctl.h>
+# include <termios.h>
+#endif
 
 /* Needed for Unix version of run_with_timeout. */
 #include <signal.h>
