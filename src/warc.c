@@ -684,7 +684,7 @@ warc_write_warcinfo_record (char *filename)
 
   warc_timestamp (timestamp, sizeof(timestamp));
 
-  filename_basename = basename (filename);
+  filename_basename = base_name (filename);
 
   warc_write_start_record ();
   warc_write_header ("WARC-Type", "warcinfo");
@@ -692,6 +692,8 @@ warc_write_warcinfo_record (char *filename)
   warc_write_header ("WARC-Date", timestamp);
   warc_write_header ("WARC-Record-ID", warc_current_warcinfo_uuid_str);
   warc_write_header ("WARC-Filename", filename_basename);
+
+  xfree (filename_basename);
 
   /* Create content.  */
   warc_tmp = warc_tempfile ();

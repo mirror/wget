@@ -1034,7 +1034,7 @@ main (int argc, char **argv)
   /* On VMS, lose the "dev:[dir]" prefix and the ".EXE;nnn" suffix. */
   exec_name = vms_basename (argv[0]);
 #else /* def __VMS */
-  exec_name = basename (argv[0]);
+  exec_name = base_name (argv[0]);
 #endif /* def __VMS [else] */
 
 #ifdef WINDOWS
