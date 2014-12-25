@@ -334,15 +334,19 @@ AS_IF([test x"$with_zlib" != xno], [
 ])
 
 AS_IF([test x"$with_ssl" = xopenssl], [
-  PKG_CHECK_MODULES([OPENSSL], [openssl], [
-    AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
-    AC_LIBOBJ([openssl])
-    LIBS="$OPENSSL_LIBS $LIBS"
-    CFLAGS="$OPENSSL_CFLAGS -DHAVE_LIBSSL $CFLAGS"
-    LIBSSL=" " # ntlm check below wants this
-    AC_CHECK_FUNCS([RAND_egd])
-    AC_DEFINE([HAVE_LIBSSL], [1], [Define if using openssl.])
-  ], [
+  if [test x"$with_libssl_prefix" = x]; then
+    PKG_CHECK_MODULES([OPENSSL], [openssl], [
+      AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
+      AC_LIBOBJ([openssl])
+      LIBS="$OPENSSL_LIBS $LIBS"
+      CFLAGS="$OPENSSL_CFLAGS -DHAVE_LIBSSL $CFLAGS"
+      LIBSSL=" " # ntlm check below wants this
+      AC_CHECK_FUNCS([RAND_egd])
+      AC_DEFINE([HAVE_LIBSSL], [1], [Define if using openssl.])
+      ssl_found=yes
+    ])
+  fi
+  if [test x"$ssl_found" != xyes]; then
     dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
     dnl doesn't record its dependency on libdl, so we need to make sure
     dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
@@ -399,7 +403,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
         AC_MSG_ERROR([--with-ssl=openssl was given, but SSL is not available.])
       fi
     ])
-  ])
+  fi
 ], [
   # --with-ssl is not openssl: check if it's no
   AS_IF([test x"$with_ssl" != xno], [
@@ -407,13 +411,17 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     with_ssl=gnutls
 
     dnl Now actually check for -lgnutls
-    PKG_CHECK_MODULES([GNUTLS], [gnutls], [
-      AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
-      AC_LIBOBJ([gnutls])
-      LIBS="$GNUTLS_LIBS $LIBS"
-      CFLAGS="$GNUTLS_CFLAGS -DHAVE_LIBGNUTLS $CFLAGS"
-      AC_DEFINE([HAVE_LIBGNUTLS], [1], [Define if using gnutls.])
-    ], [
+    if [test x"$with_libgnutls_prefix" = x]; then
+      PKG_CHECK_MODULES([GNUTLS], [gnutls], [
+        AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
+        AC_LIBOBJ([gnutls])
+        LIBS="$GNUTLS_LIBS $LIBS"
+        CFLAGS="$GNUTLS_CFLAGS -DHAVE_LIBGNUTLS $CFLAGS"
+        AC_DEFINE([HAVE_LIBGNUTLS], [1], [Define if using gnutls.])
+        ssl_found=yes
+      ])
+    fi
+    if [test x"$ssl_found" != xyes]; then
       AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
 #include <gnutls/gnutls.h>
       ], [gnutls_global_init()])
@@ -426,7 +434,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
       else
         AC_MSG_ERROR([GnuTLS has not been found. Use --with-ssl=openssl if you explicitly want OpenSSL.])
       fi
-    ])
+    fi
 
     AC_CHECK_FUNCS(gnutls_priority_set_direct)
   ]) # endif: --with-ssl != no?
