@@ -4,8 +4,8 @@ Compiling From Repository Sources
    does not contain automatically-generated files, even when these are
    normally present in the distribution tarballs. Therefore, to build GNU
    Wget from the sources in the repository, you'll need to have one or
-   more of the following (note that gettext, OpenSSL, libidn, libiconv
-   and libpsl are not absolutely required):
+   more of the following (note that gettext, OpenSSL, GnuTLS, libidn,
+   libiconv, libpsl, libpcre and pkg-config are not absolutely required):
 
      * [20]autoconf (currently, GNU Wget requires version 2.61). This is
        needed to generate the configure script from configure.in. This is
@@ -46,30 +46,49 @@ Compiling From Repository Sources
        to export M4=<new m4 path>, to be sure that autoconf/automake use
        it instead of the old one.
 
-     * [29]OpenSSL to handle encrypted web sessions. You almost certainly
-       want this. It is not enough to have the library installed; you need
-       to have the header files available to compile against as well. For
-       GNU/Linux systems, this usually means installing a "developer"
-       package for openssl (for example, [30]Debian systems require
-       installation of the libssl-dev package). Alternatively, you can
-       compile GNU Wget against the [31]GNUTLS library instead, by
-       specifying --with-ssl=gnutls to the ./configure script; however,
-       building against GNUTLS is currently experimental, and not
-       officially supported. If you have OpenSSL and its development
-       headers installed, but don't want to build Wget with it, specify
-       --without-ssl to the ./configure script.
+     * [29]GnuTLS to allow encrypted data transfer (HTTPS).
+       You need the header files and the library installed.
+       As an alternative, you can use [30]OpenSSL by specifying
+       --with-ssl=openssl to the ./configure script.
+       If you do not want HTTPS support, specify --without-ssl to the
+       ./configure script.
+       If you want to compile+link a non-system library version use
+       --with-libgnutls-prefix (or if having pkg-config: see description
+       below).
 
-     * [32]libidn is required for IDN/IRI support (non-ASCII characters
+     * [30]OpenSSL  to allow encrypted data transfer (HTTPS) an an
+       alternative to [31]GnuTLS.
+       You need the header files and the library installed.
+       If you want to compile+link a non-system library version use
+       --with-libssl-prefix (or if having pkg-config: see description below).
+
+     * [31]libidn is required for IDN/IRI support (non-ASCII characters
        within what would otherwise be URLs).
 
-     * [33]libiconv is required on non-GNU systems, for IDN/IRI support.
+     * [32]libiconv is required on non-GNU systems, for IDN/IRI support.
        On GNU systems, the functionality provided by libiconv is already
        present in the system libraries.
 
-     * [34]git is used to fetch gnulib files trough the bootstrap.sh script.
+     * [33]git is used to fetch gnulib files trough the bootstrap.sh script.
 
-     * [35]libpsl is required for using a public suffix list to check for valid
-       cookie domains.
+     * [34]libpsl is required for using a public suffix list to check for valid
+       cookie domains. You need the header files and the library installed.
+
+     * [35]libpcre is required for using Perl-compatible regular expressions
+       with --accept-regex and --reject-regex. You need the header files and
+       the library installed to compile and link Wget with PCRE support.
+
+     * [36]pkg-config helps the ./configure script to find installed libraries.
+       Most libraries provide a pkg-config file (.pc extension) with
+       information about dependencies, header file and library locations.
+       Distributions deliver their specific .pc file to each library.
+       If you want to compile+link against your own library version, make a
+       copy of the appropriate .pc file and amend it to your needs (e.g. edit
+       the line starting with prefix=). Before you execute the ./configure
+       script, set (and export) PKG_CONFIG_PATH to the directory where you
+       saved the .pc file. Example:
+       $ PKG_CONFIG_PATH="." ./configure
+
 
    For those who might be confused as to what to do once they check out
    the source code, considering configure and Makefile do not yet exist at
@@ -99,7 +118,7 @@ Compiling From Repository Sources
 
  $ ./configure --enable-assert [other configure options]
 
- Copyright © 2008,2010 Free Software Foundation, Inc.
+ Copyright (C) 2008,2010,2014,2015 Free Software Foundation, Inc.
  License GPLv3+: GNU GPL version 3 or later
  <http://www.gnu.org/licenses/gpl.html>.
  This is free software: you are free to change and redistribute it.
@@ -120,8 +139,8 @@ Compiling From Repository Sources
      * [43]Valid HTML 4.01
      __________________________________________________________________
 
-   All content © 2007 Free Software Foundation. For terms of use,
-   redistribution, and modification, please see the [44]WikiLicense page.
+   All content (C) 2007 Free Software Foundation. For terms of use,
+   redistribution, and modification, please see the [45]WikiLicense page.
 
 References
 
@@ -134,13 +153,13 @@ References
   26. http://apthorpe.cynistar.net/code/configuring_cpan.html
   27. http://www.gnu.org/software/texinfo/
   28. http://www.gnu.org/software/gettext/
-  29. http://www.openssl.org/
-  30. http://www.debian.org/
-  31. http://www.gnu.org/software/gnutls/
-  32. http://www.gnu.org/software/libidn/
-  33. http://www.gnu.org/software/libiconv/
-  34. http://git-scm.com/
-  35. https://github.com/rockdaboot/libpsl
+  29. http://www.gnu.org/software/gnutls/
+  30. http://www.openssl.org/
+  31. http://www.gnu.org/software/libidn/
+  32. http://www.gnu.org/software/libiconv/
+  33. http://git-scm.com/
+  34. https://github.com/rockdaboot/libpsl
+  35. http://www.pcre.org
   36. http://wget.addictivecode.org/CompilingRepoSources?action=edit&editor=text
   37. http://wget.addictivecode.org/CompilingRepoSources
   38. http://wget.addictivecode.org/CompilingRepoSources?action=info
