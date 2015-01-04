@@ -788,12 +788,6 @@ ftp_epsv (int csock, ip_address *ip, int *port)
   for (tport = 0, i = 0; i < 5 && c_isdigit (*s); i++, s++)
       tport = (*s - '0') + 10 * tport;
 
-  if (i >= 5)
-    {
-      xfree (respline);
-      return FTPINVPASV;
-    }
-
   /* Make sure that the response terminates correcty */
   if (*s++ != delim)
     {
