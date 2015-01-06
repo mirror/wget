@@ -51,6 +51,64 @@ as that of the covered work.  */
 #include "css-url.h"
 #include "spider.h"
 
+/* Linked list bubble sort from http://stackoverflow.com/questions/19522121 */
+
+void ll_bubblesort(struct urlpos **pp)
+{
+  // p always points to the head of the list
+  struct urlpos *p = *pp;
+  *pp = 0;
+
+  while (p)
+  {
+    struct urlpos **lhs = &p;
+    struct urlpos **rhs = &p->next;
+    bool swapped = false;
+
+    // keep going until qq holds the address of a null pointer
+    while (*rhs)
+    {
+      // if the right side is greater than the left side
+      if ((*rhs)->link_expect_html > (*lhs)->link_expect_html)
+      {
+        // swap linked node ptrs, then swap *back* their next ptrs
+        struct urlpos *tmp = *lhs;
+        *lhs = *rhs;
+        *rhs = tmp;
+        tmp = (*lhs)->next;
+        (*lhs)->next = (*rhs)->next;
+        (*rhs)->next = tmp;
+        lhs = &(*lhs)->next;
+        swapped = true;
+      }
+      else
+      { // no swap. advance both pointer-pointers
+        lhs = rhs;
+        rhs = &(*rhs)->next;
+      }
+    }
+
+    // link last node to the sorted segment
+    *rhs = *pp;
+
+    // if we swapped, detach the final node, terminate the list, and continue.
+    if (swapped)
+    {
+      // take the last node off the list and push it into the result.
+      *pp = *lhs;
+      *lhs = 0;
+    }
+
+    // otherwise we're done. since no swaps happened the list is sorted.
+    // set the output parameter and terminate the loop.
+    else
+    {
+      *pp = p;
+      break;
+    }
+  }
+}
+
 /* Functions for maintaining the URL queue.  */
 
 struct queue_element {
@@ -62,6 +120,7 @@ struct queue_element {
   struct iri *iri;                /* sXXXav */
   bool css_allowed;             /* whether the document is allowed to
                                    be treated as CSS. */
+  struct queue_element *prev;   /* previous element in queue */
   struct queue_element *next;   /* next element in queue */
 };
 
@@ -88,9 +147,9 @@ url_queue_delete (struct url_queue *queue)
   xfree (queue);
 }
 
-/* Enqueue a URL in the queue.  The queue is FIFO: the items will be
-   retrieved ("dequeued") from the queue in the order they were placed
-   into it.  */
+/* Enqueue a URL in the queue.  The queue is FIFO (LIFO): the items will be
+   retrieved ("dequeued") from the queue in the (opposite) order they were
+   placed into it.  */
 
 static void
 url_enqueue (struct url_queue *queue, struct iri *i,
@@ -104,6 +163,7 @@ url_enqueue (struct url_queue *queue, struct iri *i,
   qel->depth = depth;
   qel->html_allowed = html_allowed;
   qel->css_allowed = css_allowed;
+  qel->prev = NULL;
   qel->next = NULL;
 
   ++queue->count;
@@ -119,7 +179,11 @@ url_enqueue (struct url_queue *queue, struct iri *i,
              i->uri_encoding ? quote_n (1, i->uri_encoding) : "None"));
 
   if (queue->tail)
+  {
+    if (opt.queue_type == queue_type_lifo)
+      qel->prev = queue->tail;
     queue->tail->next = qel;
+  }
   queue->tail = qel;
 
   if (!queue->head)
@@ -134,14 +198,36 @@ url_dequeue (struct url_queue *queue, struct iri **i,
              const char **url, const char **referer, int *depth,
              bool *html_allowed, bool *css_allowed)
 {
-  struct queue_element *qel = queue->head;
+  struct queue_element *qel;
+
+  switch (opt.queue_type)
+  {
+    default:
+    case queue_type_fifo:
+      qel = queue->head;
+      break;
+    case queue_type_lifo:
+      qel = queue->tail;
+      break;
+  }
 
   if (!qel)
     return false;
 
-  queue->head = queue->head->next;
-  if (!queue->head)
-    queue->tail = NULL;
+  switch (opt.queue_type)
+  {
+    default:
+    case queue_type_fifo:
+      queue->head = queue->head->next;
+      if (!queue->head)
+        queue->tail = NULL;
+      break;
+    case queue_type_lifo:
+      queue->tail = queue->tail->prev;
+      if (!queue->tail)
+        queue->head = NULL;
+      break;
+  }
 
   *i = qel->iri;
   *url = qel->url;
@@ -406,6 +492,10 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
               /* Strip auth info if present */
               if (strip_auth)
                 referer_url = url_string (url_parsed, URL_AUTH_HIDE);
+
+              /* Place html pages on top */
+              if (opt.queue_type == queue_type_lifo)
+                ll_bubblesort(&child);
 
               for (; child; child = child->next)
                 {
