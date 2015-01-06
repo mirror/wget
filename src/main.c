@@ -272,6 +272,7 @@ static struct cmdline_option option_data[] =
     { "proxy-passwd", 0, OPT_VALUE, "proxypassword", -1 }, /* deprecated */
     { "proxy-password", 0, OPT_VALUE, "proxypassword", -1 },
     { "proxy-user", 0, OPT_VALUE, "proxyuser", -1 },
+    { "queue-type", 0, OPT_VALUE, "queuetype", -1 },
     { "quiet", 'q', OPT_BOOLEAN, "quiet", -1 },
     { "quota", 'Q', OPT_VALUE, "quota", -1 },
     { "random-file", 0, OPT_VALUE, "randomfile", -1 },
@@ -736,6 +737,8 @@ WARC options:\n"),
 Recursive download:\n"),
     N_("\
   -r,  --recursive                 specify recursive download\n"),
+    N_("\
+       --queue-type=TYPE           queue type (fifo|browser).\n"),
     N_("\
   -l,  --level=NUMBER              maximum recursion depth (inf or 0 for infinite)\n"),
     N_("\

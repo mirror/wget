@@ -1916,6 +1916,10 @@ case.
 Turn on recursive retrieving.  @xref{Recursive Download}, for more
 details.  The default maximum depth is 5.
 
+@item --queue-type=@var{queuetype}
+Specify the queue type (@pxref{Recursive Download}). Accepted values are @samp{fifo}
+(the default) and @samp{browser}.
+
 @item -l @var{depth}
 @itemx --level=@var{depth}
 Specify recursion maximum depth level @var{depth} (@pxref{Recursive
@@ -2295,6 +2299,12 @@ document, then the documents linked from that document, then the
 documents linked by them, and so on.  In other words, Wget first
 downloads the documents at depth 1, then those at depth 2, and so on
 until the specified maximum depth.
+
+The @dfn{queue type} is FIFO (default) or browser. FIFO download the
+first enqueued links first. Browser download inline links directly after
+their parent page. If the parent page contain temporary inline links
+this can prevent that they expire before they're downloaded. Pages
+sometimes use temporary links to prevent direct links to files.
 
 The maximum @dfn{depth} to which the retrieval may descend is specified
 with the @samp{-l} option.  The default maximum depth is five layers.

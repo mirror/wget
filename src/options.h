@@ -46,6 +46,10 @@ struct options
   bool relative_only;           /* Follow only relative links. */
   bool no_parent;               /* Restrict access to the parent
                                    directory.  */
+  enum {
+    queue_type_fifo,
+    queue_type_browser
+  } queue_type;                 /* Recursion queue type */
   int reclevel;                 /* Maximum level of recursion */
   bool dirstruct;               /* Do we build the directory structure
                                    as we go along? */
