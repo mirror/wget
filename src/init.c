@@ -104,6 +104,7 @@ CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
 CMD_DECLARE (cmd_spec_prefer_family);
 CMD_DECLARE (cmd_spec_progress);
+CMD_DECLARE (cmd_spec_progressdisp);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_regex_type);
 CMD_DECLARE (cmd_spec_restrict_file_names);
@@ -275,7 +276,7 @@ static const struct {
 #endif
   { "serverresponse",   &opt.server_response,   cmd_boolean },
   { "showalldnsentries", &opt.show_all_dns_entries, cmd_boolean },
-  { "showprogress",     &opt.show_progress,      cmd_boolean },
+  { "showprogress",     &opt.show_progress,     cmd_spec_progressdisp },
   { "spanhosts",        &opt.spanhost,          cmd_boolean },
   { "spider",           &opt.spider,            cmd_boolean },
   { "startpos",         &opt.start_pos,         cmd_bytes },
@@ -434,7 +435,7 @@ defaults (void)
 
   /* Use a negative value to mark the absence of --start-pos option */
   opt.start_pos = -1;
-  opt.show_progress = false;
+  opt.show_progress = -1;
   opt.noscroll = false;
 }
 
@@ -1572,6 +1573,22 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored _GL_UN
   return true;
 }
 
+/* The --show-progress option is not a cmd_boolean since we need to keep track
+ * of whether the user explicitly requested the option or not. -1 means
+ * uninitialized. */
+static bool
+cmd_spec_progressdisp (const char *com, const char *val, void *place _GL_UNUSED)
+{
+  bool flag;
+  if (cmd_boolean (com, val, &flag))
+    {
+      opt.show_progress = flag;
+      return true;
+    }
+  return false;
+}
+
+
 /* The "verbose" option cannot be cmd_boolean because the variable is
    not bool -- it's of type int (-1 means uninitialized because of
    some random hackery for disallowing -q -v).  */
@@ -1583,6 +1600,7 @@ cmd_spec_verbose (const char *com, const char *val, void *place_ignored _GL_UNUS
   if (cmd_boolean (com, val, &flag))
     {
       opt.verbose = flag;
+      opt.show_progress = -1;
       return true;
     }
   return false;

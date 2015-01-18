@@ -310,6 +310,14 @@ get_log_fp (void)
   return stderr;
 }
 
+static FILE *
+get_progress_fp (void)
+{
+  if (opt.show_progress == true)
+      return stderr;
+  return get_log_fp();
+}
+
 /* Returns the file descriptor for the secondary log file. This is
    WARCLOGFP, except if called before log_init, in which case it
    returns stderr.  This is useful in case someone calls a logging
@@ -345,8 +353,14 @@ logputs (enum log_options o, const char *s)
   FILE *warcfp;
 
   check_redirect_output ();
-  if ((fp = get_log_fp ()) == NULL)
+  if (o == LOG_PROGRESS)
+    fp = get_progress_fp ();
+  else
+    fp = get_log_fp ();
+
+  if (fp == NULL)
     return;
+
   warcfp = get_warc_log_fp ();
   CHECK_VERBOSE (o);
 

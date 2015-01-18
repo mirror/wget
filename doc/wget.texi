@@ -774,11 +774,14 @@ use @samp{--progress=bar:force:noscroll}.
 Force wget to display the progress bar in any verbosity.
 
 By default, wget only displays the progress bar in verbose mode.  One may
-however want wget to display the progress bar on screen in conjunction with
+however, want wget to display the progress bar on screen in conjunction with
 any other verbosity modes like @samp{--no-verbose} or @samp{--quiet}.  This
 is often a desired a property when invoking wget to download several small/large
 files.  In such a case, wget could simply be invoked with this parameter to get
 a much cleaner output on the screen.
+
+This option will also force the progress bar to be printed to @file{stderr} when
+used alongside the @samp{--logfile} option.
 
 @item -N
 @itemx --timestamping
