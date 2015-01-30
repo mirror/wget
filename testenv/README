@@ -148,7 +148,7 @@ Various variables used consistently across all tests are:
     * ExpectedDownloadedFiles: A list of files that are expected in the local
     directory after Wget has finished executing. This does not include the files
     already existing before Wget was launched and must be mentioned again.
-    * Request_List: An unordered list of Requests that each server must receive.
+    * Request_List: An ordered list of Requests that each server must receive.
     This too is a list of lists and follows the same convention as others above.
 
 Both, the HTTPTest and FTPTest modules have the same prototype:

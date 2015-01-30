@@ -104,6 +104,7 @@ CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
 CMD_DECLARE (cmd_spec_prefer_family);
 CMD_DECLARE (cmd_spec_progress);
+CMD_DECLARE (cmd_spec_queue_type);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_regex_type);
 CMD_DECLARE (cmd_spec_restrict_file_names);
@@ -247,6 +248,7 @@ static const struct {
   { "proxypasswd",      &opt.proxy_passwd,      cmd_string }, /* deprecated */
   { "proxypassword",    &opt.proxy_passwd,      cmd_string },
   { "proxyuser",        &opt.proxy_user,        cmd_string },
+  { "queuetype",        &opt.queue_type,        cmd_spec_queue_type },
   { "quiet",            &opt.quiet,             cmd_boolean },
   { "quota",            &opt.quota,             cmd_bytes_sum },
 #ifdef HAVE_SSL
@@ -402,6 +404,8 @@ defaults (void)
   opt.restrict_files_ctrl = true;
   opt.restrict_files_nonascii = false;
   opt.restrict_files_case = restrict_no_case_restriction;
+
+  opt.queue_type = queue_type_fifo;
 
   opt.regex_type = regex_type_posix;
 
@@ -1439,6 +1443,23 @@ cmd_spec_recursive (const char *com, const char *val, void *place_ignored _GL_UN
         opt.dirstruct = true;
     }
   return true;
+}
+
+/* Validate --queue-type and set the choice.  */
+
+static bool
+cmd_spec_queue_type (const char *com, const char *val, void *place_ignored _GL_UNUSED)
+{
+  static const struct decode_item choices[] = {
+    { "fifo", queue_type_fifo },
+    { "browser", queue_type_browser },
+  };
+  int queue_type = queue_type_fifo;
+  int ok = decode_string (val, choices, countof (choices), &queue_type);
+  if (!ok)
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
+  opt.queue_type = queue_type;
+  return ok;
 }
 
 /* Validate --regex-type and set the choice.  */

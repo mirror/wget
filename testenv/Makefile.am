@@ -52,6 +52,7 @@ if HAVE_PYTHON3
     Test-Post.py                            \
     Test-504.py                             \
     Test--spider-r.py                       \
+    Test--spider-r-browser.py               \
     Test-redirect-crash.py
 
   # added test cases expected to fail here and under TESTS

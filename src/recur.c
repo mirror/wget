@@ -90,13 +90,17 @@ url_queue_delete (struct url_queue *queue)
 
 /* Enqueue a URL in the queue.  The queue is FIFO: the items will be
    retrieved ("dequeued") from the queue in the order they were placed
-   into it.  */
+   into it. Or browser: inline items are retrieved directly after
+   their parent page. */
 
 static void
 url_enqueue (struct url_queue *queue, struct iri *i,
              const char *url, const char *referer, int depth,
              bool html_allowed, bool css_allowed)
 {
+  bool append = opt.queue_type == queue_type_fifo
+    || (opt.queue_type == queue_type_browser && html_allowed);
+
   struct queue_element *qel = xnew (struct queue_element);
   qel->iri = i;
   qel->url = url;
@@ -110,20 +114,31 @@ url_enqueue (struct url_queue *queue, struct iri *i,
   if (queue->count > queue->maxcount)
     queue->maxcount = queue->count;
 
-  DEBUGP (("Enqueuing %s at depth %d\n",
+  DEBUGP (("%s %s at depth %d\n", append ? "Appending" : "Prepending",
            quotearg_n_style (0, escape_quoting_style, url), depth));
   DEBUGP (("Queue count %d, maxcount %d.\n", queue->count, queue->maxcount));
 
   if (i)
-    DEBUGP (("[IRI Enqueuing %s with %s\n", quote_n (0, url),
-             i->uri_encoding ? quote_n (1, i->uri_encoding) : "None"));
+    DEBUGP (("[IRI %s %s with %s\n", append ? "Appending" : "Prepending",
+            quote_n (0, url), i->uri_encoding ? quote_n (1, i->uri_encoding) : "None"));
 
-  if (queue->tail)
-    queue->tail->next = qel;
-  queue->tail = qel;
+  if (append)
+    {
+      if (queue->tail)
+        queue->tail->next = qel;
+      queue->tail = qel;
+    }
+  else
+    {
+      if (queue->head)
+        qel->next = queue->head;
+      queue->head = qel;
+    }
 
   if (!queue->head)
     queue->head = queue->tail;
+  if (!queue->tail)
+    queue->tail = queue->head;
 }
 
 /* Take a URL out of the queue.  Return true if this operation
