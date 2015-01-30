@@ -1,6 +1,7 @@
 from functools import partial
 import platform
 from os import getenv
+import sys
 
 """ This module allows printing coloured output to the terminal when running a
 Wget Test under certain conditions.
@@ -25,11 +26,11 @@ T_COLORS = {
     'ENDC'   : '\033[0m'
 }
 
-system = True if platform.system() == 'Linux' else False
+system = True if platform.system() in ( 'Linux', 'Darwin' ) else False
 check = False if getenv("MAKE_CHECK") == 'True' else True
 
 def printer (color, string):
-    if system and check:
+    if  sys.stdout.isatty() and system and check:
         print (T_COLORS.get (color) + string + T_COLORS.get ('ENDC'))
     else:
         print (string)
