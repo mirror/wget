@@ -175,7 +175,10 @@ class BaseTest:
         self.hook_call(self.post_configs, 'Post Test Function')
 
     def _replace_substring (self, string):
-        pattern = re.compile ('\{\{\w+\}\}')
+        """
+        Replace first occurrence of "{{name}}" in @string with "getattr(self, name)".
+        """
+        pattern = re.compile (r'\{\{\w+\}\}')
         match_obj = pattern.search (string)
         if match_obj is not None:
             rep = match_obj.group()

@@ -368,7 +368,7 @@ class _Handler (BaseHTTPRequestHandler):
                     assert hasattr (self, rule_name)
                     getattr (self, rule_name) (self.rules [rule_name])
                 except AssertionError as ae:
-                    msg = "Method " + rule_name + " not defined"
+                    msg = "Rule " + rule_name + " not defined"
                     self.send_error (500, msg)
                     return (None, None)
                 except ServerError as se:
@@ -399,7 +399,7 @@ class _Handler (BaseHTTPRequestHandler):
                                                       content_length))
                 content_length -= self.range_begin
             cont_type = self.guess_type (path)
-            self.send_header ("Content-type", cont_type)
+            self.send_header ("Content-Type", cont_type)
             self.send_header ("Content-Length", content_length)
             self.finish_headers ()
             return (content, self.range_begin)
