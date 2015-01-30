@@ -1,5 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from exc.server_error import ServerError
+from exc.server_error import ServerError, AuthError
 from socketserver import BaseServer
 from posixpath import basename, splitext
 from base64 import b64encode
@@ -274,18 +274,16 @@ class _Handler (BaseHTTPRequestHandler):
             self.user = auth_rule.auth_user
             self.passw = auth_rule.auth_pass
             params = self.parse_auth_header (auth_header)
-            pass_auth = True
             if self.user != params['username'] or \
-               self.nonce != params['nonce'] or \
-               self.opaque != params['opaque']:
-                pass_auth = False
+                    self.nonce != params['nonce'] or \
+                    self.opaque != params['opaque']:
+                return False
             req_attribs = ['username', 'realm', 'nonce', 'uri', 'response']
             for attrib in req_attribs:
                 if attrib not in params:
-                    pass_auth = False
+                    return False
             if not self.check_response (params):
-                pass_auth = False
-            return pass_auth
+                return False
 
     def authorize_both (self, auth_header, auth_rule):
         return False
@@ -296,11 +294,11 @@ class _Handler (BaseHTTPRequestHandler):
     def Authentication (self, auth_rule):
         try:
             self.handle_auth (auth_rule)
-        except ServerError as se:
+        except AuthError as se:
             self.send_response (401, "Authorization Required")
             self.send_challenge (auth_rule.auth_type)
             self.finish_headers ()
-            raise ServerError (se.__str__())
+            raise se
 
     def handle_auth (self, auth_rule):
         is_auth = True
@@ -314,11 +312,11 @@ class _Handler (BaseHTTPRequestHandler):
             assert hasattr (self, "authorize_" + auth_type)
             is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule)
         except AssertionError:
-            raise ServerError ("Authentication Mechanism " + auth_type + " not supported")
+            raise AuthError ("Authentication Mechanism " + auth_type + " not supported")
         except AttributeError as ae:
-            raise ServerError (ae.__str__())
+            raise AuthError (ae.__str__())
         if is_auth is False:
-            raise ServerError ("Unable to Authenticate")
+            raise AuthError ("Unable to Authenticate")
 
 
     def ExpectHeader (self, header_obj):
@@ -363,6 +361,8 @@ class _Handler (BaseHTTPRequestHandler):
         if path in self.server.fileSys:
             self.rules = self.server.server_configs.get (path)
 
+            content = self.server.fileSys.get (path)
+            content_length = len (content)
             for rule_name in self.rules:
                 try:
                     assert hasattr (self, rule_name)
@@ -371,12 +371,13 @@ class _Handler (BaseHTTPRequestHandler):
                     msg = "Rule " + rule_name + " not defined"
                     self.send_error (500, msg)
                     return (None, None)
+                except AuthError as ae:
+                    print (ae.__str__())
+                    return (None, None)
                 except ServerError as se:
                     print (se.__str__())
-                    return (None, None)
+                    return (content, None)
 
-            content = self.server.fileSys.get (path)
-            content_length = len (content)
             try:
                 self.range_begin = self.parse_range_header (
                     self.headers.get ("Range"), content_length)
