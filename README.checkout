@@ -56,7 +56,7 @@ Compiling From Repository Sources
        --with-libgnutls-prefix (or if having pkg-config: see description
        below).
 
-     * [30]OpenSSL  to allow encrypted data transfer (HTTPS) an an
+     * [30]OpenSSL to allow encrypted data transfer (HTTPS) an
        alternative to [31]GnuTLS.
        You need the header files and the library installed.
        If you want to compile+link a non-system library version use
