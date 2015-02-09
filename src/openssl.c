@@ -545,7 +545,7 @@ ssl_connect_wget (int fd, const char *hostname)
     DEBUGP (("SSL handshake timed out.\n"));
     goto timeout;
   }
-  if (scwt_ctx.result <= 0 || conn->state != SSL_ST_OK)
+  if (scwt_ctx.result <= 0 || SSL_state(conn) != SSL_ST_OK)
     goto error;
 
   ctx = xnew0 (struct openssl_transport_context);
