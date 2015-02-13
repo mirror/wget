@@ -95,6 +95,10 @@ struct url
   /* Username and password (unquoted). */
   char *user;
   char *passwd;
+
+  /* 'host' is allocated by idna_to_ascii_8z() via idn_encode().
+   * Call 'idn_free()' to free this memory. */
+  bool idn_allocated;
 };
 
 /* Function declarations */

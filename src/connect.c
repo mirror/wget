@@ -54,6 +54,11 @@ as that of the covered work.  */
 #include <errno.h>
 #include <string.h>
 #include <sys/time.h>
+
+#ifdef ENABLE_IRI
+#include <idn-free.h>
+#endif
+
 #include "utils.h"
 #include "host.h"
 #include "connect.h"
@@ -278,7 +283,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
               str = xmalloc (len);
               snprintf (str, len, "%s (%s)", name, print);
               str[len-1] = '\0';
-              xfree (name);
+              idn_free (name);
             }
 
           logprintf (LOG_VERBOSE, _("Connecting to %s|%s|:%d... "),

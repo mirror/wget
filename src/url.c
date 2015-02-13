@@ -897,6 +897,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
             {
               xfree (u->host);
               u->host = new;
+              u->idn_allocated = true;
               host_modified = true;
             }
         }
@@ -1175,7 +1176,13 @@ url_free (struct url *url)
 {
   if (url)
     {
-      xfree (url->host);
+      if (url->idn_allocated) {
+        idn_free (url->host);      /* A dummy if !defined(ENABLE_IRI) */
+        url->host = NULL;
+      }
+      else
+        xfree (url->host);
+
       xfree (url->path);
       xfree (url->url);
 

@@ -35,6 +35,7 @@ as that of the covered work.  */
 #include <iconv.h>
 #include <stringprep.h>
 #include <idna.h>
+#include <idn-free.h>
 #include <errno.h>
 
 #include "utils.h"

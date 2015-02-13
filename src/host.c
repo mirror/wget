@@ -57,6 +57,10 @@ as that of the covered work.  */
 
 #include <errno.h>
 
+#ifdef ENABLE_IRI
+#include <idn-free.h>
+#endif
+
 #include "utils.h"
 #include "host.h"
 #include "url.h"
@@ -741,7 +745,7 @@ lookup_host (const char *host, int flags)
           str = xmalloc (len);
           snprintf (str, len, "%s (%s)", name, host);
           str[len-1] = '\0';
-          xfree (name);
+          idn_free (name);
         }
 
       logprintf (LOG_VERBOSE, _("Resolving %s... "),

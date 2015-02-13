@@ -39,6 +39,9 @@ struct iri {
 
 #ifdef ENABLE_IRI
 
+# include <idna.h>
+# include <idn-free.h>
+
 char *parse_charset (char *str);
 char *find_locale (void);
 bool check_encoding_name (char *encoding);
@@ -62,6 +65,7 @@ extern struct iri dummy_iri;
 #define locale_to_utf8(str)         (str)
 #define idn_encode(a,b)             NULL
 #define idn_decode(str)             NULL
+#define idn_free(str)               ((void)0)
 #define remote_to_utf8(a,b,c)       false
 #define iri_new()                   (&dummy_iri)
 #define iri_dup(a)                  (&dummy_iri)
