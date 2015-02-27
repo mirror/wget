@@ -7,7 +7,17 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget 16.1
+* Changes in Wget X.Y.Z
+
+** Native uuid generation on Windows
+
+** Fix build on Solaris
+
+** Allow progress bar on stderr when -o is used
+
+** Accept 5-digit port numbers in FTP EPSV responses.
+
+* Changes in Wget 1.16.1
 
 ** Add --enable-assert configure option.
 
