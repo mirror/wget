@@ -7,7 +7,7 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.Y.Z
+* Changes in Wget 1.16.2
 
 ** Native uuid generation on Windows
 
@@ -16,6 +16,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Allow progress bar on stderr when -o is used
 
 ** Accept 5-digit port numbers in FTP EPSV responses.
+
+** Support older versions of flex.
+
+** Updated translations.
 
 * Changes in Wget 1.16.1
 
