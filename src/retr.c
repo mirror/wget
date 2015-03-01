@@ -1023,6 +1023,7 @@ retrieve_from_file (const char *file, bool html, int *count)
           char *error = url_error (url, url_err);
           logprintf (LOG_NOTQUIET, "%s: %s.\n", url, error);
           xfree (error);
+          iri_free (iri);
           return URLERROR;
         }
 
