@@ -875,7 +875,10 @@ format_and_print_line (const char *prefix, const char *line,
   line_dup = xstrdup (line);
 
   if (printf ("%s", prefix) < 0)
-    return -1;
+    {
+      xfree (line_dup);
+      return -1;
+    }
 
   /* Wrap to new line after prefix. */
   remaining_chars = 0;
@@ -903,7 +906,10 @@ format_and_print_line (const char *prefix, const char *line,
     }
 
   if (printf ("\n") < 0)
-    return -1;
+    {
+      xfree (line_dup);
+      return -1;
+    }
 
   xfree (line_dup);
   return 0;
