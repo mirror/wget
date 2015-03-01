@@ -304,6 +304,7 @@ append_url (const char *link_uri, int position, int size,
           logprintf (LOG_NOTQUIET,
                      _("%s: Cannot resolve incomplete link %s.\n"),
                      ctx->document_file, link_uri);
+          iri_free (iri);
           return NULL;
         }
 
@@ -312,6 +313,7 @@ append_url (const char *link_uri, int position, int size,
         {
           DEBUGP (("%s: link \"%s\" doesn't parse.\n",
                    ctx->document_file, link_uri));
+          iri_free (iri);
           return NULL;
         }
     }
@@ -335,6 +337,7 @@ append_url (const char *link_uri, int position, int size,
           DEBUGP (("%s: merged link \"%s\" doesn't parse.\n",
                    ctx->document_file, complete_uri));
           xfree (complete_uri);
+          iri_free (iri);
           return NULL;
         }
       xfree (complete_uri);
