@@ -772,6 +772,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
                      proxy, error);
           xfree (url);
           xfree (error);
+          xfree (proxy);
+          iri_free (pi);
           RESTORE_METHOD;
           result = PROXERR;
           goto bail;
@@ -781,6 +783,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           logprintf (LOG_NOTQUIET, _("Error in proxy URL %s: Must be HTTP.\n"), proxy);
           url_free (proxy_url);
           xfree (url);
+          xfree (proxy);
+          iri_free (pi);
           RESTORE_METHOD;
           result = PROXERR;
           goto bail;
