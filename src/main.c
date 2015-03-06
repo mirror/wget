@@ -340,8 +340,7 @@ no_prefix (const char *s)
 
   char *cp = p;
   int size = 3 + strlen (s) + 1;  /* "no-STRING\0" */
-  if (p + size >= buffer + sizeof (buffer))
-    abort ();
+  assert(p + size <= buffer + sizeof (buffer));
 
   cp[0] = 'n', cp[1] = 'o', cp[2] = '-';
   strcpy (cp + 3, s);
