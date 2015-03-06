@@ -1521,6 +1521,11 @@ Please note that wget does not require the content to be of the form
 simply transmit whatever data is provided to it. Most servers however expect
 the POST data to be in the above format when processing HTML Forms.
 
+When sending a POST request using the @samp{--post-file} option, Wget treats
+the file as a binary file and will send every character in the POST request
+without stripping trailing newline or formfeed characters. Any other control
+characters in the text will also be sent as-is in the POST request.
+
 Please be aware that Wget needs to know the size of the POST data in
 advance.  Therefore the argument to @code{--post-file} must be a regular
 file; specifying a FIFO or something like @file{/dev/stdin} won't work.
