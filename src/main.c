@@ -1271,6 +1271,9 @@ main (int argc, char **argv)
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 
+  if (!opt.verbose && opt.show_progress == -1)
+    opt.show_progress = false;
+
   if (opt.quiet && opt.show_progress == -1)
     opt.show_progress = false;
 
