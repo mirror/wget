@@ -7,6 +7,11 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.16.3
+
+** Fix a regression introduced by wget 1.16.2 that --quiet is not
+   really quiet anymore.
+
 * Changes in Wget 1.16.2
 
 ** Native uuid generation on Windows
