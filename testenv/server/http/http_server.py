@@ -109,12 +109,12 @@ class _Handler (BaseHTTPRequestHandler):
 
             body_data = self.get_body_data ()
             self.send_response (200)
-            self.send_header ("Content-type", "text/plain")
+            self.add_header ("Content-type", "text/plain")
             content = self.server.fileSys.pop (path) + "\n" + body_data
             total_length = len (content)
             self.server.fileSys[path] = content
-            self.send_header ("Content-Length", total_length)
-            self.send_header ("Location", self.path)
+            self.add_header ("Content-Length", total_length)
+            self.add_header ("Location", self.path)
             self.finish_headers ()
             try:
                 self.wfile.write (content.encode ('utf-8'))
@@ -162,7 +162,7 @@ class _Handler (BaseHTTPRequestHandler):
             self.send_response (201)
         body_data = self.get_body_data ()
         self.server.fileSys[path] = body_data
-        self.send_header ("Location", self.path)
+        self.add_header ("Location", self.path)
         self.finish_headers ()
 
     """ This empty method is called automatically when all the rules are
@@ -180,10 +180,17 @@ class _Handler (BaseHTTPRequestHandler):
         header_obj = self.get_rule_list ('SendHeader')
         if header_obj:
             for header in header_obj.headers:
-                self.send_header (header, header_obj.headers[header])
+                self.add_header (header, header_obj.headers[header])
 
     def finish_headers (self):
         self.send_cust_headers ()
+        try:
+            for keyword, value in self._headers_dict.items():
+                self.send_header(keyword, value)
+            # Clear the dictionary of existing headers for the next request
+            self._headers_dict.clear()
+        except AttributeError:
+            pass
         self.end_headers ()
 
     def Response (self, resp_obj):
@@ -200,10 +207,19 @@ class _Handler (BaseHTTPRequestHandler):
         else:
             return True
 
+    def add_header (self, keyword, value):
+        if not hasattr (self, "_headers_dict"):
+            self._headers_dict = dict()
+        self._headers_dict[keyword.lower()] = value
+
     def base64 (self, data):
         string = b64encode (data.encode ('utf-8'))
         return string.decode ('utf-8')
 
+    """ Send an authentication challenge.
+    This method calls self.send_header() directly instead of using the
+    add_header() method because sending multiple WWW-Authenticate headers
+    actually makes sense and we do use that feature in some tests. """
     def send_challenge (self, auth_type):
         auth_type = auth_type.lower()
         if auth_type == "both":
@@ -393,15 +409,15 @@ class _Handler (BaseHTTPRequestHandler):
                 self.send_response (200)
             else:
                 self.send_response (206)
-                self.send_header ("Accept-Ranges", "bytes")
-                self.send_header ("Content-Range",
+                self.add_header ("Accept-Ranges", "bytes")
+                self.add_header ("Content-Range",
                                   "bytes %d-%d/%d" % (self.range_begin,
                                                       content_length - 1,
                                                       content_length))
                 content_length -= self.range_begin
             cont_type = self.guess_type (path)
-            self.send_header ("Content-Type", cont_type)
-            self.send_header ("Content-Length", content_length)
+            self.add_header ("Content-Type", cont_type)
+            self.add_header ("Content-Length", content_length)
             self.finish_headers ()
             return (content, self.range_begin)
         else:
