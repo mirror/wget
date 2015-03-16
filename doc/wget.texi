@@ -2,6 +2,7 @@
 
 @c %**start of header
 @setfilename wget.info
+@documentencoding UTF-8
 @include version.texi
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
@@ -59,11 +60,11 @@ Texts.  A copy of the license is included in the section entitled
 @title GNU Wget @value{VERSION}
 @subtitle The non-interactive download utility
 @subtitle Updated for Wget @value{VERSION}, @value{UPDATED}
-@author by Hrvoje Nik@v{s}i@'{c} and others
+@author by Hrvoje Nikšić and others
 
 @ignore
 @c man begin AUTHOR
-Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
+Originally written by Hrvoje Nikšić <hniksic@xemacs.org>.
 @c man end
 @c man begin SEEALSO
 This is @strong{not} the complete manual for GNU Wget.
@@ -4101,12 +4102,7 @@ me).
 @section Contributors
 @cindex contributors
 
-@iftex
-GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@xemacs.org},
-@end iftex
-@ifnottex
-GNU Wget was written by Hrvoje Niksic @email{hniksic@@xemacs.org}.
-@end ifnottex
+GNU Wget was written by Hrvoje Nikšić @email{hniksic@@xemacs.org},
 
 However, the development of Wget could never have gone as far as it has, were
 it not for the help of many people, either with bug reports, feature proposals,
@@ -4146,14 +4142,8 @@ portability fixes.
 Gordon Matzigkeit---@file{.netrc} support.
 
 @item
-@iftex
-Zlatko @v{C}alu@v{s}i@'{c}, Tomislav Vujec and Dra@v{z}en
-Ka@v{c}ar---feature suggestions and ``philosophical'' discussions.
-@end iftex
-@ifnottex
-Zlatko Calusic, Tomislav Vujec and Drazen Kacar---feature suggestions
-and ``philosophical'' discussions.
-@end ifnottex
+Zlatko Čalušić, Tomislav Vujec and Dražen
+Kačar---feature suggestions and ``philosophical'' discussions.
 
 @item
 Darko Budor---initial port to Windows.
@@ -4163,21 +4153,11 @@ Antonio Rosella---help and suggestions, plus the initial Italian
 translation.
 
 @item
-@iftex
-Tomislav Petrovi@'{c}, Mario Miko@v{c}evi@'{c}---many bug reports and
+Tomislav Petrović, Mario Mikočević---many bug reports and
 suggestions.
-@end iftex
-@ifnottex
-Tomislav Petrovic, Mario Mikocevic---many bug reports and suggestions.
-@end ifnottex
 
 @item
-@iftex
-Fran@,{c}ois Pinard---many thorough bug reports and discussions.
-@end iftex
-@ifnottex
-Francois Pinard---many thorough bug reports and discussions.
-@end ifnottex
+François Pinard---many thorough bug reports and discussions.
 
 @item
 Karl Eichwalder---lots of help with internationalization, Makefile
@@ -4240,12 +4220,7 @@ Wanderlei Cavassin,
 Gilles Cedoc,
 Tim Charron,
 Noel Cragg,
-@iftex
-Kristijan @v{C}onka@v{s},
-@end iftex
-@ifnottex
-Kristijan Conkas,
-@end ifnottex
+Kristijan Čonkaš,
 John Daily,
 Andreas Damm,
 Ahmon Dancy,
@@ -4255,27 +4230,12 @@ Alexander Dergachev,
 Andrew Deryabin,
 Ulrich Drepper,
 Marc Duponcheel,
-@iftex
-Damir D@v{z}eko,
-@end iftex
-@ifnottex
-Damir Dzeko,
-@end ifnottex
+Damir Džeko,
 Alan Eldridge,
 Hans-Andreas Engel,
-@iftex
-Aleksandar Erkalovi@'{c},
-@end iftex
-@ifnottex
-Aleksandar Erkalovic,
-@end ifnottex
+Aleksandar Erkalović,
 Andy Eskilsson,
-@iftex
-Jo@~{a}o Ferreira,
-@end iftex
-@ifnottex
-Joao Ferreira,
-@end ifnottex
+João Ferreira,
 Christian Fraenkel,
 David Fritz,
 Mike Frysinger,
@@ -4300,25 +4260,10 @@ Richard Huveneers,
 Jonas Jensen,
 Larry Jones,
 Simon Josefsson,
-@iftex
-Mario Juri@'{c},
-@end iftex
-@ifnottex
-Mario Juric,
-@end ifnottex
-@iftex
-Hack Kampbj@o rn,
-@end iftex
-@ifnottex
-Hack Kampbjorn,
-@end ifnottex
+Mario Jurić,
+Hack Kampbjørn,
 Const Kaplinsky,
-@iftex
-Goran Kezunovi@'{c},
-@end iftex
-@ifnottex
-Goran Kezunovic,
-@end ifnottex
+Goran Kezunović,
 Igor Khristophorov,
 Robert Kleine,
 KOJIMA Haime,
@@ -4327,31 +4272,14 @@ Alexander Kourakos,
 Martin Kraemer,
 Sami Krank,
 Jay Krell,
-@tex
-$\Sigma\acute{\iota}\mu o\varsigma\;
-\Xi\varepsilon\nu\iota\tau\acute{\epsilon}\lambda\lambda\eta\varsigma$
-(Simos KSenitellis),
-@end tex
-@ifnottex
-Simos KSenitellis,
-@end ifnottex
+Σίμος Ξενιτέλλης (Simos KSenitellis),
 Christian Lackas,
 Hrvoje Lacko,
 Daniel S.@: Lewart,
-@iftex
-Nicol@'{a}s Lichtmeier,
-@end iftex
-@ifnottex
-Nicolas Lichtmeier,
-@end ifnottex
+Nicolás Lichtmeier,
 Dave Love,
 Alexander V.@: Lukyanov,
-@iftex
-Thomas Lu@ss{}nig,
-@end iftex
-@ifnottex
-Thomas Lussnig,
-@end ifnottex
+Thomas Lußnig,
 Andre Majorel,
 Aurelien Marchand,
 Matthew J.@: Mellon,
@@ -4372,31 +4300,15 @@ Leonid Petrov,
 Simone Piunno,
 Andrew Pollock,
 Steve Pothier,
-@iftex
-Jan P@v{r}ikryl,
-@end iftex
-@ifnottex
-Jan Prikryl,
-@end ifnottex
+Jan Přikryl,
 Marin Purgar,
-@iftex
-Csaba R@'{a}duly,
-@end iftex
-@ifnottex
-Csaba Raduly,
-@end ifnottex
+Csaba Ráduly,
 Keith Refson,
 Bill Richardson,
 Tyler Riddle,
 Tobias Ringstrom,
 Jochen Roderburg,
-@c Texinfo doesn't grok @'{@i}, so we have to use TeX itself.
-@tex
-Juan Jos\'{e} Rodr\'{\i}guez,
-@end tex
-@ifnottex
-Juan Jose Rodriguez,
-@end ifnottex
+Juan José Rodríguez,
 Maciej W.@: Rozycki,
 Edward J.@: Sabol,
 Heinz Salzmann,
@@ -4423,12 +4335,7 @@ Dave Turner,
 Gisle Vanem,
 Rabin Vincent,
 Russell Vincent,
-@iftex
-@v{Z}eljko Vrba,
-@end iftex
-@ifnottex
-Zeljko Vrba,
-@end ifnottex
+Željko Vrba,
 Charles G Waldman,
 Douglas E.@: Wegscheid,
 Ralf Wildenhues,
@@ -4437,12 +4344,7 @@ Benjamin Wolsey,
 Saint Xavier,
 YAMAZAKI Makoto,
 Jasmin Zainul,
-@iftex
-Bojan @v{Z}drnja,
-@end iftex
-@ifnottex
-Bojan Zdrnja,
-@end ifnottex
+Bojan Ždrnja,
 Kristijan Zimmer,
 Xin Zou.
 
