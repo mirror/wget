@@ -1642,7 +1642,7 @@ form-based authentication.
 
 @cindex SSL
 To support encrypted HTTP (HTTPS) downloads, Wget must be compiled
-with an external SSL library, currently OpenSSL.  If Wget is compiled
+with an external SSL library. The current default is GnuTLS. If Wget is compiled
 without SSL support, none of these options are available.
 
 @table @samp
