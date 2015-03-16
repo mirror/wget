@@ -3859,15 +3859,17 @@ digest_authentication_encode (const char *au, const char *user,
 
   if (!realm || !nonce || !user || !passwd || !path || !method || !qop)
     {
+      if (!qop)
+        *auth_err = UNKNOWNATTR;
+      else
+        *auth_err = ATTRMISSING;
+
       xfree (realm);
       xfree (opaque);
       xfree (nonce);
       xfree (qop);
       xfree (algorithm);
-      if (!qop)
-        *auth_err = UNKNOWNATTR;
-      else
-        *auth_err = ATTRMISSING;
+
       return NULL;
     }
 
