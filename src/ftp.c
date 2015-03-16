@@ -1696,7 +1696,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
         case UNLINKERR: case WARC_TMP_FWRITEERR:
           /* Fatal errors, give up.  */
           if (warc_tmp != NULL)
-            fclose (warc_tmp);
+              fclose (warc_tmp);
           return err;
         case CONSOCKERR: case CONERROR: case FTPSRVERR: case FTPRERR:
         case WRITEFAILED: case FTPUNKNOWNTYPE: case FTPSYSERR:
@@ -1771,10 +1771,12 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
 
           warc_res = warc_write_resource_record (NULL, u->url, NULL, NULL,
                                                   warc_ip, NULL, warc_tmp, -1);
+
           if (! warc_res)
             return WARC_ERR;
 
           /* warc_write_resource_record has also closed warc_tmp. */
+          warc_tmp = NULL;
         }
 
       if (con->cmd & DO_LIST)
@@ -1821,6 +1823,9 @@ Removing file due to --delete-after in ftp_loop_internal():\n"));
       if (local_file)
         *local_file = xstrdup (locf);
 
+      if (warc_tmp != NULL)
+        fclose (warc_tmp);
+
       return RETROK;
     } while (!opt.ntry || (count < opt.ntry));
 
@@ -1829,6 +1834,10 @@ Removing file due to --delete-after in ftp_loop_internal():\n"));
       fd_close (con->csock);
       con->csock = -1;
     }
+
+  if (warc_tmp != NULL)
+    fclose (warc_tmp);
+
   return TRYLIMEXC;
 }
 
