@@ -2330,6 +2330,27 @@ open_output_stream (struct http_stat *hs, int count, FILE **fp)
       return RETROK;
 }
 
+/* Set proper type flags based on type string.  */
+static void
+set_content_type (int *dt, const char *type)
+{
+  /* If content-type is not given, assume text/html.  This is because
+     of the multitude of broken CGI's that "forget" to generate the
+     content-type.  */
+  if (!type ||
+      0 == strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)) ||
+      0 == strncasecmp (type, TEXTXHTML_S, strlen (TEXTXHTML_S)))
+    *dt |= TEXTHTML;
+  else
+    *dt &= ~TEXTHTML;
+
+  if (type &&
+      0 == strncasecmp (type, TEXTCSS_S, strlen (TEXTCSS_S)))
+    *dt |= TEXTCSS;
+  else
+    *dt &= ~TEXTCSS;
+}
+
 /* Retrieve a document through HTTP protocol.  It recognizes status
    code, and correctly handles redirections.  It closes the network
    socket.  If it receives an error from the functions below it, it
@@ -2957,21 +2978,7 @@ read_header:
         }
     }
 
-  /* If content-type is not given, assume text/html.  This is because
-     of the multitude of broken CGI's that "forget" to generate the
-     content-type.  */
-  if (!type ||
-        0 == strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)) ||
-        0 == strncasecmp (type, TEXTXHTML_S, strlen (TEXTXHTML_S)))
-    *dt |= TEXTHTML;
-  else
-    *dt &= ~TEXTHTML;
-
-  if (type &&
-      0 == strncasecmp (type, TEXTCSS_S, strlen (TEXTCSS_S)))
-    *dt |= TEXTCSS;
-  else
-    *dt &= ~TEXTCSS;
+  set_content_type (dt, type);
 
   if (opt.adjust_extension)
     {
