@@ -1868,7 +1868,6 @@ establish_connection (struct url *u, struct url **conn_ref,
         }
       else if (host_lookup_failed)
         {
-          request_free (req);
           logprintf(LOG_NOTQUIET,
                     _("%s: unable to resolve host address %s\n"),
                     exec_name, quote (relevant->host));
@@ -1884,16 +1883,10 @@ establish_connection (struct url *u, struct url **conn_ref,
     {
       sock = connect_to_host (conn->host, conn->port);
       if (sock == E_HOST)
-        {
-          request_free (req);
-          return HOSTERR;
-        }
+        return HOSTERR;
       else if (sock < 0)
-        {
-          request_free (req);
-          return (retryable_socket_connect_error (errno)
-                  ? CONERROR : CONIMPOSSIBLE);
-        }
+        return (retryable_socket_connect_error (errno)
+                ? CONERROR : CONIMPOSSIBLE);
 
 #ifdef HAVE_SSL
       if (proxy && u->scheme == SCHEME_HTTPS)
@@ -1923,7 +1916,6 @@ establish_connection (struct url *u, struct url **conn_ref,
           if (write_error < 0)
             {
               CLOSE_INVALIDATE (sock);
-              request_free (req);
               return WRITEFAILED;
             }
 
@@ -1933,7 +1925,6 @@ establish_connection (struct url *u, struct url **conn_ref,
               logprintf (LOG_VERBOSE, _("Failed reading proxy response: %s\n"),
                          fd_errstr (sock));
               CLOSE_INVALIDATE (sock);
-              request_free (req);
               return HERR;
             }
           message = NULL;
@@ -1954,7 +1945,6 @@ establish_connection (struct url *u, struct url **conn_ref,
                          quotearg_style (escape_quoting_style,
                                          _("Malformed status line")));
               xfree (head);
-              request_free (req);
               return HERR;
             }
           xfree(hs->message);
@@ -1967,7 +1957,6 @@ establish_connection (struct url *u, struct url **conn_ref,
               logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
                          message ? quotearg_style (escape_quoting_style, message) : "?");
               xfree (message);
-              request_free (req);
               return CONSSLERR;
             }
           xfree (message);
@@ -1983,13 +1972,11 @@ establish_connection (struct url *u, struct url **conn_ref,
           if (!ssl_connect_wget (sock, u->host))
             {
               CLOSE_INVALIDATE (sock);
-              request_free (req);
               return CONSSLERR;
             }
           else if (!ssl_check_certificate (sock, u->host))
             {
               CLOSE_INVALIDATE (sock);
-              request_free (req);
               return VERIFCERTERR;
             }
           *using_ssl = true;
@@ -2501,7 +2488,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     uerr_t err = establish_connection (u, &conn, hs, proxy, &proxyauth, &req,
                                        &using_ssl, inhibit_keep_alive, &sock);
     if (err != RETROK)
-      return err;
+      {
+        request_free (req);
+        return err;
+      }
   }
 
 
