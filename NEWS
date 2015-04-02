@@ -9,6 +9,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+** Add option to restrict filenames under VMS.
+
 * Changes in Wget 1.16.3
 
 ** Fix a regression introduced by wget 1.16.2 that --quiet is not
