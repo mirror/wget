@@ -1328,8 +1328,9 @@ append_string (const char *str, struct growable *dest)
 
 enum {
   filechr_not_unix    = 1,      /* unusable on Unix, / and \0 */
-  filechr_not_windows = 2,      /* unusable on Windows, one of \|/<>?:*" */
-  filechr_control     = 4       /* a control character, e.g. 0-31 */
+  filechr_not_vms     = 2,      /* unusable on VMS (ODS5), 0x00-0x1F * ? */
+  filechr_not_windows = 4,      /* unusable on Windows, one of \|/<>?:*" */
+  filechr_control     = 8       /* a control character, e.g. 0-31 */
 };
 
 #define FILE_CHAR_TEST(c, mask) \
@@ -1338,11 +1339,14 @@ enum {
 
 /* Shorthands for the table: */
 #define U filechr_not_unix
+#define V filechr_not_vms
 #define W filechr_not_windows
 #define C filechr_control
 
+#define UVWC U|V|W|C
 #define UW U|W
-#define UWC U|W|C
+#define VC V|C
+#define VW V|W
 
 /* Table of characters unsafe under various conditions (see above).
 
@@ -1353,22 +1357,22 @@ enum {
 
 static const unsigned char filechr_table[256] =
 {
-UWC,  C,  C,  C,   C,  C,  C,  C,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
-  C,  C,  C,  C,   C,  C,  C,  C,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
-  C,  C,  C,  C,   C,  C,  C,  C,   /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
-  C,  C,  C,  C,   C,  C,  C,  C,   /* CAN EM  SUB ESC  FS  GS  RS  US  */
-  0,  0,  W,  0,   0,  0,  0,  0,   /* SP  !   "   #    $   %   &   '   */
-  0,  0,  W,  0,   0,  0,  0, UW,   /* (   )   *   +    ,   -   .   /   */
-  0,  0,  0,  0,   0,  0,  0,  0,   /* 0   1   2   3    4   5   6   7   */
-  0,  0,  W,  0,   W,  0,  W,  W,   /* 8   9   :   ;    <   =   >   ?   */
-  0,  0,  0,  0,   0,  0,  0,  0,   /* @   A   B   C    D   E   F   G   */
-  0,  0,  0,  0,   0,  0,  0,  0,   /* H   I   J   K    L   M   N   O   */
-  0,  0,  0,  0,   0,  0,  0,  0,   /* P   Q   R   S    T   U   V   W   */
-  0,  0,  0,  0,   W,  0,  0,  0,   /* X   Y   Z   [    \   ]   ^   _   */
-  0,  0,  0,  0,   0,  0,  0,  0,   /* `   a   b   c    d   e   f   g   */
-  0,  0,  0,  0,   0,  0,  0,  0,   /* h   i   j   k    l   m   n   o   */
-  0,  0,  0,  0,   0,  0,  0,  0,   /* p   q   r   s    t   u   v   w   */
-  0,  0,  0,  0,   W,  0,  0,  C,   /* x   y   z   {    |   }   ~   DEL */
+UVWC, VC, VC, VC,  VC, VC, VC, VC,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
+  VC, VC, VC, VC,  VC, VC, VC, VC,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
+  VC, VC, VC, VC,  VC, VC, VC, VC,   /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
+  VC, VC, VC, VC,  VC, VC, VC, VC,   /* CAN EM  SUB ESC  FS  GS  RS  US  */
+   0,  0,  W,  0,   0,  0,  0,  0,   /* SP  !   "   #    $   %   &   '   */
+   0,  0, VW,  0,   0,  0,  0, UW,   /* (   )   *   +    ,   -   .   /   */
+   0,  0,  0,  0,   0,  0,  0,  0,   /* 0   1   2   3    4   5   6   7   */
+   0,  0,  W,  0,   W,  0,  W, VW,   /* 8   9   :   ;    <   =   >   ?   */
+   0,  0,  0,  0,   0,  0,  0,  0,   /* @   A   B   C    D   E   F   G   */
+   0,  0,  0,  0,   0,  0,  0,  0,   /* H   I   J   K    L   M   N   O   */
+   0,  0,  0,  0,   0,  0,  0,  0,   /* P   Q   R   S    T   U   V   W   */
+   0,  0,  0,  0,   W,  0,  0,  0,   /* X   Y   Z   [    \   ]   ^   _   */
+   0,  0,  0,  0,   0,  0,  0,  0,   /* `   a   b   c    d   e   f   g   */
+   0,  0,  0,  0,   0,  0,  0,  0,   /* h   i   j   k    l   m   n   o   */
+   0,  0,  0,  0,   0,  0,  0,  0,   /* p   q   r   s    t   u   v   w   */
+   0,  0,  0,  0,   W,  0,  0,  C,   /* x   y   z   {    |   }   ~   DEL */
 
   C, C, C, C,  C, C, C, C,  C, C, C, C,  C, C, C, C, /* 128-143 */
   C, C, C, C,  C, C, C, C,  C, C, C, C,  C, C, C, C, /* 144-159 */
@@ -1381,10 +1385,13 @@ UWC,  C,  C,  C,   C,  C,  C,  C,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
   0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
 };
 #undef U
+#undef V
 #undef W
 #undef C
 #undef UW
-#undef UWC
+#undef UVWC
+#undef VC
+#undef VW
 
 /* FN_PORT_SEP is the separator between host and port in file names
    for non-standard port numbers.  On Unix this is normally ':', as in
@@ -1393,10 +1400,14 @@ UWC,  C,  C,  C,   C,  C,  C,  C,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
 #define FN_PORT_SEP  (opt.restrict_files_os != restrict_windows ? ':' : '+')
 
 /* FN_QUERY_SEP is the separator between the file name and the URL
-   query, normally '?'.  Since Windows cannot handle '?' as part of
+   query, normally '?'.  Because VMS and Windows cannot handle '?' in a
    file name, we use '@' instead there.  */
-#define FN_QUERY_SEP (opt.restrict_files_os != restrict_windows ? '?' : '@')
-#define FN_QUERY_SEP_STR (opt.restrict_files_os != restrict_windows ? "?" : "@")
+#define FN_QUERY_SEP \
+ (((opt.restrict_files_os != restrict_vms) && \
+   (opt.restrict_files_os != restrict_windows)) ? '?' : '@')
+#define FN_QUERY_SEP_STR \
+ (((opt.restrict_files_os != restrict_vms) && \
+   (opt.restrict_files_os != restrict_windows)) ? "?" : "@")
 
 /* Quote path element, characters in [b, e), as file name, and append
    the quoted string to DEST.  Each character is quoted as per
@@ -1415,6 +1426,8 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
   int mask;
   if (opt.restrict_files_os == restrict_unix)
     mask = filechr_not_unix;
+  else if (opt.restrict_files_os == restrict_vms)
+    mask = filechr_not_vms;
   else
     mask = filechr_not_windows;
   if (opt.restrict_files_ctrl)
