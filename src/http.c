@@ -1201,14 +1201,17 @@ parse_content_disposition (const char *hdr, char **filename)
   param_token name, value;
   bool is_url_encoded = false;
 
-  *filename = NULL;
+  char *encodedFilename = NULL;
+  char *unencodedFilename = NULL;
   for ( ; extract_param (&hdr, &name, &value, ';', &is_url_encoded);
         is_url_encoded = false)
     {
-      int isFilename = BOUNDED_EQUAL_NO_CASE ( name.b, name.e, "filename" );
+      int isFilename = BOUNDED_EQUAL_NO_CASE (name.b, name.e, "filename");
       if ( isFilename && value.b != NULL)
         {
           /* Make the file name begin at the last slash or backslash. */
+          bool isEncodedFilename;
+          char **outFilename;
           const char *last_slash = memrchr (value.b, '/', value.e - value.b);
           const char *last_bs = memrchr (value.b, '\\', value.e - value.b);
           if (last_slash && last_bs)
@@ -1218,17 +1221,32 @@ parse_content_disposition (const char *hdr, char **filename)
           if (value.b == value.e)
             continue;
 
-          if (*filename)
-            append_value_to_filename (filename, &value, is_url_encoded);
+          /* Check if the name is "filename*" as specified in RFC 6266.
+           * Since "filename" could be broken up as "filename*N" (RFC 2231),
+           * a check is needed to make sure this is not the case */
+          isEncodedFilename = *name.e == '*' && !c_isdigit (*(name.e + 1));
+          outFilename = isEncodedFilename ? &encodedFilename
+            : &unencodedFilename;
+          if (*outFilename)
+            append_value_to_filename (outFilename, &value, is_url_encoded);
           else
             {
-              *filename = strdupdelim (value.b, value.e);
+              *outFilename = strdupdelim (value.b, value.e);
               if (is_url_encoded)
-                url_unescape (*filename);
+                url_unescape (*outFilename);
             }
         }
     }
-
+  if (encodedFilename)
+    {
+      xfree (unencodedFilename);
+      *filename = encodedFilename;
+    }
+  else
+    {
+      xfree (encodedFilename);
+      *filename = unencodedFilename;
+    }
   if (*filename)
     return true;
   else
@@ -4272,7 +4290,13 @@ test_parse_content_disposition(void)
     { "attachment; filename=\"file.ext\"; dummy", "file.ext", true },
     { "attachment", NULL, false },
     { "attachement; filename*=UTF-8'en-US'hello.txt", "hello.txt", true },
-    { "attachement; filename*0=\"hello\"; filename*1=\"world.txt\"", "helloworld.txt", true },
+    { "attachement; filename*0=\"hello\"; filename*1=\"world.txt\"",
+      "helloworld.txt", true },
+    { "attachment; filename=\"A.ext\"; filename*=\"B.ext\"", "B.ext", true },
+    { "attachment; filename*=\"A.ext\"; filename*0=\"B\"; filename*1=\"B.ext\"",
+      "A.ext", true },
+    { "filename**0=\"A\"; filename**1=\"A.ext\"; filename*0=\"B\";\
+filename*1=\"B\"", "AA.ext", true },
   };
 
   for (i = 0; i < countof(test_array); ++i)
