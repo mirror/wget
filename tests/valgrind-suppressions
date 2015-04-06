@@ -1,0 +1,8 @@
+{
+   False positive in libidn.so. More info: https://bugzilla.redhat.com/show_bug.cgi?id=678518
+   Memcheck:Addr4
+   fun:idna_to_ascii_4z
+   fun:idna_to_ascii_8z
+   fun:idn_encode
+   fun:url_parse
+}

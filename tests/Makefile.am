@@ -131,7 +131,7 @@ PX_TESTS = \
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              WgetTests.pm WgetFeature.pm WgetFeature.cfg $(PX_TESTS) \
-             certs
+             certs valgrind-suppressions
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES =

@@ -14,6 +14,12 @@ use POSIX qw(locale_h);
 use locale;
 
 our $WGETPATH = '../src/wget';
+our $VALGRIND_SUPP_FILE = Cwd::getcwd();
+if (defined $ENV{'srcdir'}) {
+    $VALGRIND_SUPP_FILE = $VALGRIND_SUPP_FILE
+                          . "/" . $ENV{'srcdir'};
+}
+$VALGRIND_SUPP_FILE = $VALGRIND_SUPP_FILE . '/valgrind-suppressions';
 
 my @unexpected_downloads = ();
 
@@ -122,7 +128,8 @@ sub run
     elsif ($valgrind == 1)
     {
         $cmdline =
-          'valgrind --error-exitcode=301 --leak-check=yes --track-origins=yes '
+          'valgrind --suppressions=' . $VALGRIND_SUPP_FILE
+          . ' --error-exitcode=301 --leak-check=yes --track-origins=yes '
           . $cmdline;
     }
     else
