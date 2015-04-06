@@ -2387,9 +2387,9 @@ static uerr_t
 gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
          struct iri *iri, int count)
 {
-  struct request *req;
+  struct request *req = NULL;
 
-  char *type;
+  char *type = NULL;
   char *user, *passwd;
   char *proxyauth;
   int statcode;
@@ -2398,6 +2398,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   struct url *conn;
   FILE *fp;
   int err;
+  uerr_t retval;
 
   int sock = -1;
 
@@ -2420,10 +2421,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
      POST). */
   bool head_only = !!(*dt & HEAD_ONLY);
 
-  char *head;
-  struct response *resp;
+  char *head = NULL;
+  struct response *resp = NULL;
   char hdrval[512];
-  char *message;
+  char *message = NULL;
 
   /* Declare WARC variables. */
   bool warc_enabled = (opt.warc_filename != NULL);
@@ -2457,7 +2458,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           scheme_disable (SCHEME_HTTPS);
           logprintf (LOG_NOTQUIET,
                      _("Disabling SSL due to encountered errors.\n"));
-          return SSLINITFAILED;
+          retval = SSLINITFAILED;
+          goto cleanup;
         }
     }
 #endif /* HAVE_SSL */
@@ -2480,7 +2482,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                               &basic_auth_finished, &body_data_size,
                               &user, &passwd, &ret);
     if (req == NULL)
-      return ret;
+      {
+        retval = ret;
+        goto cleanup;
+      }
   }
  retry_with_auth:
   /* We need to come back here when the initial attempt to retrieve
@@ -2524,8 +2529,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                                        &using_ssl, inhibit_keep_alive, &sock);
     if (err != RETROK)
       {
-        request_free (&req);
-        return err;
+        retval = err;
+        goto cleanup;
       }
   }
 
@@ -2537,8 +2542,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       if (warc_tmp == NULL)
         {
           CLOSE_INVALIDATE (sock);
-          request_free (&req);
-          return WARC_TMP_FOPENERR;
+          retval = WARC_TMP_FOPENERR;
+          goto cleanup;
         }
 
       if (! proxy)
@@ -2583,15 +2588,15 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   if (write_error < 0)
     {
       CLOSE_INVALIDATE (sock);
-      request_free (&req);
 
       if (warc_tmp != NULL)
         fclose (warc_tmp);
 
       if (write_error == -2)
-        return WARC_TMP_FWRITEERR;
+        retval = WARC_TMP_FWRITEERR;
       else
-        return WRITEFAILED;
+        retval = WRITEFAILED;
+      goto cleanup;
     }
   logprintf (LOG_VERBOSE, _("%s request sent, awaiting response... "),
              proxy ? "Proxy" : "HTTP");
@@ -2615,8 +2620,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       if (! warc_result)
         {
           CLOSE_INVALIDATE (sock);
-          request_free (&req);
-          return WARC_ERR;
+          retval = WARC_ERR;
+          goto cleanup;
         }
 
       /* warc_write_request_record has also closed warc_tmp. */
@@ -2635,17 +2640,16 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
               {
                 logputs (LOG_NOTQUIET, _("No data received.\n"));
                 CLOSE_INVALIDATE (sock);
-                request_free (&req);
-                return HEOF;
+                retval = HEOF;
               }
             else
               {
                 logprintf (LOG_NOTQUIET, _("Read error (%s) in headers.\n"),
                            fd_errstr (sock));
                 CLOSE_INVALIDATE (sock);
-                request_free (&req);
-                return HERR;
+                retval = HERR;
               }
+            goto cleanup;
           }
         DEBUGP (("\n---response begin---\n%s---response end---\n", head));
 
@@ -2662,10 +2666,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                        quotearg_style (escape_quoting_style,
                                        _("Malformed status line")));
             CLOSE_INVALIDATE (sock);
-            resp_free (&resp);
-            request_free (&req);
-            xfree (head);
-            return HERR;
+            retval = HERR;
+            goto cleanup;
           }
 
         if (H_10X (statcode))
@@ -2778,11 +2780,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           if (_err != RETRFINISHED || hs->res < 0)
             {
               CLOSE_INVALIDATE (sock);
-              request_free (&req);
-              xfree (message);
-              resp_free (&resp);
-              xfree (head);
-              return _err;
+              retval = _err;
+              goto cleanup;
             }
           else
             CLOSE_FINISH (sock);
@@ -2813,14 +2812,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
             goto retry_with_auth;
           }
       }
-      request_free (&req);
-      xfree (message);
-      resp_free (&resp);
-      xfree (head);
       if (auth_err == RETROK)
-        return AUTHFAILED;
+        retval = AUTHFAILED;
       else
-        return auth_err;
+        retval = auth_err;
+      goto cleanup;
     }
   else /* statcode != HTTP_STATUS_UNAUTHORIZED */
     {
@@ -2836,13 +2832,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       hs->restval = 0;
 
       CLOSE_FINISH (sock);
-      request_free (&req);
       xfree (hs->message);
-      xfree (message);
-      resp_free (&resp);
-      xfree (head);
 
-      return GATEWAYTIMEOUT;
+      retval = GATEWAYTIMEOUT;
+      goto cleanup;
     }
 
 
@@ -2850,14 +2843,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     uerr_t ret = check_file_output (u, hs, resp, hdrval, sizeof hdrval);
     if (ret != RETROK)
       {
-        request_free (&req);
-        resp_free (&resp);
-        xfree (head);
-        xfree (message);
-        return ret;
+        retval = ret;
+        goto cleanup;
       }
   }
-  request_free (&req);
 
   hs->statcode = statcode;
   if (statcode == -1)
@@ -2866,7 +2855,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     hs->error = xstrdup (_("(no description)"));
   else
     hs->error = xstrdup (message);
-  xfree (message);
 
   type = resp_header_strdup (resp, "Content-Type");
   if (type)
@@ -2904,7 +2892,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           contlen = last_byte_pos - first_byte_pos + 1;
         }
     }
-  resp_free (&resp);
 
   /* 20x responses are counted among successful by default.  */
   if (H_20X (statcode))
@@ -2920,10 +2907,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       hs->restval = 0;
 
       CLOSE_FINISH (sock);
-      xfree (type);
-      xfree (head);
 
-      return RETRFINISHED;
+      retval = RETRFINISHED;
+      goto cleanup;
     }
 
   /* Return if redirected.  */
@@ -2961,9 +2947,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
               if (_err != RETRFINISHED || hs->res < 0)
                 {
                   CLOSE_INVALIDATE (sock);
-                  xfree (type);
-                  xfree (head);
-                  return _err;
+                  retval = _err;
+                  goto cleanup;
                 }
               else
                 CLOSE_FINISH (sock);
@@ -2978,8 +2963,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                 CLOSE_INVALIDATE (sock);
             }
 
-          xfree (type);
-          xfree (head);
           /* From RFC2616: The status codes 303 and 307 have
              been added for servers that wish to make unambiguously
              clear which kind of reaction is expected of the client.
@@ -2998,19 +2981,25 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           switch (statcode)
             {
             case HTTP_STATUS_TEMPORARY_REDIRECT:
-              return NEWLOCATION_KEEP_POST;
+              retval = NEWLOCATION_KEEP_POST;
+              goto cleanup;
             case HTTP_STATUS_MOVED_PERMANENTLY:
               if (opt.method && c_strcasecmp (opt.method, "post") != 0)
-                return NEWLOCATION_KEEP_POST;
+                {
+                  retval = NEWLOCATION_KEEP_POST;
+                  goto cleanup;
+                }
               break;
             case HTTP_STATUS_MOVED_TEMPORARILY:
               if (opt.method && c_strcasecmp (opt.method, "post") != 0)
-                return NEWLOCATION_KEEP_POST;
+                {
+                  retval = NEWLOCATION_KEEP_POST;
+                  goto cleanup;
+                }
               break;
-            default:
-              return NEWLOCATION;
             }
-          return NEWLOCATION;
+          retval = NEWLOCATION;
+          goto cleanup;
         }
     }
 
@@ -3047,24 +3036,22 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       hs->res = 0;
       /* Mark as successfully retrieved. */
       *dt |= RETROKF;
-      xfree (type);
       if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE)
         CLOSE_FINISH (sock);
       else
         CLOSE_INVALIDATE (sock);        /* would be CLOSE_FINISH, but there
                                    might be more bytes in the body. */
-      xfree (head);
-      return RETRUNNEEDED;
+      retval = RETRUNNEEDED;
+      goto cleanup;
     }
   if ((contrange != 0 && contrange != hs->restval)
       || (H_PARTIAL (statcode) && !contrange))
     {
       /* The Range request was somehow misunderstood by the server.
          Bail out.  */
-      xfree (type);
       CLOSE_INVALIDATE (sock);
-      xfree (head);
-      return RANGEERR;
+      retval = RANGEERR;
+      goto cleanup;
     }
   if (contlen == -1)
     hs->contlen = -1;
@@ -3127,9 +3114,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           if (_err != RETRFINISHED || hs->res < 0)
             {
               CLOSE_INVALIDATE (sock);
-              xfree (head);
-              xfree (type);
-              return _err;
+              retval = _err;
+              goto cleanup;
             }
           else
             CLOSE_FINISH (sock);
@@ -3152,18 +3138,16 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
             CLOSE_INVALIDATE (sock);
         }
 
-      xfree (head);
-      xfree (type);
-      return RETRFINISHED;
+      retval = RETRFINISHED;
+      goto cleanup;
     }
 
   err = open_output_stream (hs, count, &fp);
   if (err != RETROK)
     {
-      xfree (type);
-      xfree (head);
       CLOSE_INVALIDATE (sock);
-      return err;
+      retval = err;
+      goto cleanup;
     }
 
   err = read_response_body (hs, sock, fp, contlen, contrange,
@@ -3171,10 +3155,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                             u->url, warc_timestamp_str,
                             warc_request_uuid, warc_ip, type,
                             statcode, head);
-
-  /* Now we no longer need to store the response header. */
-  xfree (head);
-  xfree (type);
 
   if (hs->res >= 0)
     CLOSE_FINISH (sock);
@@ -3184,7 +3164,16 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   if (!output_stream)
     fclose (fp);
 
-  return err;
+  retval = err;
+
+  cleanup:
+  xfree (head);
+  xfree (type);
+  xfree (message);
+  resp_free (&resp);
+  request_free (&req);
+
+  return retval;
 }
 
 /* The genuine HTTP loop!  This is the part where the retrieval is
