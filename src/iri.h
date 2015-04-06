@@ -49,7 +49,7 @@ bool check_encoding_name (char *encoding);
 const char *locale_to_utf8 (const char *str);
 char *idn_encode (struct iri *i, char *host);
 char *idn_decode (char *host);
-bool remote_to_utf8 (struct iri *i, const char *str, const char **new);
+bool remote_to_utf8 (struct iri *i, const char *str, char **new);
 struct iri *iri_new (void);
 struct iri *iri_dup (const struct iri *);
 void iri_free (struct iri *i);

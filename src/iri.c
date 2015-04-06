@@ -117,13 +117,13 @@ check_encoding_name (char *encoding)
    will contain the transcoded string on success. *out content is
    unspecified otherwise. */
 static bool
-do_conversion (const char *tocode, const char *fromcode, char *in, size_t inlen, char **out)
+do_conversion (const char *tocode, const char *fromcode, char const *in_org, size_t inlen, char **out)
 {
   iconv_t cd;
   /* sXXXav : hummm hard to guess... */
   size_t len, done, outlen;
   int invalid = 0, tooshort = 0;
-  char *s, *in_org, *in_save;
+  char *s, *in, *in_save;
 
   cd = iconv_open (tocode, fromcode);
   if (cd == (iconv_t)(-1))
@@ -135,8 +135,7 @@ do_conversion (const char *tocode, const char *fromcode, char *in, size_t inlen,
     }
 
   /* iconv() has to work on an unescaped string */
-  in_org = in;
-  in_save = in = xstrndup(in, inlen);
+  in_save = in = xstrndup (in_org, inlen);
   url_unescape(in);
   inlen = strlen(in);
 
@@ -231,7 +230,7 @@ idn_encode (struct iri *i, char *host)
   /* Encode to UTF-8 if not done */
   if (!i->utf8_encode)
     {
-      if (!remote_to_utf8 (i, (const char *) host, (const char **) &new))
+      if (!remote_to_utf8 (i, host, &new))
           return NULL;  /* Nothing to encode or an error occured */
       host = new;
     }
@@ -271,7 +270,7 @@ idn_decode (char *host)
 /* Try to transcode string str from remote encoding to UTF-8. On success, *new
    contains the transcoded string. *new content is unspecified otherwise. */
 bool
-remote_to_utf8 (struct iri *iri, const char *str, const char **new)
+remote_to_utf8 (struct iri *iri, const char *str, char **new)
 {
   bool ret = false;
 
@@ -293,7 +292,7 @@ remote_to_utf8 (struct iri *iri, const char *str, const char **new)
       return false;
     }
 
-  if (do_conversion ("UTF-8", iri->uri_encoding, (char *) str, strlen (str), (char **) new))
+  if (do_conversion ("UTF-8", iri->uri_encoding, str, strlen (str), new))
     ret = true;
 
   /* Test if something was converted */

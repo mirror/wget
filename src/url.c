@@ -701,7 +701,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
     {
       char *new_url = NULL;
 
-      iri->utf8_encode = remote_to_utf8 (iri, iri->orig_url ? iri->orig_url : url, (const char **) &new_url);
+      iri->utf8_encode = remote_to_utf8 (iri, iri->orig_url ? iri->orig_url : url, &new_url);
       if (!iri->utf8_encode)
         new_url = NULL;
       else
