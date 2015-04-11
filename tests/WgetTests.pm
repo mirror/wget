@@ -120,10 +120,20 @@ sub run
       ($cmdline =~ m{^/.*}msx) ? $cmdline : "$self->{_workdir}/$cmdline";
 
     my $valgrind = $ENV{VALGRIND_TESTS};
-    if (!defined $valgrind || $valgrind eq q{} || $valgrind == 0)
+    if (!defined $valgrind)
     {
+        $valgrind = 0;
+    }
 
-        # Valgrind not requested - leave $cmdline as it is
+    my $gdb = $ENV{GDB_TESTS};
+    if (!defined $gdb)
+    {
+        $gdb = 0;
+    }
+
+    if ($gdb == 1)
+    {
+        $cmdline = 'gdb --args ' . $cmdline;
     }
     elsif ($valgrind == 1)
     {
@@ -132,7 +142,7 @@ sub run
           . ' --error-exitcode=301 --leak-check=yes --track-origins=yes '
           . $cmdline;
     }
-    else
+    elsif ($valgrind ne q{} && $valgrind != 0)
     {
         $cmdline = "$valgrind $cmdline";
     }
