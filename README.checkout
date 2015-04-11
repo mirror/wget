@@ -23,12 +23,17 @@ Compiling From Repository Sources
      * [23]Perl, if you wish to generate the wget(1) manpage, or run the
        tests in the tests/ sub directory. Tarball distributions include an
        already-generated wget.1 manual. The command "make check" runs the
-       test suite written in perl. To execute all the tests you need
-       [24]libwww-perl and libio-socket-ssl-perl perl library. If
+       test suite written in perl and python (see below). To execute all the tests
+       you need [24]libwww-perl and libio-socket-ssl-perl perl library. If
        "perl -MCPAN -e 'install Bundle::LWP'" fails then you most likely don't
        have cpan module installed. First download [25]CPAN and [26]install it.
        Then execute "perl -MCPAN -e 'install Bundle::LWP'".
        Now "make check" should pass most of the tests in the test suite.
+
+     * [45]Python, if you want to run the tests in the testenv/ subdirectory.
+       Keep in mind that "make check" will try to run all the perl and python
+       tests. More information about the test suite below in the section
+       "Testing and development".
 
      * [27]texinfo in order to generate Info, PostScript and/or HTML
        documentation. You don't need texinfo in order to generate the
@@ -110,6 +115,8 @@ Compiling From Repository Sources
  $  src/wget --version
  GNU Wget 1.12-devel (9cb2563197bc)
 
+Testing and development
+
  All developers are requested to enable the assertions on their development
  builds to ensure a stable codebase. Assertions are added to state certain
  assumptions about the code and its data which all developers should be mindful
@@ -117,6 +124,29 @@ Compiling From Repository Sources
  option, like this:
 
  $ ./configure --enable-assert [other configure options]
+
+ Both the Perl and Python test suites (test/ and testenv/) include support for GDB and Valgrind.
+ The environment variables GDB_TESTS and VALGRIND_TESTS are available to
+ enable such wrappers. If specified, Wget would be run through either of them
+ during the test. For example:
+
+ $ cd testenv
+ $ VALGRIND_TESTS=1 ./Test-O.py
+
+ That would execute Test-O.py test case, but running Wget through Valgrind.
+
+ GDB has preference over Valgrind. If both variables have been asserted,
+ Wget would be run through GDB.
+
+ If you run a test case through GDB, please bear in mind that it could give
+ a false negative. This is because some tests that expect Wget to fail
+ rely on Wget's return code. However, when run through GDB, its return code
+ will always be zero, causing the test to claim failure. This wrapper for
+ GDB is, however, very useful to tackle bugs, allowing one to write a test case
+ for some specific bug and then using GDB to fix it more easily. Otherwise,
+ a dedicated server would have to be set up and write a custom CGI just to reproduce
+ that bug, which might be tedious. Tests should only be run through GDB for that purpose.
+
 
  Copyright (C) 2008,2010,2014,2015 Free Software Foundation, Inc.
  License GPLv3+: GNU GPL version 3 or later
@@ -169,3 +199,4 @@ References
   42. http://moinmo.in/GPL
   43. http://validator.w3.org/check?uri=referer
   44. http://wget.addictivecode.org/WikiLicense
+  45. https://www.python.org/
