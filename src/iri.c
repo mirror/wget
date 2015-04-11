@@ -224,28 +224,29 @@ locale_to_utf8 (const char *str)
 char *
 idn_encode (struct iri *i, char *host)
 {
-  char *new;
   int ret;
+  char *ascii_encoded;
+  char *utf8_encoded = NULL;
 
   /* Encode to UTF-8 if not done */
   if (!i->utf8_encode)
     {
-      if (!remote_to_utf8 (i, host, &new))
+      if (!remote_to_utf8 (i, host, &utf8_encoded))
           return NULL;  /* Nothing to encode or an error occured */
-      host = new;
     }
 
-  /* toASCII UTF-8 NULL terminated string */
-  ret = idna_to_ascii_8z (host, &new, IDNA_FLAGS);
+  /* Store in ascii_encoded the ASCII UTF-8 NULL terminated string */
+  ret = idna_to_ascii_8z (utf8_encoded ? utf8_encoded : host, &ascii_encoded, IDNA_FLAGS);
+  xfree (utf8_encoded);
+
   if (ret != IDNA_SUCCESS)
     {
-      /* sXXXav : free new when needed ! */
       logprintf (LOG_VERBOSE, _("idn_encode failed (%d): %s\n"), ret,
                  quote (idna_strerror (ret)));
       return NULL;
     }
 
-  return new;
+  return ascii_encoded;
 }
 
 /* Try to decode an "ASCII encoded" host. Return the new domain in the locale
