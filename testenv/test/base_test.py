@@ -101,12 +101,19 @@ class BaseTest:
         wget_options = '--debug --no-config %s' % self.wget_options
 
         valgrind = os.getenv("VALGRIND_TESTS", "")
-        if valgrind in ("", "0"):
-            cmd_line = '%s %s ' % (wget_path, wget_options)
+        gdb = os.getenv("GDB_TESTS", "")
+
+        # GDB has precedence over Valgrind
+        # If both VALGRIND_TESTS and GDB_TESTS are defined,
+        # GDB will be executed.
+        if gdb == "1":
+            cmd_line = 'gdb --args %s %s ' % (wget_path, wget_options)
         elif valgrind == "1":
             cmd_line = 'valgrind --error-exitcode=301 --leak-check=yes --track-origins=yes %s %s ' % (wget_path, wget_options)
-        else:
+        elif valgrind not in ("", "0"):
             cmd_line = '%s %s %s ' % (os.getenv("VALGRIND_TESTS", ""), wget_path, wget_options)
+        else:
+           cmd_line = '%s %s ' % (wget_path, wget_options)
 
         for protocol, urls, domain in zip(self.protocols,
                                           self.urls,
