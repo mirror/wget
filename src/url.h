@@ -106,6 +106,7 @@ struct url
 char *url_escape (const char *);
 char *url_escape_unsafe_and_reserved (const char *);
 void url_unescape (char *);
+void url_unescape_except_reserved (char *);
 
 struct url *url_parse (const char *, int *, struct iri *iri, bool percent_encode);
 char *url_error (const char *, int);

@@ -161,17 +161,8 @@ static const unsigned char urlchr_table[256] =
 #undef U
 #undef RU
 
-/* URL-unescape the string S.
-
-   This is done by transforming the sequences "%HH" to the character
-   represented by the hexadecimal digits HH.  If % is not followed by
-   two hexadecimal digits, it is inserted literally.
-
-   The transformation is done in place.  If you need the original
-   string intact, make a copy before calling this function.  */
-
-void
-url_unescape (char *s)
+static void
+url_unescape_1 (char *s, unsigned char mask)
 {
   char *t = s;                  /* t - tortoise */
   char *h = s;                  /* h - hare     */
@@ -190,6 +181,8 @@ url_unescape (char *s)
           if (!h[1] || !h[2] || !(c_isxdigit (h[1]) && c_isxdigit (h[2])))
             goto copychar;
           c = X2DIGITS_TO_NUM (h[1], h[2]);
+          if (urlchr_test(c, mask))
+            goto copychar;
           /* Don't unescape %00 because there is no way to insert it
              into a C string without effectively truncating it. */
           if (c == '\0')
@@ -199,6 +192,31 @@ url_unescape (char *s)
         }
     }
   *t = '\0';
+}
+
+/* URL-unescape the string S.
+
+   This is done by transforming the sequences "%HH" to the character
+   represented by the hexadecimal digits HH.  If % is not followed by
+   two hexadecimal digits, it is inserted literally.
+
+   The transformation is done in place.  If you need the original
+   string intact, make a copy before calling this function.  */
+void
+url_unescape (char *s)
+{
+  url_unescape_1 (s, 0);
+}
+
+/* URL-unescape the string S.
+
+   This functions behaves identically as url_unescape(), but does not
+   convert characters from "reserved". In other words, it only converts
+   "unsafe" characters.  */
+void
+url_unescape_except_reserved (char *s)
+{
+  url_unescape_1 (s, urlchr_reserved);
 }
 
 /* The core of url_escape_* functions.  Escapes the characters that

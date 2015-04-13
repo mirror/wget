@@ -136,7 +136,7 @@ do_conversion (const char *tocode, const char *fromcode, char const *in_org, siz
 
   /* iconv() has to work on an unescaped string */
   in_save = in = xstrndup (in_org, inlen);
-  url_unescape(in);
+  url_unescape_except_reserved (in);
   inlen = strlen(in);
 
   len = outlen = inlen * 2;
