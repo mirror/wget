@@ -102,7 +102,7 @@ static bool warc_write_ok;
 static FILE *warc_current_cdx_file;
 
 /* The record id of the warcinfo record of the current WARC file.  */
-static char *warc_current_warcinfo_uuid_str;
+static char warc_current_warcinfo_uuid_str[48];
 
 /* The file name of the current WARC file. */
 static char *warc_current_filename;
@@ -435,9 +435,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
   off_t pos;
   off_t sum;
 
-  char *buffer = malloc (BLOCKSIZE + 72);
-  if (!buffer)
-    return 1;
+  char *buffer = xmalloc (BLOCKSIZE + 72);
 
   /* Initialize the computation context.  */
   sha1_init_ctx (&ctx_block);
@@ -542,14 +540,17 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
 /* Converts the SHA1 digest to a base32-encoded string.
    "sha1:DIGEST\0"  (Allocates a new string for the response.)  */
 static char *
-warc_base32_sha1_digest (const char *sha1_digest)
+warc_base32_sha1_digest (const char *sha1_digest, char *sha1_base32, size_t sha1_base32_size)
 {
-  /* length: "sha1:" + digest + "\0" */
-  char *sha1_base32 = malloc (BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5 );
-  base32_encode (sha1_digest, SHA1_DIGEST_SIZE, sha1_base32 + 5,
-                 BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1);
-  memcpy (sha1_base32, "sha1:", 5);
-  sha1_base32[BASE32_LENGTH(SHA1_DIGEST_SIZE) + 5] = '\0';
+  if (sha1_base32_size >= BASE32_LENGTH(SHA1_DIGEST_SIZE) + 5 + 1)
+    {
+      memcpy (sha1_base32, "sha1:", 5);
+      base32_encode (sha1_digest, SHA1_DIGEST_SIZE, sha1_base32 + 5,
+                     sha1_base32_size - 5);
+    }
+  else
+    *sha1_base32 = 0;
+
   return sha1_base32;
 }
 
@@ -571,18 +572,14 @@ warc_write_digest_headers (FILE *file, long payload_offset)
       if (warc_sha1_stream_with_payload (file, sha1_res_block,
           sha1_res_payload, payload_offset) == 0)
         {
-          char *digest;
+          char digest[BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5];
 
-          digest = warc_base32_sha1_digest (sha1_res_block);
-          warc_write_header ("WARC-Block-Digest", digest);
-          xfree (digest);
+          warc_write_header ("WARC-Block-Digest",
+              warc_base32_sha1_digest (sha1_res_block, digest, sizeof(digest)));
 
           if (payload_offset >= 0)
-            {
-              digest = warc_base32_sha1_digest (sha1_res_payload);
-              warc_write_header ("WARC-Payload-Digest", digest);
-              xfree (digest);
-            }
+              warc_write_header ("WARC-Payload-Digest",
+                  warc_base32_sha1_digest (sha1_res_payload, digest, sizeof(digest)));
         }
     }
 }
@@ -743,7 +740,6 @@ warc_write_warcinfo_record (const char *filename)
   /* Write warc-info record as the first record of the file. */
   /* We add the record id of this info record to the other records in the
      file. */
-  warc_current_warcinfo_uuid_str = (char *) malloc (48);
   warc_uuid_str (warc_current_warcinfo_uuid_str);
 
   warc_timestamp (timestamp, sizeof(timestamp));
@@ -827,14 +823,15 @@ warc_start_new_file (bool meta)
   if (warc_current_file != NULL)
     fclose (warc_current_file);
 
-  xfree (warc_current_warcinfo_uuid_str);
+  *warc_current_warcinfo_uuid_str = 0;
   xfree (warc_current_filename);
 
   warc_current_file_number++;
 
   base_filename_length = strlen (opt.warc_filename);
   /* filename format:  base + "-" + 5 digit serial number + ".warc.gz" */
-  new_filename = malloc (base_filename_length + 1 + 5 + 8 + 1);
+  new_filename = xmalloc (base_filename_length + 1 + 5 + 8 + 1);
+
   warc_current_filename = new_filename;
 
   /* If max size is enabled, we add a serial number to the file names. */
@@ -995,7 +992,7 @@ warc_process_cdx_line (char *lineptr, int field_num_original_url,
         {
           /* This is a valid line with a valid checksum. */
           struct warc_cdx_record *rec;
-          rec = malloc (sizeof (struct warc_cdx_record));
+          rec = xmalloc (sizeof (struct warc_cdx_record));
           rec->url = original_url;
           rec->uuid = record_id;
           memcpy (rec->digest, checksum_v, SHA1_DIGEST_SIZE);
@@ -1228,7 +1225,7 @@ warc_close (void)
   if (warc_current_file != NULL)
     {
       warc_write_metadata ();
-      xfree (warc_current_warcinfo_uuid_str);
+      *warc_current_warcinfo_uuid_str = 0;
       fclose (warc_current_file);
     }
   if (warc_current_cdx_file != NULL)
@@ -1388,13 +1385,13 @@ warc_write_revisit_record (const char *url, const char *timestamp_str,
                            const char *refers_to, const ip_address *ip, FILE *body)
 {
   char revisit_uuid [48];
-  char *block_digest = NULL;
+  char block_digest[BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5];
   char sha1_res_block[SHA1_DIGEST_SIZE];
 
   warc_uuid_str (revisit_uuid);
 
   sha1_stream (body, sha1_res_block);
-  block_digest = warc_base32_sha1_digest (sha1_res_block);
+  warc_base32_sha1_digest (sha1_res_block, block_digest, sizeof(block_digest));
 
   warc_write_start_record ();
   warc_write_header ("WARC-Type", "revisit");
@@ -1414,7 +1411,6 @@ warc_write_revisit_record (const char *url, const char *timestamp_str,
   warc_write_end_record ();
 
   fclose (body);
-  xfree (block_digest);
 
   return warc_write_ok;
 }
@@ -1438,8 +1434,8 @@ warc_write_response_record (const char *url, const char *timestamp_str,
                             FILE *body, off_t payload_offset, const char *mime_type,
                             int response_code, const char *redirect_location)
 {
-  char *block_digest = NULL;
-  char *payload_digest = NULL;
+  char block_digest[BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5];
+  char payload_digest[BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5];
   char sha1_res_block[SHA1_DIGEST_SIZE];
   char sha1_res_payload[SHA1_DIGEST_SIZE];
   char response_uuid [48];
@@ -1472,17 +1468,16 @@ warc_write_response_record (const char *url, const char *timestamp_str,
                 }
 
               /* Send the original payload digest. */
-              payload_digest = warc_base32_sha1_digest (sha1_res_payload);
+              warc_base32_sha1_digest (sha1_res_payload, payload_digest, sizeof(payload_digest));
               result = warc_write_revisit_record (url, timestamp_str,
                          concurrent_to_uuid, payload_digest, rec_existing->uuid,
                          ip, body);
-              xfree (payload_digest);
 
               return result;
             }
 
-          block_digest = warc_base32_sha1_digest (sha1_res_block);
-          payload_digest = warc_base32_sha1_digest (sha1_res_payload);
+          warc_base32_sha1_digest (sha1_res_block, block_digest, sizeof(block_digest));
+          warc_base32_sha1_digest (sha1_res_payload, payload_digest, sizeof(payload_digest));
         }
     }
 
@@ -1516,9 +1511,6 @@ warc_write_response_record (const char *url, const char *timestamp_str,
       payload_digest, redirect_location, offset, warc_current_filename,
       response_uuid);
     }
-
-  xfree (block_digest);
-  xfree (payload_digest);
 
   return warc_write_ok;
 }
