@@ -404,7 +404,7 @@ warc_write_date_header (const char *timestamp)
    the current WARC record.  If IP is NULL, no header will
    be written.  */
 static bool
-warc_write_ip_header (ip_address *ip)
+warc_write_ip_header (const ip_address *ip)
 {
   if (ip != NULL)
     return warc_write_header ("WARC-IP-Address", print_address (ip));
@@ -542,7 +542,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
 /* Converts the SHA1 digest to a base32-encoded string.
    "sha1:DIGEST\0"  (Allocates a new string for the response.)  */
 static char *
-warc_base32_sha1_digest (char *sha1_digest)
+warc_base32_sha1_digest (const char *sha1_digest)
 {
   /* length: "sha1:" + digest + "\0" */
   char *sha1_base32 = malloc (BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5 );
@@ -734,7 +734,7 @@ warc_uuid_str (char *urn_str)
 /* Write a warcinfo record to the current file.
    Updates warc_current_warcinfo_uuid_str. */
 static bool
-warc_write_warcinfo_record (char *filename)
+warc_write_warcinfo_record (const char *filename)
 {
   FILE *warc_tmp;
   char timestamp[22];
@@ -1098,7 +1098,7 @@ _("CDX file does not list record ids. (Missing column 'u'.)\n"));
    digest.  Returns NULL if the url is not found or if the payload digest
    does not match, or if CDX deduplication is disabled. */
 static struct warc_cdx_record *
-warc_find_duplicate_cdx_record (char *url, char *sha1_digest_payload)
+warc_find_duplicate_cdx_record (const char *url, char *sha1_digest_payload)
 {
   struct warc_cdx_record *rec_existing;
 
@@ -1293,8 +1293,9 @@ warc_tempfile (void)
    Calling this function will close body.
    Returns true on success, false on error. */
 bool
-warc_write_request_record (char *url, char *timestamp_str, char *record_uuid,
-                           ip_address *ip, FILE *body, off_t payload_offset)
+warc_write_request_record (const char *url, const char *timestamp_str,
+                           const char *record_uuid, const ip_address *ip,
+                           FILE *body, off_t payload_offset)
 {
   warc_write_start_record ();
   warc_write_header ("WARC-Type", "request");
@@ -1382,9 +1383,9 @@ warc_write_cdx_record (const char *url, const char *timestamp_str,
    Calling this function will close body.
    Returns true on success, false on error. */
 static bool
-warc_write_revisit_record (char *url, char *timestamp_str,
-                           char *concurrent_to_uuid, char *payload_digest,
-                           char *refers_to, ip_address *ip, FILE *body)
+warc_write_revisit_record (const char *url, const char *timestamp_str,
+                           const char *concurrent_to_uuid, const char *payload_digest,
+                           const char *refers_to, const ip_address *ip, FILE *body)
 {
   char revisit_uuid [48];
   char *block_digest = NULL;
@@ -1432,10 +1433,10 @@ warc_write_revisit_record (char *url, char *timestamp_str,
    Calling this function will close body.
    Returns true on success, false on error. */
 bool
-warc_write_response_record (char *url, char *timestamp_str,
-                            char *concurrent_to_uuid, ip_address *ip,
-                            FILE *body, off_t payload_offset, char *mime_type,
-                            int response_code, char *redirect_location)
+warc_write_response_record (const char *url, const char *timestamp_str,
+                            const char *concurrent_to_uuid, const ip_address *ip,
+                            FILE *body, off_t payload_offset, const char *mime_type,
+                            int response_code, const char *redirect_location)
 {
   char *block_digest = NULL;
   char *payload_digest = NULL;
@@ -1535,16 +1536,18 @@ warc_write_response_record (char *url, char *timestamp_str,
    Calling this function will close body.
    Returns true on success, false on error. */
 static bool
-warc_write_record (const char *record_type, char *resource_uuid,
+warc_write_record (const char *record_type, const char *resource_uuid,
                  const char *url, const char *timestamp_str,
                  const char *concurrent_to_uuid,
-                 ip_address *ip, const char *content_type, FILE *body,
+                 const ip_address *ip, const char *content_type, FILE *body,
                  off_t payload_offset)
 {
   if (resource_uuid == NULL)
     {
-      resource_uuid = alloca (48);
-      warc_uuid_str (resource_uuid);
+      /* using uuid_buf allows const for resource_uuid in function declaration */
+      char *uuid_buf = alloca (48);
+      warc_uuid_str (uuid_buf);
+      resource_uuid = uuid_buf;
     }
 
   if (content_type == NULL)
@@ -1580,9 +1583,9 @@ warc_write_record (const char *record_type, char *resource_uuid,
    Calling this function will close body.
    Returns true on success, false on error. */
 bool
-warc_write_resource_record (char *resource_uuid, const char *url,
+warc_write_resource_record (const char *resource_uuid, const char *url,
                  const char *timestamp_str, const char *concurrent_to_uuid,
-                 ip_address *ip, const char *content_type, FILE *body,
+                 const ip_address *ip, const char *content_type, FILE *body,
                  off_t payload_offset)
 {
   return warc_write_record ("resource",
@@ -1602,7 +1605,7 @@ warc_write_resource_record (char *resource_uuid, const char *url,
    Calling this function will close body.
    Returns true on success, false on error. */
 bool
-warc_write_metadata_record (char *record_uuid, const char *url,
+warc_write_metadata_record (const char *record_uuid, const char *url,
                  const char *timestamp_str, const char *concurrent_to_uuid,
                  ip_address *ip, const char *content_type, FILE *body,
                  off_t payload_offset)
