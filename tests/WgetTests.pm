@@ -135,14 +135,14 @@ sub run
     {
         $cmdline = 'gdb --args ' . $cmdline;
     }
-    elsif ($valgrind == 1)
+    elsif ($valgrind eq "1")
     {
         $cmdline =
           'valgrind --suppressions=' . $VALGRIND_SUPP_FILE
           . ' --error-exitcode=301 --leak-check=yes --track-origins=yes '
           . $cmdline;
     }
-    elsif ($valgrind ne q{} && $valgrind != 0)
+    elsif ($valgrind ne q{} && $valgrind ne "0")
     {
         $cmdline = "$valgrind $cmdline";
     }
