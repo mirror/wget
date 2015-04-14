@@ -20,7 +20,7 @@ class ServerFiles:
     def __call__(self, test_obj):
         for server, files in zip(test_obj.servers, self.server_files):
             files_content = {f.name: test_obj._replace_substring(f.content)
-                     for f in files}
+                             for f in files}
             files_rules = {f.name: test_obj.get_server_rules(f)
-                     for f in files}
+                           for f in files}
             server.server_conf(files_content, files_rules)

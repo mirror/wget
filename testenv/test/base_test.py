@@ -28,9 +28,10 @@ class BaseTest:
         Attributes should not be defined outside __init__.
         """
         self.name = name
-        self.pre_configs = pre_hook or {}  # if pre_hook == None, then
-                                           # {} (an empty dict object) is
-                                           # passed to self.pre_configs
+        # if pre_hook == None, then {} (an empty dict object) is passed to
+        # self.pre_configs
+        self.pre_configs = pre_hook or {}
+
         self.test_params = test_params or {}
         self.post_configs = post_hook or {}
         self.protocols = protocols
@@ -109,11 +110,16 @@ class BaseTest:
         if gdb == "1":
             cmd_line = 'gdb --args %s %s ' % (wget_path, wget_options)
         elif valgrind == "1":
-            cmd_line = 'valgrind --error-exitcode=301 --leak-check=yes --track-origins=yes %s %s ' % (wget_path, wget_options)
+            cmd_line = 'valgrind --error-exitcode=301 ' \
+                                '--leak-check=yes ' \
+                                '--track-origins=yes ' \
+                                '%s %s ' % (wget_path, wget_options)
         elif valgrind not in ("", "0"):
-            cmd_line = '%s %s %s ' % (os.getenv("VALGRIND_TESTS", ""), wget_path, wget_options)
+            cmd_line = '%s %s %s ' % (os.getenv("VALGRIND_TESTS", ""),
+                                      wget_path,
+                                      wget_options)
         else:
-           cmd_line = '%s %s ' % (wget_path, wget_options)
+            cmd_line = '%s %s ' % (wget_path, wget_options)
 
         for protocol, urls, domain in zip(self.protocols,
                                           self.urls,
@@ -139,12 +145,12 @@ class BaseTest:
             if not os.getenv("NO_CLEANUP"):
                 shutil.rmtree(self.get_test_dir())
         except:
-            print ("Unknown Exception while trying to remove Test Environment.")
+            print("Unknown Exception while trying to remove Test Environment.")
 
-    def _exit_test (self):
+    def _exit_test(self):
         self.__test_cleanup()
 
-    def begin (self):
+    def begin(self):
         return 0 if self.tests_passed else 100
 
     def call_test(self):
@@ -181,16 +187,17 @@ class BaseTest:
     def post_hook_call(self):
         self.hook_call(self.post_configs, 'Post Test Function')
 
-    def _replace_substring (self, string):
+    def _replace_substring(self, string):
         """
-        Replace first occurrence of "{{name}}" in @string with "getattr(self, name)".
+        Replace first occurrence of "{{name}}" in @string with
+        "getattr(self, name)".
         """
-        pattern = re.compile (r'\{\{\w+\}\}')
-        match_obj = pattern.search (string)
+        pattern = re.compile(r'\{\{\w+\}\}')
+        match_obj = pattern.search(string)
         if match_obj is not None:
             rep = match_obj.group()
-            temp = getattr (self, rep.strip ('{}'))
-            string = string.replace (rep, temp)
+            temp = getattr(self, rep.strip('{}'))
+            string = string.replace(rep, temp)
         return string
 
     def instantiate_server_by(self, protocol):
