@@ -1540,7 +1540,8 @@ Error in server response, closing control connection.\n"));
    This loop either gets commands from con, or (if ON_YOUR_OWN is
    set), makes them up to retrieve the file given by the URL.  */
 static uerr_t
-ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_file)
+ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_file,
+                   bool force_full_retrieve)
 {
   int count, orig_lp;
   wgint restval, len = 0, qtyread = 0;
@@ -1641,6 +1642,8 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
 
       /* Decide whether or not to restart.  */
       if (con->cmd & DO_LIST)
+        restval = 0;
+      else if (force_full_retrieve)
         restval = 0;
       else if (opt.start_pos >= 0)
         restval = opt.start_pos;
@@ -1865,7 +1868,7 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
 
   con->target = xstrdup (lf);
   xfree (lf);
-  err = ftp_loop_internal (u, NULL, con, NULL);
+  err = ftp_loop_internal (u, NULL, con, NULL, false);
   lf = xstrdup (con->target);
   xfree (con->target);
   con->target = old_target;
@@ -1910,6 +1913,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
   time_t tml;
   bool dlthis; /* Download this (file). */
   const char *actual_target = NULL;
+  bool force_full_retrieve = false;
 
   /* Increase the depth.  */
   ++depth;
@@ -1989,9 +1993,10 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
 Remote file no newer than local file %s -- not retrieving.\n"), quote (con->target));
                   dlthis = false;
                 }
-              else if (eq_size)
+              else if (f->tstamp > tml)
                 {
-                  /* Remote file is newer or sizes cannot be matched */
+                  /* Remote file is newer */
+                  force_full_retrieve = true;
                   logprintf (LOG_VERBOSE, _("\
 Remote file is newer than local file %s -- retrieving.\n\n"),
                              quote (con->target));
@@ -2060,7 +2065,7 @@ Already have correct symlink %s -> %s\n\n"),
           else                /* opt.retr_symlinks */
             {
               if (dlthis)
-                err = ftp_loop_internal (u, f, con, NULL);
+                err = ftp_loop_internal (u, f, con, NULL, force_full_retrieve);
             } /* opt.retr_symlinks */
           break;
         case FT_DIRECTORY:
@@ -2071,7 +2076,7 @@ Already have correct symlink %s -> %s\n\n"),
         case FT_PLAINFILE:
           /* Call the retrieve loop.  */
           if (dlthis)
-            err = ftp_loop_internal (u, f, con, NULL);
+            err = ftp_loop_internal (u, f, con, NULL, force_full_retrieve);
           break;
         case FT_UNKNOWN:
           logprintf (LOG_NOTQUIET, _("%s: unknown/unsupported file type.\n"),
@@ -2377,7 +2382,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
         {
           /* Let's try retrieving it anyway.  */
           con->st |= ON_YOUR_OWN;
-          res = ftp_loop_internal (u, NULL, con, NULL);
+          res = ftp_loop_internal (u, NULL, con, NULL, false);
           return res;
         }
 
@@ -2477,7 +2482,7 @@ ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
                                    ispattern ? GLOB_GLOBALL : GLOB_GETONE);
         }
       else
-        res = ftp_loop_internal (u, NULL, &con, local_file);
+        res = ftp_loop_internal (u, NULL, &con, local_file, false);
     }
   if (res == FTPOK)
     res = RETROK;
