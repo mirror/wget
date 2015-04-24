@@ -292,7 +292,7 @@ ssl_init (void)
   /* Use the private key from the cert file unless otherwise specified. */
   if (opt.cert_file && !opt.private_key)
     {
-      opt.private_key = opt.cert_file;
+      opt.private_key = xstrdup (opt.cert_file);
       opt.private_key_type = opt.cert_type;
     }
 
