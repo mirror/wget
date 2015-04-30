@@ -149,7 +149,7 @@ sub emit_no_corresponding_cmds
     }
 
     local $" = "\n";
-    print <<EOT;
+    print <<"EOT";
 No corresponding commands
 =========================
 @options
@@ -170,7 +170,7 @@ sub emit_no_matching_long_cmds
     }
 
     local $" = "\n";
-    print <<EOT;
+    print <<"EOT";
 Non-matching commands
 =====================
 @options
@@ -199,7 +199,7 @@ sub emit_no_corresponding_opts
     }
 
     local $" = "\n";
-    print <<EOT;
+    print <<"EOT";
 No corresponding options
 ========================
 @commands
@@ -218,7 +218,7 @@ sub emit_deprecated_opts
     }
 
     local $" = "\n";
-    print <<EOT;
+    print <<"EOT";
 Deprecated options
 ==================
 @options
@@ -237,7 +237,7 @@ sub emit_deprecated_cmds
     }
 
     local $" = "\n";
-    print <<EOT;
+    print <<"EOT";
 Deprecated commands
 ===================
 @commands
@@ -339,7 +339,7 @@ sub emit_undocumented_cmds
     }
 
     local $" = "\n";
-    print <<EOT;
+    print <<"EOT";
 Undocumented commands
 =====================
 @commands
