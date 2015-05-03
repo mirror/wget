@@ -336,7 +336,7 @@ aprintf (const char *fmt, ...)
         {                               /* maybe we have some wrong
                                            format string? */
           logprintf (LOG_ALWAYS,
-                     _("%s: aprintf: text buffer is too big (%ld bytes), "
+                     _("%s: aprintf: text buffer is too big (%d bytes), "
                        "aborting.\n"),
                      exec_name, size);  /* printout a log message */
           abort ();                     /* and abort... */
