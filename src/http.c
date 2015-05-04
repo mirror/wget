@@ -2525,15 +2525,14 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     keep_alive = false;
 
   {
-    uerr_t err = establish_connection (u, &conn, hs, proxy, &proxyauth, &req,
-                                       &using_ssl, inhibit_keep_alive, &sock);
-    if (err != RETROK)
+    uerr_t conn_err = establish_connection (u, &conn, hs, proxy, &proxyauth, &req,
+                                            &using_ssl, inhibit_keep_alive, &sock);
+    if (conn_err != RETROK)
       {
-        retval = err;
+        retval = conn_err;
         goto cleanup;
       }
   }
-
 
   /* Open the temporary file where we will write the request. */
   if (warc_enabled)

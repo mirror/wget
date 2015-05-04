@@ -523,13 +523,13 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
               0x0, 0x0,
 
 #ifdef USE_NTRESPONSES
-                SHORTPAIR (0x18), /* NT-response length, twice */
+              SHORTPAIR (0x18), /* NT-response length, twice */
               SHORTPAIR (0x18),
 #else
-                0x0, 0x0,
+              0x0, 0x0,
               0x0, 0x0,
 #endif
-                SHORTPAIR (ntrespoff),
+              SHORTPAIR (ntrespoff),
               0x0, 0x0,
 
               SHORTPAIR (domlen),
