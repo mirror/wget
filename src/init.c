@@ -205,6 +205,7 @@ static const struct {
 #endif
   { "httpsproxy",       &opt.https_proxy,       cmd_string },
   { "httpuser",         &opt.http_user,         cmd_string },
+  { "if-modified-since", &opt.if_modified_since, cmd_boolean },
   { "ignorecase",       &opt.ignore_case,       cmd_boolean },
   { "ignorelength",     &opt.ignore_length,     cmd_boolean },
   { "ignoretags",       &opt.ignore_tags,       cmd_vector },
@@ -361,6 +362,7 @@ defaults (void)
     opt.no_proxy = sepstring (tmp);
   opt.prefer_family = prefer_none;
   opt.allow_cache = true;
+  opt.if_modified_since = true;
 
   opt.read_timeout = 900;
   opt.use_robots = true;

@@ -301,6 +301,7 @@ static struct cmdline_option option_data[] =
     { "strict-comments", 0, OPT_BOOLEAN, "strictcomments", -1 },
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
+    { "if-modified-since", 0, OPT_BOOLEAN, "if-modified-since", -1 },
     { "tries", 't', OPT_VALUE, "tries", -1 },
     { "unlink", 0, OPT_BOOLEAN, "unlink", -1 },
     { "trust-server-names", 0, OPT_BOOLEAN, "trustservernames", -1 },
@@ -515,6 +516,9 @@ Download:\n"),
     N_("\
   -N,  --timestamping              don't re-retrieve files unless newer than\n\
                                      local\n"),
+    N_("\
+       --no-if-modified-since      don't use conditional if-modified-since get\n\
+                                     requests in timestamping mode\n"),
     N_("\
   --no-use-server-timestamps       don't set the local file's timestamp by\n\
                                      the one on the server\n"),
