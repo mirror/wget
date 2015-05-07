@@ -54,7 +54,8 @@ if HAVE_PYTHON3
     Test-504.py                                     \
     Test--spider-r.py                               \
     Test-redirect-crash.py                          \
-    Test-reserved-chars.py
+    Test-reserved-chars.py                          \
+    Test-condget.py
 
   # added test cases expected to fail here and under TESTS
   XFAIL_TESTS =
