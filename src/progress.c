@@ -693,7 +693,7 @@ bar_finish (void *progress, double dltime)
    The idea is that for fast downloads, we get the speed over exactly
    the last three seconds.  For slow downloads (where a network read
    takes more than 150ms to complete), we get the speed over a larger
-   time period, as large as it takes to complete thirty reads.  This
+   time period, as large as it takes to complete twenty reads.  This
    is good because slow downloads tend to fluctuate more and a
    3-second average would be too erratic.  */
 
