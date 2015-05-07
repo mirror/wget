@@ -124,7 +124,7 @@ WgetFile (str name, str contents, str timestamp, dict rules)
 None except name is a mandatory paramter, one may pass only those parameters
 that are required by the File object.
 
-The timestamp string should be a valid Unix Timestamp as defined in RFC xxxx.
+The timestamp string should be in a format: "YYYY-MM-DD HH:MM:SS" in UTC zone.
 The rules object is a dictionary element, with the key as the Rule Name and
 value as the Rule Data. In most cases, the Rule Data is another dictionary.
 
