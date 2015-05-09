@@ -331,7 +331,8 @@ enum
   SEND_NOCACHE         = 0x0008,        /* send Pragma: no-cache directive */
   ACCEPTRANGES         = 0x0010,        /* Accept-ranges header was found */
   ADDED_HTML_EXTENSION = 0x0020,        /* added ".html" extension due to -E */
-  TEXTCSS              = 0x0040         /* document is of type text/css */
+  TEXTCSS              = 0x0040,        /* document is of type text/css */
+  IF_MODIFIED_SINCE    = 0x0080         /* use if-modified-since header */
 };
 
 /* Universal error type -- used almost everywhere.  Error reporting of
@@ -351,7 +352,8 @@ typedef enum
   RETRBADPATTERN, PROXERR,
   AUTHFAILED, QUOTEXC, WRITEFAILED, SSLINITFAILED, VERIFCERTERR,
   UNLINKERR, NEWLOCATION_KEEP_POST, CLOSEFAILED, ATTRMISSING, UNKNOWNATTR,
-  WARC_ERR, WARC_TMP_FOPENERR, WARC_TMP_FWRITEERR
+  WARC_ERR, WARC_TMP_FOPENERR, WARC_TMP_FWRITEERR,
+  TIMECONV_ERR
 } uerr_t;
 
 /* 2005-02-19 SMS.

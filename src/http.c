@@ -1681,6 +1681,58 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
 } while (0)
 #endif /* def __VMS [else] */
 
+/*
+   Convert time_t to one of valid HTTP date formats
+   ie. rfc1123-date.
+
+   HTTP-date    = rfc1123-date | rfc850-date | asctime-date
+   rfc1123-date = wkday "," SP date1 SP time SP "GMT"
+   rfc850-date  = weekday "," SP date2 SP time SP "GMT"
+   asctime-date = wkday SP date3 SP time SP 4DIGIT
+   date1        = 2DIGIT SP month SP 4DIGIT
+                  ; day month year (e.g., 02 Jun 1982)
+   date2        = 2DIGIT "-" month "-" 2DIGIT
+                  ; day-month-year (e.g., 02-Jun-82)
+   date3        = month SP ( 2DIGIT | ( SP 1DIGIT ))
+                  ; month day (e.g., Jun  2)
+   time         = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+                  ; 00:00:00 - 23:59:59
+   wkday        = "Mon" | "Tue" | "Wed"
+                | "Thu" | "Fri" | "Sat" | "Sun"
+   weekday      = "Monday" | "Tuesday" | "Wednesday"
+                | "Thursday" | "Friday" | "Saturday" | "Sunday"
+   month        = "Jan" | "Feb" | "Mar" | "Apr"
+                | "May" | "Jun" | "Jul" | "Aug"
+                | "Sep" | "Oct" | "Nov" | "Dec"
+
+   source: RFC2616  */
+static uerr_t
+time_to_rfc1123 (time_t time, char *buf, size_t bufsize)
+{
+  static const char *wkday[] = { "Sun", "Mon", "Tue", "Wed",
+                                 "Thu", "Fri", "Sat" };
+  static const char *month[] = { "Jan", "Feb", "Mar", "Apr",
+                                 "May", "Jun", "Jul", "Aug",
+                                 "Sep", "Oct", "Nov", "Dec" };
+  /* rfc1123 example: Thu, 01 Jan 1998 22:12:57 GMT  */
+  static const char *time_format = "%s, %02d %s %04d %02d:%02d:%02d GMT";
+
+  struct tm *gtm = gmtime (&time);
+  if (!gtm)
+    {
+      logprintf (LOG_NOTQUIET,
+                 _("gmtime failed. This is probably a bug.\n"));
+      return TIMECONV_ERR;
+    }
+
+  snprintf (buf, bufsize, time_format, wkday[gtm->tm_wday],
+            gtm->tm_mday, month[gtm->tm_mon],
+            gtm->tm_year + 1900, gtm->tm_hour,
+            gtm->tm_min, gtm->tm_sec);
+
+  return RETROK;
+}
+
 static struct request *
 initialize_request (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                     bool inhibit_keep_alive, bool *basic_auth_finished,
@@ -1722,6 +1774,20 @@ initialize_request (struct url *u, struct http_stat *hs, int *dt, struct url *pr
 
       /* ... but some HTTP/1.0 caches doesn't implement Cache-Control.  */
       request_set_header (req, "Pragma", "no-cache", rel_none);
+    }
+  if (*dt & IF_MODIFIED_SINCE)
+    {
+      char strtime[32];
+      uerr_t err = time_to_rfc1123 (hs->orig_file_tstamp, strtime, countof (strtime));
+
+      if (err != RETROK)
+        {
+          logputs (LOG_VERBOSE, _("Cannot convert timestamp to http format. "
+                                  "Falling back to time 0 as last modification "
+                                  "time.\n"));
+          strcpy (strtime, "Thu, 01 Jan 1970 00:00:00 GMT");
+        }
+      request_set_header (req, "If-Modified-Since", xstrdup (strtime), rel_value);
     }
   if (hs->restval)
     request_set_header (req, "Range",
@@ -2025,6 +2091,69 @@ establish_connection (struct url *u, struct url **conn_ref,
 }
 
 static uerr_t
+set_file_timestamp (struct http_stat *hs)
+{
+  size_t filename_len = strlen (hs->local_file);
+  char *filename_plus_orig_suffix = alloca (filename_len + sizeof (ORIG_SFX));
+  bool local_dot_orig_file_exists = false;
+  char *local_filename = NULL;
+  struct_stat st;
+
+  if (opt.backup_converted)
+    /* If -K is specified, we'll act on the assumption that it was specified
+        last time these files were downloaded as well, and instead of just
+        comparing local file X against server file X, we'll compare local
+        file X.orig (if extant, else X) against server file X.  If -K
+        _wasn't_ specified last time, or the server contains files called
+        *.orig, -N will be back to not operating correctly with -k. */
+    {
+      /* Would a single s[n]printf() call be faster?  --dan
+
+          Definitely not.  sprintf() is horribly slow.  It's a
+          different question whether the difference between the two
+          affects a program.  Usually I'd say "no", but at one
+          point I profiled Wget, and found that a measurable and
+          non-negligible amount of time was lost calling sprintf()
+          in url.c.  Replacing sprintf with inline calls to
+          strcpy() and number_to_string() made a difference.
+          --hniksic */
+      memcpy (filename_plus_orig_suffix, hs->local_file, filename_len);
+      memcpy (filename_plus_orig_suffix + filename_len,
+              ORIG_SFX, sizeof (ORIG_SFX));
+
+      /* Try to stat() the .orig file. */
+      if (stat (filename_plus_orig_suffix, &st) == 0)
+        {
+          local_dot_orig_file_exists = true;
+          local_filename = filename_plus_orig_suffix;
+        }
+    }
+
+  if (!local_dot_orig_file_exists)
+    /* Couldn't stat() <file>.orig, so try to stat() <file>. */
+    if (stat (hs->local_file, &st) == 0)
+      local_filename = hs->local_file;
+
+  if (local_filename != NULL)
+    /* There was a local file, so we'll check later to see if the version
+        the server has is the same version we already have, allowing us to
+        skip a download. */
+    {
+      hs->orig_file_name = xstrdup (local_filename);
+      hs->orig_file_size = st.st_size;
+      hs->orig_file_tstamp = st.st_mtime;
+#ifdef WINDOWS
+      /* Modification time granularity is 2 seconds for Windows, so
+          increase local time by 1 second for later comparison. */
+      ++hs->orig_file_tstamp;
+#endif
+      hs->timestamp_checked = true;
+    }
+
+  return RETROK;
+}
+
+static uerr_t
 check_file_output (struct url *u, struct http_stat *hs,
                    struct response *resp, char *hdrval, size_t hdrsize)
 {
@@ -2077,61 +2206,9 @@ check_file_output (struct url *u, struct http_stat *hs,
   /* Support timestamping */
   if (opt.timestamping && !hs->timestamp_checked)
     {
-      size_t filename_len = strlen (hs->local_file);
-      char *filename_plus_orig_suffix = alloca (filename_len + sizeof (ORIG_SFX));
-      bool local_dot_orig_file_exists = false;
-      char *local_filename = NULL;
-      struct_stat st;
-
-      if (opt.backup_converted)
-        /* If -K is specified, we'll act on the assumption that it was specified
-           last time these files were downloaded as well, and instead of just
-           comparing local file X against server file X, we'll compare local
-           file X.orig (if extant, else X) against server file X.  If -K
-           _wasn't_ specified last time, or the server contains files called
-           *.orig, -N will be back to not operating correctly with -k. */
-        {
-          /* Would a single s[n]printf() call be faster?  --dan
-
-             Definitely not.  sprintf() is horribly slow.  It's a
-             different question whether the difference between the two
-             affects a program.  Usually I'd say "no", but at one
-             point I profiled Wget, and found that a measurable and
-             non-negligible amount of time was lost calling sprintf()
-             in url.c.  Replacing sprintf with inline calls to
-             strcpy() and number_to_string() made a difference.
-             --hniksic */
-          memcpy (filename_plus_orig_suffix, hs->local_file, filename_len);
-          memcpy (filename_plus_orig_suffix + filename_len,
-                  ORIG_SFX, sizeof (ORIG_SFX));
-
-          /* Try to stat() the .orig file. */
-          if (stat (filename_plus_orig_suffix, &st) == 0)
-            {
-              local_dot_orig_file_exists = true;
-              local_filename = filename_plus_orig_suffix;
-            }
-        }
-
-      if (!local_dot_orig_file_exists)
-        /* Couldn't stat() <file>.orig, so try to stat() <file>. */
-        if (stat (hs->local_file, &st) == 0)
-          local_filename = hs->local_file;
-
-      if (local_filename != NULL)
-        /* There was a local file, so we'll check later to see if the version
-           the server has is the same version we already have, allowing us to
-           skip a download. */
-        {
-          hs->orig_file_name = xstrdup (local_filename);
-          hs->orig_file_size = st.st_size;
-          hs->orig_file_tstamp = st.st_mtime;
-#ifdef WINDOWS
-          /* Modification time granularity is 2 seconds for Windows, so
-             increase local time by 1 second for later comparison. */
-          ++hs->orig_file_tstamp;
-#endif
-        }
+      uerr_t timestamp_err = set_file_timestamp (hs);
+      if (timestamp_err != RETROK)
+        return timestamp_err;
     }
   return RETROK;
 }
@@ -2420,6 +2497,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   /* Whether a HEAD request will be issued (as opposed to GET or
      POST). */
   bool head_only = !!(*dt & HEAD_ONLY);
+
+  /* Whether conditional get request will be issued.  */
+  bool cond_get = !!(*dt & IF_MODIFIED_SINCE);
 
   char *head = NULL;
   struct response *resp = NULL;
@@ -3020,6 +3100,41 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         }
     }
 
+  if (cond_get)
+    {
+      if (statcode == HTTP_STATUS_NOT_MODIFIED)
+        {
+          logprintf (LOG_VERBOSE,
+                     _("File %s not modified on server. Omitting download.\n\n"),
+                     quote (hs->local_file));
+          *dt |= RETROKF;
+          CLOSE_FINISH (sock);
+          retval = RETRUNNEEDED;
+          goto cleanup;
+        }
+      /* Handle the case when server ignores If-Modified-Since header.  */
+      else if (statcode == HTTP_STATUS_OK && hs->remote_time)
+        {
+          time_t tmr = http_atotm (hs->remote_time);
+
+          /* Check if the local file is up-to-date based on Last-Modified header
+             and content length.  */
+          if (tmr != (time_t) - 1 && tmr <= hs->orig_file_tstamp
+              && (contlen == -1 || contlen == hs->orig_file_size))
+            {
+              logprintf (LOG_VERBOSE,
+                         _("Server ignored If-Modified-Since header for file %s.\n"
+                           "You might want to add --no-if-modified-since option."
+                           "\n\n"),
+                         quote (hs->local_file));
+              *dt |= RETROKF;
+              CLOSE_INVALIDATE (sock);
+              retval = RETRUNNEEDED;
+              goto cleanup;
+            }
+        }
+    }
+
   if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE
       || (!opt.timestamping && hs->restval > 0 && statcode == HTTP_STATUS_OK
           && contrange == 0 && contlen >= 0 && hs->restval >= contlen))
@@ -3263,15 +3378,30 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   if (opt.content_disposition && opt.always_rest)
     send_head_first = true;
 
-  /* Send preliminary HEAD request if -N is given and we have an existing
-   * destination file. */
   if (!opt.output_document)
       file_name = url_file_name (opt.trustservernames ? u : original_url, NULL);
   else
     file_name = xstrdup (opt.output_document);
-  if (opt.timestamping && (file_exists_p (file_name)
-                           || opt.content_disposition))
-    send_head_first = true;
+
+  if (opt.timestamping)
+    {
+      /* Use conditional get request if requested
+       * and if timestamp is known at this moment.  */
+      if (opt.if_modified_since && file_exists_p (file_name) && !send_head_first)
+        {
+          *dt |= IF_MODIFIED_SINCE;
+          {
+            uerr_t timestamp_err = set_file_timestamp (&hstat);
+            if (timestamp_err != RETROK)
+              return timestamp_err;
+          }
+        }
+        /* Send preliminary HEAD request if -N is given and we have existing
+         * destination file or content disposition is enabled.  */
+      else if (file_exists_p (file_name) || opt.content_disposition)
+        send_head_first = true;
+    }
+
   xfree (file_name);
 
   /* THE loop */
