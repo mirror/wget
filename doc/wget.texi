@@ -694,13 +694,11 @@ Without @samp{-c}, the previous example would just download the remote
 file to @file{ls-lR.Z.1}, leaving the truncated @file{ls-lR.Z} file
 alone.
 
-Beginning with Wget 1.7, if you use @samp{-c} on a non-empty file, and
-it turns out that the server does not support continued downloading,
-Wget will refuse to start the download from scratch, which would
-effectively ruin existing contents.  If you really want the download to
-start from scratch, remove the file.
+If you use @samp{-c} on a non-empty file, and the server does not support
+continued downloading, Wget will restart the download from scratch and overwrite
+the existing file entirely.
 
-Also beginning with Wget 1.7, if you use @samp{-c} on a file which is of
+Beginning with Wget 1.7, if you use @samp{-c} on a file which is of
 equal size as the one on the server, Wget will refuse to download the
 file and print an explanatory message.  The same happens when the file
 is smaller on the server than locally (presumably because it was changed
