@@ -1,5 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from exc.server_error import ServerError, AuthError
+from exc.server_error import ServerError, AuthError, NoBodyServerError
 from socketserver import BaseServer
 from posixpath import basename, splitext
 from base64 import b64encode
@@ -201,6 +201,8 @@ class _Handler(BaseHTTPRequestHandler):
     def Response(self, resp_obj):
         self.send_response(resp_obj.response_code)
         self.finish_headers()
+        if resp_obj.response_code == 304:
+            raise NoBodyServerError("Conditional get falling to head")
         raise ServerError("Custom Response code sent.")
 
     def custom_response(self):
@@ -400,6 +402,9 @@ class _Handler(BaseHTTPRequestHandler):
                     return(None, None)
                 except AuthError as ae:
                     print(ae.__str__())
+                    return(None, None)
+                except NoBodyServerError as nbse:
+                    print(nbse.__str__())
                     return(None, None)
                 except ServerError as se:
                     print(se.__str__())
