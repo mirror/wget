@@ -788,6 +788,10 @@ used alongside the @samp{--logfile} option.
 @itemx --timestamping
 Turn on time-stamping.  @xref{Time-Stamping}, for details.
 
+@item --no-if-modified-since
+Do not send If-Modified-Since header in @samp{-N} mode. Send preliminary HEAD
+request instead. This has only effect in @samp{-N} mode.
+
 @item --no-use-server-timestamps
 Don't set the local file's timestamp by the one on the server.
 
