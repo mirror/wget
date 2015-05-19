@@ -265,13 +265,12 @@ sub _show_diff
     my $min  = $explen <= $actlen ? $explen : $actlen;
     my $line = 1;
     my $col  = 1;
-    my $i;
+    my $i    = 0;
 
-    # for ($i=0; $i != $min; ++$i) {
-    for my $i (0 .. $min - 1)
+    while ( $i < $min )
     {
         last if substr($expected, $i, 1) ne substr $actual, $i, 1;
-        if (substr($expected, $i, 1) eq q{\n})
+        if (substr($expected, $i, 1) eq "\n")
         {
             $line++;
             $col = 0;
@@ -280,6 +279,7 @@ sub _show_diff
         {
             $col++;
         }
+        $i++;
     }
     my $snip_start = $i - ($SNIPPET_SIZE / 2);
     if ($snip_start < 0)
