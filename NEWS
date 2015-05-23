@@ -9,6 +9,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* Add support for --if-modified-since
+
 ** Add option to restrict filenames under VMS.
 
 * Changes in Wget 1.16.3
