@@ -332,7 +332,8 @@ enum
   ACCEPTRANGES         = 0x0010,        /* Accept-ranges header was found */
   ADDED_HTML_EXTENSION = 0x0020,        /* added ".html" extension due to -E */
   TEXTCSS              = 0x0040,        /* document is of type text/css */
-  IF_MODIFIED_SINCE    = 0x0080         /* use if-modified-since header */
+  IF_MODIFIED_SINCE    = 0x0080,        /* use if-modified-since header */
+  METALINK_METADATA    = 0x0100         /* use HTTP response for Metalink metadata */
 };
 
 /* Universal error type -- used almost everywhere.  Error reporting of
@@ -353,7 +354,10 @@ typedef enum
   AUTHFAILED, QUOTEXC, WRITEFAILED, SSLINITFAILED, VERIFCERTERR,
   UNLINKERR, NEWLOCATION_KEEP_POST, CLOSEFAILED, ATTRMISSING, UNKNOWNATTR,
   WARC_ERR, WARC_TMP_FOPENERR, WARC_TMP_FWRITEERR,
-  TIMECONV_ERR
+  TIMECONV_ERR,
+  METALINK_PARSE_ERROR, METALINK_RETR_ERROR,
+  METALINK_CHKSUM_ERROR, METALINK_SIG_ERROR,
+  RETR_WITH_METALINK
 } uerr_t;
 
 /* 2005-02-19 SMS.

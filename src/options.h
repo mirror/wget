@@ -58,6 +58,10 @@ struct options
   char *dir_prefix;             /* The top of directory tree */
   char *lfilename;              /* Log filename */
   char *input_filename;         /* Input filename */
+#ifdef HAVE_METALINK
+  char *input_metalink;         /* Input metalink file */
+  bool metalink_over_http;      /* Use Metalink if present in HTTP response */
+#endif
   char *choose_config;          /* Specified config file */
   bool noconfig;                /* Ignore all config files? */
   bool force_html;              /* Is the input file an HTML file? */

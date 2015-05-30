@@ -26,6 +26,7 @@ src/init.c
 src/iri.c
 src/log.c
 src/main.c
+src/metalink.c
 src/mswindows.c
 src/netrc.c
 src/openssl.c

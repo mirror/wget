@@ -215,6 +215,9 @@ static const struct {
   { "inet6only",        &opt.ipv6_only,         cmd_boolean },
 #endif
   { "input",            &opt.input_filename,    cmd_file },
+#ifdef HAVE_METALINK
+  { "input-metalink",   &opt.input_metalink,    cmd_file },
+#endif
   { "iri",              &opt.enable_iri,        cmd_boolean },
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
   { "limitrate",        &opt.limit_rate,        cmd_bytes },
@@ -223,6 +226,9 @@ static const struct {
   { "logfile",          &opt.lfilename,         cmd_file },
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
   { "maxredirect",      &opt.max_redirect,      cmd_number },
+#ifdef HAVE_METALINK
+  { "metalink-over-http", &opt.metalink_over_http, cmd_boolean },
+#endif
   { "method",           &opt.method,            cmd_string_uppercase },
   { "mirror",           NULL,                   cmd_spec_mirror },
   { "netrc",            &opt.netrc,             cmd_boolean },
@@ -1793,6 +1799,9 @@ cleanup (void)
   xfree (opt.lfilename);
   xfree (opt.dir_prefix);
   xfree (opt.input_filename);
+#ifdef HAVE_METALINK
+  xfree (opt.input_metalink);
+#endif
   xfree (opt.output_document);
   free_vec (opt.accepts);
   free_vec (opt.rejects);

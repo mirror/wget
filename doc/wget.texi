@@ -507,6 +507,18 @@ treated as @samp{html} if the Content-Type matches @samp{text/html}.
 Furthermore, the @var{file}'s location will be implicitly used as base
 href if none was specified.
 
+@cindex input-metalink
+@item --input-metalink=@var{file}
+Downloads files covered in local Metalink @var{file}. Metalink version 3
+and 4 are supported.
+
+@cindex metalink-over-http
+@item --metalink-over-http
+Issues HTTP HEAD request instead of GET and extracts Metalink metadata
+from response headers. Then it switches to Metalink download.
+If no valid Metalink metadata is found, it falls back to ordinary HTTP download.
+
+
 @cindex force html
 @item -F
 @itemx --force-html

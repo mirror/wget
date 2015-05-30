@@ -475,6 +475,29 @@ else
   fi
 fi
 
+dnl
+dnl Check for libmetalink
+dnl
+AS_IF([test x"$with_metalink" != xno], [
+  PKG_CHECK_MODULES([METALINK], libmetalink, [
+      LIBS="$METALINK_LIBS $LIBS"
+      CFLAGS="$METALINK_CFLAGS $CFLAGS"
+      AC_DEFINE([HAVE_METALINK], [1], [Define if using metalink.])
+      have_metalink=yes
+    ], [
+      have_metalink=no
+    ])
+])
+
+dnl
+dnl Check for GPGME
+dnl
+AM_PATH_GPGME([], [
+    LIBS="$GPGME_LIBS $LIBS"
+    CFLAGS="$GPGME_CFLAGS $CFLAGS"
+    AC_DEFINE([HAVE_GPGME], [1], [Define if GPGME is available.])
+    have_gpg=yes
+  ], [have_gpg=no])
 
 dnl **********************************************************************
 dnl Checks for IPv6
@@ -715,6 +738,7 @@ AS_IF([test "X$enable_pcre" != "Xno"],[
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
 AM_CONDITIONAL([WITH_SSL], [test "X$with_ssl" != "Xno"])
+AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$have_metalink" != "Xno"])
 
 dnl
 dnl Create output
@@ -743,4 +767,6 @@ AC_MSG_NOTICE([Summary of build options:
   Debugging:         $ENABLE_DEBUG
   Assertions:        $ENABLE_ASSERTION
   Valgrind:          $VALGRIND_INFO
+  Metalink:          $have_metalink
+  GPGME:             $have_gpg
 ])

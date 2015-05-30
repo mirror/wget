@@ -63,6 +63,11 @@ as that of the covered work.  */
 #include <getpass.h>
 #include <quote.h>
 
+#ifdef HAVE_METALINK
+# include <metalink/metalink_parser.h>
+# include "metalink.h"
+#endif
+
 #ifdef WINDOWS
 # include <io.h>
 # include <fcntl.h>
@@ -241,6 +246,9 @@ static struct cmdline_option option_data[] =
     { "inet6-only", '6', OPT_BOOLEAN, "inet6only", -1 },
 #endif
     { "input-file", 'i', OPT_VALUE, "input", -1 },
+#ifdef HAVE_METALINK
+    { "input-metalink", 0, OPT_VALUE, "input-metalink", -1 },
+#endif
     { "iri", 0, OPT_BOOLEAN, "iri", -1 },
     { "keep-session-cookies", 0, OPT_BOOLEAN, "keepsessioncookies", -1 },
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
@@ -248,6 +256,9 @@ static struct cmdline_option option_data[] =
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
     { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
+#ifdef HAVE_METALINK
+    { "metalink-over-http", 0, OPT_BOOLEAN, "metalink-over-http", -1 },
+#endif
     { "method", 0, OPT_VALUE, "method", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
@@ -483,6 +494,10 @@ Logging and input file:\n"),
        --report-speed=TYPE         output bandwidth as TYPE.  TYPE can be bits\n"),
     N_("\
   -i,  --input-file=FILE           download URLs found in local or external FILE\n"),
+#ifdef HAVE_METALINK
+    N_("\
+       --input-metalink=FILE       download files covered in local Metalink FILE\n"),
+#endif
     N_("\
   -F,  --force-html                treat input file as HTML\n"),
     N_("\
@@ -577,6 +592,10 @@ Download:\n"),
        --remote-encoding=ENC       use ENC as the default remote encoding\n"),
     N_("\
        --unlink                    remove file before clobber\n"),
+#ifdef HAVE_METALINK
+    N_("\
+       --metalink-over-http        use Metalink metadata from HTTP response headers\n"),
+#endif
     "\n",
 
     N_("\
@@ -1405,7 +1424,11 @@ for details.\n\n"));
       opt.always_rest = false;
     }
 
-  if (!nurl && !opt.input_filename)
+  if (!nurl && !opt.input_filename
+#ifdef HAVE_METALINK
+      && !opt.input_metalink
+#endif
+      )
     {
       /* No URL specified.  */
       fprintf (stderr, _("%s: missing URL\n"), exec_name);
@@ -1729,6 +1752,37 @@ outputting to a regular file.\n"));
         logprintf (LOG_NOTQUIET, _("No URLs found in %s.\n"),
                    opt.input_filename);
     }
+
+#ifdef HAVE_METALINK
+  /* Finally, from metlink file, if any.  */
+  if (opt.input_metalink)
+    {
+      metalink_error_t meta_err;
+      uerr_t retr_err;
+      metalink_t *metalink;
+
+      meta_err = metalink_parse_file (opt.input_metalink, &metalink);
+
+      if (meta_err)
+        {
+          logprintf (LOG_NOTQUIET, _("Unable to parse metalink file %s.\n"),
+                     opt.input_metalink);
+          retr_err = METALINK_PARSE_ERROR;
+        }
+      else
+        {
+          retr_err = retrieve_from_metalink (metalink);
+          if (retr_err != RETROK)
+            {
+              logprintf (LOG_NOTQUIET,
+                         _("Could not download all resources from %s.\n"),
+                         quote (opt.input_metalink));
+            }
+        }
+      inform_exit_status (retr_err);
+      metalink_delete (metalink);
+    }
+#endif /* HAVE_METALINK */
 
   /* Print broken links. */
   if (opt.recursive && opt.spider)

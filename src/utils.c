@@ -2506,6 +2506,21 @@ get_max_length (const char *path, int length, int name)
   return ret;
 }
 
+void
+hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len)
+{
+  size_t i;
+
+  for (i = 0; i < hex_len; i++)
+    {
+      /* Each byte takes 2 characters.  */
+      sprintf (str_buffer + 2 * i, "%02x", hex_buffer[i] & 0xFF);
+    }
+
+  /* Null-terminate result.  */
+  str_buffer[2 * i] = '\0';
+}
+
 #ifdef TESTING
 
 const char *
