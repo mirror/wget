@@ -10,7 +10,7 @@ make -f Makefile distclean 2>/dev/null
 # automatically exit on error
 set -e
 
-export CFLAGS="-std=c89 -pedantic -O2 -g -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
+CFLAGS="-std=c89 -pedantic -O2 -g -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
 
 CACHEFILE=$PWD/config_check.cache
 
@@ -31,7 +31,7 @@ for CC in gcc clang; do
   for options in "" "--with-ssl=openssl"; do
     export DISTCHECK_CONFIGURE_FLAGS="-C --cache-file=$CACHEFILE $options"
     echo "  ./configure $DISTCHECK_CONFIGURE_FLAGS"
-    ./configure $DISTCHECK_CONFIGURE_FLAGS >/dev/null
+    ./configure $DISTCHECK_CONFIGURE_FLAGS CFLAGS="$CFLAGS" >/dev/null
 
     for xVALGRIND in 0 1; do
       for xLCALL in C tr_TR.utf8; do
@@ -44,7 +44,7 @@ for CC in gcc clang; do
     unset TESTS_ENVIRONMENT
     export TESTS_ENVIRONMENT
     echo "  make distcheck -j$CORES"
-    make distcheck -j$CORES
+    make distcheck CFLAGS="$CFLAGS" -j$CORES
   done
 done
 
