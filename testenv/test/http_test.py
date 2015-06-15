@@ -23,11 +23,13 @@ class HTTPTest(BaseTest):
                                        test_params,
                                        post_hook,
                                        protocols)
+        self.server_setup()
+
+    def begin(self):
         with self:
-            # if any exception occurs, self.__exit__ will be immediately called
-            self.server_setup()
             self.do_test()
             print_green('Test Passed.')
+        return super(HTTPTest, self).begin()
 
     def instantiate_server_by(self, protocol):
         server = {HTTP: HTTPd,
