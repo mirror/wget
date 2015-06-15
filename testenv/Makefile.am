@@ -26,6 +26,12 @@
 # as that of the covered work.
 
 
+if METALINK_IS_ENABLED
+  METALINK_TESTS = Test-metalink-xml.py
+else
+  METALINK_TESTS =
+endif
+
 AUTOMAKE_OPTIONS = parallel-tests
 AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; MAKE_CHECK=True; export MAKE_CHECK;\
  export PYTHONPATH=$$PYTHONPATH:$(srcdir); export VALGRIND_TESTS="@VALGRIND_TESTS@";
@@ -56,7 +62,8 @@ if HAVE_PYTHON3
     Test-redirect-crash.py                          \
     Test-reserved-chars.py                          \
     Test-condget.py                                 \
-    $(SSL_TESTS)
+    $(SSL_TESTS)				    \
+    $(METALINK_TESTS)
 
   # added test cases expected to fail here and under TESTS
 if !WITH_SSL
