@@ -113,6 +113,7 @@ class BaseTest:
             cmd_line = 'valgrind --error-exitcode=301 ' \
                                 '--leak-check=yes ' \
                                 '--track-origins=yes ' \
+                                '--suppressions=../valgrind-suppression-ssl ' \
                                 '%s %s ' % (wget_path, wget_options)
         elif valgrind not in ("", "0"):
             cmd_line = '%s %s %s ' % (os.getenv("VALGRIND_TESTS", ""),

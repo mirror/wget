@@ -149,7 +149,7 @@ my $valgrind = $ENV{VALGRIND_TESTS};
 if (!defined $valgrind || $valgrind eq "" || $valgrind == 0) {
     # Valgrind not requested - leave $cmdline as it is
 } elsif ($valgrind == 1) {
-    $cmdline = "valgrind --error-exitcode=301 --leak-check=yes --track-origins=yes " . $cmdline;
+    $cmdline = "valgrind  --suppressions=valgrind-suppressions-ssl --error-exitcode=301 --leak-check=yes --track-origins=yes " . $cmdline;
 } else {
     $cmdline = $valgrind . " " . $cmdline;
 }

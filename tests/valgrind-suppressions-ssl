@@ -1,0 +1,28 @@
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   obj:*/libcrypto.so.*
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   obj:*/libssl.so.*
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   ...
+   obj:*/libcrypto.so.*
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   write(buf)
+   ...
+   obj:*/libcrypto.so.*
+}
