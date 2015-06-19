@@ -27,7 +27,8 @@
 
 
 if METALINK_IS_ENABLED
-  METALINK_TESTS = Test-metalink-xml.py
+  METALINK_TESTS = Test-metalink-xml.py             \
+    Test-metalink-http.py
 else
   METALINK_TESTS =
 endif
