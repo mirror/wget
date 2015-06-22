@@ -191,7 +191,11 @@ class _Handler(BaseHTTPRequestHandler):
         self.send_cust_headers()
         try:
             for keyword, value in self._headers_dict.items():
-                self.send_header(keyword, value)
+                if isinstance(value, list):
+                    for value_el in value:
+                        self.send_header(keyword, value_el)
+                else:
+                    self.send_header(keyword, value)
             # Clear the dictionary of existing headers for the next request
             self._headers_dict.clear()
         except AttributeError:

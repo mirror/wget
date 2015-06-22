@@ -184,7 +184,8 @@ This section lists the currently supported File Rules and their structure.
 
     * SendHeader    : This list of Headers will be sent in EVERY response to a
     request for the respective file. It follows the same value format as
-    ExpectHeader.
+    ExpectHeader. Additionally you can specify a list of strings as <Header Data>
+    if you want the header repeated with multiple values.
 
     * Response      : The HTTP Response Code to send to a request for this File.
     The value is an Integer that represents a valid HTTP Response Code.
