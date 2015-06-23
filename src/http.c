@@ -5049,6 +5049,38 @@ test_find_key_value (void)
 }
 
 const char *
+test_has_key (void)
+{
+  static const char *header_data = "key1=val2;token1;xyz; token2;xyz;token3 ;"\
+                                   "xyz; token4 ;xyz;   token5  ";
+  struct
+  {
+    const char *token;
+    bool result;
+  } test_array[] =
+  {
+    { "key1=val2", true },
+    { "token1", true },
+    { "token2", true },
+    { "token3", true },
+    { "token4", true },
+    { "token5", true },
+    { "token6", false },
+    { "oken1", false },
+    { "poken1", false },
+    { "key1=val2", true }
+  };
+  size_t i;
+
+  for (i = 0; i < countof (test_array); ++i)
+    mu_assert ("test_has_key: wrong result",
+               has_key (header_data, header_data + strlen (header_data),
+                        test_array[i].token) == test_array[i].result);
+
+  return NULL;
+}
+
+const char *
 test_parse_content_disposition(void)
 {
   unsigned i;

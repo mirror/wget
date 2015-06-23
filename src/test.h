@@ -44,6 +44,7 @@ do { \
 } while (0)
 
 
+const char *test_has_key (void);
 const char *test_find_key_value (void);
 const char *test_parse_content_disposition(void);
 const char *test_commands_sorted(void);
