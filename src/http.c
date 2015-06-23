@@ -4998,8 +4998,55 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
     }
 }
 
-
 #ifdef TESTING
+
+const char *
+test_find_key_value (void)
+{
+  static const char *header_data = "key1=val1;key2=val2 ;key3=val3; key4=val4"\
+                                   " ; key5=val5;key6 =val6;key7= val7; "\
+                                   "key8 = val8 ;    key9    =   val9       ";
+  static const struct
+  {
+    const char *key;
+    const char *val;
+    bool result;
+  } test_array[] =
+  {
+    { "key1",  "val1", true },
+    { "key2",  "val2", true },
+    { "key3",  "val3", true },
+    { "key4",  "val4", true },
+    { "key5",  "val5", true },
+    { "key6",  "val6", true },
+    { "key7",  "val7", true },
+    { "key8",  "val8", true },
+    { "key9",  "val9", true },
+    { "key10", NULL,   false },
+    {  "ey1",  NULL,   false },
+    { "dey1",  NULL,   false }
+  };
+  size_t i;
+
+  for (i=0; i < countof (test_array); ++i)
+    {
+      bool result;
+      char *value;
+
+      result = find_key_value (header_data,
+                               header_data + strlen(header_data),
+                               test_array[i].key, &value);
+
+      mu_assert ("test_find_key_value: wrong result",
+                 result == test_array[i].result &&
+                 ((!test_array[i].result && !value) ||
+                  !strcmp (value, test_array[i].val)));
+
+      xfree (value);
+    }
+
+  return NULL;
+}
 
 const char *
 test_parse_content_disposition(void)

@@ -48,6 +48,9 @@ static int tests_run;
 static const char *
 all_tests(void)
 {
+#ifdef HAVE_METALINK
+  mu_run_test (test_find_key_value);
+#endif
   mu_run_test (test_parse_content_disposition);
   mu_run_test (test_subdir_p);
   mu_run_test (test_dir_matches_p);
