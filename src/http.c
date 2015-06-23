@@ -5001,6 +5001,50 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
 #ifdef TESTING
 
 const char *
+test_find_key_values (void)
+{
+  static const char *header_data = "key1=val1;key2=val2 ;key3=val3; key4=val4"\
+                                   " ; key5=val5;key6 =val6;key7= val7; "\
+                                   "key8 = val8 ;    key9    =   val9       "\
+                                   "    ,key10= val10,key11,key12=val12";
+  static const struct
+  {
+    const char *key;
+    const char *val;
+  } test_array[] =
+  {
+    { "key1", "val1" },
+    { "key2", "val2" },
+    { "key3", "val3" },
+    { "key4", "val4" },
+    { "key5", "val5" },
+    { "key6", "val6" },
+    { "key7", "val7" },
+    { "key8", "val8" },
+    { "key9", "val9" },
+    { "key10", "val10" },
+    { "key12", "val12" }
+  };
+  const char *pos;
+  char *key, *value;
+  size_t i = 0;
+
+  for (pos = header_data; (pos = find_key_values (pos,
+                                                 header_data + strlen (header_data),
+                                                 &key, &value)); pos++)
+    {
+      mu_assert ("test_find_key_values: wrong result",
+                 !strcmp (test_array[i].val, value) &&
+                 !strcmp (test_array[i].key, key));
+      xfree (key);
+      xfree (value);
+      i++;
+    }
+
+  return NULL;
+}
+
+const char *
 test_find_key_value (void)
 {
   static const char *header_data = "key1=val1;key2=val2 ;key3=val3; key4=val4"\

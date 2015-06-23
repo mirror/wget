@@ -50,6 +50,7 @@ all_tests(void)
 {
 #ifdef HAVE_METALINK
   mu_run_test (test_find_key_value);
+  mu_run_test (test_find_key_values);
   mu_run_test (test_has_key);
 #endif
   mu_run_test (test_parse_content_disposition);
