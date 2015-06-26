@@ -47,4 +47,14 @@ uerr_t retrieve_from_metalink (const metalink_t *metalink);
 
 int metalink_res_cmp (const void *res1, const void *res2);
 
+bool find_key_value (const char *start,
+                     const char *end,
+                     const char *key,
+                     char **value);
+bool has_key (const char *start, const char *end, const char *key);
+const char *find_key_values (const char *start,
+                             const char *end,
+                             char **key,
+                             char **value);
+
 #endif	/* METALINK_H */
