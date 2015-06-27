@@ -566,9 +566,7 @@ wgetrc_file_name (void)
      SYSTEM_WGETRC should not be defined under WINDOWS.  */
   if (!file)
     {
-      char *home = home_dir ();
-      xfree (file);
-      home = ws_mypath ();
+      char *home = ws_mypath ();
       if (home)
         {
           file = aprintf ("%s/wget.ini", home);
