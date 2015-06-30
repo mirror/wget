@@ -295,6 +295,11 @@ struct options
   bool show_all_dns_entries;    /* Show all the DNS entries when resolving a
                                    name. */
   bool report_bps;              /*Output bandwidth in bits format*/
+
+#ifdef HAVE_HSTS
+  bool hsts;
+  char *hsts_file;
+#endif
 };
 
 extern struct options opt;

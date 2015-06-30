@@ -54,6 +54,7 @@ as that of the covered work.  */
 #include "convert.h"
 #include "spider.h"
 #include "http.h"               /* for save_cookies */
+#include "hsts.h"               /* for initializing hsts_store to NULL */
 #include "ptimer.h"
 #include "warc.h"
 #include "version.h"
@@ -140,6 +141,63 @@ i18n_initialize (void)
   textdomain ("wget");
 #endif /* ENABLE_NLS */
 }
+
+#ifdef HAVE_HSTS
+/* make the HSTS store global */
+hsts_store_t hsts_store;
+
+static char*
+get_hsts_database (void)
+{
+  char *home;
+
+  if (opt.hsts_file)
+    return xstrdup (opt.hsts_file);
+
+  home = home_dir ();
+  if (home)
+    return aprintf ("%s/.wget-hsts", home);
+
+  return NULL;
+}
+
+static void
+load_hsts (void)
+{
+  if (!hsts_store)
+    {
+      char *filename = get_hsts_database ();
+
+      if (filename)
+        {
+          hsts_store = hsts_store_open (filename);
+
+          if (!hsts_store)
+            logprintf (LOG_NOTQUIET, "ERROR: could not open HSTS store at '%s'. "
+                       "HSTS will be disabled.\n",
+                       filename);
+        }
+      else
+        logprintf (LOG_NOTQUIET, "ERROR: could not open HSTS store. HSTS will be disabled.\n");
+
+      xfree (filename);
+    }
+}
+
+static void
+save_hsts (void)
+{
+  if (hsts_store)
+    {
+      char *filename = get_hsts_database ();
+
+      hsts_store_save (hsts_store, filename);
+      hsts_store_close (hsts_store);
+
+      xfree (filename);
+    }
+}
+#endif
 
 /* Definition of command-line options. */
 
@@ -230,6 +288,10 @@ static struct cmdline_option option_data[] =
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },
     { "host-directories", 0, OPT_BOOLEAN, "addhostdir", -1 },
+#ifdef HAVE_HSTS
+    { "hsts", 0, OPT_BOOLEAN, "hsts", -1},
+    { "hsts-file", 0, OPT_VALUE, "hsts-file", -1 },
+#endif
     { "html-extension", 'E', OPT_BOOLEAN, "adjustextension", -1 }, /* deprecated */
     { "htmlify", 0, OPT_BOOLEAN, "htmlify", -1 },
     { "http-keep-alive", 0, OPT_BOOLEAN, "httpkeepalive", -1 },
@@ -713,6 +775,16 @@ HTTPS (SSL/TLS) options:\n"),
 #endif
     "\n",
 #endif /* HAVE_SSL */
+
+#ifdef HAVE_HSTS
+    N_("\
+HSTS options:\n"),
+    N_("\
+       --no-hsts                   disable HSTS\n"),
+    N_("\
+       --hsts-file                 path of HSTS database (will override default)\n"),
+    "\n",
+#endif
 
     N_("\
 FTP options:\n"),
@@ -1690,6 +1762,18 @@ outputting to a regular file.\n"));
   signal (SIGWINCH, progress_handle_sigwinch);
 #endif
 
+#ifdef HAVE_HSTS
+  hsts_store = NULL;
+
+  /* Load the HSTS database.
+     Maybe all the URLs are FTP(S), in which case HSTS would not be needed,
+     but this is the best place to do it, and it shouldn't be a critical
+     performance hit.
+   */
+  if (opt.hsts)
+    load_hsts ();
+#endif
+
   /* Retrieve the URLs from argument list.  */
   for (t = url; *t; t++)
     {
@@ -1727,10 +1811,10 @@ outputting to a regular file.\n"));
               opt.follow_ftp = old_follow_ftp;
             }
           else
-          {
-            retrieve_url (url_parsed, *t, &filename, &redirected_URL, NULL,
-                          &dt, opt.recursive, iri, true);
-          }
+            {
+              retrieve_url (url_parsed, *t, &filename, &redirected_URL, NULL,
+                            &dt, opt.recursive, iri, true);
+            }
 
           if (opt.delete_after && filename != NULL && file_exists_p (filename))
             {
@@ -1847,6 +1931,11 @@ outputting to a regular file.\n"));
 
   if (opt.cookies_output)
     save_cookies ();
+
+#ifdef HAVE_HSTS
+  if (opt.hsts && hsts_store)
+    save_hsts ();
+#endif
 
   if (opt.convert_links && !opt.delete_after)
     convert_all_links ();

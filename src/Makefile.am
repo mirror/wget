@@ -48,12 +48,12 @@ EXTRA_DIST = css.l css.c css_.c build_info.c.in
 bin_PROGRAMS = wget
 wget_SOURCES = connect.c convert.c cookies.c ftp.c	\
 		css_.c css-url.c	\
-		ftp-basic.c ftp-ls.c hash.c host.c html-parse.c html-url.c	\
+		ftp-basic.c ftp-ls.c hash.c host.c hsts.c html-parse.c html-url.c	\
 		http.c init.c log.c main.c netrc.c progress.c ptimer.c	\
 		recur.c res.c retr.c spider.c url.c warc.c	\
 		utils.c exits.c build_info.c $(IRI_OBJ) $(METALINK_OBJ)	\
 		css-url.h css-tokens.h connect.h convert.h cookies.h	\
-		ftp.h hash.h host.h html-parse.h html-url.h	\
+		ftp.h hash.h host.h hsts.h  html-parse.h html-url.h	\
 		http.h http-ntlm.h init.h log.h mswindows.h netrc.h	\
 		options.h progress.h ptimer.h recur.h res.h retr.h	\
 		spider.h ssl.h sysdep.h url.h warc.h utils.h wget.h iri.h	\

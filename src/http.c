@@ -42,6 +42,7 @@ as that of the covered work.  */
 
 #include "hash.h"
 #include "http.h"
+#include "hsts.h"
 #include "utils.h"
 #include "url.h"
 #include "host.h"
@@ -1257,6 +1258,55 @@ parse_content_disposition (const char *hdr, char **filename)
     return false;
 }
 
+#ifdef HAVE_HSTS
+static bool
+parse_strict_transport_security (const char *header, time_t *max_age, bool *include_subdomains)
+{
+  param_token name, value;
+  const char *c_max_age = NULL;
+  bool is = false; /* includeSubDomains */
+  bool is_url_encoded = false;
+  bool success = false;
+
+  if (header)
+    {
+      /* Process the STS header. Keys should be matched case-insensitively. */
+      for (; extract_param (&header, &name, &value, ';', &is_url_encoded); is_url_encoded = false)
+      {
+	if (BOUNDED_EQUAL_NO_CASE(name.b, name.e, "max-age"))
+	  c_max_age = strdupdelim (value.b, value.e);
+	else if (BOUNDED_EQUAL_NO_CASE(name.b, name.e, "includeSubDomains"))
+	  is = true;
+      }
+
+      /* pass the parsed values over */
+      if (c_max_age)
+	{
+	  /* If the string value goes out of a long's bounds, strtol() will return LONG_MIN or LONG_MAX.
+	   * In theory, the HSTS engine should be able to handle it.
+	   * Also, time_t is normally defined as a long, so this should not break.
+	   */
+	  if (max_age)
+	    *max_age = (time_t) strtol (c_max_age, NULL, 10);
+	  if (include_subdomains)
+	    *include_subdomains = is;
+
+	  DEBUGP(("Parsed Strict-Transport-Security max-age = %s, includeSubDomains = %s\n",
+		     c_max_age, (is ? "true" : "false")));
+
+	  success = true;
+	}
+      else
+	{
+	  /* something weird happened */
+	  logprintf (LOG_VERBOSE, "Could not parse String-Transport-Security header\n");
+	  success = false;
+	}
+    }
+
+  return success;
+}
+#endif
 
 /* Persistent connections.  Currently, we cache the most recently used
    connection as persistent, provided that the HTTP server agrees to
@@ -2842,6 +2892,17 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   FILE *fp;
   int err;
   uerr_t retval;
+#ifdef HAVE_HSTS
+#ifdef TESTING
+  /* we don't link against main.o when we're testing */
+  hsts_store_t hsts_store = NULL;
+#else
+  extern hsts_store_t hsts_store;
+#endif
+  const char *hsts_params;
+  time_t max_age;
+  bool include_subdomains;
+#endif
 
   int sock = -1;
 
@@ -3318,6 +3379,29 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     hs->error = xstrdup (_("(no description)"));
   else
     hs->error = xstrdup (message);
+
+#ifdef HAVE_HSTS
+  if (opt.hsts && hsts_store)
+    {
+      hsts_params = resp_header_strdup (resp, "Strict-Transport-Security");
+      if (parse_strict_transport_security (hsts_params, &max_age, &include_subdomains))
+	{
+	  /* process strict transport security */
+	  if (hsts_store_entry (hsts_store, u->scheme, u->host, u->port, max_age, include_subdomains))
+	    DEBUGP(("Added new HSTS host: %s:%u (max-age: %u, includeSubdomains: %s)\n",
+		u->host,
+		u->port,
+		(unsigned int) max_age,
+		(include_subdomains ? "true" : "false")));
+	  else
+	    DEBUGP(("Updated HSTS host: %s:%u (max-age: %u, includeSubdomains: %s)\n",
+		u->host,
+		u->port,
+		(unsigned int) max_age,
+		(include_subdomains ? "true" : "false")));
+	}
+    }
+#endif
 
   type = resp_header_strdup (resp, "Content-Type");
   if (type)

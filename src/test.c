@@ -62,6 +62,12 @@ all_tests(void)
   mu_run_test (test_append_uri_pathel);
   mu_run_test (test_are_urls_equal);
   mu_run_test (test_is_robots_txt_url);
+#ifdef HAVE_HSTS
+  mu_run_test (test_hsts_new_entry);
+  mu_run_test (test_hsts_url_rewrite_superdomain);
+  mu_run_test (test_hsts_url_rewrite_congruent);
+  mu_run_test (test_hsts_read_database);
+#endif
 
   return NULL;
 }
@@ -73,6 +79,7 @@ main (int argc _GL_UNUSED, const char *argv[])
 {
   const char *result;
 
+  printf ("[DEBUG] Testing...\n\n");
 #ifdef ENABLE_NLS
   /* Set the current locale.  */
   setlocale (LC_ALL, "");

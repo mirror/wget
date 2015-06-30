@@ -1,13 +1,14 @@
-/* Declarations for HTTP.
-   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free
-   Software Foundation, Inc.
+/* Declarations for hsts.c
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2015 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,25 +28,26 @@ grants you additional permission to convey the resulting work.
 Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
+#include "wget.h"
 
-#ifndef HTTP_H
-#define HTTP_H
+#ifdef HAVE_HSTS
 
-#include "hsts.h"
+#ifndef HSTS_H
+#define HSTS_H
 
-struct url;
+#include "url.h"
 
-uerr_t http_loop (struct url *, struct url *, char **, char **, const char *,
-                  int *, struct url *, struct iri *);
-void save_cookies (void);
-void http_cleanup (void);
-time_t http_atotm (const char *);
+typedef struct hsts_store *hsts_store_t;
 
-typedef struct {
-  /* A token consists of characters in the [b, e) range. */
-  const char *b, *e;
-} param_token;
-bool extract_param (const char **, param_token *, param_token *, char, bool *);
+hsts_store_t hsts_store_open (const char *);
 
+void hsts_store_save (hsts_store_t, const char *);
+void hsts_store_close (hsts_store_t);
 
-#endif /* HTTP_H */
+bool hsts_store_entry (hsts_store_t,
+                       enum url_scheme, const char *, int,
+                       time_t, bool);
+bool hsts_match (hsts_store_t, struct url *);
+
+#endif /* HSTS_H */
+#endif /* HAVE_HSTS */

@@ -54,6 +54,7 @@ as that of the covered work.  */
 /* Is OpenSSL or GNUTLS available? */
 #if defined HAVE_LIBSSL || defined HAVE_LIBSSL32 || defined HAVE_LIBGNUTLS
 # define HAVE_SSL
+# define HAVE_HSTS /* There's no sense in enabling HSTS without SSL */
 #endif
 
 /* `gettext (FOO)' is long to write, so we use `_(FOO)'.  If NLS is
