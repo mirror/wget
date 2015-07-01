@@ -53,8 +53,9 @@ as that of the covered work.  */
 /* Given a string containing "charset=XXX", return the encoding if found,
    or NULL otherwise */
 char *
-parse_charset (char *str)
+parse_charset (const char *str)
 {
+  const char *end;
   char *charset;
 
   if (!str || !*str)
@@ -65,14 +66,14 @@ parse_charset (char *str)
     return NULL;
 
   str += 8;
-  charset = str;
+  end = str;
 
   /* sXXXav: which chars should be banned ??? */
-  while (*charset && !c_isspace (*charset))
-    charset++;
+  while (*end && !c_isspace (*end))
+    end++;
 
   /* sXXXav: could strdupdelim return NULL ? */
-  charset = strdupdelim (str, charset);
+  charset = strdupdelim (str, end);
 
   /* Do a minimum check on the charset value */
   if (!check_encoding_name (charset))
@@ -95,9 +96,9 @@ find_locale (void)
 
 /* Basic check of an encoding name. */
 bool
-check_encoding_name (char *encoding)
+check_encoding_name (const char *encoding)
 {
-  char *s = encoding;
+  const char *s = encoding;
 
   while (*s)
     {
@@ -266,7 +267,7 @@ _utf8_is_valid(const char *utf8)
 /* Try to "ASCII encode" UTF-8 host. Return the new domain on success or NULL
    on error. */
 char *
-idn_encode (struct iri *i, char *host)
+idn_encode (const struct iri *i, const char *host)
 {
   int ret;
   char *ascii_encoded;
@@ -304,7 +305,7 @@ idn_encode (struct iri *i, char *host)
 /* Try to decode an "ASCII encoded" host. Return the new domain in the locale
    on success or NULL on error. */
 char *
-idn_decode (char *host)
+idn_decode (const char *host)
 {
   char *new;
   int ret;
@@ -323,7 +324,7 @@ idn_decode (char *host)
 /* Try to transcode string str from remote encoding to UTF-8. On success, *new
    contains the transcoded string. *new content is unspecified otherwise. */
 bool
-remote_to_utf8 (struct iri *iri, const char *str, char **new)
+remote_to_utf8 (const struct iri *iri, const char *str, char **new)
 {
   bool ret = false;
 
@@ -397,7 +398,7 @@ iri_free (struct iri *i)
 /* Set uri_encoding of struct iri i. If a remote encoding was specified, use
    it unless force is true. */
 void
-set_uri_encoding (struct iri *i, char *charset, bool force)
+set_uri_encoding (struct iri *i, const char *charset, bool force)
 {
   DEBUGP (("URI encoding = %s\n", charset ? quote (charset) : "None"));
   if (!force && opt.encoding_remote)
@@ -414,7 +415,7 @@ set_uri_encoding (struct iri *i, char *charset, bool force)
 
 /* Set content_encoding of struct iri i. */
 void
-set_content_encoding (struct iri *i, char *charset)
+set_content_encoding (struct iri *i, const char *charset)
 {
   DEBUGP (("URI content encoding = %s\n", charset ? quote (charset) : "None"));
   if (opt.encoding_remote)

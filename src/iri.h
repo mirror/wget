@@ -43,18 +43,18 @@ struct iri {
 # include <idna.h>
 # include <idn-free.h>
 
-char *parse_charset (char *str);
+char *parse_charset (const char *str);
 char *find_locale (void);
-bool check_encoding_name (char *encoding);
+bool check_encoding_name (const char *encoding);
 const char *locale_to_utf8 (const char *str);
-char *idn_encode (struct iri *i, char *host);
-char *idn_decode (char *host);
-bool remote_to_utf8 (struct iri *i, const char *str, char **new);
+char *idn_encode (const struct iri *i, const char *host);
+char *idn_decode (const char *host);
+bool remote_to_utf8 (const struct iri *i, const char *str, char **new);
 struct iri *iri_new (void);
 struct iri *iri_dup (const struct iri *);
 void iri_free (struct iri *i);
-void set_uri_encoding (struct iri *i, char *charset, bool force);
-void set_content_encoding (struct iri *i, char *charset);
+void set_uri_encoding (struct iri *i, const char *charset, bool force);
+void set_content_encoding (struct iri *i, const char *charset);
 
 #else /* ENABLE_IRI */
 
