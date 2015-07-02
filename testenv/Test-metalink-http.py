@@ -52,8 +52,10 @@ LinkHeaders = [
     "<http://{{SRV_HOST}}:{{SRV_PORT}}/File1>; rel=strange; pri=4",
     # This file should be picked first, because it has the lowest pri among preferred.
     "<http://{{SRV_HOST}}:{{SRV_PORT}}/File1_try1_corrupted>; rel=duplicate; geo=su; pri=4; pref",
+    # This file should NOT be picked third due to preferred location set to 'uk'
+    "<http://{{SRV_HOST}}:{{SRV_PORT}}/File1_badgeo>; rel =duplicate;pri=5",
     # This file should be picked as third try, and it should succeed
-    "<http://{{SRV_HOST}}:{{SRV_PORT}}/File1_try3_ok>; rel=duplicate; pri=5"
+    "<http://{{SRV_HOST}}:{{SRV_PORT}}/File1_try3_ok>; rel=duplicate; pri=5;geo=uk"
     ]
 DigestHeader = "SHA-256={{FILE1_HASH}}"
 
@@ -70,7 +72,7 @@ FileOkLocal = WgetFile ("test.meta", File1)
 SigFile = WgetFile ("Sig.asc", Signature)
 FileNoMeta = WgetFile ("File2", File2)
 
-WGET_OPTIONS = "--metalink-over-http "
+WGET_OPTIONS = "--metalink-over-http --preferred-location=uk"
 WGET_URLS = [["test.meta", "File2"]]
 
 Files = [[FileOkServer, FileBadPref, FileBadHash, MetaFile, SigFile, FileNoMeta]]
