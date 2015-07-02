@@ -448,6 +448,17 @@ int metalink_res_cmp (const void* v1, const void* v2)
     return res2->preference - res1->preference;
   if (res1->priority != res2->priority)
     return res1->priority - res2->priority;
+  if (opt.preferred_location)
+    {
+      int cmp = 0;
+      if (res1->location &&
+          !strcasecmp (opt.preferred_location, res1->location))
+        cmp -= 1;
+      if (res2->location &&
+          !strcasecmp (opt.preferred_location, res2->location))
+        cmp += 1;
+      return cmp;
+    }
   return 0;
 }
 

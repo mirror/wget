@@ -274,6 +274,9 @@ static struct cmdline_option option_data[] =
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
+#ifdef HAVE_METALINK
+    { "preferred-location", 0, OPT_VALUE, "preferred-location", -1 },
+#endif
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
     { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
     { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
@@ -595,6 +598,8 @@ Download:\n"),
 #ifdef HAVE_METALINK
     N_("\
        --metalink-over-http        use Metalink metadata from HTTP response headers\n"),
+    N_("\
+       --preferred-location        preferred location for Metalink resources\n"),
 #endif
     "\n",
 
@@ -1771,6 +1776,26 @@ outputting to a regular file.\n"));
         }
       else
         {
+          /* We need to sort the resources if preferred location
+             was specified by the user.  */
+          if (opt.preferred_location && opt.preferred_location[0])
+            {
+              metalink_file_t **mfile_ptr;
+              for (mfile_ptr = metalink->files; *mfile_ptr; mfile_ptr++)
+                {
+                  metalink_resource_t **mres_ptr;
+                  metalink_file_t *mfile = *mfile_ptr;
+                  size_t mres_count = 0;
+
+                  for (mres_ptr = mfile->resources; *mres_ptr; mres_ptr++)
+                    mres_count++;
+
+                  stable_sort (mfile->resources,
+                               mres_count,
+                               sizeof (metalink_resource_t *),
+                               metalink_res_cmp);
+                }
+            }
           retr_err = retrieve_from_metalink (metalink);
           if (retr_err != RETROK)
             {

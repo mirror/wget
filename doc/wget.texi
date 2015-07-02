@@ -518,6 +518,11 @@ Issues HTTP HEAD request instead of GET and extracts Metalink metadata
 from response headers. Then it switches to Metalink download.
 If no valid Metalink metadata is found, it falls back to ordinary HTTP download.
 
+@cindex preferred-location
+@item --preferred-location
+Set preferred location for Metalink resources. This has effect if multiple
+resources with same priority are available.
+
 
 @cindex force html
 @item -F

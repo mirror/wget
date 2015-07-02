@@ -61,6 +61,7 @@ struct options
 #ifdef HAVE_METALINK
   char *input_metalink;         /* Input metalink file */
   bool metalink_over_http;      /* Use Metalink if present in HTTP response */
+  char *preferred_location;     /* Preferred location for Metalink resources */
 #endif
   char *choose_config;          /* Specified config file */
   bool noconfig;                /* Ignore all config files? */

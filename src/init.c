@@ -245,6 +245,9 @@ static const struct {
   { "postdata",         &opt.post_data,         cmd_string },
   { "postfile",         &opt.post_file_name,    cmd_file },
   { "preferfamily",     NULL,                   cmd_spec_prefer_family },
+#ifdef HAVE_METALINK
+  { "preferred-location", &opt.preferred_location, cmd_string },
+#endif
   { "preservepermissions", &opt.preserve_perm,  cmd_boolean },
 #ifdef HAVE_SSL
   { "privatekey",       &opt.private_key,       cmd_file },
@@ -1801,6 +1804,7 @@ cleanup (void)
   xfree (opt.input_filename);
 #ifdef HAVE_METALINK
   xfree (opt.input_metalink);
+  xfree (opt.preferred_location);
 #endif
   xfree (opt.output_document);
   free_vec (opt.accepts);
