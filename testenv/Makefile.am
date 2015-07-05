@@ -56,6 +56,9 @@ if HAVE_PYTHON3
     Test-cookie-expires.py                          \
     Test-cookie.py                                  \
     Test-Head.py                                    \
+    Test--https.py                                  \
+    Test--https-crl.py                              \
+    Test-hsts.py                                    \
     Test-O.py                                       \
     Test-Post.py                                    \
     Test-504.py                                     \

@@ -22,7 +22,7 @@ class BaseTest:
         * instantiate_server_by(protocol)
     """
 
-    def __init__(self, name, pre_hook, test_params, post_hook, protocols):
+    def __init__(self, name, pre_hook, test_params, post_hook, protocols, req_protocols):
         """
         Define the class-wide variables (or attributes).
         Attributes should not be defined outside __init__.
@@ -36,14 +36,23 @@ class BaseTest:
         self.post_configs = post_hook or {}
         self.protocols = protocols
 
+        if req_protocols is None:
+            self.req_protocols = map(lambda p: p.lower(), self.protocols)
+        else:
+            self.req_protocols = req_protocols
+
         self.servers = []
         self.domains = []
+        self.ports = []
+
+        self.addr = None
         self.port = -1
 
         self.wget_options = ''
         self.urls = []
 
         self.tests_passed = True
+        self.ready = False
         self.init_test_env()
 
         self.ret_code = 0
@@ -63,9 +72,12 @@ class BaseTest:
     def get_domain_addr(self, addr):
         # TODO if there's a multiple number of ports, wouldn't it be
         # overridden to the port of the last invocation?
+        # Set the instance variables 'addr' and 'port' so that
+        # they can be queried by test cases.
+        self.addr = str(addr[0])
         self.port = str(addr[1])
 
-        return '%s:%s' % (addr[0], self.port)
+        return [self.addr, self.port]
 
     def server_setup(self):
         print_blue("Running Test %s" % self.name)
@@ -77,7 +89,8 @@ class BaseTest:
             # ports and etc.
             # so we should record different domains respect to servers.
             domain = self.get_domain_addr(instance.server_address)
-            self.domains.append(domain)
+            self.domains.append(domain[0])
+            self.ports.append(domain[1])
 
     def exec_wget(self):
         cmd_line = self.gen_cmd_line()
@@ -122,9 +135,10 @@ class BaseTest:
         else:
             cmd_line = '%s %s ' % (wget_path, wget_options)
 
-        for protocol, urls, domain in zip(self.protocols,
-                                          self.urls,
-                                          self.domains):
+        for req_protocol, urls, domain, port in zip(self.req_protocols,
+                                                    self.urls,
+                                                    self.domains,
+                                                    self.ports):
             # zip is function for iterating multiple lists at the same time.
             # e.g. for item1, item2 in zip([1, 5, 3],
             #                              ['a', 'e', 'c']):
@@ -134,7 +148,8 @@ class BaseTest:
             # 5 e
             # 3 c
             for url in urls:
-                cmd_line += '%s://%s/%s ' % (protocol.lower(), domain, url)
+                cmd_line += '%s://%s:%s/%s ' % (req_protocol, domain, port, url)
+
 
         print(cmd_line)
 

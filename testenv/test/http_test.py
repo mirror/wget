@@ -17,19 +17,34 @@ class HTTPTest(BaseTest):
                  pre_hook=None,
                  test_params=None,
                  post_hook=None,
-                 protocols=(HTTP,)):
+                 protocols=(HTTP,),
+                 req_protocols=None):
         super(HTTPTest, self).__init__(name,
                                        pre_hook,
                                        test_params,
                                        post_hook,
-                                       protocols)
+                                       protocols,
+                                       req_protocols)
+
+    def setup(self):
         self.server_setup()
+        self.ready = True
 
     def begin(self):
+        if not self.ready:
+            # this is to maintain compatibility with scripts that
+            # don't call setup()
+            self.setup()
         with self:
-            self.do_test()
-            print_green('Test Passed.')
-        return super(HTTPTest, self).begin()
+            # If any exception occurs, self.__exit__ will be immediately called.
+            # We must call the parent method in the end in order to verify
+            # whether the tests succeeded or not.
+            if self.ready:
+                self.do_test()
+                print_green("Test Passed.")
+            else:
+                self.tests_passed = False
+            super(HTTPTest, self).begin()
 
     def instantiate_server_by(self, protocol):
         server = {HTTP: HTTPd,
