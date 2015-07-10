@@ -967,16 +967,31 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       if ((orig_filename_cols > MAX_FILENAME_COLS + MIN_SCROLL_TEXT) &&
           !opt.noscroll &&
           !done)
-        offset_cols = ((int) bp->tick) % (orig_filename_cols - MAX_FILENAME_COLS + 1);
+        {
+          offset_cols = ((int) bp->tick + orig_filename_cols + MAX_FILENAME_COLS / 2)
+                        % (orig_filename_cols + MAX_FILENAME_COLS);
+          if (offset_cols > orig_filename_cols)
+            {
+              padding = MAX_FILENAME_COLS - (offset_cols - orig_filename_cols);
+              memset(p, ' ', padding);
+              p += padding;
+              offset_cols = 0;
+            }
+          else
+            padding = 0;
+        }
       else
-        offset_cols = 0;
+        {
+          padding = 0;
+          offset_cols = 0;
+        }
       offset_bytes = cols_to_bytes (bp->f_download, offset_cols, cols_ret);
       bytes_in_filename = cols_to_bytes (bp->f_download + offset_bytes,
-                                         MAX_FILENAME_COLS,
+                                         MAX_FILENAME_COLS - padding,
                                          cols_ret);
       memcpy (p, bp->f_download + offset_bytes, bytes_in_filename);
       p += bytes_in_filename;
-      padding = MAX_FILENAME_COLS - *cols_ret;
+      padding = MAX_FILENAME_COLS - (padding + *cols_ret);
       for (;padding;padding--)
           *p++ = ' ';
       *p++ = ' ';
