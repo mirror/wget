@@ -29,6 +29,8 @@
 AUTOMAKE_OPTIONS = parallel-tests
 AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; MAKE_CHECK=True; export MAKE_CHECK;\
  export PYTHONPATH=$$PYTHONPATH:$(srcdir); export VALGRIND_TESTS="@VALGRIND_TESTS@";
+
+SSL_TESTS = Test--https.py Test--https-crl.py
 if HAVE_PYTHON3
   TESTS = Test-auth-basic-fail.py                   \
     Test-auth-basic.py                              \
@@ -47,21 +49,23 @@ if HAVE_PYTHON3
     Test-cookie-expires.py                          \
     Test-cookie.py                                  \
     Test-Head.py                                    \
-    Test--https.py                                  \
-    Test--https-crl.py                              \
     Test-O.py                                       \
     Test-Post.py                                    \
     Test-504.py                                     \
     Test--spider-r.py                               \
     Test-redirect-crash.py                          \
     Test-reserved-chars.py                          \
-    Test-condget.py
+    Test-condget.py                                 \
+    $(SSL_TESTS)
 
   # added test cases expected to fail here and under TESTS
-  XFAIL_TESTS =
+if !WITH_SSL
+  XFAIL_TESTS = $(SSL_TESTS)
 endif
 
-EXTRA_DIST = certs conf exc misc server test README $(TESTS) $(XFAIL_TESTS)
+endif
+
+EXTRA_DIST = certs conf exc misc server test README $(TESTS)
 
 TEST_EXTENSIONS = .py
 PY_LOG_COMPILER = python3

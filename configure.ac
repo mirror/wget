@@ -714,7 +714,7 @@ AS_IF([test "X$enable_pcre" != "Xno"],[
 
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
-
+AM_CONDITIONAL([WITH_SSL], [test "X$with_ssl" != "Xno"])
 
 dnl
 dnl Create output
