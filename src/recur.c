@@ -50,6 +50,7 @@ as that of the covered work.  */
 #include "html-url.h"
 #include "css-url.h"
 #include "spider.h"
+#include "exits.h"
 
 /* Functions for maintaining the URL queue.  */
 
