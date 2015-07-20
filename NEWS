@@ -9,9 +9,11 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
-* Add support for --if-modified-since
+** Add support for --if-modified-since
 
-* Add support for metalink through --input-metalink and --metalink-over-http
+** Add support for metalink through --input-metalink and --metalink-over-http
+
+** Add support for HSTS through --hsts and --hsts-file.
 
 ** Add option to restrict filenames under VMS.
 
