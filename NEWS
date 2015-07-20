@@ -11,6 +11,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Add support for --if-modified-since
 
+* Add support for metalink through --input-metalink and --metalink-over-http
+
 ** Add option to restrict filenames under VMS.
 
 * Changes in Wget 1.16.3
