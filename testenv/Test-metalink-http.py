@@ -115,6 +115,7 @@ http_test = HTTPTest (
                 post_hook=post_test,
 )
 
+http_test.server_setup()
 srv_host, srv_port = http_test.servers[0].server_inst.socket.getsockname ()
 
 MetaFileRules["SendHeader"] = {

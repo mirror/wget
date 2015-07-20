@@ -75,6 +75,7 @@ http_test = HTTPTest (
                 post_hook=post_test,
 )
 
+http_test.server_setup()
 ### Get and use dynamic server sockname
 srv_host, srv_port = http_test.servers[0].server_inst.socket.getsockname ()
 
