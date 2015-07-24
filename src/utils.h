@@ -157,7 +157,7 @@ long get_max_length (const char *path, int length, int name);
 size_t strlcpy (char *dst, const char *src, size_t size);
 #endif
 
-void hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len);
+void wg_hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len);
 
 extern unsigned char char_prop[];
 

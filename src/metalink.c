@@ -195,7 +195,7 @@ retrieve_from_metalink (const metalink_t* metalink)
                              quote (mfile->name));
 
                   sha256_stream (local_file, sha256);
-                  hex_to_string (sha256_txt, sha256, SHA256_DIGEST_SIZE);
+                  wg_hex_to_string (sha256_txt, sha256, SHA256_DIGEST_SIZE);
                   DEBUGP (("Declared hash: %s\n", mchksum->hash));
                   DEBUGP (("Computed hash: %s\n", sha256_txt));
                   if (!strcmp (sha256_txt, mchksum->hash))

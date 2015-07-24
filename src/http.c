@@ -2813,7 +2813,7 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
           mfile->checksums[hash_count]->type = dig_type;
 
           mfile->checksums[hash_count]->hash = xmalloc (hash_bin_len * 2 + 1);
-          hex_to_string (mfile->checksums[hash_count]->hash, bin_hash, hash_bin_len);
+          wg_hex_to_string (mfile->checksums[hash_count]->hash, bin_hash, hash_bin_len);
 
           xfree (dig_hash);
 

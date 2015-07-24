@@ -2507,7 +2507,7 @@ get_max_length (const char *path, int length, int name)
 }
 
 void
-hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len)
+wg_hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len)
 {
   size_t i;
 
