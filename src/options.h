@@ -296,6 +296,8 @@ struct options
                                    name. */
   bool report_bps;              /*Output bandwidth in bits format*/
 
+  char *rejected_log;           /* The file to log rejected URLS to. */
+
 #ifdef HAVE_HSTS
   bool hsts;
   char *hsts_file;

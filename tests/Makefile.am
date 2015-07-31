@@ -127,6 +127,7 @@ PX_TESTS = \
              Test--start-pos.px \
              Test--start-pos--continue.px \
              Test--httpsonly-r.px \
+             Test--rejected-log.px \
              Test-204.px
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \

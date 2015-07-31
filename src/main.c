@@ -321,6 +321,7 @@ static struct cmdline_option option_data[] =
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
     { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
+    { "rejected-log", 0, OPT_VALUE, "rejectedlog", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
 #ifdef HAVE_METALINK
     { "metalink-over-http", 0, OPT_BOOLEAN, "metalink-over-http", -1 },
@@ -576,6 +577,8 @@ Logging and input file:\n"),
        --config=FILE               specify config file to use\n"),
     N_("\
        --no-config                 do not read any config file\n"),
+    N_("\
+       --rejected-log=FILE         log reasons for URL rejection to FILE\n"),
     "\n",
 
     N_("\

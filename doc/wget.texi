@@ -551,6 +551,11 @@ would be resolved to @samp{http://foo/baz/b.html}.
 @cindex specify config 
 @item --config=@var{FILE}
 Specify the location of a startup file you wish to use.
+
+@item --rejected-log=@var{logfile}
+Logs all URL rejections to @var{logfile} as comma separated values.  The values
+include the reason of rejection, the URL and the parent URL it was found in.
+
 @end table
 
 @node Download Options, Directory Options, Logging and Input File Options, Invoking

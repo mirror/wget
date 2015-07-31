@@ -274,6 +274,7 @@ static const struct {
   { "referer",          &opt.referer,           cmd_string },
   { "regextype",        &opt.regex_type,        cmd_spec_regex_type },
   { "reject",           &opt.rejects,           cmd_vector },
+  { "rejectedlog",      &opt.rejected_log,      cmd_file },
   { "rejectregex",      &opt.rejectregex_s,     cmd_string },
   { "relativeonly",     &opt.relative_only,     cmd_boolean },
   { "remoteencoding",   &opt.encoding_remote,   cmd_string },
@@ -1856,6 +1857,7 @@ cleanup (void)
   xfree (opt.post_data);
   xfree (opt.body_data);
   xfree (opt.body_file);
+  xfree (opt.rejected_log);
 
 #endif /* DEBUG_MALLOC */
 }

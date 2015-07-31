@@ -1,0 +1,138 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use HTTPTest;
+
+
+###############################################################################
+
+my $mainpage = <<EOF;
+<html>
+<head>
+  <title>Main Page</title>
+</head>
+<body>
+  <p>
+    Recurse to a <a href="http://localhost:{{port}}/secondpage.html">second page</a>.
+  </p>
+</body>
+</html>
+EOF
+
+my $secondpage = <<EOF;
+<html>
+<head>
+  <title>Second Page</title>
+</head>
+<body>
+  <p>
+    Recurse to a <a href="http://localhost:{{port}}/thirdpage.html">third page</a>.
+    Try the blacklisted <a href="http://localhost:{{port}}/index.html">main page</a>.
+  </p>
+</body>
+</html>
+EOF
+
+my $thirdpage = <<EOF;
+<html>
+<head>
+  <title>Third Page</title>
+</head>
+<body>
+  <p>
+    Try a hidden <a href="http://localhost:{{port}}/dummy.txt">dummy file</a>.
+    Try to leave to <a href="http://no.such.domain/">another domain</a>.
+  </p>
+</body>
+</html>
+EOF
+
+my $robots = <<EOF;
+User-agent: *
+Disallow: /dummy.txt
+EOF
+
+my $log = <<EOF;
+REASON	U_URL	U_SCHEME	U_HOST	U_PORT	U_PATH	U_PARAMS	U_QUERY	U_FRAGMENT	P_URL	P_SCHEME	P_HOST	P_PORT	P_PATH	P_PARAMS	P_QUERY	P_FRAGMENT
+BLACKLIST	http%3A//localhost%3A{{port}}/index.html	SCHEME_HTTP	localhost	{{port}}	index.html				http%3A//localhost%3A{{port}}/secondpage.html	SCHEME_HTTP	localhost	{{port}}	secondpage.html			
+ROBOTS	http%3A//localhost%3A{{port}}/dummy.txt	SCHEME_HTTP	localhost	{{port}}	dummy.txt				http%3A//localhost%3A{{port}}/thirdpage.html	SCHEME_HTTP	localhost	{{port}}	thirdpage.html			
+SPANNEDHOST	http%3A//no.such.domain/	SCHEME_HTTP	no.such.domain	80					http%3A//localhost%3A{{port}}/thirdpage.html	SCHEME_HTTP	localhost	{{port}}	thirdpage.html			
+EOF
+
+# code, msg, headers, content
+my %urls = (
+    '/index.html' => {
+        code => "200",
+        msg => "Dontcare",
+        headers => {
+            "Content-type" => "text/html",
+        },
+        content => $mainpage,
+    },
+    '/secondpage.html' => {
+        code => "200",
+        msg => "Dontcare",
+        headers => {
+            "Content-type" => "text/html",
+        },
+        content => $secondpage,
+    },
+    '/thirdpage.html' => {
+        code => "200",
+        msg => "Dontcare",
+        headers => {
+            "Content-type" => "text/html",
+        },
+        content => $thirdpage,
+    },
+    '/dummy.txt' => {
+        code => "200",
+        msg => "Dontcare",
+        headers => {
+            "Content-type" => "text/plain",
+        },
+        content => "",
+    },
+    '/robots.txt' => {
+        code => "200",
+        msg => "Dontcare",
+        headers => {
+            "Content-type" => "text/plain",
+        },
+        content => $robots
+    },
+);
+
+my $cmdline = $WgetTest::WGETPATH . " -nd -r --rejected-log log.csv http://localhost:{{port}}/index.html";
+
+my $expected_error_code = 0;
+
+my %expected_downloaded_files = (
+  "index.html" => {
+    content => $mainpage,
+  },
+  "secondpage.html" => {
+    content => $secondpage,
+  },
+  "thirdpage.html" => {
+    content => $thirdpage,
+  },
+  "robots.txt" => {
+    content => $robots,
+  },
+  "log.csv" => {
+    content => $log,
+  },
+);
+
+###############################################################################
+
+my $the_test = HTTPTest->new (input => \%urls,
+                              cmdline => $cmdline,
+                              errcode => $expected_error_code,
+                              output => \%expected_downloaded_files);
+exit $the_test->run();
+
+# vim: et ts=4 sw=4

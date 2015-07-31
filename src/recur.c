@@ -182,11 +182,19 @@ static int blacklist_contains (struct hash_table *blacklist, const char *url)
   return ret;
 }
 
-static bool download_child_p (const struct urlpos *, struct url *, int,
-                              struct url *, struct hash_table *, struct iri *);
-static bool descend_redirect_p (const char *, struct url *, int,
-                                struct url *, struct hash_table *, struct iri *);
+typedef enum
+{
+  SUCCESS, BLACKLIST, NOTHTTPS, NONHTTP, ABSOLUTE, DOMAIN, PARENT, LIST, REGEX,
+  RULES, SPANNEDHOST, ROBOTS
+} reject_reason;
 
+static reject_reason download_child (const struct urlpos *, struct url *, int,
+                              struct url *, struct hash_table *, struct iri *);
+static reject_reason descend_redirect (const char *, struct url *, int,
+                              struct url *, struct hash_table *, struct iri *);
+static void write_reject_log_header (FILE *);
+static void write_reject_log_reason (FILE *, reject_reason, struct url *,
+                              struct url *);
 
 /* Retrieve a part of the web beginning with START_URL.  This used to
    be called "recursive retrieval", because the old function was
@@ -244,6 +252,15 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                false);
   blacklist_add (blacklist, start_url_parsed->url);
 
+  FILE *rejectedlog = 0; /* Don't write a rejected log. */
+  if (opt.rejected_log)
+    {
+      rejectedlog = fopen (opt.rejected_log, "w");
+      write_reject_log_header (rejectedlog);
+      if (!rejectedlog)
+        logprintf (LOG_NOTQUIET, "%s: %s\n", opt.rejected_log, strerror (errno));
+    }
+
   while (1)
     {
       bool descend = false;
@@ -266,9 +283,9 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
         break;
 
       /* ...and download it.  Note that this download is in most cases
-         unconditional, as download_child_p already makes sure a file
+         unconditional, as download_child already makes sure a file
          doesn't get enqueued twice -- and yet this check is here, and
-         not in download_child_p.  This is so that if you run `wget -r
+         not in download_child.  This is so that if you run `wget -r
          URL1 URL2', and a random URL is encountered once under URL1
          and again under URL2, but at a different (possibly smaller)
          depth, we want the URL's children to be taken into account
@@ -337,13 +354,19 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                      want to follow it.  */
                   if (descend)
                     {
-                      if (!descend_redirect_p (redirected, url_parsed, depth,
-                                               start_url_parsed, blacklist, i))
-                        descend = false;
+                      reject_reason r = descend_redirect (redirected, url_parsed,
+                                        depth, start_url_parsed, blacklist, i);
+                      if (r == SUCCESS)
+                        {
+                          /* Make sure that the old pre-redirect form gets
+                             blacklisted. */
+                          blacklist_add (blacklist, url);
+                        }
                       else
-                        /* Make sure that the old pre-redirect form gets
-                           blacklisted. */
-                        blacklist_add (blacklist, url);
+                        {
+                          write_reject_log_reason (rejectedlog, r, url_parsed, start_url_parsed);
+                          descend = false;
+                        }
                     }
 
                   xfree (url);
@@ -425,8 +448,9 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                     continue;
                   if (dash_p_leaf_HTML && !child->link_inline_p)
                     continue;
-                  if (download_child_p (child, url_parsed, depth, start_url_parsed,
-                                        blacklist, i))
+                  reject_reason r = download_child (child, url_parsed, depth,
+                                    start_url_parsed, blacklist, i);
+                  if (r == SUCCESS)
                     {
                       ci = iri_new ();
                       set_uri_encoding (ci, i->content_encoding, false);
@@ -438,6 +462,10 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                          don't want to enqueue (and hence download) the
                          same URL twice.  */
                       blacklist_add (blacklist, child->url->url);
+                    }
+                  else
+                    {
+                      write_reject_log_reason (rejectedlog, r, child->url, url_parsed);
                     }
                 }
 
@@ -478,6 +506,9 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
       iri_free (i);
     }
 
+  if (rejectedlog)
+    fclose (rejectedlog);
+
   /* If anything is left of the queue due to a premature exit, free it
      now.  */
   {
@@ -513,14 +544,15 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
    by storing these URLs to BLACKLIST.  This may or may not help.  It
    will help if those URLs are encountered many times.  */
 
-static bool
-download_child_p (const struct urlpos *upos, struct url *parent, int depth,
+static reject_reason
+download_child (const struct urlpos *upos, struct url *parent, int depth,
                   struct url *start_url_parsed, struct hash_table *blacklist,
                   struct iri *iri)
 {
   struct url *u = upos->url;
   const char *url = u->url;
   bool u_scheme_like_http;
+  reject_reason reason = SUCCESS;
 
   DEBUGP (("Deciding whether to enqueue \"%s\".\n", url));
 
@@ -529,11 +561,12 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       if (opt.spider)
         {
           char *referrer = url_string (parent, URL_AUTH_HIDE_PASSWD);
-          DEBUGP (("download_child_p: parent->url is: %s\n", quote (parent->url)));
+          DEBUGP (("download_child: parent->url is: %s\n", quote (parent->url)));
           visited_url (url, referrer);
           xfree (referrer);
         }
       DEBUGP (("Already on the black list.\n"));
+      reason = BLACKLIST;
       goto out;
     }
 
@@ -563,6 +596,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
   if (opt.https_only && u->scheme != SCHEME_HTTPS)
     {
       DEBUGP (("Not following non-HTTPS links.\n"));
+      reason = NOTHTTPS;
       goto out;
     }
 #endif
@@ -574,6 +608,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
   if (!u_scheme_like_http && !(u->scheme == SCHEME_FTP && opt.follow_ftp))
     {
       DEBUGP (("Not following non-HTTP schemes.\n"));
+      reason = NONHTTP;
       goto out;
     }
 
@@ -583,6 +618,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
     if (opt.relative_only && !upos->link_relative_p)
       {
         DEBUGP (("It doesn't really look like a relative link.\n"));
+        reason = ABSOLUTE;
         goto out;
       }
 
@@ -591,6 +627,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
   if (!accept_domain (u))
     {
       DEBUGP (("The domain was not accepted.\n"));
+      reason = DOMAIN;
       goto out;
     }
 
@@ -610,6 +647,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
         {
           DEBUGP (("Going to \"%s\" would escape \"%s\" with no_parent on.\n",
                    u->dir, start_url_parsed->dir));
+          reason = PARENT;
           goto out;
         }
     }
@@ -622,12 +660,14 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       if (!accdir (u->dir))
         {
           DEBUGP (("%s (%s) is excluded/not-included.\n", url, u->dir));
+          reason = LIST;
           goto out;
         }
     }
   if (!accept_url (url))
     {
       DEBUGP (("%s is excluded/not-included through regex.\n", url));
+      reason = REGEX;
       goto out;
     }
 
@@ -652,6 +692,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
         {
           DEBUGP (("%s (%s) does not match acc/rej rules.\n",
                    url, u->file));
+          reason = RULES;
           goto out;
         }
     }
@@ -662,6 +703,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       {
         DEBUGP (("This is not the same hostname as the parent's (%s and %s).\n",
                  u->host, parent->host));
+        reason = SPANNEDHOST;
         goto out;
       }
 
@@ -704,35 +746,36 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
         {
           DEBUGP (("Not following %s because robots.txt forbids it.\n", url));
           blacklist_add (blacklist, url);
+          reason = ROBOTS;
           goto out;
         }
     }
 
-  /* The URL has passed all the tests.  It can be placed in the
-     download queue. */
-  DEBUGP (("Decided to load it.\n"));
+  out:
 
-  return true;
+  if (reason == SUCCESS)
+    /* The URL has passed all the tests.  It can be placed in the
+       download queue. */
+    DEBUGP (("Decided to load it.\n"));
+  else
+    DEBUGP (("Decided NOT to load it.\n"));
 
- out:
-  DEBUGP (("Decided NOT to load it.\n"));
-
-  return false;
+  return reason;
 }
 
 /* This function determines whether we will consider downloading the
    children of a URL whose download resulted in a redirection,
    possibly to another host, etc.  It is needed very rarely, and thus
-   it is merely a simple-minded wrapper around download_child_p.  */
+   it is merely a simple-minded wrapper around download_child.  */
 
-static bool
-descend_redirect_p (const char *redirected, struct url *orig_parsed, int depth,
+static reject_reason
+descend_redirect (const char *redirected, struct url *orig_parsed, int depth,
                     struct url *start_url_parsed, struct hash_table *blacklist,
                     struct iri *iri)
 {
   struct url *new_parsed;
   struct urlpos *upos;
-  bool success;
+  reject_reason reason;
 
   assert (orig_parsed != NULL);
 
@@ -742,10 +785,10 @@ descend_redirect_p (const char *redirected, struct url *orig_parsed, int depth,
   upos = xnew0 (struct urlpos);
   upos->url = new_parsed;
 
-  success = download_child_p (upos, orig_parsed, depth,
+  reason = download_child (upos, orig_parsed, depth,
                               start_url_parsed, blacklist, iri);
 
-  if (success)
+  if (reason == SUCCESS)
     blacklist_add (blacklist, upos->url->url);
   else
     DEBUGP (("Redirection \"%s\" failed the test.\n", redirected));
@@ -753,7 +796,89 @@ descend_redirect_p (const char *redirected, struct url *orig_parsed, int depth,
   url_free (new_parsed);
   xfree (upos);
 
-  return success;
+  return reason;
+}
+
+
+/* This function writes the rejected log header. */
+static void
+write_reject_log_header (FILE *f)
+{
+  if (!f)
+    return;
+
+  /* Note: Update this header when columns change in any way. */
+  fprintf (f, "REASON\t"
+    "U_URL\tU_SCHEME\tU_HOST\tU_PORT\tU_PATH\tU_PARAMS\tU_QUERY\tU_FRAGMENT\t"
+    "P_URL\tP_SCHEME\tP_HOST\tP_PORT\tP_PATH\tP_PARAMS\tP_QUERY\tP_FRAGMENT\n");
+}
+
+/* This function writes a URL to the reject log. Internal use only. */
+static void
+write_reject_log_url (FILE *f, struct url *url)
+{
+  if (!f)
+    return;
+
+  char *escaped_str = url_escape (url->url);
+  char const *scheme_str = 0;
+  char empty_str[] = "";
+
+  switch (url->scheme)
+    {
+      case SCHEME_HTTP:    scheme_str = "SCHEME_HTTP";    break;
+      #ifdef HAVE_SSL
+        case SCHEME_HTTPS: scheme_str = "SCHEME_HTTPS";   break;
+      #endif
+      case SCHEME_FTP:     scheme_str = "SCHEME_FTP";     break;
+      case SCHEME_INVALID: scheme_str = "SCHEME_INVALID"; break;
+    }
+
+  fprintf (f, "%s\t%s\t%s\t%i\t%s\t%s\t%s\t%s",
+    escaped_str,
+    scheme_str,
+    url->host,
+    url->port,
+    url->path,
+    url->params ? url->params : empty_str,
+    url->query ? url->query : empty_str,
+    url->fragment ? url->fragment : empty_str);
+
+  free (escaped_str);
+}
+
+/* This function writes out information on why a URL was rejected and its
+   context from download_child such as the URL being rejected and it's
+   parent's URL. The format it uses is comma separated values but with tabs. */
+static void
+write_reject_log_reason (FILE *f, reject_reason r, struct url *url,
+                         struct url *parent)
+{
+  if (!f)
+    return;
+
+  char const *reason_str = 0;
+  switch (r)
+    {
+      case SUCCESS:     reason_str = "SUCCESS";     break;
+      case BLACKLIST:   reason_str = "BLACKLIST";   break;
+      case NOTHTTPS:    reason_str = "NOTHTTPS";    break;
+      case NONHTTP:     reason_str = "NONHTTP";     break;
+      case ABSOLUTE:    reason_str = "ABSOLUTE";    break;
+      case DOMAIN:      reason_str = "DOMAIN";      break;
+      case PARENT:      reason_str = "PARENT";      break;
+      case LIST:        reason_str = "LIST";        break;
+      case REGEX:       reason_str = "REGEX";       break;
+      case RULES:       reason_str = "RULES";       break;
+      case SPANNEDHOST: reason_str = "SPANNEDHOST"; break;
+      case ROBOTS:      reason_str = "ROBOTS";      break;
+    }
+
+  fprintf (f, "%s\t", reason_str);
+  write_reject_log_url (f, url);
+  fprintf (f, "\t");
+  write_reject_log_url (f, parent);
+  fprintf (f, "\n");
 }
 
 /* vim:set sts=2 sw=2 cino+={s: */
