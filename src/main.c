@@ -156,7 +156,11 @@ get_hsts_database (void)
 
   home = home_dir ();
   if (home)
-    return aprintf ("%s/.wget-hsts", home);
+    {
+      char *dir = aprintf ("%s/.wget-hsts", home);
+      xfree(home);
+      return dir;
+    }
 
   return NULL;
 }
@@ -1763,8 +1767,6 @@ outputting to a regular file.\n"));
 #endif
 
 #ifdef HAVE_HSTS
-  hsts_store = NULL;
-
   /* Load the HSTS database.
      Maybe all the URLs are FTP(S), in which case HSTS would not be needed,
      but this is the best place to do it, and it shouldn't be a critical
