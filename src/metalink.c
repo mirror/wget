@@ -83,7 +83,7 @@ retrieve_from_metalink (const metalink_t* metalink)
       char *filename = NULL;
       bool hash_ok = false;
 
-      uerr_t retr_err;
+      uerr_t retr_err = METALINK_MISSING_RESOURCE;
 
       /* -1 -> file should be rejected
          0 -> could not verify
