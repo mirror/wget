@@ -63,6 +63,7 @@ if HAVE_PYTHON3
     Test-Post.py                                    \
     Test-504.py                                     \
     Test--spider-r.py                               \
+    Test--rejected-log.py                           \
     Test-redirect-crash.py                          \
     Test-reserved-chars.py                          \
     Test-condget.py                                 \
