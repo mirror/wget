@@ -17,6 +17,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Add option to restrict filenames under VMS.
 
+** Add support for --rejected-log which logs to a separate file the reasons why
+   URLs are being rejected and some context around it.
+
 * Changes in Wget 1.16.3
 
 ** Fix a regression introduced by wget 1.16.2 that --quiet is not
