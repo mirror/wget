@@ -620,12 +620,14 @@ const char *
 test_hsts_new_entry (void)
 {
   enum hsts_kh_match match = NO_MATCH;
-  struct hsts_kh_info *khi = NULL;
+  struct hsts_kh_info *khi;
+  hsts_store_t s;
+  bool created;
 
-  hsts_store_t s = open_hsts_test_store ();
+  s = open_hsts_test_store ();
   mu_assert("Could not open the HSTS store. This could be due to lack of memory.", s != NULL);
 
-  bool created = hsts_store_entry (s, SCHEME_HTTP, "www.foo.com", 80, 1234, true);
+  created = hsts_store_entry (s, SCHEME_HTTP, "www.foo.com", 80, 1234, true);
   mu_assert("No entry should have been created.", created == false);
 
   created = hsts_store_entry (s, SCHEME_HTTPS, "www.foo.com", 443, 1234, true);
