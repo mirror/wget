@@ -193,8 +193,8 @@ static reject_reason download_child (const struct urlpos *, struct url *, int,
 static reject_reason descend_redirect (const char *, struct url *, int,
                               struct url *, struct hash_table *, struct iri *);
 static void write_reject_log_header (FILE *);
-static void write_reject_log_reason (FILE *, reject_reason, struct url *,
-                              struct url *);
+static void write_reject_log_reason (FILE *, reject_reason,
+                              const struct url *, const struct url *);
 
 /* Retrieve a part of the web beginning with START_URL.  This used to
    be called "recursive retrieval", because the old function was
@@ -231,6 +231,8 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 
   struct iri *i = iri_new ();
 
+  FILE *rejectedlog = NULL; /* Don't write a rejected log. */
+
 #define COPYSTR(x)  (x) ? xstrdup(x) : NULL;
   /* Duplicate pi struct if not NULL */
   if (pi)
@@ -252,7 +254,6 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                false);
   blacklist_add (blacklist, start_url_parsed->url);
 
-  FILE *rejectedlog = 0; /* Don't write a rejected log. */
   if (opt.rejected_log)
     {
       rejectedlog = fopen (opt.rejected_log, "w");
@@ -444,12 +445,15 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 
               for (; child; child = child->next)
                 {
+                  reject_reason r;
+
                   if (child->ignore_when_downloading)
                     continue;
                   if (dash_p_leaf_HTML && !child->link_inline_p)
                     continue;
-                  reject_reason r = download_child (child, url_parsed, depth,
-                                    start_url_parsed, blacklist, i);
+
+                  r = download_child (child, url_parsed, depth,
+                                      start_url_parsed, blacklist, i);
                   if (r == SUCCESS)
                     {
                       ci = iri_new ();
@@ -815,14 +819,15 @@ write_reject_log_header (FILE *f)
 
 /* This function writes a URL to the reject log. Internal use only. */
 static void
-write_reject_log_url (FILE *f, struct url *url)
+write_reject_log_url (FILE *fp, const struct url *url)
 {
-  if (!f)
+  const char *escaped_str;
+  const char *scheme_str;
+
+  if (!fp)
     return;
 
-  char *escaped_str = url_escape (url->url);
-  char const *scheme_str = 0;
-  char empty_str[] = "";
+  escaped_str = url_escape (url->url);
 
   switch (url->scheme)
     {
@@ -831,34 +836,35 @@ write_reject_log_url (FILE *f, struct url *url)
         case SCHEME_HTTPS: scheme_str = "SCHEME_HTTPS";   break;
       #endif
       case SCHEME_FTP:     scheme_str = "SCHEME_FTP";     break;
-      case SCHEME_INVALID: scheme_str = "SCHEME_INVALID"; break;
+      default:             scheme_str = "SCHEME_INVALID"; break;
     }
 
-  fprintf (f, "%s\t%s\t%s\t%i\t%s\t%s\t%s\t%s",
+  fprintf (fp, "%s\t%s\t%s\t%i\t%s\t%s\t%s\t%s",
     escaped_str,
     scheme_str,
     url->host,
     url->port,
     url->path,
-    url->params ? url->params : empty_str,
-    url->query ? url->query : empty_str,
-    url->fragment ? url->fragment : empty_str);
+    url->params ? url->params : "",
+    url->query ? url->query : "",
+    url->fragment ? url->fragment : "");
 
-  free (escaped_str);
+  xfree (escaped_str);
 }
 
 /* This function writes out information on why a URL was rejected and its
    context from download_child such as the URL being rejected and it's
    parent's URL. The format it uses is comma separated values but with tabs. */
 static void
-write_reject_log_reason (FILE *f, reject_reason r, struct url *url,
-                         struct url *parent)
+write_reject_log_reason (FILE *fp, reject_reason reason,
+                         const struct url *url, const struct url *parent)
 {
-  if (!f)
+  const char *reason_str;
+
+  if (!fp)
     return;
 
-  char const *reason_str = 0;
-  switch (r)
+  switch (reason)
     {
       case SUCCESS:     reason_str = "SUCCESS";     break;
       case BLACKLIST:   reason_str = "BLACKLIST";   break;
@@ -872,13 +878,14 @@ write_reject_log_reason (FILE *f, reject_reason r, struct url *url,
       case RULES:       reason_str = "RULES";       break;
       case SPANNEDHOST: reason_str = "SPANNEDHOST"; break;
       case ROBOTS:      reason_str = "ROBOTS";      break;
+      default:          reason_str = "UNKNOWN";     break;
     }
 
-  fprintf (f, "%s\t", reason_str);
-  write_reject_log_url (f, url);
-  fprintf (f, "\t");
-  write_reject_log_url (f, parent);
-  fprintf (f, "\n");
+  fprintf (fp, "%s\t", reason_str);
+  write_reject_log_url (fp, url);
+  fprintf (fp, "\t");
+  write_reject_log_url (fp, parent);
+  fprintf (fp, "\n");
 }
 
 /* vim:set sts=2 sw=2 cino+={s: */
