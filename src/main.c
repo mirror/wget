@@ -174,6 +174,8 @@ load_hsts (void)
 
       if (filename)
         {
+          DEBUGP (("Reading HSTS entries from %s\n", filename));
+
           hsts_store = hsts_store_open (filename);
 
           if (!hsts_store)
@@ -194,6 +196,9 @@ save_hsts (void)
   if (hsts_store)
     {
       char *filename = get_hsts_database ();
+
+      if (filename)
+        DEBUGP (("Saving HSTS entries to %s\n", filename));
 
       hsts_store_save (hsts_store, filename);
       hsts_store_close (hsts_store);
