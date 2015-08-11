@@ -9,6 +9,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+** Remove FTP passive to active fallback due to privacy concerns
+
 ** Add support for --if-modified-since
 
 ** Add support for metalink through --input-metalink and --metalink-over-http

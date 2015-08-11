@@ -740,6 +740,14 @@ sub run
                     last;
                 }
 
+                if (defined($self->{_server_behavior}{pasv_not_supported})
+                    && $cmd eq 'PASV')
+                {
+                    print {$conn->{socket}}
+                      "500 PASV not supported.\r\n";
+                    next;
+                }
+
                 # Run the command.
                 &{$command_table->{$cmd}}($conn, $cmd, $rest);
             }

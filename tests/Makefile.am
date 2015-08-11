@@ -127,7 +127,8 @@ PX_TESTS = \
              Test--start-pos.px \
              Test--start-pos--continue.px \
              Test--httpsonly-r.px \
-             Test-204.px
+             Test-204.px \
+             Test-ftp-pasv-not-supported.px
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              WgetTests.pm WgetFeature.pm WgetFeature.cfg $(PX_TESTS) \

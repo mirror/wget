@@ -252,7 +252,6 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
   char *respline, *tms;
   const char *user, *passwd, *tmrate;
   int cmd = con->cmd;
-  bool pasv_mode_open = false;
   wgint expected_bytes = 0;
   bool got_expected_bytes = false;
   bool rest_failed = false;
@@ -883,13 +882,19 @@ Error in server response, closing control connection.\n"));
                           ? CONERROR : CONIMPOSSIBLE);
                 }
 
-              pasv_mode_open = true;  /* Flag to avoid accept port */
               if (!opt.server_response)
                 logputs (LOG_VERBOSE, _("done.    "));
-            } /* err==FTP_OK */
-        }
+            }
+          else
+            return err;
 
-      if (!pasv_mode_open)   /* Try to use a port command if PASV failed */
+          /*
+           * We do not want to fall back from PASSIVE mode to ACTIVE mode !
+           * The reason is the PORT command exposes the client's real IP address
+           * to the server. Bad for someone who relies on privacy via a ftp proxy.
+           */
+        }
+      else
         {
           err = ftp_do_port (csock, &local_sock);
           /* FTPRERR, WRITEFAILED, bindport (FTPSYSERR), HOSTERR,
@@ -1148,8 +1153,8 @@ Error in server response, closing control connection.\n"));
     }
 
   /* If no transmission was required, then everything is OK.  */
-  if (!pasv_mode_open)  /* we are not using pasive mode so we need
-                              to accept */
+  if (!opt.ftp_pasv)  /* we are not using passive mode so we need
+                         to accept */
     {
       /* Wait for the server to connect to the address we're waiting
          at.  */
