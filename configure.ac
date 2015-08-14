@@ -490,17 +490,22 @@ AS_IF([test x"$with_metalink" != xno], [
     ], [
       with_metalink=no
     ])
-])
 
-dnl
-dnl Check for GPGME
-dnl
-AM_PATH_GPGME([], [
-    LIBS="$GPGME_LIBS $LIBS"
-    CFLAGS="$GPGME_CFLAGS $CFLAGS"
-    AC_DEFINE([HAVE_GPGME], [1], [Define if GPGME is available.])
-    have_gpg=yes
-  ], [have_gpg=no])
+  have_gpg=no
+  AS_IF([test x"$with_metalink" = xyes], [
+    dnl
+    dnl Check for GPGME
+    dnl
+    m4_ifdef([AM_PATH_GPGME], [
+      AM_PATH_GPGME([], [
+        LIBS="$GPGME_LIBS $LIBS"
+        CFLAGS="$GPGME_CFLAGS $CFLAGS"
+        AC_DEFINE([HAVE_GPGME], [1], [Define if GPGME is available.])
+        have_gpg=yes
+      ])
+    ])
+  ])
+])
 
 dnl **********************************************************************
 dnl Checks for IPv6
