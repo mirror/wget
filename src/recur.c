@@ -184,8 +184,9 @@ static int blacklist_contains (struct hash_table *blacklist, const char *url)
 
 typedef enum
 {
-  SUCCESS, BLACKLIST, NOTHTTPS, NONHTTP, ABSOLUTE, DOMAIN, PARENT, LIST, REGEX,
-  RULES, SPANNEDHOST, ROBOTS
+  WG_RR_SUCCESS, WG_RR_BLACKLIST, WG_RR_NOTHTTPS, WG_RR_NONHTTP, WG_RR_ABSOLUTE,
+  WG_RR_DOMAIN, WG_RR_PARENT, WG_RR_LIST, WG_RR_REGEX, WG_RR_RULES,
+  WG_RR_SPANNEDHOST, WG_RR_ROBOTS
 } reject_reason;
 
 static reject_reason download_child (const struct urlpos *, struct url *, int,
@@ -357,7 +358,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                     {
                       reject_reason r = descend_redirect (redirected, url_parsed,
                                         depth, start_url_parsed, blacklist, i);
-                      if (r == SUCCESS)
+                      if (r == WG_RR_SUCCESS)
                         {
                           /* Make sure that the old pre-redirect form gets
                              blacklisted. */
@@ -454,7 +455,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 
                   r = download_child (child, url_parsed, depth,
                                       start_url_parsed, blacklist, i);
-                  if (r == SUCCESS)
+                  if (r == WG_RR_SUCCESS)
                     {
                       ci = iri_new ();
                       set_uri_encoding (ci, i->content_encoding, false);
@@ -556,7 +557,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
   struct url *u = upos->url;
   const char *url = u->url;
   bool u_scheme_like_http;
-  reject_reason reason = SUCCESS;
+  reject_reason reason = WG_RR_SUCCESS;
 
   DEBUGP (("Deciding whether to enqueue \"%s\".\n", url));
 
@@ -570,7 +571,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
           xfree (referrer);
         }
       DEBUGP (("Already on the black list.\n"));
-      reason = BLACKLIST;
+      reason = WG_RR_BLACKLIST;
       goto out;
     }
 
@@ -600,7 +601,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
   if (opt.https_only && u->scheme != SCHEME_HTTPS)
     {
       DEBUGP (("Not following non-HTTPS links.\n"));
-      reason = NOTHTTPS;
+      reason = WG_RR_NOTHTTPS;
       goto out;
     }
 #endif
@@ -612,7 +613,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
   if (!u_scheme_like_http && !(u->scheme == SCHEME_FTP && opt.follow_ftp))
     {
       DEBUGP (("Not following non-HTTP schemes.\n"));
-      reason = NONHTTP;
+      reason = WG_RR_NONHTTP;
       goto out;
     }
 
@@ -622,7 +623,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
     if (opt.relative_only && !upos->link_relative_p)
       {
         DEBUGP (("It doesn't really look like a relative link.\n"));
-        reason = ABSOLUTE;
+        reason = WG_RR_ABSOLUTE;
         goto out;
       }
 
@@ -631,7 +632,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
   if (!accept_domain (u))
     {
       DEBUGP (("The domain was not accepted.\n"));
-      reason = DOMAIN;
+      reason = WG_RR_DOMAIN;
       goto out;
     }
 
@@ -651,7 +652,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
         {
           DEBUGP (("Going to \"%s\" would escape \"%s\" with no_parent on.\n",
                    u->dir, start_url_parsed->dir));
-          reason = PARENT;
+          reason = WG_RR_PARENT;
           goto out;
         }
     }
@@ -664,14 +665,14 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
       if (!accdir (u->dir))
         {
           DEBUGP (("%s (%s) is excluded/not-included.\n", url, u->dir));
-          reason = LIST;
+          reason = WG_RR_LIST;
           goto out;
         }
     }
   if (!accept_url (url))
     {
       DEBUGP (("%s is excluded/not-included through regex.\n", url));
-      reason = REGEX;
+      reason = WG_RR_REGEX;
       goto out;
     }
 
@@ -696,7 +697,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
         {
           DEBUGP (("%s (%s) does not match acc/rej rules.\n",
                    url, u->file));
-          reason = RULES;
+          reason = WG_RR_RULES;
           goto out;
         }
     }
@@ -707,7 +708,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
       {
         DEBUGP (("This is not the same hostname as the parent's (%s and %s).\n",
                  u->host, parent->host));
-        reason = SPANNEDHOST;
+        reason = WG_RR_SPANNEDHOST;
         goto out;
       }
 
@@ -750,14 +751,14 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
         {
           DEBUGP (("Not following %s because robots.txt forbids it.\n", url));
           blacklist_add (blacklist, url);
-          reason = ROBOTS;
+          reason = WG_RR_ROBOTS;
           goto out;
         }
     }
 
   out:
 
-  if (reason == SUCCESS)
+  if (reason == WG_RR_SUCCESS)
     /* The URL has passed all the tests.  It can be placed in the
        download queue. */
     DEBUGP (("Decided to load it.\n"));
@@ -792,7 +793,7 @@ descend_redirect (const char *redirected, struct url *orig_parsed, int depth,
   reason = download_child (upos, orig_parsed, depth,
                               start_url_parsed, blacklist, iri);
 
-  if (reason == SUCCESS)
+  if (reason == WG_RR_SUCCESS)
     blacklist_add (blacklist, upos->url->url);
   else
     DEBUGP (("Redirection \"%s\" failed the test.\n", redirected));
@@ -866,19 +867,19 @@ write_reject_log_reason (FILE *fp, reject_reason reason,
 
   switch (reason)
     {
-      case SUCCESS:     reason_str = "SUCCESS";     break;
-      case BLACKLIST:   reason_str = "BLACKLIST";   break;
-      case NOTHTTPS:    reason_str = "NOTHTTPS";    break;
-      case NONHTTP:     reason_str = "NONHTTP";     break;
-      case ABSOLUTE:    reason_str = "ABSOLUTE";    break;
-      case DOMAIN:      reason_str = "DOMAIN";      break;
-      case PARENT:      reason_str = "PARENT";      break;
-      case LIST:        reason_str = "LIST";        break;
-      case REGEX:       reason_str = "REGEX";       break;
-      case RULES:       reason_str = "RULES";       break;
-      case SPANNEDHOST: reason_str = "SPANNEDHOST"; break;
-      case ROBOTS:      reason_str = "ROBOTS";      break;
-      default:          reason_str = "UNKNOWN";     break;
+      case WG_RR_SUCCESS:     reason_str = "SUCCESS";     break;
+      case WG_RR_BLACKLIST:   reason_str = "BLACKLIST";   break;
+      case WG_RR_NOTHTTPS:    reason_str = "NOTHTTPS";    break;
+      case WG_RR_NONHTTP:     reason_str = "NONHTTP";     break;
+      case WG_RR_ABSOLUTE:    reason_str = "ABSOLUTE";    break;
+      case WG_RR_DOMAIN:      reason_str = "DOMAIN";      break;
+      case WG_RR_PARENT:      reason_str = "PARENT";      break;
+      case WG_RR_LIST:        reason_str = "LIST";        break;
+      case WG_RR_REGEX:       reason_str = "REGEX";       break;
+      case WG_RR_RULES:       reason_str = "RULES";       break;
+      case WG_RR_SPANNEDHOST: reason_str = "SPANNEDHOST"; break;
+      case WG_RR_ROBOTS:      reason_str = "ROBOTS";      break;
+      default:                reason_str = "UNKNOWN";     break;
     }
 
   fprintf (fp, "%s\t", reason_str);
