@@ -78,8 +78,6 @@ Files = [[index_html, secondpage_html, thirdpage_html, robots_txt, dummy_txt]]
 
 ExpectedReturnCode = 0
 ExpectedDownloadedFiles = [index_html, secondpage_html, thirdpage_html, robots_txt, log_csv]
-# TODO: fix long line
-# TODO: check names
 
 ################ Pre and Post Test Hooks #####################################
 pre_test = {
