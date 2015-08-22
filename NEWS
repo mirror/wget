@@ -134,7 +134,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Add support for TLS Server Name Indication.
 
-** Accept the arguments --accept-reject and --reject-regex.
+** Accept the arguments --accept-regex and --reject-regex.
 
 ** The GNU TLS backend honors correctly the timeout value.
 
