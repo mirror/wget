@@ -3691,7 +3691,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     }
 
   /* Return if we have no intention of further downloading.  */
-  if ((!(*dt & RETROKF) && !opt.content_on_error) || head_only)
+  if ((!(*dt & RETROKF) && !opt.content_on_error) || head_only || (opt.spider && !opt.recursive))
     {
       /* In case the caller cares to look...  */
       hs->len = 0;
@@ -3699,7 +3699,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       hs->restval = 0;
 
       /* Normally we are not interested in the response body of a error responses.
-         But if we are writing a WARC file we are: we like to keep everyting.  */
+         But if we are writing a WARC file we are: we like to keep everything.  */
       if (warc_enabled)
         {
           int _err = read_response_body (hs, sock, NULL, contlen, 0,
@@ -3727,6 +3727,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                If not, they can be worked around using
                `--no-http-keep-alive'.  */
             CLOSE_FINISH (sock);
+          else if (opt.spider && !opt.recursive)
+            /* we just want to see if the page exists - no downloading required */
+            CLOSE_INVALIDATE (sock);
           else if (keep_alive
                    && skip_short_body (sock, contlen, chunked_transfer_encoding))
             /* Successfully skipped the body; also keep using the socket. */
@@ -3906,8 +3909,8 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
       tms = datetime_str (time (NULL));
 
       if (opt.spider && !got_head)
-        logprintf (LOG_VERBOSE, _("\
-Spider mode enabled. Check if remote file exists.\n"));
+        logprintf (LOG_VERBOSE,
+			  _("Spider mode enabled. Check if remote file exists.\n"));
 
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
@@ -4131,7 +4134,7 @@ Remote file does not exist -- broken link!!!\n"));
         }
 
       /* Did we get the time-stamp? */
-      if (!got_head)
+      if (!got_head || (opt.spider && !opt.recursive))
         {
           got_head = true;    /* no more time-stamping */
 
