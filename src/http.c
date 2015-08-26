@@ -1272,12 +1272,12 @@ parse_strict_transport_security (const char *header, time_t *max_age, bool *incl
     {
       /* Process the STS header. Keys should be matched case-insensitively. */
       for (; extract_param (&header, &name, &value, ';', &is_url_encoded); is_url_encoded = false)
-      {
-	if (BOUNDED_EQUAL_NO_CASE(name.b, name.e, "max-age"))
-	  c_max_age = strdupdelim (value.b, value.e);
-	else if (BOUNDED_EQUAL_NO_CASE(name.b, name.e, "includeSubDomains"))
-	  is = true;
-      }
+        {
+          if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "max-age"))
+            c_max_age = strdupdelim (value.b, value.e);
+          else if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "includeSubDomains"))
+            is = true;
+        }
 
       /* pass the parsed values over */
       if (c_max_age)
@@ -1291,10 +1291,11 @@ parse_strict_transport_security (const char *header, time_t *max_age, bool *incl
 	  if (include_subdomains)
 	    *include_subdomains = is;
 
-	  DEBUGP(("Parsed Strict-Transport-Security max-age = %s, includeSubDomains = %s\n",
+	  DEBUGP (("Parsed Strict-Transport-Security max-age = %s, includeSubDomains = %s\n",
 		     c_max_age, (is ? "true" : "false")));
 
-	  success = true;
+          xfree (c_max_age);
+          success = true;
 	}
       else
 	{
