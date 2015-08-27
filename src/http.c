@@ -2141,7 +2141,7 @@ establish_connection (struct url *u, struct url **conn_ref,
 
       if (conn->scheme == SCHEME_HTTPS)
         {
-          if (!ssl_connect_wget (sock, u->host))
+          if (!ssl_connect_wget (sock, u->host, NULL))
             {
               CLOSE_INVALIDATE (sock);
               return CONSSLERR;
@@ -2741,6 +2741,9 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
 #ifdef HAVE_SSL
             case SCHEME_HTTPS:
               mres.type = xstrdup ("https");
+              break;
+            case SCHEME_FTPS:
+              mres.type = xstrdup ("ftps");
               break;
 #endif
             case SCHEME_FTP:

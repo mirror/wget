@@ -219,6 +219,7 @@ cert to be of the same type.\n"));
 struct wgnutls_transport_context
 {
   gnutls_session_t session;       /* GnuTLS session handle */
+  gnutls_datum_t *session_data;
   int last_error;               /* last error returned by read/write/... */
 
   /* Since GnuTLS doesn't support the equivalent to recv(...,
@@ -405,6 +406,11 @@ wgnutls_close (int fd, void *arg)
 {
   struct wgnutls_transport_context *ctx = arg;
   /*gnutls_bye (ctx->session, GNUTLS_SHUT_RDWR);*/
+  if (ctx->session_data)
+    {
+      gnutls_free (ctx->session_data->data);
+      gnutls_free (ctx->session_data);
+    }
   gnutls_deinit (ctx->session);
   xfree (ctx);
   close (fd);
@@ -420,7 +426,7 @@ static struct transport_implementation wgnutls_transport =
 };
 
 bool
-ssl_connect_wget (int fd, const char *hostname)
+ssl_connect_wget (int fd, const char *hostname, int *continue_session)
 {
 #ifdef F_GETFL
   int flags = 0;
@@ -531,6 +537,27 @@ ssl_connect_wget (int fd, const char *hostname)
       return false;
     }
 
+  if (continue_session)
+    {
+      ctx = (struct wgnutls_transport_context *) fd_transport_context (*continue_session);
+      if (!gnutls_session_is_resumed (session))
+        {
+          if (!ctx || !ctx->session_data || gnutls_session_set_data (session, ctx->session_data->data, ctx->session_data->size))
+            {
+              /* server does not want to continue the session */
+              gnutls_free (ctx->session_data->data);
+              gnutls_free (ctx->session_data);
+              gnutls_deinit (session);
+              return false;
+            }
+        }
+      else
+        {
+          logputs (LOG_ALWAYS, "SSL session has already been resumed. Continuing.\n");
+          continue_session = NULL;
+        }
+    }
+
   if (opt.connect_timeout)
     {
 #ifdef F_GETFL
@@ -612,7 +639,13 @@ ssl_connect_wget (int fd, const char *hostname)
     }
 
   ctx = xnew0 (struct wgnutls_transport_context);
+  ctx->session_data = xnew0 (gnutls_datum_t);
   ctx->session = session;
+  if (gnutls_session_get_data2 (session, ctx->session_data))
+    {
+      xfree (ctx->session_data);
+      logprintf (LOG_NOTQUIET, "WARNING: Could not save SSL session data for socket %d\n", fd);
+    }
   fd_register_transport (fd, &wgnutls_transport, ctx);
   return true;
 }

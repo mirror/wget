@@ -135,6 +135,23 @@ ftp_request (const char *command, const char *value)
   return res;
 }
 
+uerr_t
+ftp_greeting (int csock)
+{
+  uerr_t err = FTPOK;
+  char *response = NULL;
+
+  err = ftp_response (csock, &response);
+  if (err != FTPOK)
+    goto bail;
+  if (*response != '2')
+    err = FTPSRVERR;
+
+bail:
+  if (response)
+    xfree (response);
+  return err;
+}
 /* Sends the USER and PASS commands to the server, to control
    connection socket csock.  */
 uerr_t
@@ -144,16 +161,6 @@ ftp_login (int csock, const char *acc, const char *pass)
   char *request, *respline;
   int nwritten;
 
-  /* Get greeting.  */
-  err = ftp_response (csock, &respline);
-  if (err != FTPOK)
-    return err;
-  if (*respline != '2')
-    {
-      xfree (respline);
-      return FTPSRVERR;
-    }
-  xfree (respline);
   /* Send USER username.  */
   request = ftp_request ("USER", acc);
   nwritten = fd_write (csock, request, strlen (request), -1);
@@ -421,6 +428,119 @@ ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf,
   snprintf (buf, buflen, "|%d|%s|%d|", afnum, print_address (addr), port);
   buf[buflen - 1] = '\0';
 }
+
+#ifdef HAVE_SSL
+/*
+ * The following three functions defined into this #ifdef block
+ * wrap the extended FTP commands defined in RFC 2228 (FTP Security Extensions).
+ * Currently, only FTPS is supported, so these functions are only compiled when SSL
+ * support is available, because there's no point in using FTPS when there's no SSL.
+ * Shall someone add new secure FTP protocols in the future, feel free to remove this
+ * #ifdef, or add new constants to it.
+ */
+
+/*
+ * Sends an AUTH command as defined by RFC 2228,
+ * deriving its argument from the scheme. For example, if the provided scheme
+ * is SCHEME_FTPS, the command sent will be "AUTH TLS". Currently, this is the only
+ * scheme supported, so this function will return FTPNOAUTH when supplied a different
+ * one. It will also return FTPNOAUTH if the target server does not support FTPS.
+ */
+uerr_t
+ftp_auth (int csock, enum url_scheme scheme)
+{
+  uerr_t err = 0;
+  int written = 0;
+  char *request = NULL, *response = NULL;
+
+  if (scheme == SCHEME_FTPS)
+    {
+      request = ftp_request ("AUTH", "TLS");
+      written = fd_write (csock, request, strlen (request), -1);
+      if (written < 0)
+        {
+          err = WRITEFAILED;
+          goto bail;
+        }
+      err = ftp_response (csock, &response);
+      if (err != FTPOK)
+        goto bail;
+      if (*response != '2')
+        err = FTPNOAUTH;
+    }
+  else
+    err = FTPNOAUTH;
+
+bail:
+  xfree (request);
+  xfree (response);
+
+  return err;
+}
+
+uerr_t
+ftp_pbsz (int csock, int pbsz)
+{
+  uerr_t err = 0;
+  int written = 0;
+  char spbsz[5];
+  char *request = NULL, *response = NULL;
+
+  snprintf (spbsz, 5, "%d", pbsz);
+  request = ftp_request ("PBSZ", spbsz);
+  written = fd_write (csock, request, strlen (request), -1);
+  if (written < 0)
+    {
+      err = WRITEFAILED;
+      goto bail;
+    }
+
+  err = ftp_response (csock, &response);
+  if (err != FTPOK)
+    goto bail;
+  if (*response != '2')
+    err = FTPNOPBSZ;
+
+bail:
+  xfree (request);
+  xfree (response);
+
+  return err;
+}
+
+uerr_t
+ftp_prot (int csock, enum prot_level prot)
+{
+  uerr_t err = 0;
+  int written = 0;
+  char *request = NULL, *response = NULL;
+  /* value must be a single character value */
+  char value[2];
+
+  value[0] = prot;
+  value[1] = '\0';
+
+  request = ftp_request ("PROT", value);
+  written = fd_write (csock, request, strlen (request), -1);
+  if (written < 0)
+    {
+      err = WRITEFAILED;
+      goto bail;
+    }
+
+  err = ftp_response (csock, &response);
+  if (err != FTPOK)
+    goto bail;
+  if (*response != '2')
+    err = FTPNOPROT;
+
+bail:
+  xfree (request);
+  xfree (response);
+
+  return err;
+}
+#endif /* HAVE_SSL */
 
 /* Bind a port and send the appropriate PORT command to the FTP
    server.  Use acceptport after RETR, to get the socket of data

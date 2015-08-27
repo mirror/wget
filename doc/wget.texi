@@ -2008,6 +2008,43 @@ this option has no effect.  Symbolic links are always traversed in this
 case.
 @end table
 
+@section FTPS Options
+
+@table @samp
+@item --ftps-implicit
+This option tells Wget to use FTPS implicitly. Implicit FTPS consists of initializing
+SSL/TLS from the very beginning of the control connection. This option does not send
+an @code{AUTH TLS} command: it assumes the server speaks FTPS and directly starts an
+SSL/TLS connection. If the attempt is successful, the session continues just like
+regular FTPS (@code{PBSZ} and @code{PROT} are sent, etc.).
+Implicit FTPS is no longer a requirement for FTPS implementations, and thus
+many servers may not support it. If @samp{--ftps-implicit} is passed and no explicit
+port number specified, the default port for implicit FTPS, 990, will be used, instead
+of the default port for the "normal" (explicit) FTPS which is the same as that of FTP,
+21.
+
+@item --no-ftps-resume-ssl
+Do not resume the SSL/TLS session in the data channel. When starting a data connection,
+Wget tries to resume the SSL/TLS session previously started in the control connection.
+SSL/TLS session resumption avoids performing an entirely new handshake by reusing
+the SSL/TLS parameters of a previous session. Typically, the FTPS servers want it that way,
+so Wget does this by default. Under rare circumstances however, one might want to
+start an entirely new SSL/TLS session in every data connection.
+This is what @samp{--no-ftps-resume-ssl} is for.
+
+@item --ftps-clear-data-connection
+All the data connections will be in plain text. Only the control connection will be
+under SSL/TLS. Wget will send a @code{PROT C} command to achieve this, which must be
+approved by the server.
+
+@item --ftps-fallback-to-ftp
+Fall back to FTP if FTPS is not supported by the target server. For security reasons,
+this option is not asserted by default. The default behaviour is to exit with an error.
+If a server does not successfully reply to the initial @code{AUTH TLS} command, or in the
+case of implicit FTPS, if the initial SSL/TLS connection attempt is rejected, it is
+considered that such server does not support FTPS.
+@end table
+
 @node Recursive Retrieval Options, Recursive Accept/Reject Options, FTP Options, Invoking
 @section Recursive Retrieval Options
 

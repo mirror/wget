@@ -44,6 +44,7 @@ as that of the covered work.  */
 #include "url.h"
 #include "retr.h"
 #include "ftp.h"
+#include "ssl.h"
 #include "connect.h"
 #include "host.h"
 #include "netrc.h"
@@ -237,6 +238,78 @@ print_length (wgint size, wgint start, bool authoritative)
 
 static uerr_t ftp_get_listing (struct url *, ccon *, struct fileinfo **);
 
+static uerr_t
+get_ftp_greeting(int csock, ccon *con)
+{
+  uerr_t err = 0;
+
+  /* Get the server's greeting */
+  err = ftp_greeting (csock);
+  if (err != FTPOK)
+    {
+      logputs (LOG_NOTQUIET, "Error in server response. Closing.\n");
+      fd_close (csock);
+      con->csock = -1;
+    }
+
+  return err;
+}
+
+#ifdef HAVE_SSL
+static uerr_t
+init_control_ssl_connection (int csock, struct url *u, bool *using_control_security)
+{
+  bool using_security = false;
+
+  /* If '--ftps-implicit' was passed, perform the SSL handshake directly,
+   * and do not send an AUTH command.
+   * Otherwise send an AUTH sequence before login,
+   * and perform the SSL handshake if accepted by server.
+   */
+  if (!opt.ftps_implicit && !opt.server_response)
+    logputs (LOG_VERBOSE, "==> AUTH TLS ... ");
+  if (opt.ftps_implicit || ftp_auth (csock, SCHEME_FTPS) == FTPOK)
+    {
+      if (!ssl_connect_wget (csock, u->host, NULL))
+        {
+          fd_close (csock);
+          return CONSSLERR;
+        }
+      else if (!ssl_check_certificate (csock, u->host))
+        {
+          fd_close (csock);
+          return VERIFCERTERR;
+        }
+
+      if (!opt.ftps_implicit && !opt.server_response)
+        logputs (LOG_VERBOSE, " done.\n");
+
+      /* If implicit FTPS was requested, we act as "normal" FTP, but over SSL.
+       * We're not using RFC 2228 commands.
+       */
+      using_security = true;
+    }
+  else
+    {
+      /* The server does not support 'AUTH TLS'.
+       * Check if --ftps-fallback-to-ftp was passed. */
+      if (opt.ftps_fallback_to_ftp)
+        {
+          logputs (LOG_NOTQUIET, "Server does not support AUTH TLS. Falling back to FTP.\n");
+          using_security = false;
+        }
+      else
+        {
+          fd_close (csock);
+          return FTPNOAUTH;
+        }
+    }
+
+  *using_control_security = using_security;
+  return NOCONERROR;
+}
+#endif
+
 /* Retrieves a file with denoted parameters through opening an FTP
    connection to the server.  It always closes the data connection,
    and closes the control connection in case of error.  If warc_tmp
@@ -260,6 +333,15 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
   char type_char;
   bool try_again;
   bool list_a_used = false;
+#ifdef HAVE_SSL
+  enum prot_level prot = (opt.ftps_clear_data_connection ? PROT_CLEAR : PROT_PRIVATE);
+  /* these variables tell whether the target server
+   * accepts the security extensions (RFC 2228) or not,
+   * and whether we're actually using any of them
+   * (encryption at the control connection only,
+   * or both at control and data connections) */
+  bool using_control_security = false, using_data_security = false;
+#endif
 
   assert (con != NULL);
   assert (con->target != NULL);
@@ -285,8 +367,34 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
   local_sock = -1;
   con->dltime = 0;
 
+#ifdef HAVE_SSL
+  if (u->scheme == SCHEME_FTPS)
+    {
+      /* Initialize SSL layer first */
+      if (!ssl_init ())
+        {
+          scheme_disable (SCHEME_FTPS);
+          logprintf (LOG_NOTQUIET, _("Could not initialize SSL. It will be disabled."));
+          err = SSLINITFAILED;
+          return err;
+        }
+
+      /* If we're using the default FTP port and implicit FTPS was requested,
+       * rewrite the port to the default *implicit* FTPS port.
+       */
+      if (opt.ftps_implicit && u->port == DEFAULT_FTP_PORT)
+        {
+          DEBUGP (("Implicit FTPS was specified. Rewriting default port to %d.\n", DEFAULT_FTPS_IMPLICIT_PORT));
+          u->port = DEFAULT_FTPS_IMPLICIT_PORT;
+        }
+    }
+#endif
+
   if (!(cmd & DO_LOGIN))
-    csock = con->csock;
+    {
+      csock = con->csock;
+      using_data_security = con->st & DATA_CHANNEL_SECURITY;
+    }
   else                          /* cmd & DO_LOGIN */
     {
       char    *host = con->proxy ? con->proxy->host : u->host;
@@ -307,6 +415,43 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
         con->csock = csock;
       else
         con->csock = -1;
+
+#ifdef HAVE_SSL
+      if (u->scheme == SCHEME_FTPS)
+        {
+          /* If we're in implicit FTPS mode, we have to set up SSL/TLS before everything else.
+           * Otherwise we first read the server's greeting, and then send an "AUTH TLS".
+           */
+          if (opt.ftps_implicit)
+            {
+              err = init_control_ssl_connection (csock, u, &using_control_security);
+              if (err != NOCONERROR)
+                return err;
+              err = get_ftp_greeting (csock, con);
+              if (err != FTPOK)
+                return err;
+            }
+          else
+            {
+              err = get_ftp_greeting (csock, con);
+              if (err != FTPOK)
+                return err;
+              err = init_control_ssl_connection (csock, u, &using_control_security);
+              if (err != NOCONERROR)
+                return err;
+            }
+        }
+      else
+        {
+          err = get_ftp_greeting (csock, con);
+          if (err != FTPOK)
+            return err;
+        }
+#else
+      err = get_ftp_greeting (csock, con);
+      if (err != FTPOK)
+        return err;
+#endif
 
       /* Second: Login with proper USER/PASS sequence.  */
       logprintf (LOG_VERBOSE, _("Logging in as %s ... "),
@@ -365,6 +510,46 @@ Error in server response, closing control connection.\n"));
         default:
           abort ();
         }
+
+#ifdef HAVE_SSL
+      if (using_control_security)
+        {
+          /* Send the PBSZ and PROT commands, in that order.
+           * If we are here it means that the server has already accepted
+           * some form of FTPS. Thus, these commands must work.
+           * If they don't work, that's an error. There's no sense in honoring
+           * --ftps-fallback-to-ftp or similar options. */
+          if (u->scheme == SCHEME_FTPS)
+            {
+              if (!opt.server_response)
+                logputs (LOG_VERBOSE, "==> PBSZ 0 ... ");
+              if ((err = ftp_pbsz (csock, 0)) == FTPNOPBSZ)
+                {
+                  logputs (LOG_NOTQUIET, _("Server did not accept the 'PBSZ 0' command.\n"));
+                  return err;
+                }
+              if (!opt.server_response)
+                logputs (LOG_VERBOSE, "done.");
+
+              if (!opt.server_response)
+                logprintf (LOG_VERBOSE, "  ==> PROT %c ... ", prot);
+              if ((err = ftp_prot (csock, prot)) == FTPNOPROT)
+                {
+                  logprintf (LOG_NOTQUIET, _("Server did not accept the 'PROT %c' command.\n"), prot);
+                  return err;
+                }
+              if (!opt.server_response)
+                logputs (LOG_VERBOSE, "done.\n");
+
+              if (prot != PROT_CLEAR)
+                {
+                  using_data_security = true;
+                  con->st |= DATA_CHANNEL_SECURITY;
+                }
+            }
+        }
+#endif
+
       /* Third: Get the system type */
       if (!opt.server_response)
         logprintf (LOG_VERBOSE, "==> SYST ... ");
@@ -1313,6 +1498,36 @@ Error in server response, closing control connection.\n"));
   else if (expected_bytes)
     print_length (expected_bytes, restval, false);
 
+#ifdef HAVE_SSL
+  if (u->scheme == SCHEME_FTPS && using_data_security)
+    {
+      /* We should try to restore the existing SSL session in the data connection
+       * and fall back to establishing a new session if the server doesn't want to restore it.
+       */
+      if (!opt.ftps_resume_ssl || !ssl_connect_wget (dtsock, u->host, &csock))
+        {
+          if (opt.ftps_resume_ssl)
+            logputs (LOG_NOTQUIET, "Server does not want to resume the SSL session. Trying with a new one.\n");
+          if (!ssl_connect_wget (dtsock, u->host, NULL))
+            {
+              fd_close (csock);
+              fd_close (dtsock);
+              logputs (LOG_NOTQUIET, "Could not perform SSL handshake.\n");
+              return CONERROR;
+            }
+        }
+      else
+        logputs (LOG_NOTQUIET, "Resuming SSL session in data connection.\n");
+
+      if (!ssl_check_certificate (dtsock, u->host))
+        {
+          fd_close (csock);
+          fd_close (dtsock);
+          return CONERROR;
+        }
+    }
+#endif
+
   /* Get the contents of the document.  */
   flags = 0;
   if (restval && rest_failed)
@@ -1377,10 +1592,18 @@ Error in server response, closing control connection.\n"));
      become apparent later.  */
   if (*respline != '2')
     {
-      xfree (respline);
       if (res != -1)
         logprintf (LOG_NOTQUIET, "%s (%s) - ", tms, tmrate);
       logputs (LOG_NOTQUIET, _("Data transfer aborted.\n"));
+#ifdef HAVE_SSL
+      if (!c_strncasecmp (respline, "425", 3) && u->scheme == SCHEME_FTPS)
+        {
+          logputs (LOG_NOTQUIET, "FTPS server rejects new SSL sessions in the data connection.\n");
+          xfree (respline);
+          return FTPRESTFAIL;
+        }
+#endif
+      xfree (respline);
       return FTPRETRINT;
     }
   xfree (respline);
@@ -1700,8 +1923,14 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
       switch (err)
         {
         case HOSTERR: case CONIMPOSSIBLE: case FWRITEERR: case FOPENERR:
-        case FTPNSFOD: case FTPLOGINC: case FTPNOPASV: case CONTNOTSUPPORTED:
-        case UNLINKERR: case WARC_TMP_FWRITEERR:
+        case FTPNSFOD: case FTPLOGINC: case FTPNOPASV: case FTPNOAUTH: case FTPNOPBSZ: case FTPNOPROT:
+        case UNLINKERR: case WARC_TMP_FWRITEERR: case CONSSLERR: case CONTNOTSUPPORTED:
+#ifdef HAVE_SSL
+          if (err == FTPNOAUTH)
+            logputs (LOG_NOTQUIET, "Server does not support AUTH TLS.\n");
+          if (opt.ftps_implicit)
+            logputs (LOG_NOTQUIET, "Server does not like implicit FTPS connections.\n");
+#endif
           /* Fatal errors, give up.  */
           if (warc_tmp != NULL)
               fclose (warc_tmp);

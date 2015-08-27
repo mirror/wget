@@ -293,6 +293,12 @@ static struct cmdline_option option_data[] =
     { "ftp-stmlf", 0, OPT_BOOLEAN, "ftpstmlf", -1 },
 #endif /* def __VMS */
     { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
+#ifdef HAVE_SSL
+    { "ftps-clear-data-connection", 0, OPT_BOOLEAN, "ftpscleardataconnection", -1 },
+    { "ftps-fallback-to-ftp", 0, OPT_BOOLEAN, "ftpsfallbacktoftp", -1 },
+    { "ftps-implicit", 0, OPT_BOOLEAN, "ftpsimplicit", -1 },
+    { "ftps-resume-ssl", 0, OPT_BOOLEAN, "ftpsresumessl", -1 },
+#endif
     { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },
@@ -819,6 +825,20 @@ FTP options:\n"),
     N_("\
        --retr-symlinks             when recursing, get linked-to files (not dir)\n"),
     "\n",
+
+#ifdef HAVE_SSL
+    N_("\
+FTPS options:\n"),
+    N_("\
+       --ftps-implicit                 use implicit FTPS (default port is 990)\n"),
+    N_("\
+       --ftps-resume-ssl               resume the SSL/TLS session started in the control connection when\n"
+        "                                         opening a data connection\n"),
+    N_("\
+       --ftps-clear-data-connection    cipher the control channel only; all the data will be in plaintext\n"),
+    N_("\
+       --ftps-fallback-to-ftp          fall back to FTP if FTPS is not supported in the target server\n"),
+#endif
 
     N_("\
 WARC options:\n"),
@@ -1810,12 +1830,13 @@ outputting to a regular file.\n"));
       else
         {
           if ((opt.recursive || opt.page_requisites)
-              && (url_scheme (*t) != SCHEME_FTP || url_uses_proxy (url_parsed)))
+              && ((url_scheme (*t) != SCHEME_FTP && url_scheme (*t) != SCHEME_FTPS)
+                  || url_uses_proxy (url_parsed)))
             {
               int old_follow_ftp = opt.follow_ftp;
 
               /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-              if (url_scheme (*t) == SCHEME_FTP)
+              if (url_scheme (*t) == SCHEME_FTP || url_scheme (*t) == SCHEME_FTPS)
                 opt.follow_ftp = 1;
 
               retrieve_tree (url_parsed, NULL);

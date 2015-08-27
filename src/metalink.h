@@ -34,7 +34,7 @@ as that of the covered work.  */
 
 #ifdef HAVE_SSL
 # define RES_TYPE_SUPPORTED(x)\
-    ((!x) || !strcmp (x, "ftp") || !strcmp (x, "http") || !strcmp (x, "https"))
+    ((!x) || !strcmp (x, "http") || !strcmp (x, "https") || !strcmp (x, "ftp") || !strcmp (x, "ftps"))
 #else
 # define RES_TYPE_SUPPORTED(x)\
     ((!x) || !strcmp (x, "ftp") || !strcmp (x, "http"))

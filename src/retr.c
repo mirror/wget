@@ -817,7 +817,11 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       result = http_loop (u, orig_parsed, &mynewloc, &local_file, refurl, dt,
                           proxy_url, iri);
     }
-  else if (u->scheme == SCHEME_FTP)
+  else if (u->scheme == SCHEME_FTP
+#ifdef HAVE_SSL
+      || u->scheme == SCHEME_FTPS
+#endif
+      )
     {
       /* If this is a redirection, temporarily turn off opt.ftp_glob
          and opt.recursive, both being undesirable when following
@@ -833,7 +837,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
          FTP.  In these cases we must decide whether the text is HTML
          according to the suffix.  The HTML suffixes are `.html',
          `.htm' and a few others, case-insensitive.  */
-      if (redirection_count && local_file && u->scheme == SCHEME_FTP)
+      if (redirection_count && local_file && (u->scheme == SCHEME_FTP || u->scheme == SCHEME_FTPS))
         {
           if (has_html_suffix_p (local_file))
             *dt |= TEXTHTML;
@@ -1095,12 +1099,12 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       proxy = getproxy (cur_url->url);
       if ((opt.recursive || opt.page_requisites)
-          && (cur_url->url->scheme != SCHEME_FTP || proxy))
+          && ((cur_url->url->scheme != SCHEME_FTP && cur_url->url->scheme != SCHEME_FTPS) || proxy))
         {
           int old_follow_ftp = opt.follow_ftp;
 
           /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-          if (cur_url->url->scheme == SCHEME_FTP)
+          if (cur_url->url->scheme == SCHEME_FTP || cur_url->url->scheme == SCHEME_FTPS)
             opt.follow_ftp = 1;
 
           status = retrieve_tree (parsed_url ? parsed_url : cur_url->url,
@@ -1280,6 +1284,9 @@ getproxy (struct url *u)
 #ifdef HAVE_SSL
     case SCHEME_HTTPS:
       proxy = opt.https_proxy ? opt.https_proxy : getenv ("https_proxy");
+      break;
+    case SCHEME_FTPS:
+      proxy = opt.ftp_proxy ? opt.ftp_proxy : getenv ("ftps_proxy");
       break;
 #endif
     case SCHEME_FTP:

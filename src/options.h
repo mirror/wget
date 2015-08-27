@@ -229,6 +229,10 @@ struct options
   char *random_file;            /* file with random data to seed the PRNG */
   char *egd_file;               /* file name of the egd daemon socket */
   bool https_only;              /* whether to follow HTTPS only */
+  bool ftps_resume_ssl;
+  bool ftps_fallback_to_ftp;
+  bool ftps_implicit;
+  bool ftps_clear_data_connection;
 #endif /* HAVE_SSL */
 
   bool cookies;                 /* whether cookies are used. */

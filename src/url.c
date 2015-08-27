@@ -78,6 +78,13 @@ static struct scheme_data supported_schemes[] =
   { "https",    "https://", DEFAULT_HTTPS_PORT, scm_has_query|scm_has_fragment },
 #endif
   { "ftp",      "ftp://",   DEFAULT_FTP_PORT,   scm_has_params|scm_has_fragment },
+#ifdef HAVE_SSL
+  /*
+   * Explicit FTPS uses the same port as FTP.
+   * Implicit FTPS has its own port (990), but it is disabled by default.
+   */
+  { "ftps",     "ftps://",  DEFAULT_FTP_PORT,  scm_has_params|scm_has_fragment },
+#endif
 
   /* SCHEME_INVALID */
   { NULL,       NULL,       -1,                 0 }
@@ -1772,7 +1779,7 @@ path_simplify (enum url_scheme scheme, char *path)
       else if (h[0] == '.' && h[1] == '.' && (h[2] == '/' || h[2] == '\0'))
         {
           /* Handle "../" by retreating the tortoise by one path
-             element -- but not past beggining.  */
+             element -- but not past beginning.  */
           if (t > beg)
             {
               /* Move backwards until T hits the beginning of the
@@ -1780,7 +1787,7 @@ path_simplify (enum url_scheme scheme, char *path)
               for (--t; t > beg && t[-1] != '/'; t--)
                 ;
             }
-          else if (scheme == SCHEME_FTP)
+          else if (scheme == SCHEME_FTP || scheme == SCHEME_FTPS)
             {
               /* If we're at the beginning, copy the "../" literally
                  and move the beginning so a later ".." doesn't remove

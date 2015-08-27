@@ -36,6 +36,7 @@ as that of the covered work.  */
 #define DEFAULT_HTTP_PORT 80
 #define DEFAULT_FTP_PORT 21
 #define DEFAULT_HTTPS_PORT 443
+#define DEFAULT_FTPS_IMPLICIT_PORT 990
 
 /* This represents how many characters less than the OS max name length a file
  * should be.  More precisely, a file name should be at most
@@ -70,6 +71,9 @@ enum url_scheme {
   SCHEME_HTTPS,
 #endif
   SCHEME_FTP,
+#ifdef HAVE_SSL
+  SCHEME_FTPS,
+#endif
   SCHEME_INVALID
 };
 

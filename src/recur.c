@@ -610,7 +610,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
   u_scheme_like_http = schemes_are_similar_p (u->scheme, SCHEME_HTTP);
 
   /* 1. Schemes other than HTTP are normally not recursed into. */
-  if (!u_scheme_like_http && !(u->scheme == SCHEME_FTP && opt.follow_ftp))
+  if (!u_scheme_like_http && !((u->scheme == SCHEME_FTP || u->scheme == SCHEME_FTPS) && opt.follow_ftp))
     {
       DEBUGP (("Not following non-HTTP schemes.\n"));
       reason = WG_RR_NONHTTP;
@@ -832,12 +832,13 @@ write_reject_log_url (FILE *fp, const struct url *url)
 
   switch (url->scheme)
     {
-      case SCHEME_HTTP:    scheme_str = "SCHEME_HTTP";    break;
-      #ifdef HAVE_SSL
-        case SCHEME_HTTPS: scheme_str = "SCHEME_HTTPS";   break;
-      #endif
-      case SCHEME_FTP:     scheme_str = "SCHEME_FTP";     break;
-      default:             scheme_str = "SCHEME_INVALID"; break;
+      case SCHEME_HTTP:  scheme_str = "SCHEME_HTTP";    break;
+#ifdef HAVE_SSL
+      case SCHEME_HTTPS: scheme_str = "SCHEME_HTTPS";   break;
+      case SCHEME_FTPS:  scheme_str = "SCHEME_FTPS";    break;
+#endif
+      case SCHEME_FTP:   scheme_str = "SCHEME_FTP";     break;
+      default:           scheme_str = "SCHEME_INVALID"; break;
     }
 
   fprintf (fp, "%s\t%s\t%s\t%i\t%s\t%s\t%s\t%s",
