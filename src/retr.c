@@ -726,7 +726,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   char *mynewloc, *proxy;
   struct url *u = orig_parsed, *proxy_url;
   int up_error_code;            /* url parse error code */
-  char *local_file;
+  char *local_file = NULL;
   int redirection_count = 0;
 
   bool method_suspended = false;
@@ -754,7 +754,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
 
   result = NOCONERROR;
   mynewloc = NULL;
-  local_file = NULL;
+  xfree(local_file);
   proxy_url = NULL;
 
   proxy = getproxy (u);
