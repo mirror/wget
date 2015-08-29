@@ -1000,7 +1000,10 @@ format_and_print_line (const char *prefix, const char *line,
       if (remaining_chars <= (int) strlen (token))
         {
           if (printf ("\n%*c", TABULATION, ' ') < 0)
-            return -1;
+            {
+              xfree (line_dup);
+              return -1;
+            }
           remaining_chars = line_length - TABULATION;
         }
       if (printf ("%s ", token) < 0)

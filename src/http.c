@@ -3168,7 +3168,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         resp = resp_new (head);
 
         /* Check for status line.  */
-        message = NULL;
+        xfree(message);
         statcode = resp_status (resp, &message);
         if (statcode < 0)
           {
