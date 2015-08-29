@@ -2350,6 +2350,7 @@ test_append_uri_pathel(void)
 
       mu_assert ("test_append_uri_pathel: wrong result",
                  strcmp (dest.base, test_array[i].expected_result) == 0);
+      xfree (dest.base);
     }
 
   return NULL;

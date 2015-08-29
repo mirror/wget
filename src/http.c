@@ -4926,6 +4926,7 @@ filename*1=\"B\"", "AA.ext", true },
                  res == test_array[i].result
                  && (res == false
                      || 0 == strcmp (test_array[i].filename, filename)));
+      xfree (filename);
     }
 
   return NULL;

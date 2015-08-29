@@ -558,6 +558,7 @@ get_hsts_store_filename (void)
         fclose (fp);
     }
 
+  xfree (home);
   return filename;
 }
 
@@ -575,13 +576,14 @@ open_hsts_test_store (void)
 }
 
 static void
-close_hsts_test_store (void)
+close_hsts_test_store (hsts_store_t store)
 {
   char *filename = NULL;
 
   filename = get_hsts_store_filename ();
   unlink (filename);
   xfree (filename);
+  xfree (store);
 }
 
 static const char*
@@ -658,7 +660,7 @@ test_hsts_new_entry (void)
   mu_assert("Should've been no match", match == NO_MATCH);
 
   hsts_store_close (s);
-  close_hsts_test_store ();
+  close_hsts_test_store (s);
 
   return NULL;
 }
@@ -679,7 +681,7 @@ test_hsts_url_rewrite_superdomain (void)
   TEST_URL_RW (s, "bar.www.foo.com", 80);
 
   hsts_store_close (s);
-  close_hsts_test_store ();
+  close_hsts_test_store (s);
 
   return NULL;
 }
@@ -700,7 +702,7 @@ test_hsts_url_rewrite_congruent (void)
   TEST_URL_NORW (s, "www.foo.com", 80);
 
   hsts_store_close (s);
-  close_hsts_test_store ();
+  close_hsts_test_store (s);
 
   return NULL;
 }
@@ -736,8 +738,11 @@ test_hsts_read_database (void)
           TEST_URL_RW (table, "test.example.com", 8080);
 
           hsts_store_close (table);
+          close_hsts_test_store (table);
           unlink (file);
         }
+      xfree (file);
+      xfree (home);
     }
 
   return NULL;
