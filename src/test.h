@@ -48,6 +48,7 @@ const char *test_has_key (void);
 const char *test_find_key_value (void);
 const char *test_find_key_values (void);
 const char *test_parse_content_disposition(void);
+const char *test_parse_range_header(void);
 const char *test_commands_sorted(void);
 const char *test_cmd_spec_restrict_file_names(void);
 const char *test_is_robots_txt_url(void);

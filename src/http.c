@@ -909,9 +909,13 @@ parse_content_range (const char *hdr, wgint *first_byte_ptr,
   ++hdr;
   for (num = 0; c_isdigit (*hdr); hdr++)
     num = 10 * num + (*hdr - '0');
-  if (*hdr != '/' || !c_isdigit (*(hdr + 1)))
+  if (*hdr != '/')
     return false;
   *last_byte_ptr = num;
+  if (!(c_isdigit (*(hdr + 1)) || *(hdr + 1) == '*'))
+    return false;
+  if (*last_byte_ptr < *first_byte_ptr)
+    return false;
   ++hdr;
   if (*hdr == '*')
     num = -1;
@@ -919,6 +923,8 @@ parse_content_range (const char *hdr, wgint *first_byte_ptr,
     for (num = 0; c_isdigit (*hdr); hdr++)
       num = 10 * num + (*hdr - '0');
   *entity_length_ptr = num;
+  if ((*entity_length_ptr <= *last_byte_ptr) && *entity_length_ptr != -1)
+    return false;
   return true;
 }
 
@@ -4897,6 +4903,51 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
 }
 
 #ifdef TESTING
+
+const char *
+test_parse_range_header(void)
+{
+  static const struct {
+    const char * rangehdr;
+    const wgint firstbyte;
+    const wgint lastbyte;
+    const wgint length;
+    const bool shouldPass;
+  } test_array[] = {
+      { "bytes 0-1000/1000", 0, 1000, 1000, false },
+      { "bytes 0-999/1000", 0, 999, 1000, true },
+      { "bytes 100-99/1000", 100, 99, 1000, false },
+      { "bytes 100-100/1000", 100, 100, 1000, true },
+      { "bytes 0-1000/100000000", 0, 1000, 100000000, true },
+      { "bytes 1-999/1000", 1, 999, 1000, true },
+      { "bytes 42-1233/1234", 42, 1233, 1234, true },
+      { "bytes 42-1233/*", 42, 1233, -1, true },
+      { "bytes 0-2147483648/2147483649", 0, 2147483648, 2147483649, true },
+      { "bytes 2147483648-4294967296/4294967297", 2147483648, 4294967296, 4294967297, true }
+  };
+
+  wgint firstbyteptr[sizeof(wgint)];
+  wgint lastbyteptr[sizeof(wgint)];
+  wgint lengthptr[sizeof(wgint)];
+  bool result;
+  for (unsigned i = 0; i < countof (test_array); i++)
+    {
+      result = parse_content_range (test_array[i].rangehdr, firstbyteptr, lastbyteptr, lengthptr);
+#if 0
+      printf ("%ld %ld\n", test_array[i].firstbyte, *firstbyteptr);
+      printf ("%ld %ld\n", test_array[i].lastbyte, *lastbyteptr);
+      printf ("%ld %ld\n", test_array[i].length, *lengthptr);
+      printf ("\n");
+#endif
+      mu_assert ("test_parse_range_header: False Negative", result == test_array[i].shouldPass);
+      mu_assert ("test_parse_range_header: Bad parse", test_array[i].firstbyte == *firstbyteptr &&
+                                                       test_array[i].lastbyte == *lastbyteptr &&
+                                                       test_array[i].length == *lengthptr);
+    }
+
+  return NULL;
+}
+
 const char *
 test_parse_content_disposition(void)
 {

@@ -54,6 +54,7 @@ all_tests(void)
   mu_run_test (test_has_key);
 #endif
   mu_run_test (test_parse_content_disposition);
+  mu_run_test (test_parse_range_header);
   mu_run_test (test_subdir_p);
   mu_run_test (test_dir_matches_p);
   mu_run_test (test_commands_sorted);
