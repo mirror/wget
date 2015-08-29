@@ -1281,28 +1281,28 @@ parse_strict_transport_security (const char *header, time_t *max_age, bool *incl
 
       /* pass the parsed values over */
       if (c_max_age)
-	{
-	  /* If the string value goes out of a long's bounds, strtol() will return LONG_MIN or LONG_MAX.
-	   * In theory, the HSTS engine should be able to handle it.
-	   * Also, time_t is normally defined as a long, so this should not break.
-	   */
-	  if (max_age)
-	    *max_age = (time_t) strtol (c_max_age, NULL, 10);
-	  if (include_subdomains)
-	    *include_subdomains = is;
+        {
+          /* If the string value goes out of a long's bounds, strtol() will return LONG_MIN or LONG_MAX.
+           * In theory, the HSTS engine should be able to handle it.
+           * Also, time_t is normally defined as a long, so this should not break.
+           */
+          if (max_age)
+            *max_age = (time_t) strtol (c_max_age, NULL, 10);
+          if (include_subdomains)
+            *include_subdomains = is;
 
-	  DEBUGP (("Parsed Strict-Transport-Security max-age = %s, includeSubDomains = %s\n",
-		     c_max_age, (is ? "true" : "false")));
+          DEBUGP (("Parsed Strict-Transport-Security max-age = %s, includeSubDomains = %s\n",
+                 c_max_age, (is ? "true" : "false")));
 
           xfree (c_max_age);
           success = true;
-	}
+        }
       else
-	{
-	  /* something weird happened */
-	  logprintf (LOG_VERBOSE, "Could not parse String-Transport-Security header\n");
-	  success = false;
-	}
+        {
+          /* something weird happened */
+          logprintf (LOG_VERBOSE, "Could not parse String-Transport-Security header\n");
+          success = false;
+        }
     }
 
   return success;
@@ -3386,21 +3386,21 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     {
       hsts_params = resp_header_strdup (resp, "Strict-Transport-Security");
       if (parse_strict_transport_security (hsts_params, &max_age, &include_subdomains))
-	{
-	  /* process strict transport security */
-	  if (hsts_store_entry (hsts_store, u->scheme, u->host, u->port, max_age, include_subdomains))
-	    DEBUGP(("Added new HSTS host: %s:%u (max-age: %u, includeSubdomains: %s)\n",
-		u->host,
-		u->port,
-		(unsigned int) max_age,
-		(include_subdomains ? "true" : "false")));
-	  else
-	    DEBUGP(("Updated HSTS host: %s:%u (max-age: %u, includeSubdomains: %s)\n",
-		u->host,
-		u->port,
-		(unsigned int) max_age,
-		(include_subdomains ? "true" : "false")));
-	}
+        {
+          /* process strict transport security */
+          if (hsts_store_entry (hsts_store, u->scheme, u->host, u->port, max_age, include_subdomains))
+            DEBUGP(("Added new HSTS host: %s:%u (max-age: %u, includeSubdomains: %s)\n",
+                   u->host,
+                   u->port,
+                   (unsigned int) max_age,
+                   (include_subdomains ? "true" : "false")));
+          else
+            DEBUGP(("Updated HSTS host: %s:%u (max-age: %u, includeSubdomains: %s)\n",
+                   u->host,
+                   u->port,
+                   (unsigned int) max_age,
+                   (include_subdomains ? "true" : "false")));
+        }
     }
 #endif
 
