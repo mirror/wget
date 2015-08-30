@@ -427,8 +427,11 @@ gpg_skip_verification:
           if (unlink (filename))
             logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
         }
-      fclose (output_stream);
-      output_stream = NULL;
+      if (output_stream)
+        {
+          fclose (output_stream);
+          output_stream = NULL;
+        }
       xfree (filename);
     } /* Iterate over files.  */
 
