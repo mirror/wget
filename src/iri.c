@@ -231,6 +231,7 @@ locale_to_utf8 (const char *str)
   if (do_conversion ("UTF-8", opt.locale, (char *) str, strlen ((char *) str), &new))
     return (const char *) new;
 
+  xfree (new);
   return str;
 }
 

@@ -1274,7 +1274,10 @@ parse_strict_transport_security (const char *header, time_t *max_age, bool *incl
       for (; extract_param (&header, &name, &value, ';', &is_url_encoded); is_url_encoded = false)
         {
           if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "max-age"))
-            c_max_age = strdupdelim (value.b, value.e);
+            {
+              xfree(c_max_age);
+              c_max_age = strdupdelim (value.b, value.e);
+            }
           else if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "includeSubDomains"))
             is = true;
         }
@@ -2486,9 +2489,10 @@ open_output_stream (struct http_stat *hs, int count, FILE **fp)
     *fp = output_stream;
 
   /* Print fetch message, if opt.verbose.  */
-      logprintf (LOG_VERBOSE, _("Saving to: %s\n"),
-                 HYPHENP (hs->local_file) ? quote ("STDOUT") : quote (hs->local_file));
-      return RETROK;
+  logprintf (LOG_VERBOSE, _("Saving to: %s\n"),
+             HYPHENP (hs->local_file) ? quote ("STDOUT") : quote (hs->local_file));
+
+  return RETROK;
 }
 
 /* Set proper type flags based on type string.  */
@@ -2625,6 +2629,7 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
                   logprintf (LOG_NOTQUIET, _("When downloading signature:\n"
                                              "%s: %s.\n"), urlstr, error);
                   xfree (error);
+                  iri_free (iri);
                 }
               else
                 {
