@@ -4907,6 +4907,7 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
 const char *
 test_parse_range_header(void)
 {
+  unsigned i;
   static const struct {
     const char * rangehdr;
     const wgint firstbyte;
@@ -4930,7 +4931,7 @@ test_parse_range_header(void)
   wgint lastbyteptr[sizeof(wgint)];
   wgint lengthptr[sizeof(wgint)];
   bool result;
-  for (unsigned i = 0; i < countof (test_array); i++)
+  for (i = 0; i < countof (test_array); i++)
     {
       result = parse_content_range (test_array[i].rangehdr, firstbyteptr, lastbyteptr, lengthptr);
 #if 0
