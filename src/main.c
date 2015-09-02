@@ -1899,9 +1899,9 @@ outputting to a regular file.\n"));
                          _("Could not download all resources from %s.\n"),
                          quote (opt.input_metalink));
             }
+          metalink_delete (metalink);
         }
       inform_exit_status (retr_err);
-      metalink_delete (metalink);
     }
 #endif /* HAVE_METALINK */
 
