@@ -5,7 +5,8 @@ Compiling From Repository Sources
    normally present in the distribution tarballs. Therefore, to build GNU
    Wget from the sources in the repository, you'll need to have one or
    more of the following (note that gettext, OpenSSL, GnuTLS, libidn,
-   libiconv, libpsl, libpcre and pkg-config are not absolutely required):
+   libiconv, libpsl, libpcre, pkg-config, libmetalink and GnuPG are not
+   absolutely required):
 
      * [20]autoconf (currently, GNU Wget requires version 2.61). This is
        needed to generate the configure script from configure.in. This is
@@ -93,6 +94,10 @@ Compiling From Repository Sources
        script, set (and export) PKG_CONFIG_PATH to the directory where you
        saved the .pc file. Example:
        $ PKG_CONFIG_PATH="." ./configure
+
+     * [46]libmetalink is needed to enable Metalink files support.
+
+     * [47]GnuPG with GPGME is used to verify GPG-signed Metalink resources.
 
 
    For those who might be confused as to what to do once they check out
@@ -200,3 +205,5 @@ References
   43. http://validator.w3.org/check?uri=referer
   44. http://wget.addictivecode.org/WikiLicense
   45. https://www.python.org/
+  46. https://launchpad.net/libmetalink
+  47. https://www.gnupg.org
