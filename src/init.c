@@ -159,6 +159,7 @@ static const struct {
   { "contentdisposition", &opt.content_disposition, cmd_boolean },
   { "contentonerror",   &opt.content_on_error,  cmd_boolean },
   { "continue",         &opt.always_rest,       cmd_boolean },
+  { "convertfileonly",  &opt.convert_file_only, cmd_boolean },
   { "convertlinks",     &opt.convert_links,     cmd_boolean },
   { "cookies",          &opt.cookies,           cmd_boolean },
 #ifdef HAVE_SSL
@@ -377,6 +378,7 @@ defaults (void)
   opt.htmlify = true;
   opt.http_keep_alive = true;
   opt.use_proxy = true;
+  opt.convert_file_only = false;
   tmp = getenv ("no_proxy");
   if (tmp)
     opt.no_proxy = sepstring (tmp);

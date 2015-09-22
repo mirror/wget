@@ -2123,6 +2123,23 @@ Note that only at the end of the download can Wget know which links have
 been downloaded.  Because of that, the work done by @samp{-k} will be
 performed at the end of all the downloads.
 
+@item --convert-file-only
+This option converts only the filename part of the URLs, leaving the rest
+of the URLs untouched. This filename part is sometimes referred to as the
+"basename", although we avoid that term here in order not to cause confusion.
+
+It works particularly well in conjunction with @samp{--adjust-extension}, although
+this coupling is not enforced. It proves useful to populate Internet caches
+with files downloaded from different hosts.
+
+Example: if some link points to @file{//foo.com/bar.cgi?xyz} with
+@samp{--adjust-extension} asserted and its local destination is intended to be
+@file{./foo.com/bar.cgi?xyz.css}, then the link would be converted to
+@file{//foo.com/bar.cgi?xyz.css}. Note that only the filename part has been
+modified. The rest of the URL has been left untouched, including the net path
+(@code{//}) which would otherwise be processed by Wget and converted to the
+effective scheme (ie. @code{http://}).
+
 @cindex backing up converted files
 @item -K
 @itemx --backup-converted
