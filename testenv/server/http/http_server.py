@@ -231,11 +231,11 @@ class _Handler(BaseHTTPRequestHandler):
     This method calls self.send_header() directly instead of using the
     add_header() method because sending multiple WWW-Authenticate headers
     actually makes sense and we do use that feature in some tests. """
-    def send_challenge(self, auth_type):
+    def send_challenge(self, auth_type, auth_parm):
         auth_type = auth_type.lower()
         if auth_type == "both":
-            self.send_challenge("basic")
-            self.send_challenge("digest")
+            self.send_challenge("basic", auth_parm)
+            self.send_challenge("digest", auth_parm)
             return
         if auth_type == "basic":
             challenge_str = 'BasIc realm="Wget-Test"'
@@ -246,7 +246,11 @@ class _Handler(BaseHTTPRequestHandler):
             challenge_str = 'DIgest realm="Test", nonce="%s", opaque="%s"' % (
                             self.nonce,
                             self.opaque)
-            challenge_str += ', qop="auth"'
+            try:
+                if auth_parm['qop']:
+                    challenge_str += ', qop="%s"' % auth_parm['qop']
+            except KeyError:
+                pass
             if auth_type == "both_inline":
                 # 'BasIc' to provoke a Wget failure with turkish locales
                 challenge_str = 'BasIc realm="Wget-Test", ' + challenge_str
@@ -324,7 +328,7 @@ class _Handler(BaseHTTPRequestHandler):
             self.handle_auth(auth_rule)
         except AuthError as se:
             self.send_response(401, "Authorization Required")
-            self.send_challenge(auth_rule.auth_type)
+            self.send_challenge(auth_rule.auth_type, auth_rule.auth_parm)
             self.finish_headers()
             raise se
 

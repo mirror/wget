@@ -18,7 +18,10 @@ File1_rules = {
     "Authentication"    : {
         "Type"          : "Both",
         "User"          : "Sauron",
-        "Pass"          : "TheEye"
+        "Pass"          : "TheEye",
+        "Parm"          : {
+            "qop"       : "auth"
+        }
     },
     "RejectHeader"      : {
         "Authorization" : "Basic U2F1cm9uOlRoZUV5ZQ=="
@@ -28,7 +31,10 @@ File2_rules = {
     "Authentication"    : {
         "Type"          : "Both_inline",
         "User"          : "Sauron",
-        "Pass"          : "TheEye"
+        "Pass"          : "TheEye",
+        "Parm"          : {
+            "qop"       : "auth"
+        }
     },
     "RejectHeader"      : {
         "Authorization" : "Basic U2F1cm9uOlRoZUV5ZQ=="
@@ -38,7 +44,11 @@ File3_rules = {
     "Authentication"    : {
         "Type"          : "Digest",
         "User"          : "Sauron",
-        "Pass"          : "TheEye"
+        "Pass"          : "TheEye",
+        "Parm"          : {
+            "qop"       : "auth"
+        }
+
     }
 }
 
