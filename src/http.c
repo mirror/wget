@@ -4628,12 +4628,9 @@ digest_authentication_encode (const char *au, const char *user,
       xfree (qop); /* force freeing mem and return */
     }
 
-  if (!realm || !nonce || !user || !passwd || !path || !method || !qop)
+  if (!realm || !nonce || !user || !passwd || !path || !method)
     {
-      if (!qop)
-        *auth_err = UNKNOWNATTR;
-      else
-        *auth_err = ATTRMISSING;
+      *auth_err = ATTRMISSING;
 
       xfree (realm);
       xfree (opaque);
