@@ -4684,7 +4684,7 @@ digest_authentication_encode (const char *au, const char *user,
     md5_finish_ctx (&ctx, hash);
     dump_hash (a2buf, hash);
 
-    if (qop && (!strcmp(qop, "auth") || !strcmp (qop, "auth-int")))
+    if (qop && !strcmp(qop, "auth"))
       {
         /* RFC 2617 Digest Access Authentication */
         /* generate random hex string */
