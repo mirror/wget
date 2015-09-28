@@ -56,9 +56,9 @@ Disallow: /dummy.txt
 
 log = """\
 REASON	U_URL	U_SCHEME	U_HOST	U_PORT	U_PATH	U_PARAMS	U_QUERY	U_FRAGMENT	P_URL	P_SCHEME	P_HOST	P_PORT	P_PATH	P_PARAMS	P_QUERY	P_FRAGMENT
-BLACKLIST	http%3A//127.0.0.1%3A{{port}}/index.html	SCHEME_HTTP	127.0.0.1	{{port}}	index.html				http%3A//127.0.0.1%3A{{port}}/secondpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	secondpage.html			
-ROBOTS	http%3A//127.0.0.1%3A{{port}}/dummy.txt	SCHEME_HTTP	127.0.0.1	{{port}}	dummy.txt				http%3A//127.0.0.1%3A{{port}}/thirdpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	thirdpage.html			
-SPANNEDHOST	http%3A//no.such.domain/	SCHEME_HTTP	no.such.domain	80					http%3A//127.0.0.1%3A{{port}}/thirdpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	thirdpage.html			
+BLACKLIST	http%3A//127.0.0.1%3A{{port}}/index.html	SCHEME_HTTP	127.0.0.1	{{port}}	index.html				http%3A//127.0.0.1%3A{{port}}/secondpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	secondpage.html
+ROBOTS	http%3A//127.0.0.1%3A{{port}}/dummy.txt	SCHEME_HTTP	127.0.0.1	{{port}}	dummy.txt				http%3A//127.0.0.1%3A{{port}}/thirdpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	thirdpage.html
+SPANNEDHOST	http%3A//no.such.domain/	SCHEME_HTTP	no.such.domain	80					http%3A//127.0.0.1%3A{{port}}/thirdpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	thirdpage.html
 """
 
 dummyfile = "Don't care."
