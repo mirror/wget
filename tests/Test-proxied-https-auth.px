@@ -12,6 +12,8 @@ my $cert_path;
 my $key_path;
 my $srcdir;
 
+our $VALGRIND_SUPP_FILE;
+
 if (@ARGV) {
     $srcdir = shift @ARGV;
 } elsif (defined $ENV{srcdir}) {
@@ -152,11 +154,20 @@ my $cmdline = $WgetTest::WGETPATH . " --user=fiddle-dee-dee"
     . " https://no.such.domain/needs-auth.txt";
 $cmdline =~ s/{{port}}/$SOCKET->sockport()/e;
 
+if (defined $srcdir) {
+    $VALGRIND_SUPP_FILE = $srcdir . '/valgrind-suppressions-ssl';
+} else {
+    $VALGRIND_SUPP_FILE = './valgrind-suppressions-ssl';
+}
+
 my $valgrind = $ENV{VALGRIND_TESTS};
 if (!defined $valgrind || $valgrind eq "" || $valgrind == 0) {
     # Valgrind not requested - leave $cmdline as it is
 } elsif ($valgrind == 1) {
-    $cmdline = "valgrind  --suppressions=valgrind-suppressions-ssl --error-exitcode=301 --leak-check=yes --track-origins=yes " . $cmdline;
+    $cmdline =
+      'valgrind --suppressions=' . $VALGRIND_SUPP_FILE
+      . ' --error-exitcode=301 --leak-check=yes --track-origins=yes '
+      . $cmdline;
 } else {
     $cmdline = $valgrind . " " . $cmdline;
 }
