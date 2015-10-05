@@ -39,13 +39,16 @@ as that of the covered work.  */
 #include "c-ctype.h"
 #ifdef TESTING
 #include "test.h"
-#include <unistd.h> /* for unlink(), used only in tests */
 #endif
 
+#include <unistd.h>
+#include <sys/types.h>
 #include <stdlib.h>
 #include <time.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <stdio.h>
+#include <sys/file.h>
 
 struct hsts_store {
   struct hash_table *table;
@@ -265,9 +268,8 @@ hsts_store_merge (hsts_store_t store,
 }
 
 static bool
-hsts_read_database (hsts_store_t store, const char *file, bool merge_with_existing_entries)
+hsts_read_database (hsts_store_t store, FILE *fp, bool merge_with_existing_entries)
 {
-  FILE *fp = NULL;
   char *line = NULL, *p;
   size_t len = 0;
   int items_read;
@@ -281,67 +283,54 @@ hsts_read_database (hsts_store_t store, const char *file, bool merge_with_existi
 
   func = (merge_with_existing_entries ? hsts_store_merge : hsts_new_entry);
 
-  fp = fopen (file, "r");
-  if (fp)
+  while (getline (&line, &len, fp) > 0)
     {
-      while (getline (&line, &len, fp) > 0)
-        {
-          for (p = line; c_isspace (*p); p++)
-            ;
+      for (p = line; c_isspace (*p); p++)
+        ;
 
-          if (*p == '#')
-            continue;
+      if (*p == '#')
+        continue;
 
-          items_read = sscanf (p, "%255s %d %d %lu %lu",
-                               host,
-                               &port,
-                               &include_subdomains,
-                               (unsigned long *) &created,
-                               (unsigned long *) &max_age);
+      items_read = sscanf (p, "%255s %d %d %lu %lu",
+                           host,
+                           &port,
+                           &include_subdomains,
+                           (unsigned long *) &created,
+                           (unsigned long *) &max_age);
 
-          if (items_read == 5)
-            func (store, host, port, created, max_age, !!include_subdomains);
-        }
-
-      xfree (line);
-      fclose (fp);
-
-      result = true;
+      if (items_read == 5)
+        func (store, host, port, created, max_age, !!include_subdomains);
     }
+
+  xfree (line);
+  result = true;
 
   return result;
 }
 
 static void
-hsts_store_dump (hsts_store_t store, const char *filename)
+hsts_store_dump (hsts_store_t store, FILE *fp)
 {
-  FILE *fp = NULL;
   hash_table_iterator it;
 
-  fp = fopen (filename, "w");
-  if (fp)
+  /* Print preliminary comments. We don't care if any of these fail. */
+  fputs ("# HSTS 1.0 Known Hosts database for GNU Wget.\n", fp);
+  fputs ("# Edit at your own risk.\n", fp);
+  fputs ("# <hostname>[:<port>]\t<incl. subdomains>\t<created>\t<max-age>\n", fp);
+
+  /* Now cycle through the HSTS store in memory and dump the entries */
+  for (hash_table_iterate (store->table, &it); hash_table_iter_next (&it);)
     {
-      /* Print preliminary comments. We don't care if any of these fail. */
-      fputs ("# HSTS 1.0 Known Hosts database for GNU Wget.\n", fp);
-      fputs ("# Edit at your own risk.\n", fp);
-      fputs ("# <hostname>[:<port>]\t<incl. subdomains>\t<created>\t<max-age>\n", fp);
+      struct hsts_kh *kh = (struct hsts_kh *) it.key;
+      struct hsts_kh_info *khi = (struct hsts_kh_info *) it.value;
 
-      /* Now cycle through the HSTS store in memory and dump the entries */
-      for (hash_table_iterate (store->table, &it); hash_table_iter_next (&it);)
+      if (fprintf (fp, "%s\t%d\t%d\t%lu\t%lu\n",
+                   kh->host, kh->explicit_port, khi->include_subdomains,
+                   khi->created, khi->max_age) < 0)
         {
-          struct hsts_kh *kh = (struct hsts_kh *) it.key;
-          struct hsts_kh_info *khi = (struct hsts_kh_info *) it.value;
-
-          if (fprintf (fp, "%s\t%d\t%d\t%lu\t%lu\n",
-                       kh->host, kh->explicit_port, khi->include_subdomains,
-                       khi->created, khi->max_age) < 0)
-            {
-              logprintf (LOG_ALWAYS, "Could not write the HSTS database correctly.\n");
-              break;
-            }
+          logprintf (LOG_ALWAYS, "Could not write the HSTS database correctly.\n");
+          break;
         }
-
-      fclose (fp);
     }
 }
 
@@ -474,6 +463,7 @@ hsts_store_open (const char *filename)
 {
   hsts_store_t store = NULL;
   struct stat st;
+  FILE *fp = NULL;
 
   store = xnew0 (struct hsts_store);
   store->table = hash_table_new (0, hsts_hash_func, hsts_cmp_func);
@@ -484,13 +474,15 @@ hsts_store_open (const char *filename)
       if (stat (filename, &st) == 0)
         store->last_mtime = st.st_mtime;
 
-      if (!hsts_read_database (store, filename, false))
+      fp = fopen (filename, "r");
+      if (!fp || !hsts_read_database (store, fp, false))
         {
           /* abort! */
           hsts_store_close (store);
           xfree (store);
-          store = NULL;
         }
+      if (fp)
+        fclose (fp);
     }
 
   return store;
@@ -500,18 +492,36 @@ void
 hsts_store_save (hsts_store_t store, const char *filename)
 {
   struct stat st;
+  FILE *fp = NULL;
+  int fd = 0;
 
   if (filename && hash_table_count (store->table) > 0)
     {
-      /* If the file has changed, merge the changes with our in-memory data
-         before dumping them to the file.
-         Otherwise we could potentially overwrite the data stored by other Wget processes.
-       */
-      if (store->last_mtime && stat (filename, &st) == 0 && st.st_mtime > store->last_mtime)
-        hsts_read_database (store, filename, true);
+      fp = fopen (filename, "a+");
+      if (fp)
+        {
+          /* Lock the file to avoid potential race conditions */
+          fd = fileno (fp);
+          flock (fd, LOCK_EX);
 
-      /* now dump to the file */
-      hsts_store_dump (store, filename);
+          /* If the file has changed, merge the changes with our in-memory data
+             before dumping them to the file.
+             Otherwise we could potentially overwrite the data stored by other Wget processes.
+           */
+          if (store->last_mtime && stat (filename, &st) == 0 && st.st_mtime > store->last_mtime)
+            hsts_read_database (store, fp, true);
+
+          /* We've merged the latest changes so we can now truncate the file
+             and dump everything. */
+          fseek (fp, 0, SEEK_SET);
+          ftruncate (fd, 0);
+
+          /* now dump to the file */
+          hsts_store_dump (store, fp);
+
+          /* fclose is expected to unlock the file for us */
+          fclose (fp);
+        }
     }
 }
 
