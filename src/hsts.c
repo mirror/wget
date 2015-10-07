@@ -258,6 +258,8 @@ hsts_store_merge (hsts_store_t store,
 
       success = true;
     }
+  else if (!khi)
+    success = hsts_new_entry (store, host, port, created, max_age, include_subdomains);
 
   return success;
 }
