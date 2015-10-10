@@ -41,11 +41,7 @@ my $cmdline = $WgetTest::WGETPATH . " -S ftp://localhost:{{port}}/afile.txt";
 
 my $expected_error_code = 8;
 
-my %expected_downloaded_files = (
-    'afile.txt' => {
-        content => $afile,
-    },
-);
+my %expected_downloaded_files = ();
 
 ###############################################################################
 
@@ -55,6 +51,6 @@ my $the_test = FTPTest->new (
                              cmdline => $cmdline,
                              errcode => $expected_error_code,
                              output => \%expected_downloaded_files);
-exit !$the_test->run();
+exit $the_test->run();
 
 # vim: et ts=4 sw=4
