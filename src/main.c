@@ -619,7 +619,7 @@ Download:\n"),
        --no-if-modified-since      don't use conditional if-modified-since get\n\
                                      requests in timestamping mode\n"),
     N_("\
-  --no-use-server-timestamps       don't set the local file's timestamp by\n\
+       --no-use-server-timestamps  don't set the local file's timestamp by\n\
                                      the one on the server\n"),
     N_("\
   -S,  --server-response           print server response\n"),
