@@ -441,11 +441,21 @@ construct_relative (const char *basefile, const char *linkfile)
         ++basedirs;
     }
 
-  /* Construct LINK as explained above. */
-  link = xmalloc (3 * basedirs + strlen (linkfile) + 1);
-  for (i = 0; i < basedirs; i++)
-    memcpy (link + 3 * i, "../", 3);
-  strcpy (link + 3 * i, linkfile);
+  if (!basedirs && (b = strpbrk (linkfile, "/:")) && *b == ':')
+    {
+      link = xmalloc (2 + strlen (linkfile) + 1);
+      memcpy (link, "./", 2);
+      strcpy (link + 2, linkfile);
+    }
+  else
+    {
+      /* Construct LINK as explained above. */
+      link = xmalloc (3 * basedirs + strlen (linkfile) + 1);
+      for (i = 0; i < basedirs; i++)
+        memcpy (link + 3 * i, "../", 3);
+      strcpy (link + 3 * i, linkfile);
+    }
+
   return link;
 }
 

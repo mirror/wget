@@ -25,7 +25,7 @@ my $converted = <<EOF;
     <title>Index</title>
   </head>
   <body>
-    <a href="site%3Bsub:.html">Site</a>
+    <a href="./site%3Bsub:.html">Site</a>
   </body>
 </html>
 EOF
