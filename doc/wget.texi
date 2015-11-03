@@ -608,6 +608,9 @@ content will be placed in @var{file}. This was disabled in version
 1.11, but has been reinstated (with a warning) in 1.11.2, as there are
 some cases where this behavior can actually have some use.
 
+A combination with @samp{-nc} is only accepted if the given output
+file does not exist.
+
 Note that a combination with @samp{-k} is only permitted when
 downloading a single document, as in that case it will just convert
 all relative URIs to external ones; @samp{-k} makes no sense for
@@ -648,6 +651,9 @@ When running Wget with @samp{-N}, with or without @samp{-r} or
 of a file depends on the local and remote timestamp and size of the
 file (@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the
 same time as @samp{-N}.
+
+A combination with @samp{-O}/@samp{--output-document} is only accepted
+if the given output file does not exist.
 
 Note that when @samp{-nc} is specified, files with the suffixes
 @samp{.html} or @samp{.htm} will be loaded from the local disk and
