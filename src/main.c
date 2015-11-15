@@ -1131,7 +1131,7 @@ print_version (void)
   /* TRANSLATORS: When available, an actual copyright character
      (circle-c) should be used in preference to "(C)". */
   if (printf (_("\
-Copyright (C) %s Free Software Foundation, Inc.\n"), "2014") < 0)
+Copyright (C) %s Free Software Foundation, Inc.\n"), "2015") < 0)
     exit (WGET_EXIT_IO_FAIL);
   if (fputs (_("\
 License GPLv3+: GNU GPL version 3 or later\n\

@@ -7,7 +7,7 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.Y.Z
+* Changes in Wget 1.17
 
 ** Remove FTP passive to active fallback due to privacy concerns.
 
@@ -23,6 +23,11 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
    URLs are being rejected and some context around it.
 
 ** Add support for FTPS.
+
+** Do not download/save file on error when --spider enabled
+
+** Add --convert-file-only option. This option converts only the
+   filename part of the URLs, leaving the rest of the URLs untouched.
 
 * Changes in Wget 1.16.3
 
