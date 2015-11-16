@@ -48,7 +48,9 @@ as that of the covered work.  */
 
 /* Disable assertions when debug support is not compiled in. */
 #ifndef ENABLE_DEBUG
+#ifndef NDEBUG
 # define NDEBUG
+#endif
 #endif
 
 /* Is OpenSSL or GNUTLS available? */
