@@ -429,6 +429,65 @@ ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf,
   buf[buflen - 1] = '\0';
 }
 
+/* Bind a port and send the appropriate PORT command to the FTP
+   server.  Use acceptport after RETR, to get the socket of data
+   connection.  */
+uerr_t
+ftp_eprt (int csock, int *local_sock)
+{
+  uerr_t err;
+  char *request, *respline;
+  ip_address addr;
+  int nwritten;
+  int port;
+  /* Must contain the argument of EPRT (of the form |af|addr|port|).
+   * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr
+   * 1 char for af (1-2) and 5 chars for port (0-65535) */
+  char bytes[4 + INET6_ADDRSTRLEN + 1 + 5 + 1];
+
+  /* Get the address of this side of the connection. */
+  if (!socket_ip_address (csock, &addr, ENDPOINT_LOCAL))
+    return FTPSYSERR;
+
+  /* Setting port to 0 lets the system choose a free port.  */
+  port = 0;
+
+  /* Bind the port.  */
+  *local_sock = bind_local (&addr, &port);
+  if (*local_sock < 0)
+    return FTPSYSERR;
+
+  /* Construct the argument of EPRT (of the form |af|addr|port|). */
+  ip_address_to_eprt_repr (&addr, port, bytes, sizeof (bytes));
+
+  /* Send PORT request.  */
+  request = ftp_request ("EPRT", bytes);
+  nwritten = fd_write (csock, request, strlen (request), -1);
+  if (nwritten < 0)
+    {
+      xfree (request);
+      fd_close (*local_sock);
+      return WRITEFAILED;
+    }
+  xfree (request);
+  /* Get appropriate response.  */
+  err = ftp_response (csock, &respline);
+  if (err != FTPOK)
+    {
+      fd_close (*local_sock);
+      return err;
+    }
+  if (*respline != '2')
+    {
+      xfree (respline);
+      fd_close (*local_sock);
+      return FTPPORTERR;
+    }
+  xfree (respline);
+  return FTPOK;
+}
+#endif
+
 #ifdef HAVE_SSL
 /*
  * The following three functions defined into this #ifdef block
@@ -541,65 +600,6 @@ bail:
   return err;
 }
 #endif /* HAVE_SSL */
-
-/* Bind a port and send the appropriate PORT command to the FTP
-   server.  Use acceptport after RETR, to get the socket of data
-   connection.  */
-uerr_t
-ftp_eprt (int csock, int *local_sock)
-{
-  uerr_t err;
-  char *request, *respline;
-  ip_address addr;
-  int nwritten;
-  int port;
-  /* Must contain the argument of EPRT (of the form |af|addr|port|).
-   * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr
-   * 1 char for af (1-2) and 5 chars for port (0-65535) */
-  char bytes[4 + INET6_ADDRSTRLEN + 1 + 5 + 1];
-
-  /* Get the address of this side of the connection. */
-  if (!socket_ip_address (csock, &addr, ENDPOINT_LOCAL))
-    return FTPSYSERR;
-
-  /* Setting port to 0 lets the system choose a free port.  */
-  port = 0;
-
-  /* Bind the port.  */
-  *local_sock = bind_local (&addr, &port);
-  if (*local_sock < 0)
-    return FTPSYSERR;
-
-  /* Construct the argument of EPRT (of the form |af|addr|port|). */
-  ip_address_to_eprt_repr (&addr, port, bytes, sizeof (bytes));
-
-  /* Send PORT request.  */
-  request = ftp_request ("EPRT", bytes);
-  nwritten = fd_write (csock, request, strlen (request), -1);
-  if (nwritten < 0)
-    {
-      xfree (request);
-      fd_close (*local_sock);
-      return WRITEFAILED;
-    }
-  xfree (request);
-  /* Get appropriate response.  */
-  err = ftp_response (csock, &respline);
-  if (err != FTPOK)
-    {
-      fd_close (*local_sock);
-      return err;
-    }
-  if (*respline != '2')
-    {
-      xfree (respline);
-      fd_close (*local_sock);
-      return FTPPORTERR;
-    }
-  xfree (respline);
-  return FTPOK;
-}
-#endif
 
 /* Similar to ftp_port, but uses `PASV' to initiate the passive FTP
    transfer.  Reads the response from server and parses it.  Reads the
