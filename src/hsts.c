@@ -148,13 +148,14 @@ hsts_find_entry (hsts_store_t store,
 end:
   /* restore pointer or we'll get a SEGV */
   k->host = org_ptr;
-  xfree (k->host);
 
   /* copy parameters to previous frame */
   if (match_type)
     *match_type = match;
   if (kh)
     memcpy (kh, k, sizeof (struct hsts_kh));
+  else
+    xfree (k->host);
 
   xfree (k);
   return khi;
@@ -236,8 +237,7 @@ hsts_new_entry (hsts_store_t store,
 static void
 hsts_remove_entry (hsts_store_t store, struct hsts_kh *kh)
 {
-  if (hash_table_remove (store->table, kh))
-    xfree (kh->host);
+  hash_table_remove (store->table, kh);
 }
 
 static bool
@@ -375,9 +375,10 @@ hsts_match (hsts_store_t store, struct url *u)
           else
             hsts_remove_entry (store, kh);
         }
+      xfree (kh->host);
     }
 
-  xfree(kh);
+  xfree (kh);
 
   return url_changed;
 }
@@ -451,9 +452,10 @@ hsts_store_entry (hsts_store_t store,
           result = hsts_add_entry (store, host, port, max_age, include_subdomains);
         }
       /* we ignore new entries with max_age == 0 */
+      xfree (kh->host);
     }
 
-  xfree(kh);
+  xfree (kh);
 
   return result;
 }
@@ -613,7 +615,7 @@ test_url_rewrite (hsts_store_t s, const char *url, int port, bool rewrite)
   if (rewrite)
     {
       if (port == 80)
-       mu_assert("URL: port should've been rewritten to 443", u.port == 443);
+        mu_assert("URL: port should've been rewritten to 443", u.port == 443);
       else
         mu_assert("URL: port should've been left intact", u.port == port);
       mu_assert("URL: scheme should've been rewritten to HTTPS", u.scheme == SCHEME_HTTPS);
@@ -686,7 +688,7 @@ test_hsts_url_rewrite_superdomain (void)
   s = open_hsts_test_store ();
   mu_assert("Could not open the HSTS store", s != NULL);
 
-  created = hsts_store_entry (s, SCHEME_HTTPS, "www.foo.com", 443, time(NULL) + 1234, true);
+  created = hsts_store_entry (s, SCHEME_HTTPS, "www.foo.com", 443, 1234, true);
   mu_assert("A new entry should've been created", created == true);
 
   TEST_URL_RW (s, "www.foo.com", 80);
@@ -707,7 +709,7 @@ test_hsts_url_rewrite_congruent (void)
   s = open_hsts_test_store ();
   mu_assert("Could not open the HSTS store", s != NULL);
 
-  created = hsts_store_entry (s, SCHEME_HTTPS, "foo.com", 443, time(NULL) + 1234, false);
+  created = hsts_store_entry (s, SCHEME_HTTPS, "foo.com", 443, 1234, false);
   mu_assert("A new entry should've been created", created == true);
 
   TEST_URL_RW (s, "foo.com", 80);
@@ -726,6 +728,7 @@ test_hsts_read_database (void)
   char *home = home_dir();
   char *file = NULL;
   FILE *fp = NULL;
+  time_t created = time(NULL) - 10;
 
   if (home)
     {
@@ -734,9 +737,9 @@ test_hsts_read_database (void)
       if (fp)
         {
           fputs ("# dummy comment\n", fp);
-          fputs ("foo.example.com\t0\t1\t1434224817\t123123123\n", fp);
-          fputs ("bar.example.com\t0\t0\t1434224817\t456456456\n", fp);
-          fputs ("test.example.com\t8080\t0\t1434224817\t789789789\n", fp);
+          fprintf (fp, "foo.example.com\t0\t1\t%ld\t123\n",(long) created);
+          fprintf (fp, "bar.example.com\t0\t0\t%ld\t456\n", (long) created);
+          fprintf (fp, "test.example.com\t8080\t0\t%ld\t789\n", (long) created);
           fclose (fp);
 
           table = hsts_store_open (file);
