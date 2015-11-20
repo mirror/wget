@@ -633,9 +633,13 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
         {
           if (!ctx || !ctx->session_data || gnutls_session_set_data (session, ctx->session_data->data, ctx->session_data->size))
             {
-              /* server does not want to continue the session */
-              gnutls_free (ctx->session_data->data);
-              gnutls_free (ctx->session_data);
+              if (ctx && ctx->session_data)
+                {
+                  /* server does not want to continue the session */
+                  if (ctx->session_data->data)
+                    gnutls_free (ctx->session_data->data);
+                  gnutls_free (ctx->session_data);
+                }
               gnutls_deinit (session);
               return false;
             }
