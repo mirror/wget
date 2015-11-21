@@ -3794,7 +3794,6 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   struct http_stat hstat;        /* HTTP status */
   struct_stat st;
   bool send_head_first = true;
-  char *file_name;
   bool force_full_retrieve = false;
 
 
@@ -3864,11 +3863,6 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   if (opt.content_disposition && opt.always_rest)
     send_head_first = true;
 
-  if (!opt.output_document)
-      file_name = url_file_name (opt.trustservernames ? u : original_url, NULL);
-  else
-    file_name = xstrdup (opt.output_document);
-
 #ifdef HAVE_METALINK
   if (opt.metalink_over_http)
     {
@@ -3881,7 +3875,7 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
     {
       /* Use conditional get request if requested
        * and if timestamp is known at this moment.  */
-      if (opt.if_modified_since && file_exists_p (file_name) && !send_head_first)
+      if (opt.if_modified_since && !send_head_first && got_name && file_exists_p (hstat.local_file))
         {
           *dt |= IF_MODIFIED_SINCE;
           {
@@ -3892,11 +3886,9 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
         }
         /* Send preliminary HEAD request if -N is given and we have existing
          * destination file or content disposition is enabled.  */
-      else if (file_exists_p (file_name) || opt.content_disposition)
+      else if (opt.content_disposition || file_exists_p (hstat.local_file))
         send_head_first = true;
     }
-
-  xfree (file_name);
 
   /* THE loop */
   do
