@@ -1872,7 +1872,7 @@ initialize_request (struct url *u, struct http_stat *hs, int *dt, struct url *pr
   /* Find the username and password for authentication. */
   *user = u->user;
   *passwd = u->passwd;
-  search_netrc (u->host, (const char **)&user, (const char **)&passwd, 0);
+  search_netrc (u->host, (const char **)user, (const char **)passwd, 0);
   *user = *user ? *user : (opt.http_user ? opt.http_user : opt.user);
   *passwd = *passwd ? *passwd : (opt.http_passwd ? opt.http_passwd : opt.passwd);
 
