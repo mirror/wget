@@ -610,7 +610,11 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
   u_scheme_like_http = schemes_are_similar_p (u->scheme, SCHEME_HTTP);
 
   /* 1. Schemes other than HTTP are normally not recursed into. */
-  if (!u_scheme_like_http && !((u->scheme == SCHEME_FTP || u->scheme == SCHEME_FTPS) && opt.follow_ftp))
+  if (!u_scheme_like_http && !((u->scheme == SCHEME_FTP
+#ifdef HAVE_SSL
+      || u->scheme == SCHEME_FTPS
+#endif
+      ) && opt.follow_ftp))
     {
       DEBUGP (("Not following non-HTTP schemes.\n"));
       reason = WG_RR_NONHTTP;

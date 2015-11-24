@@ -1787,7 +1787,11 @@ path_simplify (enum url_scheme scheme, char *path)
               for (--t; t > beg && t[-1] != '/'; t--)
                 ;
             }
-          else if (scheme == SCHEME_FTP || scheme == SCHEME_FTPS)
+          else if (scheme == SCHEME_FTP
+#ifdef HAVE_SSL
+              || scheme == SCHEME_FTPS
+#endif
+              )
             {
               /* If we're at the beginning, copy the "../" literally
                  and move the beginning so a later ".." doesn't remove

@@ -393,7 +393,9 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
   if (!(cmd & DO_LOGIN))
     {
       csock = con->csock;
+#ifdef HAVE_SSL
       using_data_security = con->st & DATA_CHANNEL_SECURITY;
+#endif
     }
   else                          /* cmd & DO_LOGIN */
     {

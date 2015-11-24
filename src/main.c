@@ -1842,13 +1842,21 @@ only if outputting to a regular file.\n"));
       else
         {
           if ((opt.recursive || opt.page_requisites)
-              && ((url_scheme (*t) != SCHEME_FTP && url_scheme (*t) != SCHEME_FTPS)
+              && ((url_scheme (*t) != SCHEME_FTP
+#ifdef HAVE_SSL
+              && url_scheme (*t) != SCHEME_FTPS
+#endif
+              )
                   || url_uses_proxy (url_parsed)))
             {
               int old_follow_ftp = opt.follow_ftp;
 
               /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-              if (url_scheme (*t) == SCHEME_FTP || url_scheme (*t) == SCHEME_FTPS)
+              if (url_scheme (*t) == SCHEME_FTP
+#ifdef HAVE_SSL
+                  || url_scheme (*t) == SCHEME_FTPS
+#endif
+                  )
                 opt.follow_ftp = 1;
 
               retrieve_tree (url_parsed, NULL);

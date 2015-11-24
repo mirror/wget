@@ -837,7 +837,11 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
          FTP.  In these cases we must decide whether the text is HTML
          according to the suffix.  The HTML suffixes are `.html',
          `.htm' and a few others, case-insensitive.  */
-      if (redirection_count && local_file && (u->scheme == SCHEME_FTP || u->scheme == SCHEME_FTPS))
+      if (redirection_count && local_file && (u->scheme == SCHEME_FTP
+#ifdef HAVE_SSL
+          || u->scheme == SCHEME_FTPS
+#endif
+          ))
         {
           if (has_html_suffix_p (local_file))
             *dt |= TEXTHTML;
@@ -1099,12 +1103,20 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       proxy = getproxy (cur_url->url);
       if ((opt.recursive || opt.page_requisites)
-          && ((cur_url->url->scheme != SCHEME_FTP && cur_url->url->scheme != SCHEME_FTPS) || proxy))
+          && ((cur_url->url->scheme != SCHEME_FTP
+#ifdef HAVE_SSL
+          && cur_url->url->scheme != SCHEME_FTPS
+#endif
+          ) || proxy))
         {
           int old_follow_ftp = opt.follow_ftp;
 
           /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-          if (cur_url->url->scheme == SCHEME_FTP || cur_url->url->scheme == SCHEME_FTPS)
+          if (cur_url->url->scheme == SCHEME_FTP
+#ifdef HAVE_SSL
+              || cur_url->url->scheme == SCHEME_FTPS
+#endif
+              )
             opt.follow_ftp = 1;
 
           status = retrieve_tree (parsed_url ? parsed_url : cur_url->url,
