@@ -37,7 +37,7 @@ AUTOMAKE_OPTIONS = parallel-tests
 AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; MAKE_CHECK=True; export MAKE_CHECK;\
  export PYTHONPATH=$$PYTHONPATH:$(srcdir); export VALGRIND_TESTS="@VALGRIND_TESTS@";
 
-SSL_TESTS = Test--https.py Test--https-crl.py
+SSL_TESTS = Test--https.py Test--https-crl.py Test-hsts.py
 if HAVE_PYTHON3
   TESTS = Test-auth-basic-fail.py                   \
     Test-auth-basic.py                              \
@@ -58,7 +58,6 @@ if HAVE_PYTHON3
     Test-Head.py                                    \
     Test--https.py                                  \
     Test--https-crl.py                              \
-    Test-hsts.py                                    \
     Test-O.py                                       \
     Test-Post.py                                    \
     Test-504.py                                     \
