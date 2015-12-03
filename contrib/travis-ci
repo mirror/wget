@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Set a stricter bash mode
+set -e
+set -u
+
+SSL=${1:-""}
+case $SSL in
+    "") SSL_LIB="--without-ssl";;
+    "openssl") SSL_LIB="--with-ssl=openssl";;
+    "gnutls") SSL_LIB="--with-ssl=gnutls";;
+esac
+
+# For some reason. /proc/cpuinfo reports 16 cores on Travis, while the docs
+# claim that each instance has only 2 cores. We believe the docs and force a
+# value of only 2 here.
+CORES=2
+
+# Define a large number of Warning flags for the compiler. Hopefully, someone
+# will sit and analyze the output to clean the warnings from the codebase.
+CFLAGS="-std=c89 -pedantic -O2 -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
+
+# A cachefile for ./configure. I'm not sure if this is any useful.
+CACHEFILE=$PWD/config_check.cache
+
+# measure time consumed and print it at the end of the script
+START=$(date +%s)
+
+# the compiler changed, so we have to remove the cache file here
+rm -f "$CACHEFILE"
+
+for options in "" "--disable-ipv6"; do
+  export DISTCHECK_CONFIGURE_FLAGS="-C --cache-file=$CACHEFILE --enable-assert --enable-valgrind-tests $SSL_LIB $options"
+  echo "  ./configure $DISTCHECK_CONFIGURE_FLAGS CFLAGS=\"$CFLAGS\""
+  ./configure $DISTCHECK_CONFIGURE_FLAGS CFLAGS="$CFLAGS"
+
+  # We would like to have more languages tested here. Currently, there is a
+  # problem in the translations file for Turkish which causes the progress bar
+  # to assert fail. Apart from that, at least one another language with multi
+  # byte and multi column characters.
+  # TODO: Add Japanese and Turkish LANG for test
+  for xLCALL in C; do
+    export TESTS_ENVIRONMENT="LC_ALL=$xLCALL VALGRIND_TESTS=1"
+    echo "    TESTS_ENVIRONMENT=\"$TESTS_ENVIRONMENT\" make distcheck CFLAGS=$CFLAGS -j$CORES"
+    make distcheck CFLAGS="$CFLAGS" -j$CORES
+  done
+done
+
+END=$(date +%s)
+echo "Duration: $((END-START))"

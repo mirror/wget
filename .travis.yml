@@ -1,0 +1,50 @@
+sudo: no
+
+language: c
+
+compiler:
+    - gcc
+
+notifications:
+    email:
+        recipients:
+            - darnir@gmail.com
+            - bug-wget@gnu.org
+        on_success: change
+        on_failure: always
+
+env:
+    global:
+        - PERLLIB=$PERLLIB:../../tests
+        - PERL5LIB=$PERL5LIB:../../tests
+    matrix:
+        - SSL=""
+        - SSL="openssl"
+        - SSL="gnutls"
+
+addons:
+    apt:
+        packages:
+            - automake
+            - autoconf
+            - autopoint
+            - flex
+            - texinfo
+            - pkg-config
+            - libgnutls-dev
+            - libssl-dev
+            - make
+            - libhttp-daemon-perl
+            - libio-socket-ssl-perl
+            - libidn11-dev
+            - gettext
+            - texlive
+            - python3
+            - valgrind
+            - language-pack-tr
+            - language-pack-ja
+
+script:
+    - make distclean || true
+    - ./bootstrap
+    - ./contrib/travis-ci $SSL
