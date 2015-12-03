@@ -682,6 +682,10 @@ ssl_check_certificate (int fd, const char *host)
   SSL *conn = ctx->conn;
   assert (conn != NULL);
 
+  /* The user explicitly said to not check for the certificate.  */
+  if (opt.check_cert == CHECK_CERT_QUIET)
+    return success;
+
   cert = SSL_get_peer_certificate (conn);
   if (!cert)
     {
@@ -880,13 +884,12 @@ ssl_check_certificate (int fd, const char *host)
   X509_free (cert);
 
  no_cert:
-  if (opt.check_cert && !success)
+  if (opt.check_cert == CHECK_CERT_ON && !success)
     logprintf (LOG_NOTQUIET, _("\
 To connect to %s insecurely, use `--no-check-certificate'.\n"),
                quotearg_style (escape_quoting_style, host));
 
-  /* Allow --no-check-cert to disable certificate checking. */
-  return opt.check_cert ? success : true;
+  return opt.check_cert == CHECK_CERT_ON ? success : true;
 }
 
 /*

@@ -29,6 +29,13 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
+enum CHECK_CERT_MODES
+{
+  CHECK_CERT_OFF,
+  CHECK_CERT_ON,
+  CHECK_CERT_QUIET,
+};
+
 struct options
 {
   int verbose;                  /* Are we verbose?  (First set to -1,
@@ -215,7 +222,7 @@ struct options
     secure_protocol_tlsv1_2,
     secure_protocol_pfs
   } secure_protocol;            /* type of secure protocol to use. */
-  bool check_cert;              /* whether to validate the server's cert */
+  int check_cert;               /* whether to validate the server's cert */
   char *cert_file;              /* external client certificate to use. */
   char *private_key;            /* private key file (if not internal). */
   enum keyfile_type {

@@ -1725,6 +1725,9 @@ this option to bypass the verification and proceed with the download.
 site's authenticity, or if you really don't care about the validity of
 its certificate.}  It is almost always a bad idea not to check the
 certificates when transmitting confidential or important data.
+If you are really sure of what you are doing, you can specify
+--check-certificate=quiet to tell wget to not print any warning about
+invalid certificates, in most cases this is the wrong thing to do.
 
 @cindex SSL certificate
 @item --certificate=@var{file}

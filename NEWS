@@ -9,6 +9,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* Add --check-certificate=quiet to tell wget to not print any warning about
+  invalid certificates,
+
 * Changes in Wget 1.17
 
 ** Remove FTP passive to active fallback due to privacy concerns.

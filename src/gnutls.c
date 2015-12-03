@@ -692,6 +692,10 @@ ssl_check_certificate (int fd, const char *host)
   const char *severity = opt.check_cert ? _("ERROR") : _("WARNING");
   bool success = true;
 
+  /* The user explicitly said to not check for the certificate.  */
+  if (opt.check_cert == CHECK_CERT_QUIET)
+    return success;
+
   err = gnutls_certificate_verify_peers2 (ctx->session, &status);
   if (err < 0)
     {
@@ -766,5 +770,5 @@ ssl_check_certificate (int fd, const char *host)
     }
 
  out:
-  return opt.check_cert ? success : true;
+  return opt.check_cert == CHECK_CERT_ON ? success : true;
 }

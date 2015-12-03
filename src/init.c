@@ -115,6 +115,7 @@ CMD_DECLARE (cmd_spec_secure_protocol);
 CMD_DECLARE (cmd_spec_timeout);
 CMD_DECLARE (cmd_spec_useragent);
 CMD_DECLARE (cmd_spec_verbose);
+CMD_DECLARE (cmd_check_cert);
 
 /* List of recognized commands, each consisting of name, place and
    function.  When adding a new command, simply add it to the list,
@@ -152,7 +153,7 @@ static const struct {
   { "cadirectory",      &opt.ca_directory,      cmd_directory },
   { "certificate",      &opt.cert_file,         cmd_file },
   { "certificatetype",  &opt.cert_type,         cmd_cert_type },
-  { "checkcertificate", &opt.check_cert,        cmd_boolean },
+  { "checkcertificate", &opt.check_cert,        cmd_check_cert },
 #endif
   { "chooseconfig",     &opt.choose_config,     cmd_file },
   { "connecttimeout",   &opt.connect_timeout,   cmd_time },
@@ -415,7 +416,7 @@ defaults (void)
   opt.retr_symlinks = true;
 
 #ifdef HAVE_SSL
-  opt.check_cert = true;
+  opt.check_cert = CHECK_CERT_ON;
   opt.ftps_resume_ssl = true;
   opt.ftps_fallback_to_ftp = false;
   opt.ftps_implicit = false;
@@ -955,6 +956,18 @@ static bool simple_atof (const char *, const char *, double *);
                      && (p)[3] == '\0')
 
 
+static int
+cmd_boolean_internal (const char *com, const char *val, void *place)
+{
+  if (CMP2 (val, 'o', 'n') || CMP3 (val, 'y', 'e', 's') || CMP1 (val, '1'))
+    /* "on", "yes" and "1" mean true. */
+    return 1;
+  else if (CMP3 (val, 'o', 'f', 'f') || CMP2 (val, 'n', 'o') || CMP1 (val, '0'))
+    /* "off", "no" and "0" mean false. */
+    return 0;
+  return -1;
+}
+
 /* Store the boolean value from VAL to PLACE.  COM is ignored,
    except for error messages.  */
 static bool
@@ -962,21 +975,59 @@ cmd_boolean (const char *com, const char *val, void *place)
 {
   bool value;
 
-  if (CMP2 (val, 'o', 'n') || CMP3 (val, 'y', 'e', 's') || CMP1 (val, '1'))
-    /* "on", "yes" and "1" mean true. */
-    value = true;
-  else if (CMP3 (val, 'o', 'f', 'f') || CMP2 (val, 'n', 'o') || CMP1 (val, '0'))
-    /* "off", "no" and "0" mean false. */
-    value = false;
-  else
+  switch (cmd_boolean_internal (com, val, place))
     {
-      fprintf (stderr,
-               _("%s: %s: Invalid boolean %s; use `on' or `off'.\n"),
-               exec_name, com, quote (val));
-      return false;
-    }
+    case 0:
+      value = false;
+      break;
 
+    case 1:
+      value = true;
+      break;
+
+    default:
+      {
+        fprintf (stderr,
+                 _("%s: %s: Invalid boolean %s; use `on' or `off'.\n"),
+                 exec_name, com, quote (val));
+        return false;
+      }
+    }
   *(bool *) place = value;
+  return true;
+}
+
+/* Store the check_cert value from VAL to PLACE.  COM is ignored,
+   except for error messages.  */
+static bool
+cmd_check_cert (const char *com, const char *val, void *place)
+{
+  int value;
+
+  switch (cmd_boolean_internal (com, val, place))
+    {
+    case 0:
+      value = CHECK_CERT_OFF;
+      break;
+
+    case 1:
+      value = CHECK_CERT_ON;
+      break;
+
+    default:
+      {
+        if (!c_strcasecmp (val, "quiet"))
+          value = CHECK_CERT_QUIET;
+        else
+          {
+            fprintf (stderr,
+                     _("%s: %s: Invalid %s; use `on', `off' or `quiet'.\n"),
+                     exec_name, com, quote (val));
+            return false;
+          }
+      }
+    }
+  *(int *) place = value;
   return true;
 }
 
