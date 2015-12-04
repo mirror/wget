@@ -37,7 +37,10 @@ AUTOMAKE_OPTIONS = parallel-tests
 AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; MAKE_CHECK=True; export MAKE_CHECK;\
  export PYTHONPATH=$$PYTHONPATH:$(srcdir); export VALGRIND_TESTS="@VALGRIND_TESTS@";
 
-SSL_TESTS = Test--https.py Test--https-crl.py Test-hsts.py
+if WITH_SSL
+  AM_TESTS_ENVIRONMENT += export SSL_TESTS=1;
+endif
+
 if HAVE_PYTHON3
   TESTS = Test-auth-basic-fail.py                   \
     Test-auth-basic.py                              \
@@ -58,6 +61,7 @@ if HAVE_PYTHON3
     Test-Head.py                                    \
     Test--https.py                                  \
     Test--https-crl.py                              \
+    Test-hsts.py                                    \
     Test-O.py                                       \
     Test-Post.py                                    \
     Test-504.py                                     \
@@ -66,13 +70,7 @@ if HAVE_PYTHON3
     Test-redirect-crash.py                          \
     Test-reserved-chars.py                          \
     Test-condget.py                                 \
-    $(SSL_TESTS)				    \
     $(METALINK_TESTS)
-
-  # added test cases expected to fail here and under TESTS
-if !WITH_SSL
-  XFAIL_TESTS = $(SSL_TESTS)
-endif
 
 endif
 

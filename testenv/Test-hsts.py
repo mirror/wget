@@ -9,6 +9,12 @@ import os
 """
 This test makes sure Wget can parse a given HSTS database and apply the indicated HSTS policy.
 """
+
+TEST_NAME = "HSTS basic test"
+print (os.getenv('SSL_TESTS'))
+if os.getenv('SSL_TESTS') is None:
+    exit (77)
+
 def hsts_database_path():
     hsts_file = ".wget-hsts-testenv"
     return os.path.abspath(hsts_file)
@@ -24,8 +30,6 @@ def create_hsts_database(path, host, port):
     f.write("# dummy comment\n")
     f.write(host + "\t" + str(port) + "\t0\t" + str(curtime) + "\t" + max_age + "\n")
     f.close()
-
-TEST_NAME = "HSTS basic test"
 
 File_Name = "hw"
 File_Content = "Hello, world!"

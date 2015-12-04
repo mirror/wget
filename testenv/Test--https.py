@@ -9,6 +9,9 @@ import os
     This test ensures that Wget can download files from HTTPS Servers
 """
 TEST_NAME = "HTTPS Downloads"
+if os.getenv('SSL_TESTS') is None:
+    exit (77)
+
 ############# File Definitions ###############################################
 File1 = "Would you like some Tea?"
 File2 = "With lemon or cream?"
