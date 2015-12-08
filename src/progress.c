@@ -594,7 +594,8 @@ bar_create (const char *f_download, wgint initial, wgint total)
   bp->width = screen_width - 1;
   /* + enough space for the terminating zero, and hopefully enough room
    * for multibyte characters. */
-  bp->buffer = xmalloc (bp->width + 100);
+#define BUF_LEN (bp->width + 100)
+  bp->buffer = xmalloc (BUF_LEN);
 
   logputs (LOG_VERBOSE, "\n");
 
@@ -899,11 +900,10 @@ get_eta (int *bcd)
 static void
 create_image (struct bar_progress *bp, double dl_total_time, bool done)
 {
+  memset (bp->buffer, '\0', BUF_LEN);
   const int MAX_FILENAME_COLS = bp->width / 4;
   char *p = bp->buffer;
   wgint size = bp->initial_length + bp->count;
-
-  int size_grouped_pad; /* Used to pad the field width for size_grouped. */
 
   struct bar_progress_hist *hist = &bp->hist;
   int orig_filename_cols = count_cols (bp->f_download);
@@ -951,10 +951,9 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   if (orig_filename_cols <= MAX_FILENAME_COLS)
     {
       int padding = MAX_FILENAME_COLS - orig_filename_cols;
-      sprintf (p, "%s ", bp->f_download);
-      p += orig_filename_cols + 1;
-      for (;padding;padding--)
-        *p++ = ' ';
+      p += sprintf (p, "%s ", bp->f_download);
+      memset (p, ' ', padding);
+      p += padding;
     }
   else
     {
@@ -992,9 +991,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       memcpy (p, bp->f_download + offset_bytes, bytes_in_filename);
       p += bytes_in_filename;
       padding = MAX_FILENAME_COLS - (padding + *cols_ret);
-      for (;padding;padding--)
-          *p++ = ' ';
-      *p++ = ' ';
+      memset (p, ' ', padding + 1);
+      p += padding + 1;
     }
 
   /* "xx% " */
@@ -1002,15 +1000,13 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
     {
       int percentage = 100.0 * size / bp->total_length;
       assert (percentage <= 100);
-
-      if (percentage < 100)
-        sprintf (p, "%3d%%", percentage);
-      else
-        strcpy (p, "100%");
-      p += 4;
+      p += sprintf (p, "%3d%%", percentage);
     }
   else
-    APPEND_LITERAL ("    ");
+    {
+      memset (p, ' ', PROGRESS_PERCENT_LEN);
+      p += PROGRESS_PERCENT_LEN;
+    }
 
   /* The progress bar: "[====>      ]" or "[++==>      ]". */
   if (progress_size && bp->total_length > 0)
@@ -1022,7 +1018,6 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       int dlsz = (double)size / bp->total_length * progress_size;
 
       char *begin;
-      int i;
 
       assert (dlsz <= progress_size);
       assert (insz <= dlsz);
@@ -1032,18 +1027,19 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 
       /* Print the initial portion of the download with '+' chars, the
          rest with '=' and one '>'.  */
-      for (i = 0; i < insz; i++)
-        *p++ = '+';
+      memset (p, '+', insz);
+      p += insz;
+
       dlsz -= insz;
       if (dlsz > 0)
         {
-          for (i = 0; i < dlsz - 1; i++)
-            *p++ = '=';
+          memset (p, '=', dlsz-1);
+          p += dlsz - 1;
           *p++ = '>';
         }
 
-      while (p - begin < progress_size)
-        *p++ = ' ';
+      memset (p, ' ', (progress_size - (p - begin)));
+      p += (progress_size - (p - begin));
       *p++ = ']';
     }
   else if (progress_size)
@@ -1071,27 +1067,14 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       *p++ = ']';
 
     }
- ++bp->tick;
+  ++bp->tick;
 
   /* " 234.56M" */
   down_size = human_readable (size, 1000, 2);
-  cols_diff = 7 - count_cols (down_size);
-  while (cols_diff > 0)
-  {
-    *p++=' ';
-    cols_diff--;
-  }
-  sprintf (p, " %s", down_size);
-  move_to_end (p);
-  /* Pad with spaces to 7 chars for the size_grouped field;
-   * couldn't use the field width specifier in sprintf, because
-   * it counts in bytes, not characters. */
-  for (size_grouped_pad = PROGRESS_FILESIZE_LEN - 7;
-       size_grouped_pad > 0;
-       --size_grouped_pad)
-    {
-      *p++ = ' ';
-    }
+  cols_diff = PROGRESS_FILESIZE_LEN - count_cols (down_size);
+  memset (p, ' ', cols_diff);
+  p += cols_diff;
+  p += sprintf (p, "%s", down_size);
 
   /* " 12.52Kb/s or 12.52KB/s" */
   if (hist->total_time > 0 && hist->total_bytes)
@@ -1104,9 +1087,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       wgint dlquant = hist->total_bytes + bp->recent_bytes;
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
-      sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
+      p += sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
                dlspeed,  !opt.report_bps ? short_units[units] : short_units_bits[units]);
-      move_to_end (p);
     }
   else
     APPEND_LITERAL (" --.-KB/s");
@@ -1144,14 +1126,13 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
               bp->last_eta_time = dl_total_time;
             }
 
-          sprintf (p, get_eta(&bytes_cols_diff),
+          p += sprintf (p, get_eta(&bytes_cols_diff),
                    eta_to_human_short (eta, false));
-          move_to_end (p);
         }
       else if (bp->total_length > 0)
         {
         skip_eta:
-          APPEND_LITERAL ("             ");
+          memset (p, ' ', PROGRESS_ETA_LEN);
         }
     }
   else
@@ -1161,21 +1142,19 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       int ncols;
 
       /* Note to translators: this should not take up more room than
-         available here.  Abbreviate if necessary.  */
-      strcpy (p, _("   in "));
+         available here (6 columns).  Abbreviate if necessary.  */
+      strcpy (p, _("    in "));
       nbytes = strlen (p);
       ncols  = count_cols (p);
       bytes_cols_diff = nbytes - ncols;
-      p += nbytes;
       if (dl_total_time >= 10)
-        strcpy (p, eta_to_human_short ((int) (dl_total_time + 0.5), false));
+        ncols += sprintf (p + nbytes, "%s",  eta_to_human_short ((int) (dl_total_time + 0.5), false));
       else
-        sprintf (p, "%ss", print_decimal (dl_total_time));
-      move_to_end (p);
+        ncols += sprintf (p + nbytes, "%ss", print_decimal (dl_total_time));
+      p += ncols + bytes_cols_diff;
+      memset (p, ' ', PROGRESS_ETA_LEN - ncols);
     }
 
-  while (p - bp->buffer - bytes_cols_diff < bp->width)
-    *p++ = ' ';
   *p = '\0';
 
   /* 2014-11-14  Darshit Shah  <darnir@gmail.com>
