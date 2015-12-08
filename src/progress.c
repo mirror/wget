@@ -900,7 +900,6 @@ get_eta (int *bcd)
 static void
 create_image (struct bar_progress *bp, double dl_total_time, bool done)
 {
-  memset (bp->buffer, '\0', BUF_LEN);
   const int MAX_FILENAME_COLS = bp->width / 4;
   char *p = bp->buffer;
   wgint size = bp->initial_length + bp->count;
@@ -944,6 +943,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   int bytes_cols_diff = 0;
   int cols_diff;
   const char *down_size;
+
+  memset (bp->buffer, '\0', BUF_LEN);
 
   if (progress_size < 5)
     progress_size = 0;

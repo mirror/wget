@@ -33,7 +33,7 @@ enum CHECK_CERT_MODES
 {
   CHECK_CERT_OFF,
   CHECK_CERT_ON,
-  CHECK_CERT_QUIET,
+  CHECK_CERT_QUIET
 };
 
 struct options

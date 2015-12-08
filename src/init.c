@@ -957,7 +957,7 @@ static bool simple_atof (const char *, const char *, double *);
 
 
 static int
-cmd_boolean_internal (const char *com, const char *val, void *place)
+cmd_boolean_internal (const char *com _GL_UNUSED, const char *val, void *place _GL_UNUSED)
 {
   if (CMP2 (val, 'o', 'n') || CMP3 (val, 'y', 'e', 's') || CMP1 (val, '1'))
     /* "on", "yes" and "1" mean true. */
