@@ -9,8 +9,7 @@ notifications:
     email:
         recipients:
             - darnir@gmail.com
-            - bug-wget@gnu.org
-        on_success: change
+        on_success: always
         on_failure: always
 
 env:
@@ -42,7 +41,7 @@ addons:
             - python3
             - valgrind
             - language-pack-tr
-            - language-pack-ja
+            - language-pack-ru
 
 script:
     - make distclean || true

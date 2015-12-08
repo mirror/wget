@@ -14,7 +14,7 @@ esac
 # For some reason. /proc/cpuinfo reports 16 cores on Travis, while the docs
 # claim that each instance has only 2 cores. We believe the docs and force a
 # value of only 2 here.
-CORES=2
+CORES=3
 
 # Define a large number of Warning flags for the compiler. Hopefully, someone
 # will sit and analyze the output to clean the warnings from the codebase.
@@ -34,12 +34,7 @@ for options in "" "--disable-ipv6"; do
   echo "  ./configure $DISTCHECK_CONFIGURE_FLAGS CFLAGS=\"$CFLAGS\""
   ./configure $DISTCHECK_CONFIGURE_FLAGS CFLAGS="$CFLAGS"
 
-  # We would like to have more languages tested here. Currently, there is a
-  # problem in the translations file for Turkish which causes the progress bar
-  # to assert fail. Apart from that, at least one another language with multi
-  # byte and multi column characters.
-  # TODO: Add Japanese and Turkish LANG for test
-  for xLCALL in C; do
+  for xLCALL in "ru_RU.UTF-8" "C" "tr_TR.UTF-8"; do
     export TESTS_ENVIRONMENT="LC_ALL=$xLCALL VALGRIND_TESTS=1"
     echo "    TESTS_ENVIRONMENT=\"$TESTS_ENVIRONMENT\" make distcheck CFLAGS=$CFLAGS -j$CORES"
     make distcheck CFLAGS="$CFLAGS" -j$CORES
