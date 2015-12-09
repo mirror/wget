@@ -321,7 +321,8 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
 {
   int csock, dtsock, local_sock, res;
   uerr_t err = RETROK;          /* appease the compiler */
-  FILE *fp;
+  FILE *fp = NULL;
+  struct_fstat st;
   char *respline, *tms;
   const char *user, *passwd, *tmrate;
   int cmd = con->cmd;
@@ -1514,8 +1515,9 @@ Error in server response, closing control connection.\n"));
             {
               fd_close (csock);
               fd_close (dtsock);
+              err = CONERROR;
               logputs (LOG_NOTQUIET, "Could not perform SSL handshake.\n");
-              return CONERROR;
+              goto exit_error;
             }
         }
       else
@@ -1525,7 +1527,8 @@ Error in server response, closing control connection.\n"));
         {
           fd_close (csock);
           fd_close (dtsock);
-          return CONERROR;
+          err = CONERROR;
+          goto exit_error;
         }
     }
 #endif
@@ -1762,6 +1765,13 @@ Error in server response, closing control connection.\n"));
     }
   } while (try_again);
   return RETRFINISHED;
+
+exit_error:
+
+  /* If fp is a regular file, close and try to remove it */
+  if (fp && !output_stream)
+    fclose (fp);
+  return err;
 }
 
 /* A one-file FTP loop.  This is the part where FTP retrieval is

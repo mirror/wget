@@ -464,7 +464,7 @@ hsts_store_t
 hsts_store_open (const char *filename)
 {
   hsts_store_t store = NULL;
-  struct stat st;
+  struct_stat st;
   FILE *fp = NULL;
 
   store = xnew0 (struct hsts_store);
@@ -473,27 +473,29 @@ hsts_store_open (const char *filename)
 
   if (file_exists_p (filename))
     {
-      if (stat (filename, &st) == 0)
-        store->last_mtime = st.st_mtime;
-
       fp = fopen (filename, "r");
+
       if (!fp || !hsts_read_database (store, fp, false))
         {
           /* abort! */
           hsts_store_close (store);
           xfree (store);
+          goto out;
         }
-      if (fp)
-        fclose (fp);
+
+      if (fstat (fileno (fp), &st) == 0)
+        store->last_mtime = st.st_mtime;
+      fclose (fp);
     }
 
+out:
   return store;
 }
 
 void
 hsts_store_save (hsts_store_t store, const char *filename)
 {
-  struct stat st;
+  struct_stat st;
   FILE *fp = NULL;
   int fd = 0;
 
