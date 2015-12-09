@@ -9,7 +9,8 @@ notifications:
     email:
         recipients:
             - darnir@gmail.com
-        on_success: always
+            - bug-wget@gnu.org
+        on_success: change
         on_failure: always
 
 env:
