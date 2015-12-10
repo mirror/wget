@@ -855,7 +855,7 @@ get_eta (int *bcd)
 {
   /* TRANSLATORS: "ETA" is English-centric, but this must
      be short, ideally 3 chars.  Abbreviate if necessary.  */
-  static const char eta_str[] = N_("   eta %s");
+  static const char eta_str[] = N_("    eta %s");
   static const char *eta_trans;
   static int bytes_cols_diff;
   if (eta_trans == NULL)
@@ -907,6 +907,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   struct bar_progress_hist *hist = &bp->hist;
   int orig_filename_cols = count_cols (bp->f_download);
 
+  int padding;
+
   /* The progress bar should look like this:
      file xx% [=======>             ] nnn.nnK 12.34KB/s  eta 36m 51s
 
@@ -927,12 +929,16 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      "=====>..."       - progress bar             - the rest
   */
 
+  /* TODO: Ask the Turkish Translators to fix their translation for the "done"
+   * mode of progress bar. Use one less character. Once that is done, redice
+   * PROGRESS_ETA_LEN by 1.
+   */
 #define PROGRESS_FILENAME_LEN  MAX_FILENAME_COLS + 1
 #define PROGRESS_PERCENT_LEN   4
 #define PROGRESS_DECORAT_LEN   2
 #define PROGRESS_FILESIZE_LEN  7 + 1
-#define PROGRESS_DWNLOAD_RATE  8 + 1
-#define PROGRESS_ETA_LEN       14
+#define PROGRESS_DWNLOAD_RATE  8 + 2
+#define PROGRESS_ETA_LEN       15
 
   int progress_size = bp->width - (PROGRESS_FILENAME_LEN + PROGRESS_PERCENT_LEN +
                                    PROGRESS_DECORAT_LEN + PROGRESS_FILESIZE_LEN +
@@ -951,7 +957,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 
   if (orig_filename_cols <= MAX_FILENAME_COLS)
     {
-      int padding = MAX_FILENAME_COLS - orig_filename_cols;
+      padding = MAX_FILENAME_COLS - orig_filename_cols;
       p += sprintf (p, "%s ", bp->f_download);
       memset (p, ' ', padding);
       p += padding;
@@ -961,7 +967,6 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       int offset_cols;
       int bytes_in_filename, offset_bytes, col;
       int *cols_ret = &col;
-      int padding;
 
 #define MIN_SCROLL_TEXT 5
       if ((orig_filename_cols > MAX_FILENAME_COLS + MIN_SCROLL_TEXT) &&
@@ -1088,11 +1093,11 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       wgint dlquant = hist->total_bytes + bp->recent_bytes;
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
-      p += sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
+      p += sprintf (p, "  %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
                dlspeed,  !opt.report_bps ? short_units[units] : short_units_bits[units]);
     }
   else
-    APPEND_LITERAL (" --.-KB/s");
+    APPEND_LITERAL ("  --.-KB/s");
 
   if (!done)
     {
@@ -1134,6 +1139,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
         {
         skip_eta:
           memset (p, ' ', PROGRESS_ETA_LEN);
+          p += PROGRESS_ETA_LEN;
         }
     }
   else
@@ -1154,8 +1160,12 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
         ncols += sprintf (p + nbytes, "%ss", print_decimal (dl_total_time));
       p += ncols + bytes_cols_diff;
       memset (p, ' ', PROGRESS_ETA_LEN - ncols);
+      p += PROGRESS_ETA_LEN - ncols;
     }
 
+  padding = bp->width - count_cols (bp->buffer);
+  memset (p, ' ', padding);
+  p += padding;
   *p = '\0';
 
   /* 2014-11-14  Darshit Shah  <darnir@gmail.com>
@@ -1165,7 +1175,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
    * assertion fails. Instead Wget should continue downloading and display a
    * horrible and irritating progress bar that spams the screen with newlines.
    */
-  assert (count_cols (bp->buffer) <= bp->width + 1);
+  assert (count_cols (bp->buffer) == bp->width);
 }
 
 /* Print the contents of the buffer as a one-line ASCII "image" so
