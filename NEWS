@@ -7,10 +7,18 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.Y.Z
+* Changes in Wget 1.17.1
+
+* Fix compile error when IPv6 is disabled or SSL is not present.
+
+* Fix HSTS memory leak.
+
+* Fix progress output in non-C locales.
+
+* Fix SIGSEGV when -N and --content-disposition are used together.
 
 * Add --check-certificate=quiet to tell wget to not print any warning about
-  invalid certificates,
+  invalid certificates.
 
 * Changes in Wget 1.17
 
