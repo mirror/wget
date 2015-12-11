@@ -168,7 +168,7 @@ retrieve_from_metalink (const metalink_t* metalink)
               FILE *local_file;
 
               /* Check the digest.  */
-              local_file = fopen (filename, "r");
+              local_file = fopen (filename, "rb");
               if (!local_file)
                 {
                   logprintf (LOG_NOTQUIET, _("Could not open downloaded file.\n"));
