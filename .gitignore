@@ -2,6 +2,7 @@
 /.sc-start-sc_bindtextdomain
 /.sc-start-sc_prohibit_HAVE_MBRTOWC
 /.version
+/ABOUT-NLS
 /GNUmakefile
 /INSTALL
 /Makefile
@@ -25,6 +26,7 @@ testenv/*.log
 testenv/*.trs
 # build-aux/
 build-aux/.gitignore
+build-aux/ar-lib
 build-aux/compile
 build-aux/config.guess
 build-aux/config.sub
