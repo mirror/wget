@@ -485,10 +485,12 @@ hsts_store_open (const char *filename)
 
       if (fstat (fileno (fp), &st) == 0)
         store->last_mtime = st.st_mtime;
-      fclose (fp);
     }
 
 out:
+  if (fp)
+    fclose (fp);
+
   return store;
 }
 
