@@ -322,7 +322,6 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
   int csock, dtsock, local_sock, res;
   uerr_t err = RETROK;          /* appease the compiler */
   FILE *fp = NULL;
-  struct_fstat st;
   char *respline, *tms;
   const char *user, *passwd, *tmrate;
   int cmd = con->cmd;
