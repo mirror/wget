@@ -369,7 +369,14 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
        logprintf.  */
     int save_errno = errno;
     if (sock >= 0)
-      fd_close (sock);
+      {
+#ifdef WIN32
+	/* If the connection timed out, fd_close will hang in Gnulib's
+	   close_fd_maybe_socket, inside the call to WSAEnumNetworkEvents.  */
+	if (errno != ETIMEDOUT)
+#endif
+	  fd_close (sock);
+      }
     if (print)
       logprintf (LOG_NOTQUIET, _("failed: %s.\n"), strerror (errno));
     errno = save_errno;
