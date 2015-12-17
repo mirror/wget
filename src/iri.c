@@ -180,16 +180,10 @@ do_conversion (const char *tocode, const char *fromcode, char const *in_org, siz
         }
       else if (errno == E2BIG) /* Output buffer full */
         {
-          char *new;
-
           tooshort++;
           done = len;
-          outlen = done + inlen * 2;
-          new = xmalloc (outlen + 1);
-          memcpy (new, s, done);
-          xfree (s);
-          s = new;
-          len = outlen;
+          len = outlen = done + inlen * 2;
+          s = xrealloc (s, outlen + 1);
           *out = s + done;
         }
       else /* Weird, we got an unspecified error */
