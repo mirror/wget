@@ -68,9 +68,6 @@ as that of the covered work.  */
 
 #ifdef NAMESPACE_TWEAKS
 
-/* Request the "Unix 98 compilation environment". */
-#define _XOPEN_SOURCE 500
-
 #endif /* NAMESPACE_TWEAKS */
 
 
