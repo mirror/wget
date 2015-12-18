@@ -7,6 +7,8 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget X.Y.Z
+
 * Changes in Wget 1.17.1
 
 * Fix compile error when IPv6 is disabled or SSL is not present.
