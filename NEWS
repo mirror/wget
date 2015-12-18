@@ -9,6 +9,13 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* When Wget is built with libiconv, it now converts non-ASCII URIs to
+  the locale's codeset when it creates files.  The encoding of the
+  remote files and URIs is taken from --remote-encoding, defaulting to
+  UTF-8.  The result is that non-ASCII URIs and files downloaded via
+  HTTP/HTTPS and FTP will have names on the local filesystem that
+  correspond to their remote names.
+
 * Changes in Wget 1.17.1
 
 * Fix compile error when IPv6 is disabled or SSL is not present.

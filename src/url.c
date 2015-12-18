@@ -43,6 +43,11 @@ as that of the covered work.  */
 #include "host.h"  /* for is_valid_ipv6_address */
 #include "c-strcase.h"
 
+#if HAVE_ICONV
+#include <iconv.h>
+#include <langinfo.h>
+#endif
+
 #ifdef __VMS
 #include "vms.h"
 #endif /* def __VMS */
@@ -1399,8 +1404,8 @@ UVWC, VC, VC, VC,  VC, VC, VC, VC,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
    0,  0,  0,  0,   0,  0,  0,  0,   /* p   q   r   s    t   u   v   w   */
    0,  0,  0,  0,   W,  0,  0,  C,   /* x   y   z   {    |   }   ~   DEL */
 
-  C, C, C, C,  C, C, C, C,  C, C, C, C,  C, C, C, C, /* 128-143 */
-  C, C, C, C,  C, C, C, C,  C, C, C, C,  C, C, C, C, /* 144-159 */
+  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0, /* 128-143 */
+  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0, /* 144-159 */
   0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
   0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
 
@@ -1529,6 +1534,82 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
 
   TAIL_INCR (dest, outlen);
   append_null (dest);
+}
+
+static char *
+convert_fname (const char *fname)
+{
+  char *converted_fname = (char *)fname;
+#if HAVE_ICONV
+  const char *from_encoding = opt.encoding_remote;
+  const char *to_encoding = opt.locale;
+  iconv_t cd;
+  size_t len, done, inlen, outlen;
+  char *s;
+  const char *orig_fname = fname;;
+
+  /* Defaults for remote and local encodings.  */
+  if (!from_encoding)
+    from_encoding = "UTF-8";
+  if (!to_encoding)
+    to_encoding = nl_langinfo (CODESET);
+
+  cd = iconv_open (to_encoding, from_encoding);
+  if (cd == (iconv_t)(-1))
+    logprintf (LOG_VERBOSE, _("Conversion from %s to %s isn't supported\n"),
+	       quote (from_encoding), quote (to_encoding));
+  else
+    {
+      inlen = strlen (fname);
+      len = outlen = inlen * 2;
+      converted_fname = s = xmalloc (outlen + 1);
+      done = 0;
+
+      for (;;)
+	{
+	  if (iconv (cd, &fname, &inlen, &s, &outlen) != (size_t)(-1)
+	      && iconv (cd, NULL, NULL, &s, &outlen) != (size_t)(-1))
+	    {
+	      *(converted_fname + len - outlen - done) = '\0';
+	      iconv_close(cd);
+	      DEBUGP (("Converted file name '%s' (%s) -> '%s' (%s)\n",
+		       orig_fname, from_encoding, converted_fname, to_encoding));
+	      xfree (orig_fname);
+	      return converted_fname;
+	    }
+
+	  /* Incomplete or invalid multibyte sequence */
+	  if (errno == EINVAL || errno == EILSEQ)
+	    {
+	      logprintf (LOG_VERBOSE,
+			 _("Incomplete or invalid multibyte sequence encountered\n"));
+	      xfree (converted_fname);
+	      converted_fname = (char *)orig_fname;
+	      break;
+	    }
+	  else if (errno == E2BIG) /* Output buffer full */
+	    {
+	      done = len;
+	      len = outlen = done + inlen * 2;
+	      converted_fname = xrealloc (converted_fname, outlen + 1);
+	      s = converted_fname + done;
+	    }
+	  else /* Weird, we got an unspecified error */
+	    {
+	      logprintf (LOG_VERBOSE, _("Unhandled errno %d\n"), errno);
+	      xfree (converted_fname);
+	      converted_fname = (char *)orig_fname;
+	      break;
+	    }
+	}
+      DEBUGP (("Failed to convert file name '%s' (%s) -> '?' (%s)\n",
+	       orig_fname, from_encoding, to_encoding));
+    }
+
+    iconv_close(cd);
+#endif
+
+  return converted_fname;
 }
 
 /* Append to DEST the directory structure that corresponds the
@@ -1705,6 +1786,8 @@ url_file_name (const struct url *u, char *replaced_filename)
   /* TODO: check fnres.base for path length problem */
 
   xfree (temp_fnres.base);
+
+  fname = convert_fname (fname);
 
   /* Check the cases in which the unique extensions are not used:
      1) Clobbering is turned off (-nc).
