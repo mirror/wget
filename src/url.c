@@ -1537,9 +1537,9 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
 }
 
 static char *
-convert_fname (const char *fname)
+convert_fname (char *fname)
 {
-  char *converted_fname = (char *)fname;
+  char *converted_fname = fname;
 #if HAVE_ICONV
   const char *from_encoding = opt.encoding_remote;
   const char *to_encoding = opt.locale;
