@@ -369,7 +369,7 @@ class _Handler(BaseHTTPRequestHandler):
         rej_headers = header_obj.headers
         for header_line in rej_headers:
             header_recd = self.headers.get(header_line)
-            if not header_recd and header_recd == rej_headers[header_line]:
+            if header_recd and header_recd == rej_headers[header_line]:
                 self.send_error(400, 'Blacklisted Header %s received' %
                                 header_line)
                 self.finish_headers()
