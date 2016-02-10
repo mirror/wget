@@ -543,6 +543,7 @@ logprintf (enum log_options o, const char *fmt, ...)
   va_list args;
   struct logvprintf_state lpstate;
   bool done;
+  int errno_saved = errno;
 
   check_redirect_output ();
   if (inhibit_logging)
@@ -561,6 +562,8 @@ logprintf (enum log_options o, const char *fmt, ...)
         exit (WGET_EXIT_GENERIC_ERROR);
     }
   while (!done);
+
+  errno = errno_saved;
 }
 
 #ifdef ENABLE_DEBUG
