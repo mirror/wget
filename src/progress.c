@@ -1164,6 +1164,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
     }
 
   padding = bp->width - count_cols (bp->buffer);
+  assert (padding > 0 && "Padding length became non-positive!");
+  padding = padding > 0 ? padding : 0;
   memset (p, ' ', padding);
   p += padding;
   *p = '\0';
@@ -1174,6 +1176,9 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
    * from the release code since we do not want Wget to crash and burn when the
    * assertion fails. Instead Wget should continue downloading and display a
    * horrible and irritating progress bar that spams the screen with newlines.
+   *
+   * By default, all assertions are disabled in a Wget build and are enabled
+   * only with the --enable-assert configure option.
    */
   assert (count_cols (bp->buffer) == bp->width);
 }
