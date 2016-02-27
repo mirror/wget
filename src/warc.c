@@ -246,6 +246,22 @@ warc_write_header (const char *name, const char *value)
   return warc_write_ok;
 }
 
+/* Writes a WARC header with a URI as value to the current WARC record.
+   This method may be run after warc_write_start_record and
+   before warc_write_block_from_file.  */
+static bool
+warc_write_header_uri (const char *name, const char *value)
+{
+  if (value)
+    {
+      warc_write_string (name);
+      warc_write_string (": <");
+      warc_write_string (value);
+      warc_write_string (">\r\n");
+    }
+  return warc_write_ok;
+}
+
 /* Copies the contents of DATA_IN to the WARC record.
    Adds a Content-Length header to the WARC record.
    Run this method after warc_write_header,
@@ -1292,7 +1308,7 @@ warc_write_request_record (const char *url, const char *timestamp_str,
 {
   warc_write_start_record ();
   warc_write_header ("WARC-Type", "request");
-  warc_write_header ("WARC-Target-URI", url);
+  warc_write_header_uri ("WARC-Target-URI", url);
   warc_write_header ("Content-Type", "application/http;msgtype=request");
   warc_write_date_header (timestamp_str);
   warc_write_header ("WARC-Record-ID", record_uuid);
