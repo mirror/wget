@@ -308,7 +308,7 @@ convert_links (const char *file, struct urlpos *links)
             char *quoted_newname = local_quote_string (newname,
                                                        link->link_css_p);
 
-            if (link->link_css_p)
+            if (link->link_css_p || link->link_noquote_html_p)
               p = replace_plain (p, link->size, fp, quoted_newname);
             else if (!link->link_refresh_p)
               p = replace_attr (p, link->size, fp, quoted_newname);
@@ -329,7 +329,7 @@ convert_links (const char *file, struct urlpos *links)
             char *newname = convert_basename (p, link);
             char *quoted_newname = local_quote_string (newname, link->link_css_p);
 
-            if (link->link_css_p)
+            if (link->link_css_p || link->link_noquote_html_p)
               p = replace_plain (p, link->size, fp, quoted_newname);
             else if (!link->link_refresh_p)
               p = replace_attr (p, link->size, fp, quoted_newname);
@@ -352,7 +352,7 @@ convert_links (const char *file, struct urlpos *links)
             char *newlink = link->url->url;
             char *quoted_newlink = html_quote_string (newlink);
 
-            if (link->link_css_p)
+            if (link->link_css_p || link->link_noquote_html_p)
               p = replace_plain (p, link->size, fp, newlink);
             else if (!link->link_refresh_p)
               p = replace_attr (p, link->size, fp, quoted_newlink);

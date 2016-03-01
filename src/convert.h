@@ -69,6 +69,7 @@ struct urlpos {
   unsigned int link_base_p  :1;     /* the url came from <base href=...> */
   unsigned int link_inline_p    :1; /* needed to render the page */
   unsigned int link_css_p   :1;     /* the url came from CSS */
+  unsigned int link_noquote_html_p :1; /* from HTML, but doesn't need " */
   unsigned int link_expect_html :1; /* expected to contain HTML */
   unsigned int link_expect_css  :1; /* expected to contain CSS */
 
