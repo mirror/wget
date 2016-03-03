@@ -1546,7 +1546,7 @@ convert_fname (char *fname)
   iconv_t cd;
   size_t len, done, inlen, outlen;
   char *s;
-  const char *orig_fname = fname;;
+  const char *orig_fname = fname;
 
   /* Defaults for remote and local encodings.  */
   if (!from_encoding)
