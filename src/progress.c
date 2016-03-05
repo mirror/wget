@@ -1164,7 +1164,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
     }
 
   padding = bp->width - count_cols (bp->buffer);
-  assert (padding > 0 && "Padding length became non-positive!");
+  assert (padding >= 0 && "Padding length became non-positive!");
   padding = padding > 0 ? padding : 0;
   memset (p, ' ', padding);
   p += padding;
