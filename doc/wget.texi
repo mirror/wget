@@ -4195,12 +4195,12 @@ server.
 
 Until version 1.8, Wget supported the first version of the standard,
 written by Martijn Koster in 1994 and available at
-@url{http://www.robotstxt.org/wc/norobots.html}.  As of version 1.8,
+@url{http://www.robotstxt.org/robotstxt.html}.  As of version 1.8,
 Wget has supported the additional directives specified in the internet
 draft @samp{<draft-koster-robots-00.txt>} titled ``A Method for Web
 Robots Control''.  The draft, which has as far as I know never made to
 an @sc{rfc}, is available at
-@url{http://www.robotstxt.org/wc/norobots-rfc.txt}.
+@url{http://www.robotstxt.org/norobots-rfc.txt}.
 
 This manual no longer includes the text of the Robot Exclusion Standard.
 
