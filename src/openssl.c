@@ -35,6 +35,7 @@ as that of the covered work.  */
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+#include <xalloc.h>
 
 #include <openssl/ssl.h>
 #include <openssl/x509v3.h>
@@ -506,6 +507,22 @@ ssl_connect_with_timeout_callback(void *arg)
   ctx->result = SSL_connect(ctx->ssl);
 }
 
+static const char *
+_sni_hostname(const char *hostname)
+{
+  size_t len = strlen(hostname);
+
+  char *sni_hostname = xmemdup(hostname, len + 1);
+
+  /* Remove trailing dot(s) to fix #47408.
+   * Regarding RFC 6066 (SNI): The hostname is represented as a byte
+   * string using ASCII encoding without a trailing dot. */
+  while (len && sni_hostname[--len] == '.')
+    sni_hostname[len] = 0;
+
+  return sni_hostname;
+}
+
 /* Perform the SSL handshake on file descriptor FD, which is assumed
    to be connected to an SSL server.  The SSL handle provided by
    OpenSSL is registered with the file descriptor FD using
@@ -532,7 +549,12 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
      then use it whenever we have a hostname.  If not, don't, ever. */
   if (! is_valid_ip_address (hostname))
     {
-      if (! SSL_set_tlsext_host_name (conn, hostname))
+      const char *sni_hostname = _sni_hostname(hostname);
+
+      long rc = SSL_set_tlsext_host_name (conn, sni_hostname);
+      xfree(sni_hostname);
+
+      if (rc == 0)
         {
           DEBUGP (("Failed to set TLS server-name indication."));
           goto error;
@@ -762,9 +784,12 @@ ssl_check_certificate (int fd, const char *host)
     {
       /* Test subject alternative names */
 
+      /* SNI hostname must not have a trailing dot */
+      const char *sni_hostname = _sni_hostname(host);
+
       /* Do we want to check for dNSNAmes or ipAddresses (see RFC 2818)?
        * Signal it by host_in_octet_string. */
-      ASN1_OCTET_STRING *host_in_octet_string = a2i_IPADDRESS (host);
+      ASN1_OCTET_STRING *host_in_octet_string = a2i_IPADDRESS (sni_hostname);
 
       int numaltnames = sk_GENERAL_NAME_num (subjectAltNames);
       int i;
@@ -799,7 +824,7 @@ ssl_check_certificate (int fd, const char *host)
                   if (0 <= ASN1_STRING_to_UTF8 (&name_in_utf8, name->d.dNSName))
                     {
                       /* Compare and check for NULL attack in ASN1_STRING */
-                      if (pattern_match ((char *)name_in_utf8, host) &&
+                      if (pattern_match ((char *)name_in_utf8, sni_hostname) &&
                             (strlen ((char *)name_in_utf8) ==
                                 (size_t) ASN1_STRING_length (name->d.dNSName)))
                         {
@@ -820,9 +845,11 @@ ssl_check_certificate (int fd, const char *host)
           logprintf (LOG_NOTQUIET,
               _("%s: no certificate subject alternative name matches\n"
                 "\trequested host name %s.\n"),
-                     severity, quote_n (1, host));
+                     severity, quote_n (1, sni_hostname));
           success = false;
         }
+
+      xfree(sni_hostname);
     }
 
   if (alt_name_checked == false)

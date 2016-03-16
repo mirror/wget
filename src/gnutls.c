@@ -36,6 +36,7 @@ as that of the covered work.  */
 #include <stdio.h>
 #include <dirent.h>
 #include <stdlib.h>
+#include <xalloc.h>
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
@@ -518,6 +519,22 @@ _do_handshake (gnutls_session_t session, int fd, double timeout)
   return err;
 }
 
+static const char *
+_sni_hostname(const char *hostname)
+{
+  size_t len = strlen(hostname);
+
+  char *sni_hostname = xmemdup(hostname, len + 1);
+
+  /* Remove trailing dot(s) to fix #47408.
+   * Regarding RFC 6066 (SNI): The hostname is represented as a byte
+   * string using ASCII encoding without a trailing dot. */
+  while (len && sni_hostname[--len] == '.')
+    sni_hostname[len] = 0;
+
+  return sni_hostname;
+}
+
 bool
 ssl_connect_wget (int fd, const char *hostname, int *continue_session)
 {
@@ -530,8 +547,12 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
   /* We set the server name but only if it's not an IP address. */
   if (! is_valid_ip_address (hostname))
     {
-      gnutls_server_name_set (session, GNUTLS_NAME_DNS, hostname,
-                              strlen (hostname));
+      /* GnuTLS 3.4.x (x<=10) disrespects the length parameter, we have to construct a new string */
+      /* see https://gitlab.com/gnutls/gnutls/issues/78 */
+      const char *sni_hostname = _sni_hostname(hostname);
+
+      gnutls_server_name_set (session, GNUTLS_NAME_DNS, sni_hostname, strlen(sni_hostname));
+      xfree(sni_hostname);
     }
 
   gnutls_set_default_priority (session);
@@ -719,6 +740,7 @@ ssl_check_certificate (int fd, const char *host)
       gnutls_x509_crt_t cert;
       const gnutls_datum_t *cert_list;
       unsigned int cert_list_size;
+      const char *sni_hostname;
 
       if ((err = gnutls_x509_crt_init (&cert)) < 0)
         {
@@ -753,13 +775,15 @@ ssl_check_certificate (int fd, const char *host)
           logprintf (LOG_NOTQUIET, _("The certificate has expired\n"));
           success = false;
         }
-      if (!gnutls_x509_crt_check_hostname (cert, host))
+      sni_hostname = _sni_hostname(host);
+      if (!gnutls_x509_crt_check_hostname (cert, sni_hostname))
         {
           logprintf (LOG_NOTQUIET,
                      _("The certificate's owner does not match hostname %s\n"),
-                     quote (host));
+                     quote (sni_hostname));
           success = false;
         }
+      xfree(sni_hostname);
  crt_deinit:
       gnutls_x509_crt_deinit (cert);
     }
