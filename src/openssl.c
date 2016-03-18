@@ -672,6 +672,65 @@ static char *_get_rfc2253_formatted (X509_NAME *name)
   return out ? out : xstrdup("");
 }
 
+/*
+ * Heavily modified from:
+ * https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning#OpenSSL
+ */
+static bool
+pkp_pin_peer_pubkey (X509* cert, const char *pinnedpubkey)
+{
+  /* Scratch */
+  int len1 = 0, len2 = 0;
+  char *buff1 = NULL, *temp = NULL;
+
+  /* Result is returned to caller */
+  bool result = false;
+
+  /* if a path wasn't specified, don't pin */
+  if (!pinnedpubkey)
+    return true;
+
+  if (!cert)
+    return result;
+
+  /* Begin Gyrations to get the subjectPublicKeyInfo     */
+  /* Thanks to Viktor Dukhovni on the OpenSSL mailing list */
+
+  /* https://groups.google.com/group/mailing.openssl.users/browse_thread
+   /thread/d61858dae102c6c7 */
+  len1 = i2d_X509_PUBKEY (X509_get_X509_PUBKEY (cert), NULL);
+  if (len1 < 1)
+    goto cleanup; /* failed */
+
+  /* https://www.openssl.org/docs/crypto/buffer.html */
+  buff1 = temp = OPENSSL_malloc (len1);
+  if (!buff1)
+    goto cleanup; /* failed */
+
+  /* https://www.openssl.org/docs/crypto/d2i_X509.html */
+  len2 = i2d_X509_PUBKEY (X509_get_X509_PUBKEY (cert), (unsigned char **) &temp);
+
+  /*
+   * These checks are verifying we got back the same values as when we
+   * sized the buffer. It's pretty weak since they should always be the
+   * same. But it gives us something to test.
+   */
+  if ((len1 != len2) || !temp || ((temp - buff1) != len1))
+    goto cleanup; /* failed */
+
+  /* End Gyrations */
+
+  /* The one good exit point */
+  result = wg_pin_peer_pubkey (pinnedpubkey, buff1, len1);
+
+ cleanup:
+  /* https://www.openssl.org/docs/crypto/buffer.html */
+  if (NULL != buff1)
+    OPENSSL_free (buff1);
+
+  return result;
+}
+
 /* Verify the validity of the certificate presented by the server.
    Also check that the "common name" of the server, as presented by
    its certificate, corresponds to HOST.  (HOST typically comes from
@@ -695,6 +754,7 @@ ssl_check_certificate (int fd, const char *host)
   long vresult;
   bool success = true;
   bool alt_name_checked = false;
+  bool pinsuccess = opt.pinnedpubkey == NULL;
 
   /* If the user has specified --no-check-cert, we still want to warn
      him about problems with the server's certificate.  */
@@ -705,7 +765,7 @@ ssl_check_certificate (int fd, const char *host)
   assert (conn != NULL);
 
   /* The user explicitly said to not check for the certificate.  */
-  if (opt.check_cert == CHECK_CERT_QUIET)
+  if (opt.check_cert == CHECK_CERT_QUIET && pinsuccess)
     return success;
 
   cert = SSL_get_peer_certificate (conn);
@@ -904,6 +964,13 @@ ssl_check_certificate (int fd, const char *host)
         }
     }
 
+    pinsuccess = pkp_pin_peer_pubkey (cert, opt.pinnedpubkey);
+    if (!pinsuccess)
+      {
+        logprintf (LOG_ALWAYS, _("The public key does not match pinned public key!\n"));
+        success = false;
+      }
+
 
   if (success)
     DEBUGP (("X509 certificate successfully verified and matches host %s\n",
@@ -916,7 +983,8 @@ ssl_check_certificate (int fd, const char *host)
 To connect to %s insecurely, use `--no-check-certificate'.\n"),
                quotearg_style (escape_quoting_style, host));
 
-  return opt.check_cert == CHECK_CERT_ON ? success : true;
+  /* never return true if pinsuccess fails */
+  return !pinsuccess ? false : (opt.check_cert == CHECK_CERT_ON ? success : true);
 }
 
 /*

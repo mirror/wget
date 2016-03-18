@@ -37,6 +37,10 @@ as that of the covered work.  */
 /* Constant is using when we don`t know attempted size exactly */
 #define UNKNOWN_ATTEMPTED_SIZE -3
 
+#ifndef MAX_PINNED_PUBKEY_SIZE
+#define MAX_PINNED_PUBKEY_SIZE 1048576 /* 1MB */
+#endif
+
 /* Macros that interface to malloc, but know about type sizes, and
    cast the result to the appropriate type.  The casts are not
    necessary in standard C, but Wget performs them anyway for the sake
@@ -160,5 +164,10 @@ size_t strlcpy (char *dst, const char *src, size_t size);
 void wg_hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len);
 
 extern unsigned char char_prop[];
+
+#ifdef HAVE_SSL
+/* Check pinned public key. */
+bool wg_pin_peer_pubkey (const char *pinnedpubkey, const char *pubkey, size_t pubkeylen);
+#endif
 
 #endif /* UTILS_H */

@@ -38,6 +38,7 @@ as that of the covered work.  */
 #include <stdlib.h>
 #include <xalloc.h>
 
+#include <gnutls/abstract.h>
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 #include <sys/ioctl.h>
@@ -692,6 +693,59 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
   return true;
 }
 
+static bool
+pkp_pin_peer_pubkey (gnutls_x509_crt_t cert, const char *pinnedpubkey)
+{
+  /* Scratch */
+  size_t len1 = 0, len2 = 0;
+  char *buff1 = NULL;
+
+  gnutls_pubkey_t key = NULL;
+
+  /* Result is returned to caller */
+  int ret = 0;
+  bool result = false;
+
+  /* if a path wasn't specified, don't pin */
+  if (NULL == pinnedpubkey)
+    return true;
+
+  if (NULL == cert)
+    return result;
+
+  /* Begin Gyrations to get the public key     */
+  gnutls_pubkey_init (&key);
+
+  ret = gnutls_pubkey_import_x509 (key, cert, 0);
+  if (ret < 0)
+    goto cleanup; /* failed */
+
+  ret = gnutls_pubkey_export (key, GNUTLS_X509_FMT_DER, NULL, &len1);
+  if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER || len1 == 0)
+    goto cleanup; /* failed */
+
+  buff1 = xmalloc (len1);
+
+  len2 = len1;
+
+  ret = gnutls_pubkey_export (key, GNUTLS_X509_FMT_DER, buff1, &len2);
+  if (ret < 0 || len1 != len2)
+    goto cleanup; /* failed */
+
+  /* End Gyrations */
+
+  /* The one good exit point */
+  result = wg_pin_peer_pubkey (pinnedpubkey, buff1, len1);
+
+ cleanup:
+  if (NULL != key)
+    gnutls_pubkey_deinit (key);
+
+  xfree (buff1);
+
+  return result;
+}
+
 #define _CHECK_CERT(flag,msg) \
   if (status & (flag))\
     {\
@@ -712,9 +766,10 @@ ssl_check_certificate (int fd, const char *host)
      him about problems with the server's certificate.  */
   const char *severity = opt.check_cert ? _("ERROR") : _("WARNING");
   bool success = true;
+  bool pinsuccess = opt.pinnedpubkey == NULL;
 
   /* The user explicitly said to not check for the certificate.  */
-  if (opt.check_cert == CHECK_CERT_QUIET)
+  if (opt.check_cert == CHECK_CERT_QUIET && pinsuccess)
     return success;
 
   err = gnutls_certificate_verify_peers2 (ctx->session, &status);
@@ -784,6 +839,14 @@ ssl_check_certificate (int fd, const char *host)
           success = false;
         }
       xfree(sni_hostname);
+
+      pinsuccess = pkp_pin_peer_pubkey (cert, opt.pinnedpubkey);
+      if (!pinsuccess)
+        {
+          logprintf (LOG_ALWAYS, _("The public key does not match pinned public key!\n"));
+          success = false;
+        }
+
  crt_deinit:
       gnutls_x509_crt_deinit (cert);
     }
@@ -794,5 +857,6 @@ ssl_check_certificate (int fd, const char *host)
     }
 
  out:
-  return opt.check_cert == CHECK_CERT_ON ? success : true;
+  /* never return true if pinsuccess fails */
+  return !pinsuccess ? false : (opt.check_cert == CHECK_CERT_ON ? success : true);
 }

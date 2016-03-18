@@ -1797,6 +1797,18 @@ system-specified locations, chosen at OpenSSL installation time.
 Specifies a CRL file in @var{file}.  This is needed for certificates
 that have been revocated by the CAs.
 
+@cindex SSL Public Key Pin
+@item --pinnedpubkey=file/hashes
+Tells wget to use the specified public key file (or hashes) to verify the peer.
+This can be a path to a file which contains a single public key in PEM or DER
+format, or any number of base64 encoded sha256 hashes preceded by ``sha256//''
+and separated by ``;''
+
+When negotiating a TLS or SSL connection, the server sends a certificate
+indicating its identity. A public key is extracted from this certificate and if
+it does not exactly match the public key(s) provided to this option, wget will
+abort the connection before sending or receiving any data.
+
 @cindex entropy, specifying source of
 @cindex randomness, specifying source of
 @item --random-file=@var{file}

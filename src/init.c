@@ -260,6 +260,9 @@ static const struct {
   { "passiveftp",       &opt.ftp_pasv,          cmd_boolean },
   { "passwd",           &opt.ftp_passwd,        cmd_string },/* deprecated*/
   { "password",         &opt.passwd,            cmd_string },
+#ifdef HAVE_SSL
+  { "pinnedpubkey",     &opt.pinnedpubkey,      cmd_string },
+#endif
   { "postdata",         &opt.post_data,         cmd_string },
   { "postfile",         &opt.post_file_name,    cmd_file },
   { "preferfamily",     NULL,                   cmd_spec_prefer_family },

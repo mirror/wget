@@ -241,6 +241,11 @@ struct options
   char *ca_cert;                /* CA certificate file to use */
   char *crl_file;               /* file with CRLs */
 
+  char *pinnedpubkey;           /* Public key (PEM/DER) file, or any number
+                                   of base64 encoded sha256 hashes preceded by
+                                   \'sha256//\' and seperated by \';\', to verify
+                                   peer against */
+
   char *random_file;            /* file with random data to seed the PRNG */
   char *egd_file;               /* file name of the egd daemon socket */
   bool https_only;              /* whether to follow HTTPS only */

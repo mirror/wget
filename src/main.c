@@ -363,6 +363,7 @@ static struct cmdline_option option_data[] =
     { "parent", 0, OPT__PARENT, NULL, optional_argument },
     { "passive-ftp", 0, OPT_BOOLEAN, "passiveftp", -1 },
     { "password", 0, OPT_VALUE, "password", -1 },
+    { IF_SSL ("pinnedpubkey"), 0, OPT_VALUE, "pinnedpubkey", -1 },
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
@@ -803,6 +804,11 @@ HTTPS (SSL/TLS) options:\n"),
        --ca-directory=DIR          directory where hash list of CAs is stored\n"),
     N_("\
        --crl-file=FILE             file with bundle of CRLs\n"),
+    N_("\
+       --pinnedpubkey=FILE/HASHES  Public key (PEM/DER) file, or any number\n\
+                                   of base64 encoded sha256 hashes preceded by\n\
+                                   \'sha256//\' and seperated by \';\', to verify\n\
+                                   peer against\n"),
 #if defined(HAVE_LIBSSL) || defined(HAVE_LIBSSL32)
     N_("\
        --random-file=FILE          file with random data for seeding the SSL PRNG\n"),

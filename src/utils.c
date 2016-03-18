@@ -31,6 +31,7 @@ as that of the covered work.  */
 
 #include "wget.h"
 
+#include "sha256.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -2520,6 +2521,205 @@ wg_hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len)
   /* Null-terminate result.  */
   str_buffer[2 * i] = '\0';
 }
+
+#ifdef HAVE_SSL
+
+/*
+ * Public key pem to der conversion
+ */
+
+static bool
+wg_pubkey_pem_to_der (const char *pem, unsigned char **der, size_t *der_len)
+{
+  char *stripped_pem, *begin_pos, *end_pos;
+  size_t pem_count, stripped_pem_count = 0, pem_len;
+  ssize_t size;
+  unsigned char *base64data;
+
+  *der = NULL;
+  *der_len = 0;
+
+  /* if no pem, exit. */
+  if (!pem)
+    return false;
+
+  begin_pos = strstr (pem, "-----BEGIN PUBLIC KEY-----");
+  if (!begin_pos)
+    return false;
+
+  pem_count = begin_pos - pem;
+  /* Invalid if not at beginning AND not directly following \n */
+  if (0 != pem_count && '\n' != pem[pem_count - 1])
+    return false;
+
+  /* 26 is length of "-----BEGIN PUBLIC KEY-----" */
+  pem_count += 26;
+
+  /* Invalid if not directly following \n */
+  end_pos = strstr (pem + pem_count, "\n-----END PUBLIC KEY-----");
+  if (!end_pos)
+    return false;
+
+  pem_len = end_pos - pem;
+
+  stripped_pem = xmalloc (pem_len - pem_count + 1);
+
+  /*
+   * Here we loop through the pem array one character at a time between the
+   * correct indices, and place each character that is not '\n' or '\r'
+   * into the stripped_pem array, which should represent the raw base64 string
+   */
+  while (pem_count < pem_len) {
+    if ('\n' != pem[pem_count] && '\r' != pem[pem_count])
+      stripped_pem[stripped_pem_count++] = pem[pem_count];
+    ++pem_count;
+  }
+  /* Place the null terminator in the correct place */
+  stripped_pem[stripped_pem_count] = '\0';
+
+  base64data = xmalloc (BASE64_LENGTH(stripped_pem_count));
+
+  size = base64_decode (stripped_pem, base64data);
+
+  if (size < 0) {
+    xfree (base64data);           /* malformed base64 from server */
+  } else {
+    *der = base64data;
+    *der_len = (size_t) size;
+  }
+
+  xfree (stripped_pem);
+
+  return *der_len > 0;
+}
+
+/*
+ * Generic pinned public key check.
+ */
+
+bool
+wg_pin_peer_pubkey (const char *pinnedpubkey, const char *pubkey, size_t pubkeylen)
+{
+  struct file_memory *fm;
+  unsigned char *buf = NULL, *pem_ptr = NULL;
+  size_t size, pem_len;
+  bool pem_read;
+  bool result = false;
+
+  size_t pinkeylen;
+  ssize_t decoded_hash_length;
+  char *pinkeycopy, *begin_pos, *end_pos;
+  unsigned char *sha256sumdigest = NULL, *expectedsha256sumdigest = NULL;
+
+  /* if a path wasn't specified, don't pin */
+  if (!pinnedpubkey)
+    return true;
+  if (!pubkey || !pubkeylen)
+    return result;
+
+  /* only do this if pinnedpubkey starts with "sha256//", length 8 */
+  if (strncmp (pinnedpubkey, "sha256//", 8) == 0) {
+    /* compute sha256sum of public key */
+    sha256sumdigest = xmalloc (SHA256_DIGEST_SIZE);
+    sha256_buffer (pubkey, pubkeylen, sha256sumdigest);
+    expectedsha256sumdigest = xmalloc (SHA256_DIGEST_SIZE + 1);
+
+    /* it starts with sha256//, copy so we can modify it */
+    pinkeylen = strlen (pinnedpubkey) + 1;
+    pinkeycopy = xmalloc (pinkeylen);
+    memcpy (pinkeycopy, pinnedpubkey, pinkeylen);
+
+    /* point begin_pos to the copy, and start extracting keys */
+    begin_pos = pinkeycopy;
+    do
+      {
+        end_pos = strstr (begin_pos, ";sha256//");
+        /*
+         * if there is an end_pos, null terminate,
+         * otherwise it'll go to the end of the original string
+         */
+        if (end_pos)
+          end_pos[0] = '\0';
+
+        /* decode base64 pinnedpubkey, 8 is length of "sha256//" */
+        decoded_hash_length = base64_decode (begin_pos + 8, expectedsha256sumdigest);
+        /* if valid base64, compare sha256 digests directly */
+        if (SHA256_DIGEST_SIZE == decoded_hash_length &&
+           !memcmp (sha256sumdigest, expectedsha256sumdigest, SHA256_DIGEST_SIZE)) {
+          result = true;
+          break;
+        }
+
+        /*
+         * change back the null-terminator we changed earlier,
+         * and look for next begin
+         */
+        if (end_pos) {
+          end_pos[0] = ';';
+          begin_pos = strstr (end_pos, "sha256//");
+        }
+      } while (end_pos && begin_pos);
+
+    xfree (sha256sumdigest);
+    xfree (expectedsha256sumdigest);
+    xfree (pinkeycopy);
+
+    return result;
+  }
+
+  /* fall back to assuming this is a file path */
+  fm = wget_read_file (pinnedpubkey);
+  if (!fm)
+    return result;
+
+  /* Check the file's size */
+  if (fm->length < 0 || fm->length > MAX_PINNED_PUBKEY_SIZE)
+    goto cleanup;
+
+  /*
+   * if the size of our certificate is bigger than the file
+   * size then it can't match
+   */
+  size = (size_t) fm->length;
+  if (pubkeylen > size)
+    goto cleanup;
+
+  /* If the sizes are the same, it can't be base64 encoded, must be der */
+  if (pubkeylen == size) {
+    if (!memcmp (pubkey, fm->content, pubkeylen))
+      result = true;
+    goto cleanup;
+  }
+
+  /*
+   * Otherwise we will assume it's PEM and try to decode it
+   * after placing null terminator
+   */
+  buf = xmalloc (size + 1);
+  memcpy (buf, fm->content, size);
+  buf[size] = '\0';
+
+  pem_read = wg_pubkey_pem_to_der ((const char *) buf, &pem_ptr, &pem_len);
+  /* if it wasn't read successfully, exit */
+  if (!pem_read)
+    goto cleanup;
+
+  /*
+   * if the size of our certificate doesn't match the size of
+   * the decoded file, they can't be the same, otherwise compare
+   */
+  if (pubkeylen == pem_len && !memcmp (pubkey, pem_ptr, pubkeylen))
+    result = true;
+
+ cleanup:
+  xfree (buf);
+  xfree (pem_ptr);
+  wget_read_file_free (fm);
+
+  return result;
+}
+
+#endif /* HAVE_SSL */
 
 #ifdef TESTING
 
