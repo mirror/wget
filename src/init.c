@@ -143,6 +143,9 @@ static const struct {
   { "backups",          &opt.backups,           cmd_number },
   { "base",             &opt.base_href,         cmd_string },
   { "bindaddress",      &opt.bind_address,      cmd_string },
+#ifdef HAVE_LIBCARES
+  { "binddnsaddress",   &opt.bind_dns_address,  cmd_string },
+#endif
   { "bodydata",         &opt.body_data,         cmd_string },
   { "bodyfile",         &opt.body_file,         cmd_string },
 #ifdef HAVE_SSL
@@ -173,6 +176,9 @@ static const struct {
   { "dirprefix",        &opt.dir_prefix,        cmd_directory },
   { "dirstruct",        NULL,                   cmd_spec_dirstruct },
   { "dnscache",         &opt.dns_cache,         cmd_boolean },
+#ifdef HAVE_LIBCARES
+  { "dnsservers",       &opt.dns_servers,       cmd_string },
+#endif
   { "dnstimeout",       &opt.dns_timeout,       cmd_time },
   { "domains",          &opt.domains,           cmd_vector },
   { "dotbytes",         &opt.dot_bytes,         cmd_bytes },
@@ -1921,6 +1927,18 @@ cleanup (void)
   xfree (opt.body_data);
   xfree (opt.body_file);
   xfree (opt.rejected_log);
+
+#ifdef HAVE_LIBCARES
+#include <ares.h>
+  {
+    extern ares_channel ares;
+
+    xfree (opt.bind_dns_address);
+    xfree (opt.dns_servers);
+    ares_destroy (ares);
+    ares_library_cleanup ();
+  }
+#endif
 
 #endif /* DEBUG_MALLOC */
 }

@@ -571,6 +571,27 @@ the local machine.  @var{ADDRESS} may be specified as a hostname or IP
 address.  This option can be useful if your machine is bound to multiple
 IPs.
 
+@cindex bind DNS address
+@cindex client DNS address
+@cindex DNS IP address, client, DNS
+@item --bind-dns-address=@var{ADDRESS}
+[libcares only]
+This address overrides the route for DNS requests. If you ever need to
+circumvent the standard settings from /etc/resolv.conf, this option together
+with @samp{--dns-servers} is your friend.
+@var{ADDRESS} must be specified either as IPv4 or IPv6 address.
+Wget needs to be built with libcares for this option to be available.
+
+@cindex DNS server
+@cindex DNS IP address, client, DNS
+@item --dns-servers=@var{ADDRESSES}
+[libcares only]
+The given address(es) override the standard nameserver
+addresses,  e.g. as configured in /etc/resolv.conf.
+@var{ADDRESSES} may be specified either as IPv4 or IPv6 addresses,
+comma-separated.
+Wget needs to be built with libcares for this option to be available.
+
 @cindex retries
 @cindex tries
 @cindex number of tries

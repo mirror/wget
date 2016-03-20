@@ -72,7 +72,6 @@ dnl SSL: Configure SSL backend to use
 AC_ARG_WITH([ssl],
   [AS_HELP_STRING([--with-ssl={gnutls,openssl}], [specify SSL backend. GNU TLS is the default.])])
 
-
 dnl Zlib: Configure use of zlib for compression
 AC_ARG_WITH([zlib],
   [AS_HELP_STRING([--without-zlib], [disable zlib.])])
@@ -80,6 +79,9 @@ AC_ARG_WITH([zlib],
 dnl Metalink: Configure use of the Metalink library
 AC_ARG_WITH([metalink],
   [AS_HELP_STRING([--with-metalink], [enable support for metalinks.])])
+
+dnl C-Ares: Configure use of the c-ares library for DNS lookup
+AC_ARG_WITH(cares, AS_HELP_STRING([--with-cares], [enable support for C-Ares DNS lookup.]), with_cares=$withval, with_cares=no)
 
 dnl
 dnl Process features
@@ -744,6 +746,31 @@ AS_IF([test "X$enable_pcre" != "Xno"],[
   ])
 ])
 
+dnl
+dnl Check for libcares (resolver library)
+dnl
+
+AS_IF([test "X$with_cares" == "Xyes"],[
+  PKG_CHECK_MODULES([CARES], libcares, [
+    CFLAGS="$CARES_CFLAGS $CFLAGS"
+    AC_CHECK_HEADER(ares.h, [
+      LIBS="$CARES_LIBS $LIBS"
+      AC_DEFINE([HAVE_LIBCARES], [1], [Define if libcares is available.])
+      RESOLVER_INFO="libcares, --bind-dns-address and --dns-servers available"
+    ])
+  ], [
+    AC_CHECK_HEADER(ares.h, [
+      AC_CHECK_LIB(cares, ares_set_local_ip4, [
+        LIBS="-lcares ${LIBS}"
+        AC_DEFINE([HAVE_LIBCARES], 1, [Define if libcares is available.])
+        RESOLVER_INFO="libcares, --bind-dns-address and --dns-servers available"
+      ])
+    ])
+  ])
+], [
+  RESOLVER_INFO="libc, --bind-dns-address and --dns-servers not available"
+])
+
 
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
@@ -778,5 +805,6 @@ AC_MSG_NOTICE([Summary of build options:
   Assertions:        $ENABLE_ASSERTION
   Valgrind:          $VALGRIND_INFO
   Metalink:          $with_metalink
+  Resolver:          $RESOLVER_INFO
   GPGME:             $have_gpg
 ])

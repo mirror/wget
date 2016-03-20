@@ -99,6 +99,11 @@ struct options
   void *(*regex_compile_fun)(const char *);             /* Function to compile a regex. */
   bool (*regex_match_fun)(const void *, const char *);  /* Function to match a string to a regex. */
 
+#ifdef HAVE_LIBCARES
+  char *bind_dns_address;
+  char *dns_servers;
+#endif
+
   char **domains;               /* See host.c */
   char **exclude_domains;
   bool dns_cache;               /* whether we cache DNS lookups. */

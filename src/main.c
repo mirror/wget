@@ -86,6 +86,13 @@ as that of the covered work.  */
 struct iri dummy_iri;
 #endif
 
+#ifdef HAVE_LIBCARES
+#include <ares.h>
+ares_channel ares;
+#else
+void *ares;
+#endif
+
 struct options opt;
 
 /* defined in version.c */
@@ -252,6 +259,9 @@ static struct cmdline_option option_data[] =
     { "backups", 0, OPT_BOOLEAN, "backups", -1 },
     { "base", 'B', OPT_VALUE, "base", -1 },
     { "bind-address", 0, OPT_VALUE, "bindaddress", -1 },
+#ifdef HAVE_LIBCARES
+    { "bind-dns-address", 0, OPT_VALUE, "binddnsaddress", -1 },
+#endif
     { "body-data", 0, OPT_VALUE, "bodydata", -1 },
     { "body-file", 0, OPT_VALUE, "bodyfile", -1 },
     { IF_SSL ("ca-certificate"), 0, OPT_VALUE, "cacertificate", -1 },
@@ -277,6 +287,9 @@ static struct cmdline_option option_data[] =
     { "directories", 0, OPT_BOOLEAN, "dirstruct", -1 },
     { "directory-prefix", 'P', OPT_VALUE, "dirprefix", -1 },
     { "dns-cache", 0, OPT_BOOLEAN, "dnscache", -1 },
+#ifdef HAVE_LIBCARES
+    { "dns-servers", 0, OPT_VALUE, "dnsservers", -1 },
+#endif
     { "dns-timeout", 0, OPT_VALUE, "dnstimeout", -1 },
     { "domains", 'D', OPT_VALUE, "domains", -1 },
     { "dont-remove-listing", 0, OPT__DONT_REMOVE_LISTING, NULL, no_argument },
@@ -627,6 +640,12 @@ Download:\n"),
        --spider                    don't download anything\n"),
     N_("\
   -T,  --timeout=SECONDS           set all timeout values to SECONDS\n"),
+#ifdef HAVE_LIBCARES
+    N_("\
+       --dns-servers=ADDRESSES     list of DNS servers to query (comma separated)\n"),
+    N_("\
+       --bind-dns-address=ADDRESS  bind DNS resolver to ADDRESS (hostname or IP) on local host\n"),
+#endif
     N_("\
        --dns-timeout=SECS          set the DNS lookup timeout to SECS\n"),
     N_("\
@@ -1773,6 +1792,58 @@ only if outputting to a regular file.\n"));
           exit (WGET_EXIT_GENERIC_ERROR);
         }
     }
+
+#ifdef HAVE_LIBCARES
+  if (opt.bind_dns_address || opt.dns_servers)
+    {
+      if (ares_library_init (ARES_LIB_INIT_ALL))
+        {
+          fprintf (stderr, _("Failed to init libcares\n"));
+          exit (WGET_EXIT_GENERIC_ERROR);
+        }
+
+      if (ares_init (&ares) != ARES_SUCCESS)
+        {
+          fprintf (stderr, _("Failed to init c-ares channel\n"));
+          exit (WGET_EXIT_GENERIC_ERROR);
+        }
+
+      if (opt.bind_dns_address)
+        {
+          struct in_addr a4;
+#ifdef ENABLE_IPV6
+          struct in6_addr a6;
+#endif
+
+          if (inet_pton (AF_INET, opt.bind_dns_address, &a4) == 1)
+            {
+              ares_set_local_ip4 (ares, ntohl (a4.s_addr));
+            }
+#ifdef ENABLE_IPV6
+          else if (inet_pton (AF_INET6, opt.bind_dns_address, &a6) == 1)
+            {
+              ares_set_local_ip6 (ares, (unsigned char *) &a6);
+            }
+#endif
+          else
+            {
+              fprintf (stderr, _("Failed to parse IP address '%s'\n"), opt.bind_dns_address);
+              exit (WGET_EXIT_GENERIC_ERROR);
+            }
+        }
+
+      if (opt.dns_servers)
+        {
+          int result;
+
+          if ((result = ares_set_servers_csv (ares, opt.dns_servers)) != ARES_SUCCESS)
+            {
+              fprintf (stderr, _("Failed to set DNS server(s) '%s' (%d)\n"), opt.dns_servers, result);
+              exit (WGET_EXIT_GENERIC_ERROR);
+            }
+        }
+    }
+#endif
 
 #ifdef __VMS
   /* Set global ODS5 flag according to the specified destination (if

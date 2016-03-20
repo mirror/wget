@@ -99,6 +99,9 @@ Compiling From Repository Sources
 
      * [47]GnuPG with GPGME is used to verify GPG-signed Metalink resources.
 
+     * [48]libcares is needed to bind DNS resolving to a given IP address.
+       The command line options --dns-servers and --bind-dns-address are
+       only available when configured with --with-cares.
 
    For those who might be confused as to what to do once they check out
    the source code, considering configure and Makefile do not yet exist at
@@ -207,3 +210,4 @@ References
   45. https://www.python.org/
   46. https://launchpad.net/libmetalink
   47. https://www.gnupg.org
+  48. http://c-ares.haxx.se/

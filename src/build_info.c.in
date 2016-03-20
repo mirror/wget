@@ -8,6 +8,7 @@ nls             defined ENABLE_NLS
 ntlm            defined ENABLE_NTLM
 opie            defined ENABLE_OPIE
 psl             defined HAVE_LIBPSL
+cares            defined HAVE_LIBCARES
 
 metalink        defined HAVE_METALINK
 gpgme           defined HAVE_GPGME
