@@ -1002,7 +1002,7 @@ specified in bytes (default), kilobytes (with @samp{k} suffix), or
 megabytes (with @samp{m} suffix).
 
 Note that quota will never affect downloading a single file.  So if you
-specify @samp{wget -Q10k ftp://wuarchive.wustl.edu/ls-lR.gz}, all of the
+specify @samp{wget -Q10k https://example.com/ls-lR.gz}, all of the
 @file{ls-lR.gz} will be downloaded.  The same goes even when several
 @sc{url}s are specified on the command-line.  However, quota is
 respected when retrieving either recursively, or from an input file.
@@ -1605,11 +1605,11 @@ users:
 # @r{Log in to the server.  This can be done only once.}
 wget --save-cookies cookies.txt \
      --post-data 'user=foo&password=bar' \
-     http://server.com/auth.php
+     http://example.com/auth.php
 
 # @r{Now grab the page or pages we care about.}
 wget --load-cookies cookies.txt \
-     -p http://server.com/interesting/article.php
+     -p http://example.com/interesting/article.php
 @end group
 @end example
 
@@ -2580,11 +2580,11 @@ The @samp{-D} option allows you to specify the domains that will be
 followed, thus limiting the recursion only to the hosts that belong to
 these domains.  Obviously, this makes sense only in conjunction with
 @samp{-H}.  A typical example would be downloading the contents of
-@samp{www.server.com}, but allowing downloads from
-@samp{images.server.com}, etc.:
+@samp{www.example.com}, but allowing downloads from
+@samp{images.example.com}, etc.:
 
 @example
-wget -rH -Dserver.com http://www.server.com/
+wget -rH -Dexample.com http://www.example.com/
 @end example
 
 You can specify more than one address by separating them with a comma,
@@ -2824,7 +2824,7 @@ These links are not relative:
 @example
 <a href="/foo.gif">
 <a href="/foo/bar.gif">
-<a href="http://www.server.com/foo/bar.gif">
+<a href="http://www.example.com/foo/bar.gif">
 @end example
 
 Using this option guarantees that recursive retrieval will not span
@@ -3694,7 +3694,7 @@ same directory structure the original has, with only one try per
 document, saving the log of the activities to @file{gnulog}:
 
 @example
-wget -r http://www.gnu.org/ -o gnulog
+wget -r https://www.gnu.org/ -o gnulog
 @end example
 
 @item
@@ -3702,7 +3702,7 @@ The same as the above, but convert the links in the downloaded files to
 point to local files, so you can view the documents off-line:
 
 @example
-wget --convert-links -r http://www.gnu.org/ -o gnulog
+wget --convert-links -r https://www.gnu.org/ -o gnulog
 @end example
 
 @item
@@ -3712,22 +3712,22 @@ sheets, are also downloaded.  Also make sure the downloaded page
 references the downloaded links.
 
 @example
-wget -p --convert-links http://www.server.com/dir/page.html
+wget -p --convert-links http://www.example.com/dir/page.html
 @end example
 
-The @sc{html} page will be saved to @file{www.server.com/dir/page.html}, and
-the images, stylesheets, etc., somewhere under @file{www.server.com/},
+The @sc{html} page will be saved to @file{www.example.com/dir/page.html}, and
+the images, stylesheets, etc., somewhere under @file{www.example.com/},
 depending on where they were on the remote server.
 
 @item
-The same as the above, but without the @file{www.server.com/} directory.
+The same as the above, but without the @file{www.example.com/} directory.
 In fact, I don't want to have all those random server directories
 anyway---just save @emph{all} those files under a @file{download/}
 subdirectory of the current directory.
 
 @example
 wget -p --convert-links -nH -nd -Pdownload \
-     http://www.server.com/dir/page.html
+     http://www.example.com/dir/page.html
 @end example
 
 @item
@@ -3756,12 +3756,12 @@ wget -r -l2 -P/tmp ftp://wuarchive.wustl.edu/
 
 @item
 You want to download all the @sc{gif}s from a directory on an @sc{http}
-server.  You tried @samp{wget http://www.server.com/dir/*.gif}, but that
+server.  You tried @samp{wget http://www.example.com/dir/*.gif}, but that
 didn't work because @sc{http} retrieval does not support globbing.  In
 that case, use:
 
 @example
-wget -r -l1 --no-parent -A.gif http://www.server.com/dir/
+wget -r -l1 --no-parent -A.gif http://www.example.com/dir/
 @end example
 
 More verbose, but the effect is the same.  @samp{-r -l1} means to
@@ -3777,7 +3777,7 @@ interrupted.  Now you do not want to clobber the files already present.
 It would be:
 
 @example
-wget -nc -r http://www.gnu.org/
+wget -nc -r https://www.gnu.org/
 @end example
 
 @item
@@ -3785,7 +3785,7 @@ If you want to encode your own username and password to @sc{http} or
 @sc{ftp}, use the appropriate @sc{url} syntax (@pxref{URL Format}).
 
 @example
-wget ftp://hniksic:mypassword@@unix.server.com/.emacs
+wget ftp://hniksic:mypassword@@unix.example.com/.emacs
 @end example
 
 Note, however, that this usage is not advisable on multi-user systems
@@ -3822,7 +3822,7 @@ to recheck a site each Sunday:
 
 @example
 crontab
-0 0 * * 0 wget --mirror http://www.gnu.org/ -o /home/me/weeklog
+0 0 * * 0 wget --mirror https://www.gnu.org/ -o /home/me/weeklog
 @end example
 
 @item
@@ -3834,7 +3834,7 @@ would look like this:
 
 @example
 wget --mirror --convert-links --backup-converted  \
-     http://www.gnu.org/ -o /home/me/weeklog
+     https://www.gnu.org/ -o /home/me/weeklog
 @end example
 
 @item
@@ -3847,13 +3847,13 @@ or @samp{application/xhtml+xml} to @file{@var{name}.html}.
 @example
 wget --mirror --convert-links --backup-converted \
      --html-extension -o /home/me/weeklog        \
-     http://www.gnu.org/
+     https://www.gnu.org/
 @end example
 
 Or, with less typing:
 
 @example
-wget -m -k -K -E http://www.gnu.org/ -o /home/me/weeklog
+wget -m -k -K -E https://www.gnu.org/ -o /home/me/weeklog
 @end example
 @end itemize
 @c man end
@@ -3960,14 +3960,14 @@ username and password.
 Like all GNU utilities, the latest version of Wget can be found at the
 master GNU archive site ftp.gnu.org, and its mirrors.  For example,
 Wget @value{VERSION} can be found at
-@url{ftp://ftp.gnu.org/pub/gnu/wget/wget-@value{VERSION}.tar.gz}
+@url{https://ftp.gnu.org/pub/gnu/wget/wget-@value{VERSION}.tar.gz}
 
 @node Web Site, Mailing Lists, Distribution, Various
 @section Web Site
 @cindex web site
 
 The official web site for GNU Wget is at
-@url{http://www.gnu.org/software/wget/}. However, most useful
+@url{https//www.gnu.org/software/wget/}. However, most useful
 information resides at ``The Wget Wgiki'',
 @url{http://wget.addictivecode.org/}.
 
@@ -3981,14 +3981,14 @@ information resides at ``The Wget Wgiki'',
 The primary mailinglist for discussion, bug-reports, or questions
 about GNU Wget is at @email{bug-wget@@gnu.org}. To subscribe, send an
 email to @email{bug-wget-join@@gnu.org}, or visit
-@url{http://lists.gnu.org/mailman/listinfo/bug-wget}.
+@url{https://lists.gnu.org/mailman/listinfo/bug-wget}.
 
 You do not need to subscribe to send a message to the list; however,
 please note that unsubscribed messages are moderated, and may take a
 while before they hit the list---@strong{usually around a day}.  If
 you want your message to show up immediately, please subscribe to the
 list before posting. Archives for the list may be found at
-@url{http://lists.gnu.org/pipermail/bug-wget/}.
+@url{https://lists.gnu.org/archive/html/bug-wget/}.
 
 An NNTP/Usenettish gateway is also available via
 @uref{http://gmane.org/about.php,Gmane}. You can see the Gmane
@@ -3996,15 +3996,7 @@ archives at
 @url{http://news.gmane.org/gmane.comp.web.wget.general}. Note that the
 Gmane archives conveniently include messages from both the current
 list, and the previous one. Messages also show up in the Gmane
-archives sooner than they do at @url{lists.gnu.org}.
-
-@unnumberedsubsec Bug Notices List
-
-Additionally, there is the @email{wget-notify@@addictivecode.org} mailing
-list. This is a non-discussion list that receives bug report
-notifications from the bug-tracker. To subscribe to this list,
-send an email to @email{wget-notify-join@@addictivecode.org},
-or visit @url{http://addictivecode.org/mailman/listinfo/wget-notify}.
+archives sooner than they do at @url{https://lists.gnu.org}.
 
 @unnumberedsubsec Obsolete Lists
 
@@ -4016,7 +4008,7 @@ discussing patches to GNU Wget.
 Messages from @email{wget@@sunsite.dk} are archived at
 @itemize @tie{}
 @item
-@url{http://www.mail-archive.com/wget%40sunsite.dk/} and at
+@url{https://www.mail-archive.com/wget%40sunsite.dk/} and at
 @item
 @url{http://news.gmane.org/gmane.comp.web.wget.general} (which also
 continues to archive the current list, @email{bug-wget@@gnu.org}).
@@ -4045,7 +4037,7 @@ via IRC at @code{irc.freenode.org}, @code{#wget}. Come check it out!
 
 @c man begin BUGS
 You are welcome to submit bug reports via the GNU Wget bug tracker (see
-@url{http://wget.addictivecode.org/BugTracker}).
+@url{https://savannah.gnu.org/bugs/?func=additem&group=wget}).
 
 Before actually submitting a bug report, please try to follow a few
 simple guidelines.
@@ -4062,7 +4054,7 @@ Lists}).
 @item
 Try to repeat the bug in as simple circumstances as possible.  E.g. if
 Wget crashes while downloading @samp{wget -rl0 -kKE -t5 --no-proxy
-http://yoyodyne.com -o /tmp/log}, you should try to see if the crash is
+http://example.com -o /tmp/log}, you should try to see if the crash is
 repeatable, and if will occur with a simpler set of options.  You might
 even try to start the download at the page where the crash occurred to
 see if that page somehow triggered the crash.
@@ -4127,7 +4119,7 @@ Windows-related features might look at them.
 
 Support for building on MS-DOS via DJGPP has been contributed by Gisle
 Vanem; a port to VMS is maintained by Steven Schweda, and is available
-at @url{http://antinode.org/}.
+at @url{https://antinode.info/dec/sw/wget.html}.
 
 @node Signals,  , Portability, Various
 @section Signals
@@ -4205,12 +4197,12 @@ download an individual page.  Because of that, Wget honors RES when
 downloading recursively.  For instance, when you issue:
 
 @example
-wget -r http://www.server.com/
+wget -r http://www.example.com/
 @end example
 
-First the index of @samp{www.server.com} will be downloaded.  If Wget
+First the index of @samp{www.example.com} will be downloaded.  If Wget
 finds that it wants to download more documents from that server, it will
-request @samp{http://www.server.com/robots.txt} and, if found, use it
+request @samp{http://www.example.com/robots.txt} and, if found, use it
 for further downloads.  @file{robots.txt} is loaded only once per each
 server.
 
