@@ -274,7 +274,7 @@ retrieve_from_metalink (const metalink_t* metalink)
                       goto gpg_skip_verification;
                     }
 
-                  DEBUGP (("Veryfying signature %s:\n%s\n",
+                  DEBUGP (("Verifying signature %s:\n%s\n",
                            quote (msig->mediatype),
                            msig->signature));
 
