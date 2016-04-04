@@ -97,6 +97,7 @@ Environment Variables:
   the test suite will execute all the tests via this command.
   If it is set to "1", valgrind memcheck is enabled with hard coded options.
   This variable is set by ./configure --enable-valgrind-tests.
+* SSL_TESTS: This must be set to run any https tests.
 
 
 File Structure:

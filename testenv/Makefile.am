@@ -61,6 +61,12 @@ if HAVE_PYTHON3
     Test-Head.py                                    \
     Test--https.py                                  \
     Test--https-crl.py                              \
+    Test-pinnedpubkey-der-https.py                  \
+    Test-pinnedpubkey-der-no-check-https.py         \
+    Test-pinnedpubkey-hash-https.py                 \
+    Test-pinnedpubkey-hash-no-check-fail-https.py   \
+    Test-pinnedpubkey-pem-fail-https.py             \
+    Test-pinnedpubkey-pem-https.py                  \
     Test-hsts.py                                    \
     Test-O.py                                       \
     Test-Post.py                                    \
