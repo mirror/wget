@@ -334,6 +334,22 @@ hsts_store_dump (hsts_store_t store, FILE *fp)
     }
 }
 
+/*
+ * Test:
+ *  - The file is a regular file (ie. not a symlink), and
+ *  - The file is not world-writable.
+ */
+static bool
+hsts_file_access_valid (const char *filename)
+{
+  struct_stat st;
+
+  if (stat (filename, &st) == -1)
+    return false;
+
+  return !(st.st_mode & S_IWOTH) && S_ISREG (st.st_mode);
+}
+
 /* HSTS API */
 
 /*
@@ -464,8 +480,6 @@ hsts_store_t
 hsts_store_open (const char *filename)
 {
   hsts_store_t store = NULL;
-  struct_stat st;
-  FILE *fp = NULL;
 
   store = xnew0 (struct hsts_store);
   store->table = hash_table_new (0, hsts_hash_func, hsts_cmp_func);
@@ -473,24 +487,40 @@ hsts_store_open (const char *filename)
 
   if (file_exists_p (filename))
     {
-      fp = fopen (filename, "r");
-
-      if (!fp || !hsts_read_database (store, fp, false))
+      if (hsts_file_access_valid (filename))
         {
-          /* abort! */
+          struct_stat st;
+          FILE *fp = fopen (filename, "r");
+
+          if (!fp || !hsts_read_database (store, fp, false))
+            {
+              /* abort! */
+              hsts_store_close (store);
+              xfree (store);
+              fclose (fp);
+              goto out;
+            }
+
+          if (fstat (fileno (fp), &st) == 0)
+            store->last_mtime = st.st_mtime;
+
+          fclose (fp);
+        }
+      else
+        {
+          /*
+           * If we're not reading the HSTS database,
+           * then by all means act as if HSTS was disabled.
+           */
           hsts_store_close (store);
           xfree (store);
-          goto out;
-        }
 
-      if (fstat (fileno (fp), &st) == 0)
-        store->last_mtime = st.st_mtime;
+          logprintf (LOG_NOTQUIET, "Will not apply HSTS. "
+                     "The HSTS database must be a regular and non-world-writable file.\n");
+        }
     }
 
 out:
-  if (fp)
-    fclose (fp);
-
   return store;
 }
 
