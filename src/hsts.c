@@ -426,9 +426,8 @@ hsts_store_entry (hsts_store_t store,
             hsts_remove_entry (store, kh);
           else if (max_age > 0)
             {
-              entry->include_subdomains = include_subdomains;
-
-              if (entry->max_age != max_age)
+              if (entry->max_age != max_age ||
+                  entry->include_subdomains != include_subdomains)
                 {
                   /* RFC 6797 states that 'max_age' is a TTL relative to the reception of the STS header
                      so we have to update the 'created' field too */
@@ -436,6 +435,7 @@ hsts_store_entry (hsts_store_t store,
                   if (t != -1)
                     entry->created = t;
                   entry->max_age = max_age;
+                  entry->include_subdomains = include_subdomains;
                 }
             }
           /* we ignore negative max_ages */
