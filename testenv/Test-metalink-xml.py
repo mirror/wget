@@ -8,7 +8,6 @@ import hashlib
 """
     This is to test Metalink as XML file support in Wget.
 """
-TEST_NAME = "Metalink in XML"
 ############# File Definitions ###############################################
 File1 = "Would you like some Tea?"
 File1_lowPref = "Do not take this"
@@ -69,7 +68,6 @@ post_test = {
 }
 
 http_test = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test,

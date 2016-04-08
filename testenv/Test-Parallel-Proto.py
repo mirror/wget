@@ -8,7 +8,6 @@ from misc.wget_file import WgetFile
     This is a Prototype Test File for multiple servers.
     Ideally this File should be copied and edited to write new tests.
 """
-TEST_NAME = "Parallel Prototype"
 ############# File Definitions ###############################################
 File1 = "Would you like some Tea?"
 File2 = "With lemon or cream?"
@@ -44,7 +43,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test,

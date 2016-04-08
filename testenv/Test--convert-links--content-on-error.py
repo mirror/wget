@@ -6,7 +6,6 @@ from misc.wget_file import WgetFile
 """
     This test ensures that Wget link conversion works also on HTTP error pages.
 """
-TEST_NAME = "Test--convert-links--content-on-error"
 ############# File Definitions ###############################################
 a_x_FileContent = """
 <!DOCTYPE html>
@@ -70,7 +69,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

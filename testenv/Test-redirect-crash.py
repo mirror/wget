@@ -20,7 +20,6 @@ redirected = [
         "File%20formats/Images/SVG,%20Scalable%20Vector%20Graphics/html,%20W3C%20v1.2%20rec%20(tiny)/directory/"
 ]
 
-TEST_NAME = "Redirection crash"
 ############# File Definitions ###############################################
 Index = ""
 for i in urls:
@@ -65,7 +64,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

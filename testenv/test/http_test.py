@@ -13,14 +13,12 @@ class HTTPTest(BaseTest):
     # immediately after the call to Wget returns.
 
     def __init__(self,
-                 name="Unnamed Test",
                  pre_hook=None,
                  test_params=None,
                  post_hook=None,
                  protocols=(HTTP,),
                  req_protocols=None):
-        super(HTTPTest, self).__init__(name,
-                                       pre_hook,
+        super(HTTPTest, self).__init__(pre_hook,
                                        test_params,
                                        post_hook,
                                        protocols,

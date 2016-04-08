@@ -8,7 +8,6 @@ from misc.wget_file import WgetFile
     Also, we ensure that Wget saves the host after a successfull auth and
     doesn't wait for a challenge the second time.
 """
-TEST_NAME = "Multiple authentication support"
 ############# File Definitions ###############################################
 File1 = "Would you like some Tea?"
 File2 = "With lemon or cream?"
@@ -78,7 +77,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

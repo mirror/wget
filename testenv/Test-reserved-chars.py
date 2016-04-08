@@ -11,7 +11,6 @@ This test ensures that Wget keeps reserved characters in URLs in non-UTF-8 chars
 # so we need to set LC_ALL="C" in order to reproduce it.
 environ["LC_ALL"] = "C"
 
-TEST_NAME = "URLs with reserved characters"
 ######### File Definitions #########
 RequestList = [
     [
@@ -50,7 +49,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

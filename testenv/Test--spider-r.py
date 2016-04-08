@@ -6,7 +6,6 @@ from misc.wget_file import WgetFile
 """
     This test executed Wget in Spider mode with recursive retrieval.
 """
-TEST_NAME = "Recursive Spider"
 ############# File Definitions ###############################################
 mainpage = """
 <html>
@@ -97,7 +96,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

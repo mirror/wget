@@ -6,7 +6,6 @@ from misc.wget_file import WgetFile
 """
     Simple test for HTTP Conditional-GET Requests using the -N command
 """
-TEST_NAME = "HTTP Conditional-GET Requests"
 ############# File Definitions ###############################################
 # Keep same length !
 Cont1 = """THIS IS 1 FILE"""
@@ -131,7 +130,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

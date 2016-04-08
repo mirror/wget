@@ -8,7 +8,6 @@ from misc.wget_file import WgetFile
     Also, we ensure that Wget saves the host after a successfull auth and
     doesn't wait for a challenge the second time.
 """
-TEST_NAME = "Basic Authorization"
 ############# File Definitions ###############################################
 File1 = "I am an invisble man."
 File2 = "I too am an invisible man."
@@ -50,7 +49,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

@@ -10,7 +10,6 @@ import os
 This test makes sure Wget can parse a given HSTS database and apply the indicated HSTS policy.
 """
 
-TEST_NAME = "HSTS basic test"
 print (os.getenv('SSL_TESTS'))
 if os.getenv('SSL_TESTS') is None:
     exit (77)
@@ -63,7 +62,6 @@ test_options = {
 }
 
 test = HTTPTest(
-        name = TEST_NAME,
         pre_hook = pre_test,
         post_hook = post_test,
         test_params = test_options,

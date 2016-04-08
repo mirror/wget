@@ -7,7 +7,6 @@ from misc.wget_file import WgetFile
     This test ensures that Wget parses the Content-Disposition header
     correctly and creates the appropriate file when the said filename exists.
 """
-TEST_NAME = "Content Disposition Clobber"
 ############# File Definitions ###############################################
 File1 = "Teapot"
 File2 = "The Teapot Protocol"
@@ -45,7 +44,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

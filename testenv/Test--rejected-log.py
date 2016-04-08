@@ -6,7 +6,6 @@ from misc.wget_file import WgetFile
 """
     This test executed Wget in recursive mode with a rejected log outputted.
 """
-TEST_NAME = "Rejected Log"
 ############# File Definitions ###############################################
 mainpage = """
 <html>
@@ -93,7 +92,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

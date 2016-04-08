@@ -7,7 +7,6 @@ from misc.wget_file import WgetFile
     This test ensures that Wget identifies bad servers trying to set cookies
     for a different domain and rejects them.
 """
-TEST_NAME = "Cookie Domain Mismatch"
 ############# File Definitions ###############################################
 File1 = "Would you care for a cup of coffee?"
 File2 = "Anyone for chocochip cookies?"
@@ -49,7 +48,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

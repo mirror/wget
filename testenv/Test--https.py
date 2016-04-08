@@ -8,7 +8,6 @@ import os
 """
     This test ensures that Wget can download files from HTTPS Servers
 """
-TEST_NAME = "HTTPS Downloads"
 if os.getenv('SSL_TESTS') is None:
     exit (77)
 
@@ -48,7 +47,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test,

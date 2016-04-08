@@ -6,7 +6,6 @@ from misc.wget_file import WgetFile
 """
     This test ensures Wget's Digest Authorization Negotiation.
 """
-TEST_NAME = "Digest Authorization"
 ############# File Definitions ###############################################
 File1 = "Need a cookie?"
 File2 = "Want cookies with milk!"
@@ -57,7 +56,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

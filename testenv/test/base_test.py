@@ -4,6 +4,7 @@ import shlex
 import traceback
 import re
 import time
+import sys
 from subprocess import call
 from misc.colour_terminal import print_red, print_blue
 from exc.test_failed import TestFailed
@@ -22,12 +23,12 @@ class BaseTest:
         * instantiate_server_by(protocol)
     """
 
-    def __init__(self, name, pre_hook, test_params, post_hook, protocols, req_protocols):
+    def __init__(self, pre_hook, test_params, post_hook, protocols, req_protocols):
         """
         Define the class-wide variables (or attributes).
         Attributes should not be defined outside __init__.
         """
-        self.name = name
+        self.name = os.path.basename(os.path.realpath(sys.argv[0]))
         # if pre_hook == None, then {} (an empty dict object) is passed to
         # self.pre_configs
         self.pre_configs = pre_hook or {}

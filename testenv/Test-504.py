@@ -18,7 +18,6 @@ from misc.wget_file import WgetFile
     considered 504 as a general Server Error, it would be a fatal failure and
     Wget would request File1 only once.
 """
-TEST_NAME = "504 Gateway Timeouts"
 ############# File Definitions ###############################################
 File1 = """All happy families are alike;
 Each unhappy family is unhappy in its own way"""
@@ -63,7 +62,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test

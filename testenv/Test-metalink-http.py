@@ -9,7 +9,6 @@ from base64 import b64encode
 """
     This is to test Metalink as HTTP file support in Wget.
 """
-TEST_NAME = "Metalink in HTTP"
 
 # Helper function for hostname, port and digest substitution
 def SubstituteServerInfo (text, host, port, digest):
@@ -109,7 +108,6 @@ post_test = {
 }
 
 http_test = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test,

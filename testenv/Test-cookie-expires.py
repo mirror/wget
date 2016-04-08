@@ -8,7 +8,6 @@ from misc.wget_file import WgetFile
     Simultaneuously, we also check if multiple cookies to the same domain
     are handled correctly
 """
-TEST_NAME = "Cookie Expires"
 ############# File Definitions ###############################################
 File1 = "Hello World!"
 File2 = "'Ello! This is Amazing!"
@@ -72,7 +71,6 @@ post_test = {
 }
 
 err = HTTPTest (
-                name=TEST_NAME,
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test
