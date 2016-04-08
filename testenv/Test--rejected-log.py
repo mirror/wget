@@ -55,10 +55,10 @@ Disallow: /dummy.txt
 """
 
 log = """\
-REASON	U_URL	U_SCHEME	U_HOST	U_PORT	U_PATH	U_PARAMS	U_QUERY	U_FRAGMENT	P_URL	P_SCHEME	P_HOST	P_PORT	P_PATH	P_PARAMS	P_QUERY	P_FRAGMENT
-BLACKLIST	http%3A//127.0.0.1%3A{{port}}/index.html	SCHEME_HTTP	127.0.0.1	{{port}}	index.html				http%3A//127.0.0.1%3A{{port}}/secondpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	secondpage.html
-ROBOTS	http%3A//127.0.0.1%3A{{port}}/dummy.txt	SCHEME_HTTP	127.0.0.1	{{port}}	dummy.txt				http%3A//127.0.0.1%3A{{port}}/thirdpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	thirdpage.html
-SPANNEDHOST	http%3A//no.such.domain/	SCHEME_HTTP	no.such.domain	80					http%3A//127.0.0.1%3A{{port}}/thirdpage.html	SCHEME_HTTP	127.0.0.1	{{port}}	thirdpage.html
+REASON\tU_URL\tU_SCHEME\tU_HOST\tU_PORT\tU_PATH\tU_PARAMS\tU_QUERY\tU_FRAGMENT\tP_URL\tP_SCHEME\tP_HOST\tP_PORT\tP_PATH\tP_PARAMS\tP_QUERY\tP_FRAGMENT
+BLACKLIST\thttp%3A//127.0.0.1%3A{{port}}/index.html\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tindex.html\t\t\t\thttp%3A//127.0.0.1%3A{{port}}/secondpage.html\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tsecondpage.html\t\t\t
+ROBOTS\thttp%3A//127.0.0.1%3A{{port}}/dummy.txt\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tdummy.txt\t\t\t\thttp%3A//127.0.0.1%3A{{port}}/thirdpage.html\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tthirdpage.html\t\t\t
+SPANNEDHOST\thttp%3A//no.such.domain/\tSCHEME_HTTP\tno.such.domain\t80\t\t\t\t\thttp%3A//127.0.0.1%3A{{port}}/thirdpage.html\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tthirdpage.html\t\t\t
 """
 
 dummyfile = "Don't care."
