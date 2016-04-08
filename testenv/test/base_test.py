@@ -162,6 +162,7 @@ class BaseTest:
                 shutil.rmtree(self.get_test_dir())
         except:
             print("Unknown Exception while trying to remove Test Environment.")
+            self.tests_passed = False
 
     def _exit_test(self):
         self.__test_cleanup()
@@ -263,4 +264,4 @@ class BaseTest:
                 traceback.print_tb(exc_tb)
         self.__test_cleanup()
 
-        return True
+        return self.tests_passed
