@@ -651,6 +651,7 @@ cache_remove (const char *host)
 }
 
 #ifdef HAVE_LIBCARES
+#include <sys/select.h>
 #include <ares.h>
 extern ares_channel ares;
 
