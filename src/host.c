@@ -694,6 +694,13 @@ address_list_from_hostent (struct hostent *host)
   return al;
 }
 
+/* Since GnuLib's select() (i.e. rpl_select()) cannot handle socket-numbers
+ * returned from C-ares, we must use the original select() from Winsock.
+ */
+#ifdef WINDOWS
+#undef select
+#endif
+
 static void
 wait_ares (ares_channel channel)
 {
