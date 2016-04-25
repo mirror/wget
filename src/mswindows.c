@@ -62,7 +62,7 @@ void
 xsleep (double seconds)
 {
 #if defined(HAVE_USLEEP) && defined(HAVE_SLEEP)
-  if (seconds > 1000)
+  if (seconds >= 1)
     {
       /* Explained in utils.c. */
       sleep (seconds);
