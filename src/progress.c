@@ -1198,8 +1198,6 @@ display_image (char *buf)
 static void
 bar_set_params (char *params)
 {
-  char *term = getenv ("TERM");
-
   if (params)
     {
       char *param = strtok (params, ":");
@@ -1219,12 +1217,6 @@ bar_set_params (char *params)
           dots.  */
        || !isatty (fileno (stderr))
 #endif
-       /* Normally we don't depend on terminal type because the
-          progress bar only uses ^M to move the cursor to the
-          beginning of line, which works even on dumb terminals.  But
-          Jamie Zawinski reports that ^M and ^H tricks don't work in
-          Emacs shell buffers, and only make a mess.  */
-       || (term && 0 == strcmp (term, "emacs"))
        )
       && !current_impl_locked)
     {
