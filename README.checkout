@@ -25,10 +25,11 @@ Compiling From Repository Sources
        tests in the tests/ sub directory. Tarball distributions include an
        already-generated wget.1 manual. The command "make check" runs the
        test suite written in perl and python (see below). To execute all the tests
-       you need [24]libwww-perl and libio-socket-ssl-perl perl library. If
-       "perl -MCPAN -e 'install Bundle::LWP'" fails then you most likely don't
-       have cpan module installed. First download [25]CPAN and [26]install it.
-       Then execute "perl -MCPAN -e 'install Bundle::LWP'".
+       you need libwww-perl and libio-socket-ssl-perl perl library.
+       GNU/Linux distros likely have these two libraries packaged.
+       If not, install them directly with "perl -MCPAN -e 'install Bundle::LWP'"[24].
+       If that fails then you most likely don't have the CPAN module installed.
+       First download [25]CPAN and [26]install it, then try again the above command.
        Now "make check" should pass most of the tests in the test suite.
 
      * [45]Python, if you want to run the tests in the testenv/ subdirectory.
