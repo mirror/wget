@@ -53,6 +53,7 @@ as that of the covered work.  */
 struct hsts_store {
   struct hash_table *table;
   time_t last_mtime;
+  bool changed;
 };
 
 struct hsts_kh {
@@ -386,10 +387,14 @@ hsts_match (hsts_store_t store, struct url *u)
                   if (u->port == 80)
                     u->port = 443;
                   url_changed = true;
+                  store->changed = true;
                 }
             }
           else
-            hsts_remove_entry (store, kh);
+            {
+              hsts_remove_entry (store, kh);
+              store->changed = true;
+            }
         }
       xfree (kh->host);
     }
@@ -439,7 +444,10 @@ hsts_store_entry (hsts_store_t store,
       if (entry && match == CONGRUENT_MATCH)
         {
           if (max_age == 0)
-            hsts_remove_entry (store, kh);
+            {
+              hsts_remove_entry (store, kh);
+              store->changed = true;
+            }
           else if (max_age > 0)
             {
               if (entry->max_age != max_age ||
@@ -452,6 +460,8 @@ hsts_store_entry (hsts_store_t store,
                     entry->created = t;
                   entry->max_age = max_age;
                   entry->include_subdomains = include_subdomains;
+
+                  store->changed = true;
                 }
             }
           /* we ignore negative max_ages */
@@ -466,6 +476,8 @@ hsts_store_entry (hsts_store_t store,
              happen we got a non-existent entry with max_age == 0.
           */
           result = hsts_add_entry (store, host, port, max_age, include_subdomains);
+          if (result)
+            store->changed = true;
         }
       /* we ignore new entries with max_age == 0 */
       xfree (kh->host);
@@ -484,6 +496,7 @@ hsts_store_open (const char *filename)
   store = xnew0 (struct hsts_store);
   store->table = hash_table_new (0, hsts_hash_func, hsts_cmp_func);
   store->last_mtime = 0;
+  store->changed = false;
 
   if (file_exists_p (filename))
     {
@@ -559,6 +572,12 @@ hsts_store_save (hsts_store_t store, const char *filename)
           fclose (fp);
         }
     }
+}
+
+bool
+hsts_store_has_changed (hsts_store_t store)
+{
+  return (store ? store->changed : false);
 }
 
 void

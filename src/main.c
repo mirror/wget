@@ -204,10 +204,12 @@ save_hsts (void)
     {
       char *filename = get_hsts_database ();
 
-      if (filename)
-        DEBUGP (("Saving HSTS entries to %s\n", filename));
+      if (filename && hsts_store_has_changed (hsts_store))
+        {
+          DEBUGP (("Saving HSTS entries to %s\n", filename));
+          hsts_store_save (hsts_store, filename);
+        }
 
-      hsts_store_save (hsts_store, filename);
       hsts_store_close (hsts_store);
 
       xfree (filename);

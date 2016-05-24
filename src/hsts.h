@@ -43,6 +43,7 @@ hsts_store_t hsts_store_open (const char *);
 
 void hsts_store_save (hsts_store_t, const char *);
 void hsts_store_close (hsts_store_t);
+bool hsts_store_has_changed (hsts_store_t);
 
 bool hsts_store_entry (hsts_store_t,
                        enum url_scheme, const char *, int,
