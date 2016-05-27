@@ -57,7 +57,10 @@ wget.pod: $(srcdir)/wget.texi version.texi
 	$(TEXI2POD) -D VERSION="$(VERSION)" $(srcdir)/wget.texi $@
 
 $(MAN): wget.pod
-	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" --utf8 $? > $@
+	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" --utf8 $? > $@; \
+	if [ $? != 0 ]; then \
+          $(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $? > $@; \
+	fi
 
 #wget.cat: $(MAN)
 #	nroff -man $? > $@
