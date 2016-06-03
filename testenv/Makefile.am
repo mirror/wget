@@ -61,6 +61,7 @@ if HAVE_PYTHON3
     Test-Head.py                                    \
     Test--https.py                                  \
     Test--https-crl.py                              \
+    Test-missing-scheme-retval.py                   \
     Test-pinnedpubkey-der-https.py                  \
     Test-pinnedpubkey-der-no-check-https.py         \
     Test-pinnedpubkey-hash-https.py                 \
