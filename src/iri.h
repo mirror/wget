@@ -60,7 +60,7 @@ void set_content_encoding (struct iri *i, const char *charset);
 
 extern struct iri dummy_iri;
 
-#define parse_charset(str)          (str, NULL)
+#define parse_charset(str)          NULL
 #define find_locale()               NULL
 #define check_encoding_name(str)    false
 #define locale_to_utf8(str)         (str)

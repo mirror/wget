@@ -234,17 +234,19 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 
   FILE *rejectedlog = NULL; /* Don't write a rejected log. */
 
-#define COPYSTR(x)  (x) ? xstrdup(x) : NULL;
   /* Duplicate pi struct if not NULL */
   if (pi)
     {
+#define COPYSTR(x)  (x) ? xstrdup(x) : NULL;
       i->uri_encoding = COPYSTR (pi->uri_encoding);
       i->content_encoding = COPYSTR (pi->content_encoding);
       i->utf8_encode = pi->utf8_encode;
+#undef COPYSTR
     }
+#ifdef ENABLE_IRI
   else
     set_uri_encoding (i, opt.locale, true);
-#undef COPYSTR
+#endif
 
   queue = url_queue_new ();
   blacklist = make_string_hash_table (0);

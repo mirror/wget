@@ -3424,13 +3424,16 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       char *tmp = strchr (type, ';');
       if (tmp)
         {
+#ifdef ENABLE_IRI
           /* sXXXav: only needed if IRI support is enabled */
           char *tmp2 = tmp + 1;
+#endif
 
           while (tmp > type && c_isspace (tmp[-1]))
             --tmp;
           *tmp = '\0';
 
+#ifdef ENABLE_IRI
           /* Try to get remote encoding if needed */
           if (opt.enable_iri && !opt.encoding_remote)
             {
@@ -3439,6 +3442,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                 set_content_encoding (iri, tmp);
               xfree(tmp);
             }
+#endif
         }
     }
   hs->newloc = resp_header_strdup (resp, "Location");

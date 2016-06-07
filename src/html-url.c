@@ -836,10 +836,12 @@ get_urls_html (const char *file, const char *url, bool *meta_disallow_follow,
   map_html_tags (fm->content, fm->length, collect_tags_mapper, &ctx, flags,
                  NULL, interesting_attributes);
 
+#ifdef ENABLE_IRI
   /* Meta charset is only valid if there was no HTTP header Content-Type charset. */
   /* This is true for HTTP 1.0 and 1.1. */
   if (iri && !iri->content_encoding && meta_charset)
     set_content_encoding (iri, meta_charset);
+#endif
 
   DEBUGP (("no-follow in %s: %d\n", file, ctx.nofollow));
   if (meta_disallow_follow)
