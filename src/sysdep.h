@@ -143,16 +143,6 @@ int snprintf (char *str, size_t count, const char *fmt, ...);
 int vsnprintf (char *str, size_t count, const char *fmt, va_list arg);
 #endif
 
-/* Some systems (Linux libc5, "NCR MP-RAS 3.0", and others) don't
-   provide MAP_FAILED, a symbolic constant for the value returned by
-   mmap() when it doesn't work.  Usually, this constant should be -1.
-   This only makes sense for files that use mmap() and include
-   sys/mman.h *before* sysdep.h, but doesn't hurt others.  */
-
-#ifndef MAP_FAILED
-# define MAP_FAILED ((void *) -1)
-#endif
-
 /* Enable system fnmatch only on systems where fnmatch.h is usable.
    If the fnmatch on your system is buggy, undef this symbol and a
    replacement implementation will be used instead.  */

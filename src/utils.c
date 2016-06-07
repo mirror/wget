@@ -37,9 +37,6 @@ as that of the covered work.  */
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#ifdef HAVE_MMAP
-# include <sys/mman.h>
-#endif
 #ifdef HAVE_PROCESS_H
 # include <process.h>  /* getpid() */
 #endif
@@ -88,6 +85,18 @@ as that of the covered work.  */
 
 #if defined HAVE_SIGSETJMP || defined HAVE_SIGBLOCK
 # define USE_SIGNAL_TIMEOUT
+#endif
+
+/* Some systems (Linux libc5, "NCR MP-RAS 3.0", and others) don't
+   provide MAP_FAILED, a symbolic constant for the value returned by
+   mmap() when it doesn't work.  Usually, this constant should be -1.
+   This only makes sense for files that use mmap() and include
+   sys/mman.h *before* sysdep.h, but doesn't hurt others.  */
+#ifdef HAVE_MMAP
+# include <sys/mman.h>
+# ifndef MAP_FAILED
+#  define MAP_FAILED ((void *) -1)
+# endif
 #endif
 
 #include "utils.h"
