@@ -7,7 +7,21 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.Y.Z
+* Changes in Wget 1.18
+
+* By default, on server redirects to a FTP resource, use the original
+  URL to get the local file name. Close CVE-2016-4971.  This
+  introduces a backward-incompatibility for HTTP->FTP redirects and
+  any script that relies on the old  behaviour must use
+  --trust-server-names.
+
+* Check the HSTS file is not world-writable before using it.
+
+* Parse <img srcset> attributes on a recursive download.
+
+* Fix problem with SNI server names having trailing dot(s)
+
+* New options --bind-dns-address and --dns-servers.
 
 * When Wget is built with libiconv, it now converts non-ASCII URIs to
   the locale's codeset when it creates files.  The encoding of the
