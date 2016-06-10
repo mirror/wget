@@ -32,8 +32,8 @@ Compiling From Repository Sources
        First download [25]CPAN and [26]install it, then try again the above command.
        Now "make check" should pass most of the tests in the test suite.
 
-     * [45]Python, if you want to run the tests in the testenv/ subdirectory.
-       Keep in mind that "make check" will try to run all the perl and python
+     * [45]Python3, if you want to run the tests in the testenv/ subdirectory.
+       Keep in mind that "make check" will try to run all the Perl and Python3
        tests. More information about the test suite below in the section
        "Testing and development".
 
