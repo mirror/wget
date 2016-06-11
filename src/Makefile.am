@@ -41,7 +41,6 @@ endif
 
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
-LIBS     = @LIBICONV@ @LIBINTL@ @LIBS@ $(LIB_CLOCK_GETTIME)
 
 EXTRA_DIST = css.l css.c css_.c build_info.c.in
 
@@ -60,7 +59,9 @@ wget_SOURCES = connect.c convert.c cookies.c ftp.c	\
 		exits.h version.h metalink.h
 nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = iri.c
-LDADD = $(LIBOBJS) ../lib/libgnu.a
+LDADD = $(LIBOBJS) ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB) $(INET_NTOP_LIB) $(LIBSOCKET)\
+ $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO) $(LIB_SELECT) $(LTLIBICONV) $(LTLIBINTL) $(LTLIBTHREAD)\
+ $(SERVENT_LIB)
 AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
 
