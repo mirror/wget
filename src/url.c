@@ -1564,7 +1564,7 @@ convert_fname (char *fname)
 
       for (;;)
 	{
-	  if (iconv (cd, &fname, &inlen, &s, &outlen) != (size_t)(-1)
+	  if (iconv (cd, (ICONV_CONST char **) &fname, &inlen, &s, &outlen) != (size_t)(-1)
 	      && iconv (cd, NULL, NULL, &s, &outlen) != (size_t)(-1))
 	    {
 	      *(converted_fname + len - outlen - done) = '\0';

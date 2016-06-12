@@ -146,7 +146,7 @@ do_conversion (const char *tocode, const char *fromcode, char const *in_org, siz
 
   for (;;)
     {
-      if (iconv (cd, &in, &inlen, out, &outlen) != (size_t)(-1) &&
+      if (iconv (cd, (ICONV_CONST char **) &in, &inlen, out, &outlen) != (size_t)(-1) &&
           iconv (cd, NULL, NULL, out, &outlen) != (size_t)(-1))
         {
           *out = s;
