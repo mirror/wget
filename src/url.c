@@ -43,10 +43,8 @@ as that of the covered work.  */
 #include "host.h"  /* for is_valid_ipv6_address */
 #include "c-strcase.h"
 
-#if HAVE_ICONV
 #include <iconv.h>
 #include <langinfo.h>
-#endif
 
 #ifdef __VMS
 #include "vms.h"
@@ -1540,7 +1538,6 @@ static char *
 convert_fname (char *fname)
 {
   char *converted_fname = fname;
-#if HAVE_ICONV
   const char *from_encoding = opt.encoding_remote;
   const char *to_encoding = opt.locale;
   iconv_t cd;
@@ -1607,7 +1604,6 @@ convert_fname (char *fname)
     }
 
     iconv_close(cd);
-#endif
 
   return converted_fname;
 }
