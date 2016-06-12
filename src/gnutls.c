@@ -50,7 +50,7 @@ as that of the covered work.  */
 #include "hash.h"
 #include "ssl.h"
 
-#include <sys/fcntl.h>
+#include <fcntl.h>
 
 #ifdef WIN32
 # include "w32sock.h"
