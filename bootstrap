@@ -1,10 +1,10 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2013-12-05.23; # UTC
+scriptversion=2016-01-24.06; # UTC
 
 # Bootstrap this package from checked-out sources.
 
-# Copyright (C) 2003-2014 Free Software Foundation, Inc.
+# Copyright (C) 2003-2016 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,6 +41,9 @@ export LC_ALL
 (unset CDPATH) >/dev/null 2>&1 && unset CDPATH
 
 local_gl_dir=gl
+
+# Honor $PERL, but work even if there is none.
+PERL="${PERL-perl}"
 
 me=$0
 
@@ -456,6 +459,7 @@ check_versions() {
     test "$appvar" = TAR && appvar=AMTAR
     case $appvar in
         GZIP) ;; # Do not use $GZIP:  it contains gzip options.
+        PERL::*) ;; # Keep perl modules as-is
         *) eval "app=\${$appvar-$app}" ;;
     esac
 
@@ -473,6 +477,17 @@ check_versions() {
           ret=1
           continue
         } ;;
+      # Another check is for perl modules.  These can be written as
+      # e.g. perl::XML::XPath in case of XML::XPath module, etc.
+      perl::*)
+        # Extract module name
+        app="${app#perl::}"
+        if ! $PERL -m"$app" -e 'exit 0' >/dev/null 2>&1; then
+          warn_ "Error: perl module '$app' not found"
+          ret=1
+        fi
+        continue
+        ;;
     esac
     if [ "$req_ver" = "-" ]; then
       # Merely require app to exist; not all prereq apps are well-behaved
@@ -900,7 +915,8 @@ if test $use_libtool = 1; then
   esac
 fi
 echo "$0: $gnulib_tool $gnulib_tool_options --import ..."
-$gnulib_tool $gnulib_tool_options --import $gnulib_modules &&
+$gnulib_tool $gnulib_tool_options --import $gnulib_modules \
+  || die "gnulib-tool failed"
 
 for file in $gnulib_files; do
   symlink_to_dir "$GNULIB_SRCDIR" $file \
@@ -1005,6 +1021,6 @@ echo "$0: done.  Now you can run './configure'."
 # eval: (add-hook 'write-file-hooks 'time-stamp)
 # time-stamp-start: "scriptversion="
 # time-stamp-format: "%:y-%02m-%02d.%02H"
-# time-stamp-time-zone: "UTC"
+# time-stamp-time-zone: "UTC0"
 # time-stamp-end: "; # UTC"
 # End:
