@@ -4335,8 +4335,13 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
            first attempt to clobber existing data.)  */
         hstat.restval = st.st_size;
       else if (count > 1)
-        /* otherwise, continue where the previous try left off */
-        hstat.restval = hstat.len;
+        {
+          /* otherwise, continue where the previous try left off */
+          if (hstat.len < hstat.restval)
+            hstat.restval -= hstat.len;
+          else
+            hstat.restval = hstat.len;
+        }
       else
         hstat.restval = 0;
 
