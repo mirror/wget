@@ -20,8 +20,12 @@ A_File = WgetFile ("File1", File1)
 B_File = WgetFile ("File2", File2)
 C_File = WgetFile ("File3", File3)
 
-CAFILE = os.path.abspath(os.path.join(os.getenv('srcdir', '.'), 'certs', 'ca-cert.pem'))
-WGET_OPTIONS = "--pinnedpubkey=sha256//mHiEhWHvusnzP7COZk+SzSJ+Gl7nZT+ADx0PUnDD7mM= --ca-certificate=" + CAFILE
+CERTDIR = os.path.abspath(os.path.join(os.getenv('srcdir', '.'), 'certs'))
+CAFILE = CERTDIR + '/ca-cert.pem'
+KEYFILE = CERTDIR + '/server-pubkey-sha256.base64'
+with open(KEYFILE, 'r') as f:
+    KEY = f.read().replace('\n', '')
+WGET_OPTIONS = "--pinnedpubkey=sha256//" + KEY + " --ca-certificate=" + CAFILE
 WGET_URLS = [["File1", "File2"]]
 
 Files = [[A_File, B_File]]

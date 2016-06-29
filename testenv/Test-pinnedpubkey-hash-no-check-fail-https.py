@@ -18,7 +18,7 @@ File2 = "With lemon or cream?"
 A_File = WgetFile ("File1", File1)
 B_File = WgetFile ("File2", File2)
 
-WGET_OPTIONS = "--no-check-certificate --pinnedpubkey=sha256//mHiEhWHvusnzP7COZk+SzSJ+Gl7ZZT+ADx0PUnDD7mM="
+WGET_OPTIONS = "--no-check-certificate --pinnedpubkey=sha256//invalid"
 WGET_URLS = [["File1", "File2"]]
 
 Files = [[A_File, B_File]]
