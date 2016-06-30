@@ -204,18 +204,20 @@ ssl_init (void)
 #endif
   SSL_library_init ();
   SSL_load_error_strings ();
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
   SSLeay_add_all_algorithms ();
   SSLeay_add_ssl_algorithms ();
+#endif
 
   switch (opt.secure_protocol)
     {
-#ifndef OPENSSL_NO_SSL2
+#if !defined OPENSSL_NO_SSL2 && OPENSSL_VERSION_NUMBER < 0x10100000L
     case secure_protocol_sslv2:
       meth = SSLv2_client_method ();
       break;
 #endif
 
-#ifndef OPENSSL_NO_SSL3
+#ifndef OPENSSL_NO_SSL3_METHOD
     case secure_protocol_sslv3:
       meth = SSLv3_client_method ();
       break;
@@ -583,7 +585,7 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
     DEBUGP (("SSL handshake timed out.\n"));
     goto timeout;
   }
-  if (scwt_ctx.result <= 0 || SSL_state(conn) != SSL_ST_OK)
+  if (scwt_ctx.result <= 0 || !SSL_is_init_finished(conn))
     goto error;
 
   ctx = xnew0 (struct openssl_transport_context);
