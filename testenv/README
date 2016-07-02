@@ -130,12 +130,12 @@ The rules object is a dictionary element, with the key as the Rule Name and
 value as the Rule Data. In most cases, the Rule Data is another dictionary.
 
 Various variables used consistently across all tests are:
-    * WGET_OPTIONS: The command line string passed to Wget upon invokation. This
+    * WGET_OPTIONS: The command line string passed to Wget upon invocation. This
     string may contain URLs, like in the case where in-URL authentication is
     used. Variable names passed like {{var_name}} will be replaced by the
     contents of the variable self.var_name before being passed to Wget
     * WGET_URLS: This is a list of filenames which will be appended as the URLs
-    to Wget during invokation. This is a list of lists, where WGET_URLS[0]
+    to Wget during invocation. This is a list of lists, where WGET_URLS[0]
     represents the list of Filenames called from Server[0], WGET_URLS[1] is a
     list of files downloaded from Server[2], etc.
     * Files: This variable defines the files that exist in the Server's
@@ -215,7 +215,7 @@ executed. The currently supported options are:
     download. The complete URL will be created and passed to Wget
     automatically. (alias URLs)
     * WgetCommands  : A string consisting of the various commandline switches
-    sent to Wget upon invokation. Any data placed between {{ }} in this string
+    sent to Wget upon invocation. Any data placed between {{ }} in this string
     will be replaced with the contents of self.<data> before being passed to
     Wget. This is particularly useful for getting the hostname and port for a
     file. While all Download URL's are passed to Urls, a notable exception is

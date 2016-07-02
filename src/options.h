@@ -243,7 +243,7 @@ struct options
 
   char *pinnedpubkey;           /* Public key (PEM/DER) file, or any number
                                    of base64 encoded sha256 hashes preceded by
-                                   \'sha256//\' and seperated by \';\', to verify
+                                   \'sha256//\' and separated by \';\', to verify
                                    peer against */
 
   char *random_file;            /* file with random data to seed the PRNG */

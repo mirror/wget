@@ -802,7 +802,7 @@ With @samp{--progress=bar}, there are currently two possible parameters,
 @var{force} and @var{noscroll}.
 
 When the output is not a TTY, the progress bar always falls back to ``dot'',
-even if @samp{--progress=bar} was passed to Wget during invokation. This
+even if @samp{--progress=bar} was passed to Wget during invocation. This
 behaviour can be overridden and the ``bar'' output forced by using the ``force''
 parameter as @samp{--progress=bar:force}.
 

@@ -809,7 +809,7 @@ HTTPS (SSL/TLS) options:\n"),
     N_("\
        --pinnedpubkey=FILE/HASHES  Public key (PEM/DER) file, or any number\n\
                                    of base64 encoded sha256 hashes preceded by\n\
-                                   \'sha256//\' and seperated by \';\', to verify\n\
+                                   \'sha256//\' and separated by \';\', to verify\n\
                                    peer against\n"),
 #if defined(HAVE_LIBSSL) || defined(HAVE_LIBSSL32)
     N_("\

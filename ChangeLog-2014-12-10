@@ -729,7 +729,7 @@
 	* testenv/Makefile.am: Run the tests in Python's Optimizedmode
 	* testenv/conf/__init__.py (gen_hook): Use try..except instead of if..else
 	* testenv/misc/color_terminal.py: System and check will not change while a test is
-	run. Do not test for them on every invokation of printer()
+	run. Do not test for them on every invocation of printer()
 	* testenv/server/http/http_server.py: The ssl and re modules are required by
 	specific functions. Load them lazily
 	(HTTPSServer.__init__): Lazy load ssl module here
