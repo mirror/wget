@@ -66,6 +66,9 @@ as that of the covered work.  */
 # include "metalink.h"
 # include "xstrndup.h"
 #endif
+#ifdef ENABLE_XATTR
+#include "xattr.h"
+#endif
 
 #ifdef TESTING
 #include "test.h"
@@ -2892,8 +2895,8 @@ fail:
    If PROXY is non-NULL, the connection will be made to the proxy
    server, and u->url will be requested.  */
 static uerr_t
-gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
-         struct iri *iri, int count)
+gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
+         int *dt, struct url *proxy, struct iri *iri, int count)
 {
   struct request *req = NULL;
 
@@ -3754,6 +3757,20 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       goto cleanup;
     }
 
+#ifdef ENABLE_XATTR
+  if (opt.enable_xattr)
+    {
+      if (original_url != u)
+        {
+          set_file_metadata (u->url, original_url->url, fp);
+        }
+      else
+        {
+          set_file_metadata (u->url, NULL, fp);
+        }
+    }
+#endif
+
   err = read_response_body (hs, sock, fp, contlen, contrange,
                             chunked_transfer_encoding,
                             u->url, warc_timestamp_str,
@@ -3972,7 +3989,7 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
         *dt &= ~SEND_NOCACHE;
 
       /* Try fetching the document, or at least its head.  */
-      err = gethttp (u, &hstat, dt, proxy, iri, count);
+      err = gethttp (u, original_url, &hstat, dt, proxy, iri, count);
 
       /* Time?  */
       tms = datetime_str (time (NULL));

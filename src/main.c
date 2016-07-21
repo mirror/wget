@@ -436,6 +436,9 @@ static struct cmdline_option option_data[] =
 #ifdef USE_WATT32
     { "wdebug", 0, OPT_BOOLEAN, "wdebug", -1 },
 #endif
+#ifdef ENABLE_XATTR
+    { "xattr", 0, OPT_BOOLEAN, "xattr", -1 },
+#endif
   };
 
 #undef IF_SSL
@@ -703,6 +706,10 @@ Download:\n"),
        --metalink-over-http        use Metalink metadata from HTTP response headers\n"),
     N_("\
        --preferred-location        preferred location for Metalink resources\n"),
+#endif
+#ifdef ENABLE_XATTR
+    N_("\
+       --no-xattr                  turn off storage of metadata in extended file attributes\n"),
 #endif
     "\n",
 

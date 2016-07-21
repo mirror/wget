@@ -339,6 +339,9 @@ static const struct {
 #ifdef USE_WATT32
   { "wdebug",           &opt.wdebug,            cmd_boolean },
 #endif
+#ifdef ENABLE_XATTR
+  { "xattr",            &opt.enable_xattr,      cmd_boolean },
+#endif
 };
 
 /* Look up CMDNAME in the commands[] and return its position in the
@@ -481,6 +484,12 @@ defaults (void)
 #ifdef HAVE_HSTS
   /* HSTS is enabled by default */
   opt.hsts = true;
+#endif
+
+#ifdef ENABLE_XATTR
+  opt.enable_xattr = true;
+#else
+  opt.enable_xattr = false;
 #endif
 }
 

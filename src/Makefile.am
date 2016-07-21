@@ -39,6 +39,10 @@ if METALINK_IS_ENABLED
 METALINK_OBJ = metalink.c
 endif
 
+if WITH_XATTR
+XATTR_OBJ = xattr.c
+endif
+
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
 
@@ -49,14 +53,14 @@ wget_SOURCES = connect.c convert.c cookies.c ftp.c	\
 		css_.c css-url.c	\
 		ftp-basic.c ftp-ls.c hash.c host.c hsts.c html-parse.c html-url.c	\
 		http.c init.c log.c main.c netrc.c progress.c ptimer.c	\
-		recur.c res.c retr.c spider.c url.c warc.c	\
+		recur.c res.c retr.c spider.c url.c warc.c $(XATTR_OBJ) \
 		utils.c exits.c build_info.c $(IRI_OBJ) $(METALINK_OBJ)	\
 		css-url.h css-tokens.h connect.h convert.h cookies.h	\
 		ftp.h hash.h host.h hsts.h  html-parse.h html-url.h	\
 		http.h http-ntlm.h init.h log.h mswindows.h netrc.h	\
 		options.h progress.h ptimer.h recur.h res.h retr.h	\
 		spider.h ssl.h sysdep.h url.h warc.h utils.h wget.h iri.h	\
-		exits.h version.h metalink.h
+		exits.h version.h metalink.h xattr.h
 nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = iri.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB) $(INET_NTOP_LIB) $(LIBSOCKET)\

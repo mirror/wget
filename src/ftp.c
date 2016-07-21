@@ -52,6 +52,9 @@ as that of the covered work.  */
 #include "recur.h"              /* for INFINITE_RECURSION */
 #include "warc.h"
 #include "c-strcase.h"
+#ifdef ENABLE_XATTR
+#include "xattr.h"
+#endif
 
 #ifdef __VMS
 # include "vms.h"
@@ -1545,6 +1548,13 @@ Error in server response, closing control connection.\n"));
   tms = datetime_str (time (NULL));
   tmrate = retr_rate (rd_size, con->dltime);
   total_download_time += con->dltime;
+
+#ifdef ENABLE_XATTR
+  if (opt.enable_xattr)
+    {
+      set_file_metadata (u->url, NULL, fp);
+    }
+#endif
 
   fd_close (local_sock);
   /* Close the local file.  */

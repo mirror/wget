@@ -127,6 +127,8 @@ struct options
   bool warc_keep_log;           /* Store the log file in a WARC record. */
   char **warc_user_headers;     /* User-defined WARC header(s). */
 
+  bool enable_xattr;            /* Store metadata in POSIX extended attributes. */
+
   char *user;                   /* Generic username */
   char *passwd;                 /* Generic password */
   bool ask_passwd;              /* Ask for password? */
