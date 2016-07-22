@@ -510,6 +510,12 @@ scheme_disable (enum url_scheme scheme)
   supported_schemes[scheme].flags |= scm_disabled;
 }
 
+const char *
+scheme_leading_string (enum url_scheme scheme)
+{
+  return supported_schemes[scheme].leading_string;
+}
+
 /* Skip the username and password, if present in the URL.  The
    function should *not* be called with the complete URL, but with the
    portion after the scheme.

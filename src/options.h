@@ -132,6 +132,7 @@ struct options
   char *user;                   /* Generic username */
   char *passwd;                 /* Generic password */
   bool ask_passwd;              /* Ask for password? */
+  char *use_askpass;           /* value to use for use-askpass if WGET_ASKPASS is not set */
 
   bool always_rest;             /* Always use REST. */
   wgint start_pos;              /* Start position of a download. */
