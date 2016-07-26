@@ -32,9 +32,11 @@ write_xattr_metadata (const char *name, const char *value, FILE *fp)
 
   if (name && value && fp)
     {
-      retval = fsetxattr (fileno(fp), name, value, strlen(value), 0);
+      retval = fsetxattr (fileno (fp), name, value, strlen (value), 0);
       /* FreeBSD's extattr_set_fd returns the length of the extended attribute. */
       retval = (retval < 0) ? retval : 0;
+      if (retval)
+        DEBUGP (("Failed to set xattr %s.\n", quote(name)));
     }
 
   return retval;
@@ -71,9 +73,7 @@ set_file_metadata (const char *origin_url, const char *referrer_url, FILE *fp)
 
   retval = write_xattr_metadata ("user.xdg.origin.url", escnonprint_uri (origin_url), fp);
   if ((!retval) && referrer_url)
-    {
-      retval = write_xattr_metadata ("user.xdg.referrer.url", escnonprint_uri (referrer_url), fp);
-    }
+    retval = write_xattr_metadata ("user.xdg.referrer.url", escnonprint_uri (referrer_url), fp);
 
   return retval;
 }

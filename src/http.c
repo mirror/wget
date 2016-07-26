@@ -423,7 +423,7 @@ maybe_send_basic_creds (const char *hostname, const char *user,
       do_challenge = true;
     }
   else if (basic_authed_hosts
-      && hash_table_contains(basic_authed_hosts, hostname))
+      && hash_table_contains (basic_authed_hosts, hostname))
     {
       DEBUGP (("Found %s in basic_authed_hosts.\n", quote (hostname)));
       do_challenge = true;
@@ -449,9 +449,9 @@ register_basic_auth_host (const char *hostname)
     {
       basic_authed_hosts = make_nocase_string_hash_table (1);
     }
-  if (!hash_table_contains(basic_authed_hosts, hostname))
+  if (!hash_table_contains (basic_authed_hosts, hostname))
     {
-      hash_table_put (basic_authed_hosts, xstrdup(hostname), NULL);
+      hash_table_put (basic_authed_hosts, xstrdup (hostname), NULL);
       DEBUGP (("Inserted %s into basic_authed_hosts\n", quote (hostname)));
     }
 }
@@ -849,7 +849,7 @@ resp_free (struct response **resp_ref)
    caused crashes in UTF-8 locales.  */
 
 static void
-print_response_line(const char *prefix, const char *b, const char *e)
+print_response_line (const char *prefix, const char *b, const char *e)
 {
   char *copy;
   BOUNDED_TO_ALLOCA(b, e, copy);
@@ -875,7 +875,7 @@ print_server_response (const struct response *resp, const char *prefix)
         --e;
       if (b < e && e[-1] == '\r')
         --e;
-      print_response_line(prefix, b, e);
+      print_response_line (prefix, b, e);
     }
 }
 
@@ -1029,18 +1029,18 @@ skip_short_body (int fd, wgint contlen, bool chunked)
    or a fragment of a long parameter value
 */
 static int
-modify_param_name(param_token *name)
+modify_param_name (param_token *name)
 {
   const char *delim1 = memchr (name->b, '*', name->e - name->b);
   const char *delim2 = memrchr (name->b, '*', name->e - name->b);
 
   int result;
 
-  if(delim1 == NULL)
+  if (delim1 == NULL)
     {
       result = NOT_RFC2231;
     }
-  else if(delim1 == delim2)
+  else if (delim1 == delim2)
     {
       if ((name->e - 1) == delim1)
         {
@@ -1158,12 +1158,12 @@ extract_param (const char **source, param_token *name, param_token *value,
     }
   *source = p;
 
-  param_type = modify_param_name(name);
+  param_type = modify_param_name (name);
   if (param_type != NOT_RFC2231)
     {
       if (param_type == RFC2231_ENCODING && is_url_encoded)
         *is_url_encoded = true;
-      modify_param_value(value, param_type);
+      modify_param_value (value, param_type);
     }
   return true;
 }
@@ -1178,8 +1178,8 @@ static void
 append_value_to_filename (char **filename, param_token const * const value,
                           bool is_url_encoded)
 {
-  int original_length = strlen(*filename);
-  int new_length = strlen(*filename) + (value->e - value->b);
+  int original_length = strlen (*filename);
+  int new_length = strlen (*filename) + (value->e - value->b);
   *filename = xrealloc (*filename, new_length+1);
   memcpy (*filename + original_length, value->b, (value->e - value->b));
   (*filename)[new_length] = '\0';
@@ -1284,7 +1284,7 @@ parse_strict_transport_security (const char *header, time_t *max_age, bool *incl
         {
           if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "max-age"))
             {
-              xfree(c_max_age);
+              xfree (c_max_age);
               c_max_age = strdupdelim (value.b, value.e);
             }
           else if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "includeSubDomains"))
@@ -1886,7 +1886,7 @@ initialize_request (struct url *u, struct http_stat *hs, int *dt, struct url *pr
     {
       /* If this is a host for which we've already received a Basic
        * challenge, we'll go ahead and send Basic authentication creds. */
-      *basic_auth_finished = maybe_send_basic_creds(u->host, *user, *passwd, req);
+      *basic_auth_finished = maybe_send_basic_creds (u->host, *user, *passwd, req);
     }
 
   /* Generate the Host header, HOST:PORT.  Take into account that:
@@ -2122,7 +2122,7 @@ establish_connection (struct url *u, struct url **conn_ref,
               xfree (head);
               return HERR;
             }
-          xfree(hs->message);
+          xfree (hs->message);
           hs->message = xstrdup (message);
           resp_free (&resp);
           xfree (head);
@@ -3000,7 +3000,7 @@ gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
   hs->res = -1;
   hs->rderrmsg = NULL;
   hs->newloc = NULL;
-  xfree(hs->remote_time);
+  xfree (hs->remote_time);
   hs->error = NULL;
   hs->message = NULL;
 
@@ -3139,7 +3139,7 @@ gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
       bool warc_result;
 
       /* Generate a timestamp and uuid for this request. */
-      warc_timestamp (warc_timestamp_str, sizeof(warc_timestamp_str));
+      warc_timestamp (warc_timestamp_str, sizeof (warc_timestamp_str));
       warc_uuid_str (warc_request_uuid);
 
       /* Create a request record and store it in the WARC file. */
@@ -3185,7 +3185,7 @@ gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
         resp = resp_new (head);
 
         /* Check for status line.  */
-        xfree(message);
+        xfree (message);
         statcode = resp_status (resp, &message);
         if (statcode < 0)
           {
@@ -3214,7 +3214,7 @@ gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
     while (_repeat);
   }
 
-  xfree(hs->message);
+  xfree (hs->message);
   hs->message = xstrdup (message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
@@ -3443,7 +3443,7 @@ gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
               tmp = parse_charset (tmp2);
               if (tmp)
                 set_content_encoding (iri, tmp);
-              xfree(tmp);
+              xfree (tmp);
             }
 #endif
         }
@@ -3761,13 +3761,9 @@ gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
   if (opt.enable_xattr)
     {
       if (original_url != u)
-        {
-          set_file_metadata (u->url, original_url->url, fp);
-        }
+        set_file_metadata (u->url, original_url->url, fp);
       else
-        {
-          set_file_metadata (u->url, NULL, fp);
-        }
+        set_file_metadata (u->url, NULL, fp);
     }
 #endif
 
@@ -4633,7 +4629,7 @@ digest_authentication_encode (const char *au, const char *user,
           }
     }
 
-  if (qop != NULL && strcmp(qop,"auth"))
+  if (qop != NULL && strcmp (qop,"auth"))
     {
       logprintf (LOG_NOTQUIET, _("Unsupported quality of protection '%s'.\n"), qop);
       xfree (qop); /* force freeing mem and return */
@@ -4678,7 +4674,7 @@ digest_authentication_encode (const char *au, const char *user,
     if (algorithm && !strcmp (algorithm, "MD5-sess"))
       {
         /* A1BUF = H( H(user ":" realm ":" password) ":" nonce ":" cnonce ) */
-        snprintf (cnonce, sizeof (cnonce), "%08x", random_number(INT_MAX));
+        snprintf (cnonce, sizeof (cnonce), "%08x", random_number (INT_MAX));
 
         md5_init_ctx (&ctx);
         /* md5_process_bytes (hash, MD5_DIGEST_SIZE, &ctx); */
@@ -4700,12 +4696,12 @@ digest_authentication_encode (const char *au, const char *user,
     md5_finish_ctx (&ctx, hash);
     dump_hash (a2buf, hash);
 
-    if (qop && !strcmp(qop, "auth"))
+    if (qop && !strcmp (qop, "auth"))
       {
         /* RFC 2617 Digest Access Authentication */
         /* generate random hex string */
         if (!*cnonce)
-          snprintf(cnonce, sizeof(cnonce), "%08x", random_number(INT_MAX));
+          snprintf (cnonce, sizeof (cnonce), "%08x", random_number (INT_MAX));
 
         /* RESPONSE_DIGEST = H(A1BUF ":" nonce ":" noncecount ":" clientnonce ":" qop ": " A2BUF) */
         md5_init_ctx (&ctx);
@@ -4715,9 +4711,9 @@ digest_authentication_encode (const char *au, const char *user,
         md5_process_bytes ((unsigned char *)":", 1, &ctx);
         md5_process_bytes ((unsigned char *)"00000001", 8, &ctx); /* TODO: keep track of server nonce values */
         md5_process_bytes ((unsigned char *)":", 1, &ctx);
-        md5_process_bytes ((unsigned char *)cnonce, strlen(cnonce), &ctx);
+        md5_process_bytes ((unsigned char *)cnonce, strlen (cnonce), &ctx);
         md5_process_bytes ((unsigned char *)":", 1, &ctx);
-        md5_process_bytes ((unsigned char *)qop, strlen(qop), &ctx);
+        md5_process_bytes ((unsigned char *)qop, strlen (qop), &ctx);
         md5_process_bytes ((unsigned char *)":", 1, &ctx);
         md5_process_bytes ((unsigned char *)a2buf, MD5_DIGEST_SIZE * 2, &ctx);
         md5_finish_ctx (&ctx, hash);
@@ -4767,12 +4763,12 @@ digest_authentication_encode (const char *au, const char *user,
 
     if (opaque)
       {
-        res_len += snprintf(res + res_len, res_size - res_len, ", opaque=\"%s\"", opaque);
+        res_len += snprintf (res + res_len, res_size - res_len, ", opaque=\"%s\"", opaque);
       }
 
     if (algorithm)
       {
-        snprintf(res + res_len, res_size - res_len, ", algorithm=\"%s\"", algorithm);
+        snprintf (res + res_len, res_size - res_len, ", algorithm=\"%s\"", algorithm);
       }
   }
 
@@ -4921,7 +4917,7 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
 #ifdef TESTING
 
 const char *
-test_parse_range_header(void)
+test_parse_range_header (void)
 {
   unsigned i;
   static const struct {
@@ -4966,7 +4962,7 @@ test_parse_range_header(void)
 }
 
 const char *
-test_parse_content_disposition(void)
+test_parse_content_disposition (void)
 {
   unsigned i;
   static const struct {
@@ -4988,7 +4984,7 @@ test_parse_content_disposition(void)
 filename*1=\"B\"", "AA.ext", true },
   };
 
-  for (i = 0; i < countof(test_array); ++i)
+  for (i = 0; i < countof (test_array); ++i)
     {
       char *filename;
       bool res;

@@ -242,7 +242,7 @@ print_length (wgint size, wgint start, bool authoritative)
 static uerr_t ftp_get_listing (struct url *, struct url *, ccon *, struct fileinfo **);
 
 static uerr_t
-get_ftp_greeting(int csock, ccon *con)
+get_ftp_greeting (int csock, ccon *con)
 {
   uerr_t err = 0;
 
@@ -875,7 +875,7 @@ Error in server response, closing control connection.\n"));
              Unlike the rest of this block, this particular behavior
              _is_ VMS-specific, so it gets its own VMS test.
           */
-          if ((con->rs == ST_VMS) && (strchr( target, '/') != NULL))
+          if ((con->rs == ST_VMS) && (strchr (target, '/') != NULL))
             {
               cwd_end = 3;
               DEBUGP (("Using extra \"CWD []\" step for VMS server.\n"));
@@ -1551,9 +1551,7 @@ Error in server response, closing control connection.\n"));
 
 #ifdef ENABLE_XATTR
   if (opt.enable_xattr)
-    {
-      set_file_metadata (u->url, NULL, fp);
-    }
+    set_file_metadata (u->url, NULL, fp);
 #endif
 
   fd_close (local_sock);
@@ -1651,10 +1649,10 @@ Error in server response, closing control connection.\n"));
 #ifdef __VMS
       char *targ;
 
-      targ = ods_conform( con->target);
+      targ = ods_conform (con->target);
       if (targ != con->target)
         {
-          xfree( con->target);
+          xfree (con->target);
           con->target = targ;
         }
 #endif /* def __VMS */
@@ -2513,7 +2511,7 @@ is_invalid_entry (struct fileinfo *f)
   while (cur->next)
     {
       cur = cur->next;
-      if (strcmp(f_name, cur->name) == 0)
+      if (strcmp (f_name, cur->name) == 0)
           return true;
     }
   return false;
