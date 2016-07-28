@@ -154,7 +154,13 @@ retrieve_from_metalink (const metalink_t* metalink)
                  To do that we create the local file here and put
                  it as output_stream. We restore the original configuration
                  after we are finished with the file.  */
-              output_stream = unique_create (mfile->name, true, &filename);
+              if (opt.always_rest)
+                // continue previous download
+                output_stream = fopen (mfile->name, "ab");
+              else
+                // create a file with an unique name
+                output_stream = unique_create (mfile->name, true, &filename);
+
               output_stream_regular = true;
 
               /* Store the real file name for displaying in messages.  */
@@ -331,7 +337,7 @@ retrieve_from_metalink (const metalink_t* metalink)
 #ifdef HAVE_GPGME
               /* Check the crypto signature.
 
-                 Note that the signtures from Metalink in XML will not be
+                 Note that the signatures from Metalink in XML will not be
                  parsed when using libmetalink version older than 0.1.3.
                  Metalink-over-HTTP is not affected by this problem.  */
               if (mfile->signature)
