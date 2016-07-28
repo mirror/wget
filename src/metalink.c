@@ -170,7 +170,26 @@ retrieve_from_metalink (const metalink_t* metalink)
 
               output_stream_regular = true;
 
-              /* Store the real file name for displaying in messages.  */
+              /*
+                At this point, if output_stream is NULL, the file
+                couldn't be created/opened.
+
+                This happens when the metalink:file has a "path/file"
+                name format and its directory tree cannot be created:
+                * stdio.h (fopen)
+                * src/utils.c (unique_create)
+
+                RFC5854 requires a proper "path/file" format handling,
+                this can be achieved setting opt.output_document while
+                output_stream is left to NULL:
+                * src/http.c (open_output_stream): If output_stream is
+                  NULL, create the opt.output_document "path/file"
+              */
+              if (!filename)
+                filename = xstrdup (mfile->name);
+
+              /* Store the real file name for displaying in messages,
+                 and for proper RFC5854 "path/file" handling.  */
               opt.output_document = filename;
 
               opt.metalink_over_http = false;
@@ -178,6 +197,15 @@ retrieve_from_metalink (const metalink_t* metalink)
               retr_err = retrieve_url (url, mres->url, NULL, NULL,
                                        NULL, NULL, opt.recursive, iri, false);
               opt.metalink_over_http = _metalink_http;
+
+              /*
+                Bug: output_stream is NULL, but retrieve_url() somehow
+                created filename.
+
+                Bugfix: point output_stream to filename if it exists.
+              */
+              if (!output_stream && file_exists_p (filename))
+                output_stream = fopen (filename, "ab");
             }
           url_free (url);
           iri_free (iri);

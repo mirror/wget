@@ -1,24 +1,26 @@
-GNU Wget Metalink module (--input-metalink)
+GNU Wget Metalink module
 
-  Evaluation of "Directory Options" on the command line
+  Evaluation of the Metalink/XML and Metalink/HTTP implementations
 
 
 1. Introduction
 ***************
 
 This document, and the results contained in it, is focused over the
-testing of the metalink:file "path/file" name format.
+evaluation of the Metalink/XML and Metalink/HTTP implementations.
 
 The "Directory Options" mentioned here are used on the command line in
-conjunction with the option '--input-metalink=file':
+conjunction with the option '--input-metalink=file' for Metalink/XML,
+and '--metalink-over-http' for Metalink/HTTP.
 
-$ wget --input-metalink=file <directory options>
+$ wget --input-metalink=<file> [directory options]
+$ wget --metalink-over-http [directory options] <url>
 
 2. Notes
 ********
 
-Tests containing a metalink:file "/path/file", "./path/file", or
-"../path/file" name shall be run manually due to security concerns.
+Tests for metalink:file names beginning with '/', '~/', './', or '../'
+(e.g. "/path/file") shall be run manually due to security concerns.
 
 3. Metalink files used as reference
 ***********************************
@@ -47,17 +49,30 @@ EOF
 4.1 Implemented safety features
 ===============================
 
-Do not follow relative or absolute paths: "/path/file", "./path/file",
-and "../path/file" as metalink:file name formats are all ignored (wget
-refuses to start). The options --trust-server-names changes nothing.
+Any metalink:file name containing an absolute, relative, or home path
+(see '2. Notes') parsed from Metalink/XML files is rejected.
 
-4.2 Actual behaviour
-====================
+This is a libmetalink's design decision implemented in the function
+metalink_check_safe_path().  This feature shall not be modified.
 
-Given a metalink:file "path/file" name, if "path" exists, download
-"path/file", then compute its checksum. If "path" doesn't exist,
-download the url's file in the working directory; then the checksum
-fails: cannot find "path/file".
+All the above conform to the RFC5854 standard.
+
+References:
+ https://tools.ietf.org/html/rfc5854#section-4.1.2.1
+ https://tools.ietf.org/html/rfc5854#section-4.2.8.3
+
+4.2 File download behaviour
+===========================
+
+When a Metalink/XML file is parsed:
+1. create the metalink:file "path/file" tree;
+2. download the metalink:url file as "path/file";
+3. verify the "path/file" checksum.
+
+All the above conform to the RFC5854 standard.
+
+References:
+ https://tools.ietf.org/html/rfc5854
 
 4.3 Questionable behaviours
 ===========================
@@ -69,69 +84,85 @@ If more metalink:file elements are the same, wget downloads them all.
 
 The download is OK even when metalink:file size is wrong.
 
-5. Directory Options
+5. `wget --metalink-over-http`
+******************************
+
+5.1 Implemented safety features
+===============================
+
+The function url_file_name() is responsible of parsing the url's file
+name and mixing in the "Directory Options" wrote on the command line.
+
+The use of libmetalink's metalink_check_safe_path() shouldn't be
+necessary (see '4.1 Implemented safety features').
+
+All the above comform to the usual Wget's download behaviour.
+
+References:
+ wget(1)
+
+5.2 File download behaviour
+===========================
+
+When a Metalink/HTTP header is parsed:
+1. extract metalink metadata from the header;
+2. download the file from the mirror with the highest priority;
+3. verify the file's checksum.
+
+All the above comform to the usual Wget's download behaviour and to
+the RFC6249 standard.
+
+References:
+ wget(1)
+ https://tools.ietf.org/html/rfc6249
+
+6. Directory Options
 ********************
 
 '-nd'
 '--no-directories'
 
-    Used alone has no effect (see `wget --input-metalink=test.meta4`).
+    Do not apply to Metalink/XML files (aka --input-metalink=<file>).
 
-    Used in conjunction with --recursive, given "path/file", if "path"
-    exists, download "path/file" and compute its checksum.  If "path"
-    doesnt' exist, download the url's file in the working directory,
-    then the checksum fails: cannot find "path/file".
+    Apply to Metalink/HTTP urls as described in the Wget's manual, see
+    wget(1).  The target url is the url wrote on the command line.
 
 '-x'
 '--force-directories'
 
-    Given "path/file", if "path" exists, download "path/file", then
-    compute its checksum.  If "path" doesn't exist, create the url
-    hierarchy, then the checksum fails: cannot find "path/file".
+    Do not apply to Metalink/XML files (aka --input-metalink=<file>).
+
+    Apply to Metalink/HTTP urls as described in the Wget's manual, see
+    wget(1).  The target url is the url wrote on the command line.
 
 '-nH'
 '--no-host-directories'
 
-    Given "path/file", if "path" exists, download "path/file", then
-    compute its checksum.  If "path" doesn't exist, download the url's
-    file in the working directory, then the checksum fails: cannot
-    find "path/file"; in this context, if --force-directories is
-    present, create the url hierarchy omitting the host component.
+    Do not apply to Metalink/XML files (aka --input-metalink=<file>).
+
+    Apply to Metalink/HTTP urls as described in the Wget's manual, see
+    wget(1).  The target url is the url wrote on the command line.
 
 '--protocol-directories'
 
-    Used alone has no effect (see `wget --input-metalink=test.meta4`).
+    Do not apply to Metalink/XML files (aka --input-metalink=<file>).
 
-    In conjunction with --force-directories, use the protocol name as
-    the first directory component (see --force-directories).
+    Apply to Metalink/HTTP urls as described in the Wget's manual, see
+    wget(1).  The target url is the url wrote on the command line.
 
 '--cut-dirs=number'
 
-    Used alone has no effect (see `wget --input-metalink=test.meta4`).
+    Do not apply to Metalink/XML files (aka --input-metalink=<file>).
 
-    In conjunction with --force-directories, ignore 'number' directory
-    components after the domain (see --force-directories).
+    Apply to Metalink/HTTP urls as described in the Wget's manual, see
+    wget(1).  The target url is the url wrote on the command line.
 
 '-P prefix'
 '--directory-prefix=prefix'
 
-    This is buggy or non-intuitive.
+    Do not apply to Metalink/XML files (aka --input-metalink=<file>).
 
-    Given "path/file", and more metalink:url uris for the same file,
-    if '-P path' is specified, the first url's file is downloaded as
-    "path/<url_file>", and the second url's file as "path/file". The
-    first file fails the checksum: cannot find "path/file". The file
-    "path/file" passes the checksum verification.
+    Apply to Metalink/HTTP downloads.
 
-    Given "path/file", and more metalink:url uris for the same file,
-    if '-P newp' is specified, all the urls' files are downloaded as
-    "newp/<url_file>. A suffix counter is added to the file names to
-    not overwrite existing files. Then all the checksums fail: cannot
-    find "path/file".
-
-    Given "path/file", and more metalink:url uris for the same file,
-    if '-P ../path' is specified, the same things as if '-P ../newp'
-    or '-P newp' will happen, e.g. "newp/<url_file> and checksums
-    failures.
-
-    [write here more wrong things happening]
+    The directory prefix is the directory where all other files and
+    subdirectories will be saved to, see wget(1).

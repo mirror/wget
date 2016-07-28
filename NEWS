@@ -9,6 +9,11 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* When processing a Metalink file, create the parent directories of a
+  "path/file" destination file name:
+  https://tools.ietf.org/html/rfc5854#section-4.1.2.1
+  https://tools.ietf.org/html/rfc5854#section-4.2.8.3
+
 * On a recursive download, append a .tmp suffix to temporary files
   that will be deleted after being parsed, and create them
   readable/writable only by the owner.
