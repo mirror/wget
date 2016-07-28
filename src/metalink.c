@@ -34,8 +34,12 @@ as that of the covered work.  */
 #include "retr.h"
 #include "exits.h"
 #include "utils.h"
+#include "md5.h"
+#include "sha1.h"
 #include "sha256.h"
+#include "sha512.h"
 #include "xstrndup.h"
+#include "c-strcase.h"
 #include <errno.h>
 #include <unistd.h> /* For unlink.  */
 #include <metalink/metalink_parser.h>
@@ -177,14 +181,39 @@ retrieve_from_metalink (const metalink_t* metalink)
 
               for (mchksum_ptr = mfile->checksums; *mchksum_ptr; mchksum_ptr++)
                 {
+                  char md5[MD5_DIGEST_SIZE];
+                  char md5_txt[2 * MD5_DIGEST_SIZE + 1];
+
+                  char sha1[SHA1_DIGEST_SIZE];
+                  char sha1_txt[2 * SHA1_DIGEST_SIZE + 1];
+
+                  char sha224[SHA224_DIGEST_SIZE];
+                  char sha224_txt[2 * SHA224_DIGEST_SIZE + 1];
+
                   char sha256[SHA256_DIGEST_SIZE];
                   char sha256_txt[2 * SHA256_DIGEST_SIZE + 1];
 
+                  char sha384[SHA384_DIGEST_SIZE];
+                  char sha384_txt[2 * SHA384_DIGEST_SIZE + 1];
+
+                  char sha512[SHA512_DIGEST_SIZE];
+                  char sha512_txt[2 * SHA512_DIGEST_SIZE + 1];
+
+                  hash_ok = false;
                   mchksum = *mchksum_ptr;
 
                   /* I have seen both variants...  */
-                  if (strcasecmp (mchksum->type, "sha256")
-                      && strcasecmp (mchksum->type, "sha-256"))
+                  if (c_strcasecmp (mchksum->type, "md5")
+                      && c_strcasecmp (mchksum->type, "sha1")
+                      && c_strcasecmp (mchksum->type, "sha-1")
+                      && c_strcasecmp (mchksum->type, "sha224")
+                      && c_strcasecmp (mchksum->type, "sha-224")
+                      && c_strcasecmp (mchksum->type, "sha256")
+                      && c_strcasecmp (mchksum->type, "sha-256")
+                      && c_strcasecmp (mchksum->type, "sha384")
+                      && c_strcasecmp (mchksum->type, "sha-384")
+                      && c_strcasecmp (mchksum->type, "sha512")
+                      && c_strcasecmp (mchksum->type, "sha-512"))
                     {
                       DEBUGP (("Ignoring unsupported checksum type %s.\n",
                                quote (mchksum->type)));
@@ -194,22 +223,72 @@ retrieve_from_metalink (const metalink_t* metalink)
                   logprintf (LOG_VERBOSE, _("Computing checksum for %s\n"),
                              quote (mfile->name));
 
-                  sha256_stream (local_file, sha256);
-                  wg_hex_to_string (sha256_txt, sha256, SHA256_DIGEST_SIZE);
                   DEBUGP (("Declared hash: %s\n", mchksum->hash));
-                  DEBUGP (("Computed hash: %s\n", sha256_txt));
-                  if (!strcmp (sha256_txt, mchksum->hash))
+
+                  if (c_strcasecmp (mchksum->type, "md5") == 0)
+                    {
+                      md5_stream (local_file, md5);
+                      wg_hex_to_string (md5_txt, md5, MD5_DIGEST_SIZE);
+                      DEBUGP (("Computed hash: %s\n", md5_txt));
+                      if (!strcmp (md5_txt, mchksum->hash))
+                        hash_ok = true;
+                    }
+                  else if (c_strcasecmp (mchksum->type, "sha1") == 0
+                           || c_strcasecmp (mchksum->type, "sha-1") == 0)
+                    {
+                      sha1_stream (local_file, sha1);
+                      wg_hex_to_string (sha1_txt, sha1, SHA1_DIGEST_SIZE);
+                      DEBUGP (("Computed hash: %s\n", sha1_txt));
+                      if (!strcmp (sha1_txt, mchksum->hash))
+                        hash_ok = true;
+                    }
+                  else if (c_strcasecmp (mchksum->type, "sha224") == 0
+                           || c_strcasecmp (mchksum->type, "sha-224") == 0)
+                    {
+                      sha224_stream (local_file, sha224);
+                      wg_hex_to_string (sha224_txt, sha224, SHA224_DIGEST_SIZE);
+                      DEBUGP (("Computed hash: %s\n", sha224_txt));
+                      if (!strcmp (sha224_txt, mchksum->hash))
+                        hash_ok = true;
+                    }
+                  else if (c_strcasecmp (mchksum->type, "sha256") == 0
+                           || c_strcasecmp (mchksum->type, "sha-256") == 0)
+                    {
+                      sha256_stream (local_file, sha256);
+                      wg_hex_to_string (sha256_txt, sha256, SHA256_DIGEST_SIZE);
+                      DEBUGP (("Computed hash: %s\n", sha256_txt));
+                      if (!strcmp (sha256_txt, mchksum->hash))
+                        hash_ok = true;
+                    }
+                  else if (c_strcasecmp (mchksum->type, "sha384") == 0
+                           || c_strcasecmp (mchksum->type, "sha-384") == 0)
+                    {
+                      sha384_stream (local_file, sha384);
+                      wg_hex_to_string (sha384_txt, sha384, SHA384_DIGEST_SIZE);
+                      DEBUGP (("Computed hash: %s\n", sha384_txt));
+                      if (!strcmp (sha384_txt, mchksum->hash))
+                        hash_ok = true;
+                    }
+                  else if (c_strcasecmp (mchksum->type, "sha512") == 0
+                           || c_strcasecmp (mchksum->type, "sha-512") == 0)
+                    {
+                      sha512_stream (local_file, sha512);
+                      wg_hex_to_string (sha512_txt, sha512, SHA512_DIGEST_SIZE);
+                      DEBUGP (("Computed hash: %s\n", sha512_txt));
+                      if (!strcmp (sha512_txt, mchksum->hash))
+                        hash_ok = true;
+                    }
+
+                  if (hash_ok)
                     {
                       logputs (LOG_VERBOSE,
                                _("Checksum matches.\n"));
-                      hash_ok = true;
                     }
                   else
                     {
                       logprintf (LOG_NOTQUIET,
                                  _("Checksum mismatch for file %s.\n"),
                                  quote (mfile->name));
-                      hash_ok = false;
                     }
 
                   /* Stop as soon as we checked the supported checksum.  */
@@ -452,10 +531,10 @@ int metalink_res_cmp (const void* v1, const void* v2)
     {
       int cmp = 0;
       if (res1->location &&
-          !strcasecmp (opt.preferred_location, res1->location))
+          !c_strcasecmp (opt.preferred_location, res1->location))
         cmp -= 1;
       if (res2->location &&
-          !strcasecmp (opt.preferred_location, res2->location))
+          !c_strcasecmp (opt.preferred_location, res2->location))
         cmp += 1;
       return cmp;
     }
