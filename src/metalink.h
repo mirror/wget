@@ -47,6 +47,9 @@ uerr_t retrieve_from_metalink (const metalink_t *metalink);
 
 int metalink_res_cmp (const void *res1, const void *res2);
 
+void badhash_suffix (char *name);
+void badhash_or_remove (char *name);
+
 bool find_key_value (const char *start,
                      const char *end,
                      const char *key,

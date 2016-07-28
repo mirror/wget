@@ -343,6 +343,7 @@ static struct cmdline_option option_data[] =
     { "input-metalink", 0, OPT_VALUE, "input-metalink", -1 },
 #endif
     { "iri", 0, OPT_BOOLEAN, "iri", -1 },
+    { "keep-badhash", 0, OPT_BOOLEAN, "keepbadhash", -1 },
     { "keep-session-cookies", 0, OPT_BOOLEAN, "keepsessioncookies", -1 },
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
@@ -702,6 +703,8 @@ Download:\n"),
     N_("\
        --unlink                    remove file before clobber\n"),
 #ifdef HAVE_METALINK
+    N_("\
+       --keep-badhash              keep files with checksum mismatch (append .badhash)\n"),
     N_("\
        --metalink-over-http        use Metalink metadata from HTTP response headers\n"),
     N_("\

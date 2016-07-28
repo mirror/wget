@@ -120,13 +120,20 @@ retrieve_from_metalink (const metalink_t* metalink)
           retr_err = METALINK_RETR_ERROR;
 
           /* If output_stream is not NULL, then we have failed on
-             previous resource and are retrying. Thus, remove the file.  */
+             previous resource and are retrying. Thus, rename/remove
+             the file.  */
           if (output_stream)
             {
               fclose (output_stream);
               output_stream = NULL;
-              if (unlink (filename))
-                logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+              badhash_or_remove (filename);
+              xfree (filename);
+            }
+          else if (filename)
+            {
+              /* Rename/remove the file downloaded previously before
+                 downloading it again.  */
+              badhash_or_remove (filename);
               xfree (filename);
             }
 
@@ -525,15 +532,13 @@ gpg_skip_verification:
 #endif
       last_retr_err = retr_err == RETROK ? last_retr_err : retr_err;
 
-      /* Remove the file if error encountered or if option specified.
+      /* Rename the file if error encountered; remove if option specified.
          Note: the file has been downloaded using *_loop. Therefore, it
          is not necessary to keep the file for continuated download.  */
       if ((retr_err != RETROK || opt.delete_after)
            && filename != NULL && file_exists_p (filename))
         {
-          logprintf (LOG_VERBOSE, _("Removing %s.\n"), quote (filename));
-          if (unlink (filename))
-            logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+          badhash_or_remove (filename);
         }
       if (output_stream)
         {
@@ -549,6 +554,47 @@ gpg_skip_verification:
   output_stream = _output_stream;
 
   return last_retr_err;
+}
+
+/* Append the suffix ".badhash" to the file NAME, except without
+   overwriting an existing file with that name and suffix.  */
+void
+badhash_suffix (char *name)
+{
+  char *bhash, *uname;
+
+  bhash = concat_strings (name, ".badhash", (char *)0);
+  uname = unique_name (bhash, false);
+
+  logprintf (LOG_VERBOSE, _("Renaming ‘%s’ to ‘%s’.\n"), name, uname);
+
+  if (link (name, uname))
+    logprintf (LOG_NOTQUIET, "link: %s\n", strerror (errno));
+  else if (unlink (name))
+    logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+
+  xfree (bhash);
+  xfree (uname);
+}
+
+/* Append the suffix ".badhash" to the file NAME, except without
+   overwriting an existing file with that name and suffix.
+
+   Remove the file NAME if the option --delete-after is specified, or
+   if the option --keep-badhash isn't set.  */
+void
+badhash_or_remove (char *name)
+{
+  if (opt.delete_after || !opt.keep_badhash)
+    {
+      logprintf (LOG_VERBOSE, _("Removing %s.\n"), quote (name));
+      if (unlink (name))
+        logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+    }
+  else
+    {
+      badhash_suffix(name);
+    }
 }
 
 int metalink_res_cmp (const void* v1, const void* v2)

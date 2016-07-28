@@ -260,6 +260,7 @@ struct options
   bool cookies;                 /* whether cookies are used. */
   char *cookies_input;          /* file we're loading the cookies from. */
   char *cookies_output;         /* file we're saving the cookies to. */
+  bool keep_badhash;            /* Keep files with checksum mismatch. */
   bool keep_session_cookies;    /* whether session cookies should be
                                    saved and loaded. */
 

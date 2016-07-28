@@ -237,6 +237,7 @@ static const struct {
   { "input-metalink",   &opt.input_metalink,    cmd_file },
 #endif
   { "iri",              &opt.enable_iri,        cmd_boolean },
+  { "keepbadhash",      &opt.keep_badhash,      cmd_boolean },
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
   { "limitrate",        &opt.limit_rate,        cmd_bytes },
   { "loadcookies",      &opt.cookies_input,     cmd_file },

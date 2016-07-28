@@ -512,6 +512,12 @@ href if none was specified.
 Downloads files covered in local Metalink @var{file}. Metalink version 3
 and 4 are supported.
 
+@cindex keep-badhash
+@item --keep-badhash
+Keeps downloaded Metalink's files with a bad hash. It appends .badhash
+to the name of Metalink's files which have a checksum mismatch, except
+without overwriting existing files.
+
 @cindex metalink-over-http
 @item --metalink-over-http
 Issues HTTP HEAD request instead of GET and extracts Metalink metadata
