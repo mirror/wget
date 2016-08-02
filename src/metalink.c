@@ -34,6 +34,8 @@ as that of the covered work.  */
 #include "retr.h"
 #include "exits.h"
 #include "utils.h"
+#include "md2.h"
+#include "md4.h"
 #include "md5.h"
 #include "sha1.h"
 #include "sha256.h"
@@ -181,6 +183,12 @@ retrieve_from_metalink (const metalink_t* metalink)
 
               for (mchksum_ptr = mfile->checksums; *mchksum_ptr; mchksum_ptr++)
                 {
+                  char md2[MD2_DIGEST_SIZE];
+                  char md2_txt[2 * MD2_DIGEST_SIZE + 1];
+
+                  char md4[MD4_DIGEST_SIZE];
+                  char md4_txt[2 * MD4_DIGEST_SIZE + 1];
+
                   char md5[MD5_DIGEST_SIZE];
                   char md5_txt[2 * MD5_DIGEST_SIZE + 1];
 
@@ -203,7 +211,9 @@ retrieve_from_metalink (const metalink_t* metalink)
                   mchksum = *mchksum_ptr;
 
                   /* I have seen both variants...  */
-                  if (c_strcasecmp (mchksum->type, "md5")
+                  if (c_strcasecmp (mchksum->type, "md2")
+                      && c_strcasecmp (mchksum->type, "md4")
+                      && c_strcasecmp (mchksum->type, "md5")
                       && c_strcasecmp (mchksum->type, "sha1")
                       && c_strcasecmp (mchksum->type, "sha-1")
                       && c_strcasecmp (mchksum->type, "sha224")
@@ -225,7 +235,23 @@ retrieve_from_metalink (const metalink_t* metalink)
 
                   DEBUGP (("Declared hash: %s\n", mchksum->hash));
 
-                  if (c_strcasecmp (mchksum->type, "md5") == 0)
+                  if (c_strcasecmp (mchksum->type, "md2") == 0)
+                    {
+                      md2_stream (local_file, md2);
+                      wg_hex_to_string (md2_txt, md2, MD2_DIGEST_SIZE);
+                      DEBUGP (("Computed hash: %s\n", md2_txt));
+                      if (!strcmp (md2_txt, mchksum->hash))
+                        hash_ok = true;
+                    }
+                  else if (c_strcasecmp (mchksum->type, "md4") == 0)
+                    {
+                      md4_stream (local_file, md4);
+                      wg_hex_to_string (md4_txt, md4, MD4_DIGEST_SIZE);
+                      DEBUGP (("Computed hash: %s\n", md4_txt));
+                      if (!strcmp (md4_txt, mchksum->hash))
+                        hash_ok = true;
+                    }
+                  else if (c_strcasecmp (mchksum->type, "md5") == 0)
                     {
                       md5_stream (local_file, md5);
                       wg_hex_to_string (md5_txt, md5, MD5_DIGEST_SIZE);
