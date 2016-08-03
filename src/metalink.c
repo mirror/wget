@@ -155,10 +155,10 @@ retrieve_from_metalink (const metalink_t* metalink)
                  it as output_stream. We restore the original configuration
                  after we are finished with the file.  */
               if (opt.always_rest)
-                // continue previous download
+                /* continue previous download */
                 output_stream = fopen (mfile->name, "ab");
               else
-                // create a file with an unique name
+                /* create a file with an unique name */
                 output_stream = unique_create (mfile->name, true, &filename);
 
               output_stream_regular = true;
