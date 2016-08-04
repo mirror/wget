@@ -321,7 +321,7 @@ static struct cmdline_option option_data[] =
     { "host-directories", 0, OPT_BOOLEAN, "addhostdir", -1 },
 #ifdef HAVE_HSTS
     { "hsts", 0, OPT_BOOLEAN, "hsts", -1},
-    { "hsts-file", 0, OPT_VALUE, "hsts-file", -1 },
+    { "hsts-file", 0, OPT_VALUE, "hstsfile", -1 },
 #endif
     { "html-extension", 'E', OPT_BOOLEAN, "adjustextension", -1 }, /* deprecated */
     { "htmlify", 0, OPT_BOOLEAN, "htmlify", -1 },
@@ -340,7 +340,7 @@ static struct cmdline_option option_data[] =
 #endif
     { "input-file", 'i', OPT_VALUE, "input", -1 },
 #ifdef HAVE_METALINK
-    { "input-metalink", 0, OPT_VALUE, "input-metalink", -1 },
+    { "input-metalink", 0, OPT_VALUE, "inputmetalink", -1 },
 #endif
     { "iri", 0, OPT_BOOLEAN, "iri", -1 },
     { "keep-badhash", 0, OPT_BOOLEAN, "keepbadhash", -1 },
@@ -352,7 +352,7 @@ static struct cmdline_option option_data[] =
     { "rejected-log", 0, OPT_VALUE, "rejectedlog", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
 #ifdef HAVE_METALINK
-    { "metalink-over-http", 0, OPT_BOOLEAN, "metalink-over-http", -1 },
+    { "metalink-over-http", 0, OPT_BOOLEAN, "metalinkoverhttp", -1 },
 #endif
     { "method", 0, OPT_VALUE, "method", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
@@ -371,7 +371,7 @@ static struct cmdline_option option_data[] =
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
 #ifdef HAVE_METALINK
-    { "preferred-location", 0, OPT_VALUE, "preferred-location", -1 },
+    { "preferred-location", 0, OPT_VALUE, "preferredlocation", -1 },
 #endif
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
     { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
@@ -411,7 +411,7 @@ static struct cmdline_option option_data[] =
     { "strict-comments", 0, OPT_BOOLEAN, "strictcomments", -1 },
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
-    { "if-modified-since", 0, OPT_BOOLEAN, "if-modified-since", -1 },
+    { "if-modified-since", 0, OPT_BOOLEAN, "ifmodifiedsince", -1 },
     { "tries", 't', OPT_VALUE, "tries", -1 },
     { "unlink", 0, OPT_BOOLEAN, "unlink", -1 },
     { "trust-server-names", 0, OPT_BOOLEAN, "trustservernames", -1 },

@@ -210,7 +210,7 @@ static const struct {
   { "header",           NULL,                   cmd_spec_header },
 #ifdef HAVE_HSTS
   { "hsts",             &opt.hsts,              cmd_boolean },
-  { "hsts-file",        &opt.hsts_file,         cmd_file },
+  { "hstsfile",         &opt.hsts_file,         cmd_file },
 #endif
   { "htmlextension",    &opt.adjust_extension,  cmd_boolean }, /* deprecated */
   { "htmlify",          NULL,                   cmd_spec_htmlify },
@@ -223,7 +223,7 @@ static const struct {
 #endif
   { "httpsproxy",       &opt.https_proxy,       cmd_string },
   { "httpuser",         &opt.http_user,         cmd_string },
-  { "if-modified-since", &opt.if_modified_since, cmd_boolean },
+  { "ifmodifiedsince",  &opt.if_modified_since, cmd_boolean },
   { "ignorecase",       &opt.ignore_case,       cmd_boolean },
   { "ignorelength",     &opt.ignore_length,     cmd_boolean },
   { "ignoretags",       &opt.ignore_tags,       cmd_vector },
@@ -234,7 +234,7 @@ static const struct {
 #endif
   { "input",            &opt.input_filename,    cmd_file },
 #ifdef HAVE_METALINK
-  { "input-metalink",   &opt.input_metalink,    cmd_file },
+  { "inputmetalink",    &opt.input_metalink,    cmd_file },
 #endif
   { "iri",              &opt.enable_iri,        cmd_boolean },
   { "keepbadhash",      &opt.keep_badhash,      cmd_boolean },
@@ -246,7 +246,7 @@ static const struct {
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
   { "maxredirect",      &opt.max_redirect,      cmd_number },
 #ifdef HAVE_METALINK
-  { "metalink-over-http", &opt.metalink_over_http, cmd_boolean },
+  { "metalinkoverhttp", &opt.metalink_over_http, cmd_boolean },
 #endif
   { "method",           &opt.method,            cmd_string_uppercase },
   { "mirror",           NULL,                   cmd_spec_mirror },
@@ -268,7 +268,7 @@ static const struct {
   { "postfile",         &opt.post_file_name,    cmd_file },
   { "preferfamily",     NULL,                   cmd_spec_prefer_family },
 #ifdef HAVE_METALINK
-  { "preferred-location", &opt.preferred_location, cmd_string },
+  { "preferredlocation", &opt.preferred_location, cmd_string },
 #endif
   { "preservepermissions", &opt.preserve_perm,  cmd_boolean },
 #ifdef HAVE_SSL
