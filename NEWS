@@ -9,6 +9,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* When processing a Metalink file, with --continue resume partially
+  downloaded files and keep fully downloaded files even if they fail
+  the verification.
+
 * When processing a Metalink file, create the parent directories of a
   "path/file" destination file name:
   https://tools.ietf.org/html/rfc5854#section-4.1.2.1

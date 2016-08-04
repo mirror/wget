@@ -96,12 +96,14 @@ retrieve_from_metalink (const metalink_t* metalink)
          1 -> verified successfully  */
       char sig_status = 0;
 
+      bool skip_mfile = false;
+
       output_stream = NULL;
 
       DEBUGP (("Processing metalink file %s...\n", quote (mfile->name)));
 
       /* Resources are sorted by priority.  */
-      for (mres_ptr = mfile->resources; *mres_ptr; mres_ptr++)
+      for (mres_ptr = mfile->resources; *mres_ptr && !skip_mfile; mres_ptr++)
         {
           metalink_resource_t *mres = *mres_ptr;
           metalink_checksum_t **mchksum_ptr, *mchksum;
@@ -117,25 +119,29 @@ retrieve_from_metalink (const metalink_t* metalink)
               continue;
             }
 
-          retr_err = METALINK_RETR_ERROR;
-
-          /* If output_stream is not NULL, then we have failed on
-             previous resource and are retrying. Thus, rename/remove
-             the file.  */
-          if (output_stream)
+          /* The file is fully downloaded, but some problems were
+             encountered (checksum failure?).  The loop had been
+             continued to switch to the next url.  */
+          if (output_stream && retr_err == RETROK)
             {
+              /* Do not rename/remove a continued file. Skip it.  */
+              if (opt.always_rest)
+                {
+                  skip_mfile = true;
+                  continue;
+                }
+
               fclose (output_stream);
               output_stream = NULL;
               badhash_or_remove (filename);
               xfree (filename);
             }
-          else if (filename)
+          else if (!output_stream && filename)
             {
-              /* Rename/remove the file downloaded previously before
-                 downloading it again.  */
-              badhash_or_remove (filename);
               xfree (filename);
             }
+
+          retr_err = METALINK_RETR_ERROR;
 
           /* Parse our resource URL.  */
           iri = iri_new ();
@@ -156,17 +162,29 @@ retrieve_from_metalink (const metalink_t* metalink)
               /* Avoid recursive Metalink from HTTP headers.  */
               bool _metalink_http = opt.metalink_over_http;
 
-              /* Assure proper local file name regardless of the URL
-                 of particular Metalink resource.
-                 To do that we create the local file here and put
-                 it as output_stream. We restore the original configuration
-                 after we are finished with the file.  */
-              if (opt.always_rest)
-                /* continue previous download */
-                output_stream = fopen (mfile->name, "ab");
+              /* If output_stream is not NULL, then we have failed on
+                 previous resource and are retrying. Thus, continue
+                 with the next resource.  Do not close output_stream
+                 while iterating over the resources, or the download
+                 progress will be lost.  */
+              if (output_stream)
+                {
+                  DEBUGP (("Previous resource failed, continue with next resource.\n"));
+                }
               else
-                /* create a file with an unique name */
-                output_stream = unique_create (mfile->name, true, &filename);
+                {
+                  /* Assure proper local file name regardless of the URL
+                     of particular Metalink resource.
+                     To do that we create the local file here and put
+                     it as output_stream. We restore the original configuration
+                     after we are finished with the file.  */
+                  if (opt.always_rest)
+                    /* continue previous download */
+                    output_stream = fopen (mfile->name, "ab");
+                  else
+                    /* create a file with an unique name */
+                    output_stream = unique_create (mfile->name, true, &filename);
+                }
 
               output_stream_regular = true;
 
@@ -563,7 +581,7 @@ gpg_skip_verification:
       /* Rename the file if error encountered; remove if option specified.
          Note: the file has been downloaded using *_loop. Therefore, it
          is not necessary to keep the file for continuated download.  */
-      if ((retr_err != RETROK || opt.delete_after)
+      if (((retr_err != RETROK && !opt.always_rest) || opt.delete_after)
            && filename != NULL && file_exists_p (filename))
         {
           badhash_or_remove (filename);
