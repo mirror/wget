@@ -1,0 +1,137 @@
+GNU Wget Metalink module (--input-metalink)
+
+  Evaluation of "Directory Options" on the command line
+
+
+1. Introduction
+***************
+
+This document, and the results contained in it, is focused over the
+testing of the metalink:file "path/file" name format.
+
+The "Directory Options" mentioned here are used on the command line in
+conjunction with the option '--input-metalink=file':
+
+$ wget --input-metalink=file <directory options>
+
+2. Notes
+********
+
+Tests containing a metalink:file "/path/file", "./path/file", or
+"../path/file" name shall be run manually due to security concerns.
+
+3. Metalink files used as reference
+***********************************
+
+3.1 Test: metalink:file with "path/file" name format
+====================================================
+
+cat > test.meta4 << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<metalink xmlns="urn:ietf:params:xml:ns:metalink">
+  <file name="path/file">
+    <size>543</size>
+    <hash type="sha256">d37d3965f8e1a7b16504b4273b09c392776b7e4dd17e601256c7b2fd9ce5f56e</hash>
+    <hash type="md5">0f6ff5cdc15603f1b81227b5a296f001</hash>
+    <url>http://wrongurl.really/gnu/wget/wget-1.18.tar.xz.sig</url>
+    <url>http://ftpmirror.gnu.org/wget/wget-1.18.tar.xz.sig</url>
+    <url>http://ftp.gnu.org/gnu/wget/wget-1.18.tar.xz.sig</url>
+    <url>http://nl.mirror.babylon.network/gnu/wget/wget-1.18.tar.xz.sig</url>
+  </file>
+</metalink>
+EOF
+
+4. `wget --input-metalink=test.meta4`
+*************************************
+
+4.1 Implemented safety features
+===============================
+
+Do not follow relative or absolute paths: "/path/file", "./path/file",
+and "../path/file" as metalink:file name formats are all ignored (wget
+refuses to start). The options --trust-server-names changes nothing.
+
+4.2 Actual behaviour
+====================
+
+Given a metalink:file "path/file" name, if "path" exists, download
+"path/file", then compute its checksum. If "path" doesn't exist,
+download the url's file in the working directory; then the checksum
+fails: cannot find "path/file".
+
+4.3 Questionable behaviours
+===========================
+
+If more metalink:file elements are the same, wget downloads them all.
+
+4.4 Bugs
+========
+
+The download is OK even when metalink:file size is wrong.
+
+5. Directory Options
+********************
+
+'-nd'
+'--no-directories'
+
+    Used alone has no effect (see `wget --input-metalink=test.meta4`).
+
+    Used in conjunction with --recursive, given "path/file", if "path"
+    exists, download "path/file" and compute its checksum.  If "path"
+    doesnt' exist, download the url's file in the working directory,
+    then the checksum fails: cannot find "path/file".
+
+'-x'
+'--force-directories'
+
+    Given "path/file", if "path" exists, download "path/file", then
+    compute its checksum.  If "path" doesn't exist, create the url
+    hierarchy, then the checksum fails: cannot find "path/file".
+
+'-nH'
+'--no-host-directories'
+
+    Given "path/file", if "path" exists, download "path/file", then
+    compute its checksum.  If "path" doesn't exist, download the url's
+    file in the working directory, then the checksum fails: cannot
+    find "path/file"; in this context, if --force-directories is
+    present, create the url hierarchy omitting the host component.
+
+'--protocol-directories'
+
+    Used alone has no effect (see `wget --input-metalink=test.meta4`).
+
+    In conjunction with --force-directories, use the protocol name as
+    the first directory component (see --force-directories).
+
+'--cut-dirs=number'
+
+    Used alone has no effect (see `wget --input-metalink=test.meta4`).
+
+    In conjunction with --force-directories, ignore 'number' directory
+    components after the domain (see --force-directories).
+
+'-P prefix'
+'--directory-prefix=prefix'
+
+    This is buggy or non-intuitive.
+
+    Given "path/file", and more metalink:url uris for the same file,
+    if '-P path' is specified, the first url's file is downloaded as
+    "path/<url_file>", and the second url's file as "path/file". The
+    first file fails the checksum: cannot find "path/file". The file
+    "path/file" passes the checksum verification.
+
+    Given "path/file", and more metalink:url uris for the same file,
+    if '-P newp' is specified, all the urls' files are downloaded as
+    "newp/<url_file>. A suffix counter is added to the file names to
+    not overwrite existing files. Then all the checksums fail: cannot
+    find "path/file".
+
+    Given "path/file", and more metalink:url uris for the same file,
+    if '-P ../path' is specified, the same things as if '-P ../newp'
+    or '-P newp' will happen, e.g. "newp/<url_file> and checksums
+    failures.
+
+    [write here more wrong things happening]
