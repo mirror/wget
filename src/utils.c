@@ -2045,12 +2045,15 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
       return false;
     }
 
-  signal (SIGALRM, abort_run_with_timeout);
   if (SETJMP (run_with_timeout_env) != 0)
     {
       /* Longjumped out of FUN with a timeout. */
       signal (SIGALRM, SIG_DFL);
       return true;
+    }
+  else
+    {
+      signal (SIGALRM, abort_run_with_timeout);
     }
   alarm_set (timeout);
   fun (arg);
