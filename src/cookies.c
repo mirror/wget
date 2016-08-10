@@ -45,6 +45,7 @@ as that of the covered work.  */
 
 #include "wget.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1018,7 +1019,7 @@ cookie_header (struct cookie_jar *jar, const char *host,
 
   struct cookie *cookie;
   struct weighed_cookie *outgoing;
-  int count, i, ocnt;
+  size_t count, i, ocnt;
   char *result;
   int result_size, pos;
   PREPEND_SLASH (path);         /* see cookie_handle_set_cookie */
@@ -1032,7 +1033,7 @@ cookie_header (struct cookie_jar *jar, const char *host,
   chain_count = find_chains_of_host (jar, host, chains);
 
   /* No cookies for this host. */
-  if (!chain_count)
+  if (chain_count <= 0)
     return NULL;
 
   cookies_now = time (NULL);
@@ -1043,7 +1044,7 @@ cookie_header (struct cookie_jar *jar, const char *host,
 
   /* Count the number of matching cookies. */
   count = 0;
-  for (i = 0; i < chain_count; i++)
+  for (i = 0; i < (unsigned) chain_count; i++)
     for (cookie = chains[i]; cookie; cookie = cookie->next)
       if (cookie_matches_url (cookie, host, port, path, secflag, NULL))
         ++count;
@@ -1051,12 +1052,14 @@ cookie_header (struct cookie_jar *jar, const char *host,
     return NULL;                /* no cookies matched */
 
   /* Allocate the array. */
-  outgoing = alloca_array (struct weighed_cookie, count);
+  if (count > SIZE_MAX / sizeof (struct weighed_cookie))
+    return NULL;                /* unable to process so many cookies */
+  outgoing = xmalloc (count * sizeof (struct weighed_cookie));
 
   /* Fill the array with all the matching cookies from the chains that
      match HOST. */
   ocnt = 0;
-  for (i = 0; i < chain_count; i++)
+  for (i = 0; i < (unsigned) chain_count; i++)
     for (cookie = chains[i]; cookie; cookie = cookie->next)
       {
         int pg;
@@ -1111,6 +1114,7 @@ cookie_header (struct cookie_jar *jar, const char *host,
         }
     }
   result[pos++] = '\0';
+  xfree (outgoing);
   assert (pos == result_size);
   return result;
 }

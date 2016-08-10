@@ -344,7 +344,7 @@ request_send (const struct request *req, int fd, FILE *warc_tmp)
   /* "\r\n\0" */
   size += 3;
 
-  p = request_string = alloca_array (char, size);
+  p = request_string = xmalloc (size);
 
   /* Generate the request. */
 
@@ -379,8 +379,9 @@ request_send (const struct request *req, int fd, FILE *warc_tmp)
       /* Write a copy of the data to the WARC record. */
       int warc_tmp_written = fwrite (request_string, 1, size - 1, warc_tmp);
       if (warc_tmp_written != size - 1)
-        return -2;
+        write_error = -2;
     }
+  xfree (request_string);
   return write_error;
 }
 
