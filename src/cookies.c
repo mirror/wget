@@ -526,19 +526,52 @@ check_domain_match (const char *cookie_domain, const char *host)
 {
 
 #ifdef HAVE_LIBPSL
+  static int init_psl;
+  static const psl_ctx_t *psl;
+
   char *cookie_domain_lower = NULL;
   char *host_lower = NULL;
-  const psl_ctx_t *psl;
   int is_acceptable;
 
   DEBUGP (("cdm: 1"));
-  if (!(psl = psl_builtin()))
+  if (!init_psl)
     {
-      DEBUGP (("\nlibpsl not built with a public suffix list. "
-               "Falling back to simple heuristics.\n"));
-      goto no_psl;
-    }
+      init_psl = 1;
 
+#ifdef PSL_FILE
+      /* If PSL_FILE is a DAFSA file, loading is very fast */
+      if ((psl = psl_load_file (PSL_FILE)))
+        goto have_psl;
+
+      DEBUGP (("\nPSL: %s not found or not readable. "
+               "Falling back to built-in data.\n", quote (PSL_FILE)));
+#endif
+
+      if ((psl = psl_builtin ()) && !psl_builtin_outdated ())
+        goto have_psl;
+
+      DEBUGP (("\nPSL: built-in data outdated. "
+               "Trying to load data from %s.\n",
+              quote (psl_builtin_filename ())));
+
+      if ((psl = psl_load_file (psl_builtin_filename ())))
+        goto have_psl;
+
+      DEBUGP (("\nPSL: %s not found or not readable. "
+               "Falling back to built-in data.\n",
+              quote (psl_builtin_filename ())));
+
+      if (!(psl = psl_builtin ()))
+        {
+          DEBUGP (("\nPSL: libpsl not built with a public suffix list. "
+                   "Falling back to simple heuristics.\n"));
+          goto no_psl;
+        }
+    }
+  else if (!psl)
+    goto no_psl;
+
+have_psl:
   if (psl_str_to_utf8lower (cookie_domain, NULL, NULL, &cookie_domain_lower) == PSL_SUCCESS &&
       psl_str_to_utf8lower (host, NULL, NULL, &host_lower) == PSL_SUCCESS)
     {
