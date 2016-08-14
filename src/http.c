@@ -39,6 +39,7 @@ as that of the covered work.  */
 #include <errno.h>
 #include <time.h>
 #include <locale.h>
+#include <fcntl.h>
 
 #include "hash.h"
 #include "http.h"
@@ -2471,7 +2472,17 @@ open_output_stream (struct http_stat *hs, int count, FILE **fp)
           open_id = 22;
           *fp = fopen (hs->local_file, "wb", FOPEN_OPT_ARGS);
 #else /* def __VMS */
-          *fp = fopen (hs->local_file, "wb");
+          if (opt.delete_after
+            || opt.spider /* opt.recursive is implicitely true */
+            || !acceptable (hs->local_file))
+            {
+              *fp = fdopen (open (hs->local_file, O_BINARY | O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR), "wb");
+            }
+          else
+            {
+              *fp = fopen (hs->local_file, "wb");
+            }
+
 #endif /* def __VMS [else] */
         }
       else
