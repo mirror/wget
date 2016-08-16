@@ -325,7 +325,7 @@ retrieve_from_metalink (const metalink_t* metalink)
                     }
 
                   logprintf (LOG_VERBOSE, _("Computing checksum for %s\n"),
-                             quote (mfile->name));
+                             quote (filename));
 
                   DEBUGP (("Declared hash: %s\n", mchksum->hash));
 
@@ -408,7 +408,7 @@ retrieve_from_metalink (const metalink_t* metalink)
                     {
                       logprintf (LOG_NOTQUIET,
                                  _("Checksum mismatch for file %s.\n"),
-                                 quote (mfile->name));
+                                 quote (filename));
                     }
 
                   /* Stop as soon as we checked the supported checksum.  */
@@ -592,14 +592,14 @@ gpg_skip_verification:
       if (retr_err != RETROK)
         {
           logprintf (LOG_VERBOSE, _("Failed to download %s. Skipping resource.\n"),
-                     quote (mfile->name));
+                     quote (filename ? filename : mfile->name));
         }
       else if (!hash_ok)
         {
           retr_err = METALINK_CHKSUM_ERROR;
           logprintf (LOG_NOTQUIET,
                      _("File %s retrieved but checksum does not match. "
-                       "\n"), quote (mfile->name));
+                       "\n"), quote (filename));
         }
 #ifdef HAVE_GPGME
         /* Signature will be only validated if hash check was successful.  */
@@ -608,7 +608,7 @@ gpg_skip_verification:
           retr_err = METALINK_SIG_ERROR;
           logprintf (LOG_NOTQUIET,
                      _("File %s retrieved but signature does not match. "
-                       "\n"), quote (mfile->name));
+                       "\n"), quote (filename));
         }
 #endif
       last_retr_err = retr_err == RETROK ? last_retr_err : retr_err;
