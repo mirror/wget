@@ -31,7 +31,8 @@ if METALINK_IS_ENABLED
     Test-metalink-xml.py                            \
     Test-metalink-xml-continue.py                   \
     Test-metalink-xml-relpath.py                    \
-    Test-metalink-xml-abspath.py
+    Test-metalink-xml-abspath.py                    \
+    Test-metalink-xml-homepath.py
 else
   METALINK_TESTS =
 endif
