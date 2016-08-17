@@ -40,6 +40,7 @@ as that of the covered work.  */
 #include "sha1.h"
 #include "sha256.h"
 #include "sha512.h"
+#include "dosname.h"
 #include "xstrndup.h"
 #include "c-strcase.h"
 #include <errno.h>
@@ -87,6 +88,8 @@ retrieve_from_metalink (const metalink_t* metalink)
       metalink_file_t *mfile = *mfile_ptr;
       metalink_resource_t **mres_ptr;
       char *filename = NULL;
+      char *basename = NULL;
+      char *safename = NULL;
       char *destname = NULL;
       bool hash_ok = false;
 
@@ -109,6 +112,23 @@ retrieve_from_metalink (const metalink_t* metalink)
         filename = xstrdup (mfile->name);
 
       DEBUGP (("Processing metalink file %s...\n", quote (mfile->name)));
+
+      /* Enforce libmetalink's metalink_check_safe_path().  */
+      basename = get_metalink_basename (filename);
+      safename = metalink_check_safe_path (filename) ? filename : basename;
+
+      if (filename != safename)
+        logprintf (LOG_NOTQUIET,
+                   _("Unsafe metalink file %s. Stripping directory...\n"),
+                   quote (filename));
+
+      if (!basename)
+        {
+          logprintf (LOG_NOTQUIET,
+                     _("Rejecting metalink file. Invalid basename.\n"));
+          xfree (filename);
+          continue;
+        }
 
       /* Resources are sorted by priority.  */
       for (mres_ptr = mfile->resources; *mres_ptr && !skip_mfile; mres_ptr++)
@@ -170,6 +190,12 @@ retrieve_from_metalink (const metalink_t* metalink)
               /* Avoid recursive Metalink from HTTP headers.  */
               bool _metalink_http = opt.metalink_over_http;
 
+              /* FIXME: could be useless.  */
+              if (strcmp (url->file, basename))
+                logprintf (LOG_VERBOSE,
+                           _("URL file name %s and Metalink file name %s are different.\n"),
+                           quote_n (0, url->file), quote_n (1, basename));
+
               /* If output_stream is not NULL, then we have failed on
                  previous resource and are retrying. Thus, continue
                  with the next resource.  Do not close output_stream
@@ -188,10 +214,10 @@ retrieve_from_metalink (const metalink_t* metalink)
                      after we are finished with the file.  */
                   if (opt.always_rest)
                     /* continue previous download */
-                    output_stream = fopen (filename, "ab");
+                    output_stream = fopen (safename, "ab");
                   else
                     /* create a file with an unique name */
-                    output_stream = unique_create (filename, true, &destname);
+                    output_stream = unique_create (safename, true, &destname);
                 }
 
               output_stream_regular = true;
@@ -212,7 +238,7 @@ retrieve_from_metalink (const metalink_t* metalink)
                   NULL, create the opt.output_document "path/file"
               */
               if (!destname)
-                destname = xstrdup (filename);
+                destname = xstrdup (safename);
 
               /* Store the real file name for displaying in messages,
                  and for proper RFC5854 "path/file" handling.  */
@@ -600,7 +626,7 @@ gpg_skip_verification:
       if (retr_err != RETROK)
         {
           logprintf (LOG_VERBOSE, _("Failed to download %s. Skipping resource.\n"),
-                     quote (destname ? destname : filename));
+                     quote (destname ? destname : safename));
         }
       else if (!hash_ok)
         {
@@ -644,6 +670,34 @@ gpg_skip_verification:
   output_stream = _output_stream;
 
   return last_retr_err;
+}
+
+/*
+  Strip the directory components from the given name.
+
+  Return a pointer to the end of the leading directory components.
+  Return NULL if the resulting name is unsafe or invalid.
+
+  Due to security issues posed by saving files with unsafe names, here
+  the use of libmetalink's metalink_check_safe_path() is enforced.  If
+  this appears redundant because the given name was already verified,
+  just remember to never underestimate unsafe file names.
+*/
+char *
+get_metalink_basename (char *name)
+{
+  int n;
+  char *basename;
+
+  if (!name)
+    return NULL;
+
+  basename = last_component (name);
+
+  while ((n = FILE_SYSTEM_PREFIX_LEN (basename)) > 0)
+    basename += n;
+
+  return metalink_check_safe_path (basename) ? basename : NULL;
 }
 
 /* Append the suffix ".badhash" to the file NAME, except without

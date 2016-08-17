@@ -9,6 +9,13 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* When processing a Metalink file, enforce a safe destination path.
+  Remove any drive letter prefix under w32, i.e. 'C:D:file'.  Call
+  libmetalink's metalink_check_safe_path() to prevent absolute,
+  relative, or home paths:
+  https://tools.ietf.org/html/rfc5854#section-4.1.2.1
+  https://tools.ietf.org/html/rfc5854#section-4.2.8.3
+
 * When processing a Metalink file, --directory-prefix=<prefix> sets
   the top of the retrieval tree to prefix for Metalink downloads.
 

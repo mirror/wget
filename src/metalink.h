@@ -47,6 +47,10 @@ uerr_t retrieve_from_metalink (const metalink_t *metalink);
 
 int metalink_res_cmp (const void *res1, const void *res2);
 
+int metalink_check_safe_path (const char *path);
+
+char *last_component (char const *name);
+char *get_metalink_basename (char *name);
 void badhash_suffix (char *name);
 void badhash_or_remove (char *name);
 

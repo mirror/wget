@@ -159,3 +159,7 @@ References:
 
     Set the top of the retrieval tree to prefix for both Metalink/XML
     and Metalink/HTTP downloads, see wget(1).
+
+    If combining the prefix with the file name results in an absolute,
+    relative, or home path, the directory components are stripped and
+    only the basename is used. See '4.1 Implemented safety features'.
