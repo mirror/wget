@@ -842,6 +842,7 @@ get_urls_html (const char *file, const char *url, bool *meta_disallow_follow,
   if (iri && !iri->content_encoding && meta_charset)
     set_content_encoding (iri, meta_charset);
 #endif
+  xfree (meta_charset);
 
   DEBUGP (("no-follow in %s: %d\n", file, ctx.nofollow));
   if (meta_disallow_follow)
