@@ -9,6 +9,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* When processing a Metalink file, --directory-prefix=<prefix> sets
+  the top of the retrieval tree to prefix for Metalink downloads.
+
 * When processing a Metalink file, reject downloaded files which don't
   agree with their own metalink:size value:
   https://tools.ietf.org/html/rfc5854#section-4.2.16

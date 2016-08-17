@@ -157,9 +157,5 @@ References:
 '-P prefix'
 '--directory-prefix=prefix'
 
-    Do not apply to Metalink/XML files (aka --input-metalink=<file>).
-
-    Apply to Metalink/HTTP downloads.
-
-    The directory prefix is the directory where all other files and
-    subdirectories will be saved to, see wget(1).
+    Set the top of the retrieval tree to prefix for both Metalink/XML
+    and Metalink/HTTP downloads, see wget(1).
