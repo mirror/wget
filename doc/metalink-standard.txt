@@ -1,0 +1,156 @@
+GNU Wget Metalink recommended behaviour
+
+  Metalink/XML and Metalink/HTTP standard reference
+
+
+1. Security features
+********************
+
+Only metalink:file elements with safe "name" fields shall be accepted
+[1 #section-4.1.2.1]. If unsafe metalink:file elements are saved, any
+related test shall fail (see '2. Tests').
+
+By design, libmetalink rejects unsafe metalink:file elements [3]:
+* lib/metalink_helper.c (metalink_check_safe_path): Verify path
+
+1.1 Exceptions
+==============
+
+The option --directory-prefix could allow to use an absolute, relative
+or home path.
+
+2. Tests
+********
+
+Saving a file to an unexpected path poses a security problem. We must
+ensure that Wget's automated tests never modify the root and the home
+paths or descend/escalate to a relative path unexpectedly.
+
+2.1 Metalink/XML implemented tests
+==================================
+
+* testenv/Test-metalink-xml.py: Accept safe paths
+* testenv/Test-metalink-xml-abspath.py: Reject absolute paths
+* testenv/Test-metalink-xml-relpath.py: Reject relative paths
+* testenv/Test-metalink-xml-homepath.py: Reject home paths
+
+3. Download file name
+*********************
+
+Computing the file name to wrote from the followed urls only leads to
+uncertainty. Reason why an unique name shall be used. Respectively, it
+shall be the metalink:file "name" field for Metalink/XML and a derived
+cli's url for Metalink/HTTP.
+
+4. Metalink/XML
+***************
+
+4.1 Example files
+=================
+
+cat > bugus.meta4 << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<metalink xmlns="urn:ietf:params:xml:ns:metalink">
+  <file name="/dir/A/File1">
+    <size>1617</size>
+    <hash type="sha256">ecb3dff2648667513e31554b3ad054ccd89fce38e33367c9459ac3a285153742</hash>
+    <url>http://another.url/common_name</url>
+    <url>http://ftpmirror.gnu.org/bash/bash-4.3-patches/bash43-001</url>
+  </file>
+  <file name="dir/B/File2">
+    <size>1594</size>
+    <hash type="sha256">eee7cd7062ab29a9e4f02924d9c367264dcb8b162703f74ff6eb8f175a91502b</hash>
+    <url>http://another.url/again/common_name</url>
+    <url>http://ftpmirror.gnu.org/bash/bash-4.3-patches/bash43-002</url>
+  </file>
+</metalink>
+EOF
+
+4.2 Command line example
+========================
+
+$ wget --input-metalink=bogus.meta4
+
+4.3 Metalink/XML file parsing
+=============================
+
+The metalink xml file is parsed by one of the following libmetalink's
+functions [3], depending upon the library configured to use:
+* lib/libexpat_metalink_parser.c (metalink_parse_file): Expat [4]
+* lib/libxml2_metalink_parser.c (metalink_parse_file): Libxml2 [5]
+
+The result returned doesn't include unsafe metalink:file elements, as
+stated at point '1. Security features'.
+
+An empty result shall not be considered an error.  Parsing errors will
+be informed to the caller of libmetalink's metalink_parse_file().
+
+4.4 Saving files
+================
+
+Fetched metalink:file elements shall be wrote using the unique "name"
+field as file name [1 #section-4.1.2.1].
+
+A metalink:file url's file name shall not substitute the "name" field,
+see '3. Download file name'.
+
+4.5 Multi-Source download
+=========================
+
+Parallel range requests are allowed [1 #section-1].
+
+5. Metalink/HTTP
+****************
+
+5.1 HTTP server
+===============
+
+The local server http://127.0.0.1 is used as reference in the course
+of this chapter. Any server service capable of sending Metalink/HTTP
+header answers may be used.
+
+5.2 Command line example
+========================
+
+$ wget --metalink-over-http http://127.0.0.1/dir/file.ext
+
+5.3 Metalink/HTTP header answer
+===============================
+
+Link: http://ftpmirror.gnu.org/bash/bash-4.3-patches/bash43-001; rel=duplicate; pref; pri=2
+Link: http://another.url/common_name; rel=duplicate; pref; pri=1
+Digest: SHA-256=7LPf8mSGZ1E+MVVLOtBUzNifzjjjM2fJRZrDooUVN0I=
+
+5.4 Saving files
+================
+
+When none of --output-document and/or --content-disposition is used,
+the file name to wrote is computed from the cli's url hierarchy. The
+purpose of the "Directory Options" is as usual, and the file name is
+the cli's url file name, see wget(1).
+
+The url followed to download the file shall not substitute the cli's
+url to compute the file name to wrote, see '3. Download file name'.
+
+5.5 Multi-Source download
+=========================
+
+Parallel range requests are allowed [2 #section-7].
+
+4. References
+*************
+
+[1] The Metalink Download Description Format
+https://tools.ietf.org/html/rfc5854
+
+[2] Metalink/HTTP: Mirrors and Hashes
+https://tools.ietf.org/html/rfc6249
+
+[3] Libmetalink
+https://github.com/metalink-dev/libmetalink
+
+[4] Expat
+http://www.libexpat.org
+
+[5] Libxml2
+http://xmlsoft.org
