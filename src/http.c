@@ -1569,6 +1569,7 @@ struct http_stat
 #ifdef HAVE_METALINK
   metalink_t *metalink;
 #endif
+  bool temporary;               /* downloading a temporary file */
 };
 
 static void
@@ -2259,6 +2260,15 @@ check_file_output (struct url *u, struct http_stat *hs,
       xfree (local_file);
     }
 
+  hs->temporary = opt.delete_after || opt.spider || !acceptable (hs->local_file);
+  if (hs->temporary)
+    {
+      char *tmp = NULL;
+      asprintf (&tmp, "%s.tmp", hs->local_file);
+      xfree (hs->local_file);
+      hs->local_file = tmp;
+    }
+
   /* TODO: perform this check only once. */
   if (!hs->existence_checked && file_exists_p (hs->local_file))
     {
@@ -2472,9 +2482,7 @@ open_output_stream (struct http_stat *hs, int count, FILE **fp)
           open_id = 22;
           *fp = fopen (hs->local_file, "wb", FOPEN_OPT_ARGS);
 #else /* def __VMS */
-          if (opt.delete_after
-            || opt.spider /* opt.recursive is implicitely true */
-            || !acceptable (hs->local_file))
+          if (hs->temporary)
             {
               *fp = fdopen (open (hs->local_file, O_BINARY | O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR), "wb");
             }

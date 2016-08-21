@@ -7,6 +7,12 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget X.Y.Z
+
+* On a recursive download, append a .tmp suffix to temporary files
+  that will be deleted after being parsed, and create them
+  readable/writable only by the owner.
+
 * Changes in Wget 1.18
 
 * By default, on server redirects to a FTP resource, use the original
