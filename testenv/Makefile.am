@@ -32,7 +32,19 @@ if METALINK_IS_ENABLED
     Test-metalink-xml-continue.py                   \
     Test-metalink-xml-relpath.py                    \
     Test-metalink-xml-abspath.py                    \
-    Test-metalink-xml-homepath.py
+    Test-metalink-xml-homepath.py                   \
+    Test-metalink-xml-trust.py                      \
+    Test-metalink-xml-relpath-trust.py              \
+    Test-metalink-xml-abspath-trust.py              \
+    Test-metalink-xml-homepath-trust.py             \
+    Test-metalink-xml-prefix.py                     \
+    Test-metalink-xml-relprefix.py                  \
+    Test-metalink-xml-absprefix.py                  \
+    Test-metalink-xml-homeprefix.py                 \
+    Test-metalink-xml-prefix-trust.py               \
+    Test-metalink-xml-relprefix-trust.py            \
+    Test-metalink-xml-absprefix-trust.py            \
+    Test-metalink-xml-homeprefix-trust.py
 else
   METALINK_TESTS =
 endif

@@ -5,7 +5,7 @@ from misc.wget_file import WgetFile
 import hashlib
 
 """
-    This is to test Metalink/XML --continue support in Wget.
+    This is to test Metalink/XML relative directory prefix support in Wget.
 
     With --trust-server-names, trust the metalink:file names.
 
@@ -17,9 +17,6 @@ import hashlib
 """
 ############# File Definitions ###############################################
 bad = "Ouch!"
-
-# partial File1 to continue
-File0 = "Would you like"
 
 File1 = "Would you like some Tea?"
 File1_lowPref = "Do not take this"
@@ -55,46 +52,57 @@ MetaXml = \
   <version>1.2.3</version>
   <description>Wget Test Files description</description>
   <files>
-    <file name="File1">
+    <file name="subdir/File1">
       <verification>
         <hash type="sha256">{{FILE1_HASH}}</hash>
       </verification>
       <resources>
+        <url type="http" preference="35">http://{{SRV_HOST}}:{{SRV_PORT}}/wrong_file</url>
+        <url type="http" preference="40">http://{{SRV_HOST}}:{{SRV_PORT}}/404</url>
         <url type="http" preference="25">http://{{SRV_HOST}}:{{SRV_PORT}}/File1_lowPref</url>
         <url type="http" preference="30">http://{{SRV_HOST}}:{{SRV_PORT}}/File1</url>
       </resources>
     </file>
-    <file name="File2"> <!-- no good resources on purpose, this file shall be kept -->
+    <file name="/subdir/File2"> <!-- rejected by libmetalink -->
       <verification>
         <hash type="sha256">{{FILE2_HASH}}</hash>
       </verification>
       <resources>
         <url type="http" preference="35">http://{{SRV_HOST}}:{{SRV_PORT}}/wrong_file</url>
         <url type="http" preference="40">http://{{SRV_HOST}}:{{SRV_PORT}}/404</url>
+        <url type="http" preference="25">http://{{SRV_HOST}}:{{SRV_PORT}}/File2_lowPref</url>
+        <url type="http" preference="30">http://{{SRV_HOST}}:{{SRV_PORT}}/File2</url>
       </resources>
     </file>
-    <file name="File3">
+    <file name="~/subdir/File3"> <!-- rejected by libmetalink -->
       <verification>
         <hash type="sha256">{{FILE3_HASH}}</hash>
       </verification>
       <resources>
+        <url type="http" preference="35">http://{{SRV_HOST}}:{{SRV_PORT}}/wrong_file</url>
+        <url type="http" preference="40">http://{{SRV_HOST}}:{{SRV_PORT}}/404</url>
         <url type="http" preference="25">http://{{SRV_HOST}}:{{SRV_PORT}}/File3_lowPref</url>
         <url type="http" preference="30">http://{{SRV_HOST}}:{{SRV_PORT}}/File3</url>
       </resources>
     </file>
-    <file name="File4"> <!-- no good resources on purpose, this file shall be kept -->
+    <file name="../subdir/File4"> <!-- rejected by libmetalink -->
       <verification>
         <hash type="sha256">{{FILE4_HASH}}</hash>
       </verification>
       <resources>
         <url type="http" preference="35">http://{{SRV_HOST}}:{{SRV_PORT}}/wrong_file</url>
+        <url type="http" preference="40">http://{{SRV_HOST}}:{{SRV_PORT}}/404</url>
+        <url type="http" preference="25">http://{{SRV_HOST}}:{{SRV_PORT}}/File4_lowPref</url>
+        <url type="http" preference="30">http://{{SRV_HOST}}:{{SRV_PORT}}/File4</url>
       </resources>
     </file>
-    <file name="File5">
+    <file name="subdir/File5">
       <verification>
         <hash type="sha256">{{FILE5_HASH}}</hash>
       </verification>
       <resources>
+        <url type="http" preference="35">http://{{SRV_HOST}}:{{SRV_PORT}}/wrong_file</url>
+        <url type="http" preference="40">http://{{SRV_HOST}}:{{SRV_PORT}}/404</url>
         <url type="http" preference="25">http://{{SRV_HOST}}:{{SRV_PORT}}/File5_lowPref</url>
         <url type="http" preference="30">http://{{SRV_HOST}}:{{SRV_PORT}}/File5</url>
       </resources>
@@ -105,53 +113,45 @@ MetaXml = \
 
 wrong_file = WgetFile ("wrong_file", bad)
 
-# partial File1_down to continue
-File0_part = WgetFile ("test.metalink.#1", File0)
-
 File1_orig = WgetFile ("File1", File1)
-File1_down = WgetFile ("test.metalink.#1", File1)
+File1_down = WgetFile ("File1", File1)
 File1_nono = WgetFile ("File1_lowPref", File1_lowPref)
 
-# no good resources on purpose, this file shall be kept
-File2_ouch = WgetFile ("test.metalink.#2", bad)
+# rejected by libmetalink
+File2_orig = WgetFile ("File2", File2)
+File2_nono = WgetFile ("File2_lowPref", File2_lowPref)
 
+# rejected by libmetalink
 File3_orig = WgetFile ("File3", File3)
-File3_down = WgetFile ("test.metalink.#3", File3)
 File3_nono = WgetFile ("File3_lowPref", File3_lowPref)
 
-# no good resources on purpose, this file shall be kept
-File4_ouch = WgetFile ("test.metalink.#4", bad)
+# rejected by libmetalink
+File4_orig = WgetFile ("File4", File4)
+File4_nono = WgetFile ("File4_lowPref", File4_lowPref)
 
 File5_orig = WgetFile ("File5", File5)
-File5_down = WgetFile ("test.metalink.#5", File5)
+File5_down = WgetFile ("File5", File5)
 File5_nono = WgetFile ("File5_lowPref", File5_lowPref)
 
 MetaFile = WgetFile ("test.metalink", MetaXml)
 
-WGET_OPTIONS = "--continue --input-metalink test.metalink"
+WGET_OPTIONS = "--trust-server-names --directory-prefix ../dir --input-metalink test.metalink"
 WGET_URLS = [[]]
 
 Files = [[
     wrong_file,
     File1_orig, File1_nono,
+    File2_orig, File2_nono,
     File3_orig, File3_nono,
+    File4_orig, File4_nono,
     File5_orig, File5_nono
 ]]
-Existing_Files = [
-    File0_part, # partial File1_down to continue
-    File2_ouch, # wrong but fully downloaded file
-    File3_down, # right and fully downloaded file
-    File4_ouch, # wrong but fully downloaded file
-    MetaFile
-]
+Existing_Files = [MetaFile]
 
-ExpectedReturnCode = 1
+ExpectedReturnCode = 0
 ExpectedDownloadedFiles = [
-    File1_down, # continued file from File0_part
-    File2_ouch, # wrong but fully downloaded file
-    File3_down, # right and fully downloaded file
-    File4_ouch, # wrong but fully downloaded file
-    File5_down, # newly fully donwloaded file
+    File1_down,
+    File5_down,
     MetaFile
 ]
 

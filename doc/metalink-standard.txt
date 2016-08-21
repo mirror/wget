@@ -29,18 +29,61 @@ paths or descend/escalate to a relative path unexpectedly.
 2.1 Metalink/XML implemented tests
 ==================================
 
-* testenv/Test-metalink-xml.py: Accept safe paths
-* testenv/Test-metalink-xml-abspath.py: Reject absolute paths
-* testenv/Test-metalink-xml-relpath.py: Reject relative paths
-* testenv/Test-metalink-xml-homepath.py: Reject home paths
+See testenv/Makefile.am (METALINK_TESTS).
+
+2.2 Metalink/HTTP implemented tests
+===================================
+
+See testenv/Makefile.am (METALINK_TESTS).
 
 3. Download file name
 *********************
 
-Computing the file name to wrote from the followed urls only leads to
-uncertainty. Reason why an unique name shall be used. Respectively, it
-shall be the metalink:file "name" field for Metalink/XML and a derived
-cli's url for Metalink/HTTP.
+The download file name shall be decided by precise rules which prevent
+any naming uncertainty and security issues.
+
+3.1 Naming rules
+================
+
+The final name of downloaded files is computed starting from a trusted
+name, which is then combined with the "Directory Options".  The result
+is verified and eventually made safer following security rules. If the
+final name isn't found safe enough, then the file isn't downloaded.
+
+Depending on the options used, a suffix could be appended to the final
+name to not overwrite existing files.
+
+3.1.1 The trusted name
+======================
+
+The option --trust-server-names decides what is the trusted name.
+
+Any Metalink/XML element with an unsafe metalink:file "name" field is
+ignored, see '1. Security features'.
+
+3.1.1.1 Without --trust-server-names
+====================================
+
+When --trust-server-names is off, the basename of the --input-metalink
+file, if available, or of the mother URL is trusted.
+
+The files described by a Metalink/XML file will be named sequentially
+applying a suffix to the trusted name.
+
+3.1.1.2 With --trust-server-names
+=================================
+
+When --trust-server-names is on, the metalink:file "name" field parsed
+from Metalink/XML files is trusted. When no Metalink/XML is available,
+the mother URL is trusted.
+
+3.1.2 The final name
+====================
+
+The "Directory Options" are combined with the trusted name. The result
+is evaluated again by the '1. Security features'. If the path is found
+unsafe, only the basename of the final name is considered.  If this is
+found unsafe too, the file is not downloaded.
 
 4. Metalink/XML
 ***************

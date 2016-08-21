@@ -9,6 +9,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* When processing a Metalink file, --trust-server-names enables the
+  use of the destination file names specified in the Metalink file,
+  otherwise a safe destination file name is computed.
+
 * When processing a Metalink file, enforce a safe destination path.
   Remove any drive letter prefix under w32, i.e. 'C:D:file'.  Call
   libmetalink's metalink_check_safe_path() to prevent absolute,
