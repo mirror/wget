@@ -102,6 +102,7 @@ retrieve_from_metalink (const metalink_t* metalink)
       char *basename = NULL;
       char *safename = NULL;
       char *destname = NULL;
+      bool size_ok = false;
       bool hash_ok = false;
 
       uerr_t retr_err = METALINK_MISSING_RESOURCE;
@@ -325,10 +326,12 @@ retrieve_from_metalink (const metalink_t* metalink)
                   continue;
                 }
 
+              size_ok = false;
               logprintf (LOG_VERBOSE, _("Computing size for %s\n"), quote (destname));
 
               if (!mfile->size)
                 {
+                  size_ok = true;
                   logprintf (LOG_VERBOSE, _("File size not declared. Skipping check.\n"));
                 }
               else
@@ -356,6 +359,7 @@ retrieve_from_metalink (const metalink_t* metalink)
                     }
                   else
                     {
+                      size_ok = true;
                       logputs (LOG_VERBOSE, _("Size matches.\n"));
                     }
                 }
@@ -678,6 +682,13 @@ gpg_skip_verification:
         {
           logprintf (LOG_VERBOSE, _("Failed to download %s. Skipping resource.\n"),
                      quote (destname ? destname : safename));
+        }
+      else if (!size_ok)
+        {
+          retr_err = METALINK_SIZE_ERROR;
+          logprintf (LOG_NOTQUIET,
+                     _("File %s retrieved but size does not match. "
+                       "\n"), quote (destname));
         }
       else if (!hash_ok)
         {

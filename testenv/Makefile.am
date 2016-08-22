@@ -44,7 +44,8 @@ if METALINK_IS_ENABLED
     Test-metalink-xml-prefix-trust.py               \
     Test-metalink-xml-relprefix-trust.py            \
     Test-metalink-xml-absprefix-trust.py            \
-    Test-metalink-xml-homeprefix-trust.py
+    Test-metalink-xml-homeprefix-trust.py           \
+    Test-metalink-xml-size.py
 else
   METALINK_TESTS =
 endif
