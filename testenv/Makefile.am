@@ -42,7 +42,8 @@ if WITH_SSL
 endif
 
 if HAVE_PYTHON3
-  TESTS = Test-auth-basic-fail.py                   \
+  TESTS = Test-504.py                               \
+    Test-auth-basic-fail.py                         \
     Test-auth-basic.py                              \
     Test-auth-both.py                               \
     Test-auth-digest.py                             \
@@ -51,6 +52,7 @@ if HAVE_PYTHON3
     Test-auth-retcode.py                            \
     Test-auth-with-content-disposition.py           \
     Test-c-full.py                                  \
+    Test-condget.py                                 \
     Test-Content-disposition-2.py                   \
     Test-Content-disposition.py                     \
     Test--convert-links--content-on-error.py        \
@@ -59,24 +61,22 @@ if HAVE_PYTHON3
     Test-cookie-expires.py                          \
     Test-cookie.py                                  \
     Test-Head.py                                    \
+    Test-hsts.py                                    \
     Test--https.py                                  \
     Test--https-crl.py                              \
     Test-missing-scheme-retval.py                   \
+    Test-O.py                                       \
     Test-pinnedpubkey-der-https.py                  \
     Test-pinnedpubkey-der-no-check-https.py         \
     Test-pinnedpubkey-hash-https.py                 \
     Test-pinnedpubkey-hash-no-check-fail-https.py   \
     Test-pinnedpubkey-pem-fail-https.py             \
     Test-pinnedpubkey-pem-https.py                  \
-    Test-hsts.py                                    \
-    Test-O.py                                       \
     Test-Post.py                                    \
-    Test-504.py                                     \
-    Test--spider-r.py                               \
-    Test--rejected-log.py                           \
     Test-redirect-crash.py                          \
+    Test--rejected-log.py                           \
     Test-reserved-chars.py                          \
-    Test-condget.py                                 \
+    Test--spider-r.py                               \
     $(METALINK_TESTS)
 
 endif
