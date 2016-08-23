@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from sys import exit
 from test.http_test import HTTPTest
-from misc.constants import HTTP, HTTPS
+from test.base_test import HTTP, HTTPS
 from misc.wget_file import WgetFile
 
 """
