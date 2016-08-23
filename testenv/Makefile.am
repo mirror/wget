@@ -73,6 +73,9 @@ if HAVE_PYTHON3
     Test-pinnedpubkey-pem-fail-https.py             \
     Test-pinnedpubkey-pem-https.py                  \
     Test-Post.py                                    \
+    Test-recursive-basic.py                         \
+    Test-recursive-include.py                       \
+    Test-redirect.py                                \
     Test-redirect-crash.py                          \
     Test--rejected-log.py                           \
     Test-reserved-chars.py                          \
