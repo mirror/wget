@@ -28,6 +28,7 @@
 
 if METALINK_IS_ENABLED
   METALINK_TESTS = Test-metalink-http.py            \
+    Test-metalink-http-quoted.py                    \
     Test-metalink-xml.py                            \
     Test-metalink-xml-continue.py                   \
     Test-metalink-xml-relpath.py                    \

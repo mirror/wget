@@ -823,6 +823,32 @@ clean_metalink_string (char **str)
   *str = new;
 }
 
+/*
+  Remove the quotation surrounding a string.
+
+  The string is permanently modified.
+ */
+void
+dequote_metalink_string (char **str)
+{
+  char *new;
+  size_t str_len;
+
+  if (!str || !*str || ((*str)[0] != '\"' && (*str)[0] != '\''))
+    return;
+
+  str_len = strlen (*str); /* current string length */
+
+  /* Verify if the current string is surrounded by quotes.  */
+  if (str_len < 2 || (*str)[0] != (*str)[str_len - 1])
+    return;
+
+  /* Dequoted string.  */
+  new = xmemdup0 (*str + 1, str_len - 2);
+  xfree (*str);
+  *str = new;
+}
+
 /* Append the suffix ".badhash" to the file NAME, except without
    overwriting an existing file with that name and suffix.  */
 void
@@ -970,6 +996,7 @@ find_key_value (const char *start, const char *end, const char *key, char **valu
           while (val_end < end && *val_end != ';' && !c_isspace (*val_end))
             val_end++;
           *value = xstrndup (val_beg, val_end - val_beg);
+          dequote_metalink_string (value);
           return true;
         }
     }
@@ -1070,6 +1097,7 @@ find_key_values (const char *start, const char *end, char **key, char **value)
 
   *key = xstrndup (key_start, key_end - key_start);
   *value = xstrndup (val_start, val_end - val_start);
+  dequote_metalink_string (value);
 
   /* Skip trailing whitespaces.  */
   while (val_end < end && c_isspace (*val_end))
@@ -1082,10 +1110,10 @@ find_key_values (const char *start, const char *end, char **key, char **value)
 const char *
 test_find_key_values (void)
 {
-  static const char *header_data = "key1=val1;key2=val2 ;key3=val3; key4=val4"\
-                                   " ; key5=val5;key6 =val6;key7= val7; "\
-                                   "key8 = val8 ;    key9    =   val9       "\
-                                   "    ,key10= val10,key11,key12=val12";
+  static const char *header_data = "key1=val1;key2=\"val2\" ;key3=val3; key4=val4"\
+                                   " ; key5=val5;key6 ='val6';key7= val7; "\
+                                   "key8 = val8 ;    key9    =   \"val9\"       "\
+                                   "    ,key10= 'val10',key11,key12=val12";
   static const struct
   {
     const char *key;
@@ -1126,9 +1154,9 @@ test_find_key_values (void)
 const char *
 test_find_key_value (void)
 {
-  static const char *header_data = "key1=val1;key2=val2 ;key3=val3; key4=val4"\
-                                   " ; key5=val5;key6 =val6;key7= val7; "\
-                                   "key8 = val8 ;    key9    =   val9       ";
+  static const char *header_data = "key1=val1;key2=val2 ;key3='val3'; key4=val4"\
+                                   " ; key5='val5';key6 =val6;key7= \"val7\"; "\
+                                   "key8 = \"val8\" ;    key9    =   val9       ";
   static const struct
   {
     const char *key;

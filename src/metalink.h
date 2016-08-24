@@ -53,6 +53,7 @@ char *last_component (char const *name);
 char *get_metalink_basename (char *name);
 void append_suffix_number (char **str, const char *sep, wgint num);
 void clean_metalink_string (char **str);
+void dequote_metalink_string (char **str);
 void badhash_suffix (char *name);
 void badhash_or_remove (char *name);
 
