@@ -2428,7 +2428,7 @@ void
 stable_sort (void *base, size_t nmemb, size_t size,
              int (*cmpfun) (const void *, const void *))
 {
-  if (size > 1)
+  if (nmemb > 1 && size > 1)
     {
       void *temp = xmalloc (nmemb * size);
       mergesort_internal (base, temp, size, 0, nmemb - 1, cmpfun);
