@@ -2555,7 +2555,7 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
   metalink_t *metalink = NULL;
   metalink_file_t *mfile = xnew0 (metalink_file_t);
   const char *val_beg, *val_end;
-  int res_count = 0, hash_count = 0, sig_count = 0, i;
+  int res_count = 0, meta_count = 0, hash_count = 0, sig_count = 0, i;
 
   DEBUGP (("Checking for Metalink in HTTP response\n"));
 
@@ -2568,6 +2568,7 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
   /* Begin with 1-element array (for 0-termination). */
   mfile->checksums = xnew0 (metalink_checksum_t *);
   mfile->resources = xnew0 (metalink_resource_t *);
+  mfile->metaurls = xnew0 (metalink_metaurl_t *);
 
   /* Find all Link headers.  */
   for (i = 0;
@@ -2628,14 +2629,14 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
       DEBUGP (("URL=%s\n", urlstr));
       DEBUGP (("rel=%s\n", rel));
 
+      if (!strcmp (rel, "describedby"))
+        find_key_value (attrs_beg, val_end, "type", &reltype);
+
       /* Handle signatures.
          Libmetalink only supports one signature per file. Therefore we stop
          as soon as we successfully get first supported signature.  */
       if (sig_count == 0 &&
-          !strcmp (rel, "describedby") &&
-          find_key_value (attrs_beg, val_end, "type", &reltype) &&
-          !strcmp (reltype, "application/pgp-signature")
-          )
+          reltype && !strcmp (reltype, "application/pgp-signature"))
         {
           /* Download the signature to a temporary file.  */
           FILE *_output_stream = output_stream;
@@ -2801,6 +2802,60 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
               res_count++;
             }
         } /* Handle resource link (rel=duplicate).  */
+
+      /* Handle Metalink/XML resources.  */
+      else if (reltype && !strcmp (reltype, "application/metalink4+xml"))
+        {
+          metalink_metaurl_t murl = {0};
+          char *pristr;
+
+          /*
+             Valid ranges for the "pri" attribute are from
+             1 to 999999.  Mirror servers with a lower value of the "pri"
+             attribute have a higher priority, while mirrors with an undefined
+             "pri" attribute are considered to have a value of 999999, which is
+             the lowest priority.
+
+             rfc6249 section 3.1
+           */
+          murl.priority = DEFAULT_PRI;
+          if (find_key_value (url_end, val_end, "pri", &pristr))
+            {
+              long pri;
+              char *end_pristr;
+              /* Do not care for errno since 0 is error in this case.  */
+              pri = strtol (pristr, &end_pristr, 10);
+              if (end_pristr != pristr + strlen (pristr) ||
+                  !VALID_PRI_RANGE (pri))
+                {
+                  /* This is against the specification, so let's inform the user.  */
+                  logprintf (LOG_NOTQUIET,
+                             _("Invalid pri value. Assuming %d.\n"),
+                             DEFAULT_PRI);
+                }
+              else
+                murl.priority = pri;
+              xfree (pristr);
+            }
+
+          murl.mediatype = xstrdup (reltype);
+
+          DEBUGP (("MEDIATYPE=%s\n", murl.mediatype));
+
+          /* At this point we have validated the new resource.  */
+
+          find_key_value (url_end, val_end, "name", &murl.name);
+
+          murl.url = urlstr;
+          urlstr = NULL;
+
+          /* 1 slot from new resource, 1 slot for null-termination.  */
+          mfile->metaurls = xrealloc (mfile->metaurls,
+                                       sizeof (metalink_metaurl_t *) * (meta_count + 2));
+          mfile->metaurls[meta_count] = xnew0 (metalink_metaurl_t);
+          *mfile->metaurls[meta_count] = murl;
+          meta_count++;
+        } /* Handle resource link (rel=describedby).  */
       else
         DEBUGP (("This link header was not used for Metalink\n"));
 
@@ -2811,8 +2866,9 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
 
   /* Null-terminate resources array.  */
   mfile->resources[res_count] = 0;
+  mfile->metaurls[meta_count] = 0;
 
-  if (res_count == 0)
+  if (res_count == 0 && meta_count == 0)
     {
       DEBUGP (("No valid metalink references found.\n"));
       goto fail;
@@ -2867,7 +2923,7 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
 
     rfc6249 section 6
    */
-  if (hash_count == 0)
+  if (res_count && hash_count == 0)
     {
       logputs (LOG_VERBOSE,
                _("Could not find acceptable digest for Metalink resources.\n"
@@ -2878,6 +2934,7 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
   /* Metalink data is OK. Now we just need to sort the resources based
      on their priorities, preference, and perhaps location.  */
   stable_sort (mfile->resources, res_count, sizeof (metalink_resource_t *), metalink_res_cmp);
+  stable_sort (mfile->metaurls, meta_count, sizeof (metalink_metaurl_t *), metalink_meta_cmp);
 
   /* Restore sensible preference values (in case someone cares to look).  */
   for (i = 0; i < res_count; ++i)

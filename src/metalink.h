@@ -46,6 +46,7 @@ as that of the covered work.  */
 uerr_t retrieve_from_metalink (const metalink_t *metalink);
 
 int metalink_res_cmp (const void *res1, const void *res2);
+int metalink_meta_cmp (const void* meta1, const void* meta2);
 
 int metalink_check_safe_path (const char *path);
 

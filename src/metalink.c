@@ -913,6 +913,15 @@ int metalink_res_cmp (const void* v1, const void* v2)
   return 0;
 }
 
+int metalink_meta_cmp (const void* v1, const void* v2)
+{
+  const metalink_metaurl_t *meta1 = *(metalink_metaurl_t **) v1,
+                           *meta2 = *(metalink_metaurl_t **) v2;
+  if (meta1->priority != meta2->priority)
+    return meta1->priority - meta2->priority;
+  return 0;
+}
+
 /*
   Find value of given key. This is intended for Link header, but will
   work with any header that uses ';' as field separator and '=' as key-value
