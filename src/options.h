@@ -67,6 +67,7 @@ struct options
   char *input_filename;         /* Input filename */
 #ifdef HAVE_METALINK
   char *input_metalink;         /* Input metalink file */
+  int metalink_index;           /* Metalink application/metalink4+xml metaurl ordinal number. */
   bool metalink_over_http;      /* Use Metalink if present in HTTP response */
   char *preferred_location;     /* Preferred location for Metalink resources */
 #endif

@@ -248,6 +248,7 @@ static const struct {
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
   { "maxredirect",      &opt.max_redirect,      cmd_number },
 #ifdef HAVE_METALINK
+  { "metalinkindex",    &opt.metalink_index,     cmd_number_inf },
   { "metalinkoverhttp", &opt.metalink_over_http, cmd_boolean },
 #endif
   { "method",           &opt.method,            cmd_string_uppercase },
@@ -384,6 +385,10 @@ defaults (void)
      illegal, but porting Wget to a machine where NULL is not all-zero
      bit pattern will be the least of the implementors' worries.  */
   xzero (opt);
+
+#ifdef HAVE_METALINK
+  opt.metalink_index = -1;
+#endif
 
   opt.cookies = true;
   opt.verbose = -1;

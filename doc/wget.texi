@@ -524,6 +524,15 @@ Issues HTTP HEAD request instead of GET and extracts Metalink metadata
 from response headers. Then it switches to Metalink download.
 If no valid Metalink metadata is found, it falls back to ordinary HTTP download.
 
+@cindex metalink-index
+@item --metalink-index=@var{number}
+Set the Metalink @samp{application/metalink4+xml} metaurl ordinal
+NUMBER. From 1 to the total number of ``application/metalink4+xml''
+available.  Specify 0 or @samp{inf} to choose the first good one.
+Metaurls, such as those from a @samp{--metalink-over-http}, may have
+been sorted by priority key's value; keep this in mind to choose the
+right NUMBER.
+
 @cindex preferred-location
 @item --preferred-location
 Set preferred location for Metalink resources. This has effect if multiple

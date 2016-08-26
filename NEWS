@@ -9,6 +9,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+* When processing a Metalink header, --metalink-index=<number> allows
+  to process the header's application/metalink4+xml files.
+
 * When processing a Metalink file, --trust-server-names enables the
   use of the destination file names specified in the Metalink file,
   otherwise a safe destination file name is computed.

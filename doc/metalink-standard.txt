@@ -65,10 +65,16 @@ ignored, see '1. Security features'.
 ====================================
 
 When --trust-server-names is off, the basename of the --input-metalink
-file, if available, or of the mother URL is trusted.
+file, if available, or of the mother URL is trusted. This trusted name
+is the radix of any subsequent file name.
+
+When a Metalink/HTTP in encountered, any fetched Metalink/XML file has
+its own ordinal number appended as suffix to the trusted name. In this
+case scenario, an unique Metalink/XML file is saved each time applying
+an additional suffix to the currently computed name when necessary.
 
 The files described by a Metalink/XML file will be named sequentially
-applying a suffix to the trusted name.
+applying an additional suffix to the currently trusted/computed name.
 
 3.1.1.2 With --trust-server-names
 =================================
@@ -90,6 +96,8 @@ found unsafe too, the file is not downloaded.
 
 4.1 Example files
 =================
+
+See [1 #section-1.1].
 
 cat > bugus.meta4 << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -134,8 +142,9 @@ be informed to the caller of libmetalink's metalink_parse_file().
 Fetched metalink:file elements shall be wrote using the unique "name"
 field as file name [1 #section-4.1.2.1].
 
-A metalink:file url's file name shall not substitute the "name" field,
-see '3. Download file name'.
+A metalink:file url's file name shall not substitute the "name" field.
+
+Security exceptions are explained in '3. Download file name'.
 
 4.5 Multi-Source download
 =========================
@@ -160,9 +169,19 @@ $ wget --metalink-over-http http://127.0.0.1/dir/file.ext
 5.3 Metalink/HTTP header answer
 ===============================
 
-Link: http://ftpmirror.gnu.org/bash/bash-4.3-patches/bash43-001; rel=duplicate; pref; pri=2
-Link: http://another.url/common_name; rel=duplicate; pref; pri=1
-Digest: SHA-256=7LPf8mSGZ1E+MVVLOtBUzNifzjjjM2fJRZrDooUVN0I=
+See [2 #section-1.1].
+
+Etag: "thvDyvhfIqlvFe+A9MYgxAfm1q5="
+Link: <http://www2.example.com/example.ext>; rel=duplicate
+Link: <ftp://ftp.example.com/example.ext>; rel=duplicate
+Link: <http://example.com/example.ext.torrent>; rel=describedby;
+type="application/x-bittorrent"
+Link: <http://example.com/example.ext.meta4>; rel=describedby;
+type="application/metalink4+xml"
+Link: <http://example.com/example.ext.asc>; rel=describedby;
+type="application/pgp-signature"
+Digest: SHA-256=MWVkMWQxYTRiMzk5MDQ0MzI3NGU5NDEyZTk5OWY1ZGFmNzgyZTJlO
+DYzYjRjYzFhOTlmNTQwYzI2M2QwM2U2MQ==
 
 5.4 Saving files
 ================
@@ -173,7 +192,8 @@ purpose of the "Directory Options" is as usual, and the file name is
 the cli's url file name, see wget(1).
 
 The url followed to download the file shall not substitute the cli's
-url to compute the file name to wrote, see '3. Download file name'.
+url to compute the file name to wrote, except when it redirects to a
+Metalink/XML file, following the rules in '3. Download file name'.
 
 5.5 Multi-Source download
 =========================

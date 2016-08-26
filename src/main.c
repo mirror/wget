@@ -354,6 +354,7 @@ static struct cmdline_option option_data[] =
     { "rejected-log", 0, OPT_VALUE, "rejectedlog", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
 #ifdef HAVE_METALINK
+    { "metalink-index", 0, OPT_VALUE, "metalinkindex", -1 },
     { "metalink-over-http", 0, OPT_BOOLEAN, "metalinkoverhttp", -1 },
 #endif
     { "method", 0, OPT_VALUE, "method", -1 },
@@ -713,6 +714,8 @@ Download:\n"),
 #ifdef HAVE_METALINK
     N_("\
        --keep-badhash              keep files with checksum mismatch (append .badhash)\n"),
+    N_("\
+       --metalink-index=NUMBER     Metalink application/metalink4+xml metaurl ordinal NUMBER\n"),
     N_("\
        --metalink-over-http        use Metalink metadata from HTTP response headers\n"),
     N_("\

@@ -189,6 +189,184 @@ retrieve_from_metalink (const metalink_t* metalink)
             }
         }
 
+      /* Process the chosen application/metalink4+xml metaurl.  */
+      if (opt.metalink_index >= 0)
+        {
+          int _metalink_index = opt.metalink_index;
+
+          metalink_metaurl_t **murl_ptr;
+          int abs_count = 0, meta_count = 0;
+
+          uerr_t x_retr_err = METALINK_MISSING_RESOURCE;
+
+          opt.metalink_index = -1;
+
+          DEBUGP (("Searching application/metalink4+xml ordinal number %d...\n", _metalink_index));
+
+          if (mfile->metaurls && mfile->metaurls[0])
+            for (murl_ptr = mfile->metaurls; *murl_ptr; murl_ptr++)
+              {
+                metalink_t* metaurl_xml;
+                metalink_error_t meta_err;
+                metalink_metaurl_t *murl = *murl_ptr;
+
+                char *_dir_prefix = opt.dir_prefix;
+                char *_input_metalink = opt.input_metalink;
+
+                char *metafile = NULL;
+                char *metadest = NULL;
+                char *metadir = NULL;
+
+                abs_count++;
+
+                if (strcmp (murl->mediatype, "application/metalink4+xml"))
+                  continue;
+
+                meta_count++;
+
+                DEBUGP (("  Ordinal number %d: %s\n", meta_count, quote (murl->url)));
+
+                if (_metalink_index > 0)
+                  {
+                    if (meta_count < _metalink_index)
+                      continue;
+                    else if (meta_count > _metalink_index)
+                      break;
+                  }
+
+                logprintf (LOG_NOTQUIET,
+                           _("Processing metaurl %s...\n"), quote (murl->url));
+
+                /* Metalink/XML download file name.  */
+                metafile = xstrdup (safename);
+
+                if (opt.trustservernames)
+                  replace_metalink_basename (&metafile, murl->url);
+                else
+                  append_suffix_number (&metafile, ".meta#", meta_count);
+
+                if (!metalink_check_safe_path (metafile))
+                  {
+                    logprintf (LOG_NOTQUIET,
+                               _("Rejecting metaurl file %s. Unsafe name.\n"),
+                               quote (metafile));
+                    xfree (metafile);
+                    if (_metalink_index > 0)
+                      break;
+                    continue;
+                  }
+
+                /* For security reasons, always save metalink metaurl
+                   files as new unique files. Keep them on failure.  */
+                x_retr_err = fetch_metalink_file (murl->url, false, false,
+                                                  metafile, &metadest);
+
+                /* On failure, try the next metalink metaurl.  */
+                if (x_retr_err != RETROK)
+                  {
+                    logprintf (LOG_VERBOSE,
+                               _("Failed to download %s. Skipping metaurl.\n"),
+                               quote (metadest ? metadest : metafile));
+                    inform_exit_status (x_retr_err);
+                    xfree (metadest);
+                    xfree (metafile);
+                    if (_metalink_index > 0)
+                      break;
+                    continue;
+                  }
+
+                /* Parse Metalink/XML.  */
+                meta_err = metalink_parse_file (metadest, &metaurl_xml);
+
+                /* On failure, try the next metalink metaurl.  */
+                if (meta_err)
+                  {
+                    logprintf (LOG_NOTQUIET,
+                               _("Unable to parse metaurl file %s.\n"), quote (metadest));
+                    x_retr_err = METALINK_PARSE_ERROR;
+                    inform_exit_status (x_retr_err);
+                    xfree (metadest);
+                    xfree (metafile);
+                    if (_metalink_index > 0)
+                      break;
+                    continue;
+                  }
+
+                /* We need to sort the resources if preferred location
+                   was specified by the user.  */
+                if (opt.preferred_location && opt.preferred_location[0])
+                  {
+                    metalink_file_t **x_mfile_ptr;
+                    for (x_mfile_ptr = metaurl_xml->files; *x_mfile_ptr; x_mfile_ptr++)
+                      {
+                        metalink_resource_t **x_mres_ptr;
+                        metalink_file_t *x_mfile = *x_mfile_ptr;
+                        size_t mres_count = 0;
+
+                        for (x_mres_ptr = x_mfile->resources; *x_mres_ptr; x_mres_ptr++)
+                          mres_count++;
+
+                        stable_sort (x_mfile->resources,
+                                     mres_count,
+                                     sizeof (metalink_resource_t *),
+                                     metalink_res_cmp);
+                      }
+                  }
+
+                /* Insert the current "Directory Options".  */
+                if (metalink->origin)
+                  {
+                    /* WARNING: Do not use lib/dirname.c (dir_name) to
+                       get the directory name, it may append a dot '.'
+                       character to the directory name. */
+                    metadir = xstrdup (planname);
+                    replace_metalink_basename (&metadir, NULL);
+                  }
+                else
+                  {
+                    metadir = xstrdup (opt.dir_prefix);
+                  }
+
+                opt.dir_prefix = metadir;
+                opt.input_metalink = metadest;
+
+                x_retr_err = retrieve_from_metalink (metaurl_xml);
+
+                if (x_retr_err != RETROK)
+                  logprintf (LOG_NOTQUIET,
+                             _("Could not download all resources from %s.\n"),
+                             quote (metadest));
+
+                metalink_delete (metaurl_xml);
+                metaurl_xml = NULL;
+
+                opt.input_metalink = _input_metalink;
+                opt.dir_prefix = _dir_prefix;
+
+                xfree (metadir);
+                xfree (metadest);
+                xfree (metafile);
+
+                break;
+              }
+
+          if (x_retr_err != RETROK)
+            logprintf (LOG_NOTQUIET, _("Metaurls processing returned with error.\n"));
+
+          xfree (destname);
+          xfree (filename);
+          xfree (trsrname);
+          xfree (planname);
+
+          opt.output_document = _output_document;
+          output_stream_regular = _output_stream_regular;
+          output_stream = _output_stream;
+
+          opt.metalink_index = _metalink_index;
+
+          return x_retr_err;
+        }
+
       /* Resources are sorted by priority.  */
       for (mres_ptr = mfile->resources; *mres_ptr && !skip_mfile; mres_ptr++)
         {
@@ -740,6 +918,72 @@ gpg_skip_verification:
 }
 
 /*
+  Replace/remove the basename of a file name.
+
+  The file name is permanently modified.
+
+  Always set NAME to a string, even an empty one.
+
+  Use REF's basename as replacement.  If REF is NULL or if it doesn't
+  provide a valid basename candidate, then remove NAME's basename.
+*/
+void
+replace_metalink_basename (char **name, char *ref)
+{
+  int n;
+  char *p, *new, *basename;
+
+  if (!name)
+    return;
+
+  /* Strip old basename.  */
+  if (*name)
+    {
+      basename = last_component (*name);
+
+      if (basename == *name)
+        xfree (*name);
+      else
+        *basename = '\0';
+    }
+
+  /* New basename from file name reference.  */
+  if (ref)
+    ref = last_component (ref);
+
+  /* Replace the old basename.  */
+  new = aprintf ("%s%s", *name ? *name : "", ref ? ref : "");
+  xfree (*name);
+  *name = new;
+
+  /* Remove prefix drive letters if required, i.e. when in w32
+     environments.  */
+  p = new;
+  while (p[0] != '\0')
+    {
+      while ((n = FILE_SYSTEM_PREFIX_LEN (p)) > 0)
+        p += n;
+
+      if (p != new)
+        {
+          while (ISSLASH (p[0]))
+            ++p;
+          new = p;
+          continue;
+        }
+
+      break;
+    }
+
+  if (*name != new)
+    {
+      new = xstrdup (new);
+      xfree (*name);
+      *name = new;
+    }
+}
+
+/*
   Strip the directory components from the given name.
 
   Return a pointer to the end of the leading directory components.
@@ -889,6 +1133,110 @@ badhash_or_remove (char *name)
     {
       badhash_suffix(name);
     }
+}
+
+/*
+  Simple file fetch.
+
+  Set DESTNAME to the name of the saved file.
+
+  Resume previous download if RESUME is true.  To disable
+  Metalink/HTTP, set METALINK_HTTP to false.
+*/
+uerr_t
+fetch_metalink_file (const char *url_str,
+                     bool resume, bool metalink_http,
+                     const char *filename, char **destname)
+{
+  FILE *_output_stream = output_stream;
+  bool _output_stream_regular = output_stream_regular;
+  char *_output_document = opt.output_document;
+  bool _metalink_http = opt.metalink_over_http;
+
+  char *local_file = NULL;
+
+  uerr_t retr_err = URLERROR;
+
+  struct iri *iri;
+  struct url *url;
+  int url_err;
+
+  /* Parse the URL.  */
+  iri = iri_new ();
+  set_uri_encoding (iri, opt.locale, true);
+  url = url_parse (url_str, &url_err, iri, false);
+
+  if (!url)
+    {
+      char *error = url_error (url_str, url_err);
+      logprintf (LOG_NOTQUIET, "%s: %s.\n", url_str, error);
+      inform_exit_status (retr_err);
+      iri_free (iri);
+      xfree (error);
+      return retr_err;
+    }
+
+  output_stream = NULL;
+
+  if (resume)
+    /* continue previous download */
+    output_stream = fopen (filename, "ab");
+  else
+    /* create a file with an unique name */
+    output_stream = unique_create (filename, true, &local_file);
+
+  output_stream_regular = true;
+
+  /*
+    If output_stream is NULL, the file couldn't be created/opened.
+    This could be due to the impossibility to create a directory tree:
+    * stdio.h (fopen)
+    * src/utils.c (unique_create)
+
+    A call to retrieve_url() can indirectly create a directory tree,
+    when opt.output_document is set to the destination file name and
+    output_stream is left to NULL:
+    * src/http.c (open_output_stream): If output_stream is NULL,
+      create the destination opt.output_document "path/file"
+  */
+  if (!local_file)
+    local_file = xstrdup (filename);
+
+  /* Store the real file name for displaying in messages, and for
+     proper "path/file" handling.  */
+  opt.output_document = local_file;
+
+  opt.metalink_over_http = metalink_http;
+
+  DEBUGP (("Storing to %s\n", local_file));
+  retr_err = retrieve_url (url, url_str, NULL, NULL,
+                           NULL, NULL, opt.recursive, iri, false);
+
+  if (retr_err == RETROK)
+    {
+      if (destname)
+        *destname = local_file;
+      else
+        xfree (local_file);
+    }
+
+  if (output_stream)
+    {
+      fclose (output_stream);
+      output_stream = NULL;
+    }
+
+  opt.metalink_over_http = _metalink_http;
+  opt.output_document = _output_document;
+  output_stream_regular = _output_stream_regular;
+  output_stream = _output_stream;
+
+  inform_exit_status (retr_err);
+
+  iri_free (iri);
+  url_free (url);
+
+  return retr_err;
 }
 
 int metalink_res_cmp (const void* v1, const void* v2)
