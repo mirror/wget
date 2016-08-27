@@ -46,6 +46,7 @@ if METALINK_IS_ENABLED
     Test-metalink-xml-relprefix-trust.py            \
     Test-metalink-xml-absprefix-trust.py            \
     Test-metalink-xml-homeprefix-trust.py           \
+    Test-metalink-xml-emptyprefix-trust.py          \
     Test-metalink-xml-size.py                       \
     Test-metalink-xml-nourls.py                     \
     Test-metalink-xml-urlbreak.py
