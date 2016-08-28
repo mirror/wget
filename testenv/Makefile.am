@@ -51,6 +51,7 @@ if METALINK_IS_ENABLED
     Test-metalink-xml-homeprefix-trust.py           \
     Test-metalink-xml-emptyprefix-trust.py          \
     Test-metalink-xml-size.py                       \
+    Test-metalink-xml-nohash.py                     \
     Test-metalink-xml-nourls.py                     \
     Test-metalink-xml-urlbreak.py
 else

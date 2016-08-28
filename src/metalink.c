@@ -368,7 +368,8 @@ retrieve_from_metalink (const metalink_t* metalink)
         }
 
       /* Resources are sorted by priority.  */
-      for (mres_ptr = mfile->resources; *mres_ptr && !skip_mfile; mres_ptr++)
+      for (mres_ptr = mfile->resources;
+           *mres_ptr && mfile->checksums && !skip_mfile; mres_ptr++)
         {
           metalink_resource_t *mres = *mres_ptr;
           metalink_checksum_t **mchksum_ptr, *mchksum;
@@ -858,6 +859,12 @@ gpg_skip_verification:
                 break;
             } /* endif RETR_OK.  */
         } /* Iterate over resources.  */
+
+      if (!mfile->checksums)
+        {
+          logprintf (LOG_NOTQUIET, _("No checksums found.\n"));
+          retr_err = METALINK_CHKSUM_ERROR;
+        }
 
       if (retr_err != RETROK)
         {
