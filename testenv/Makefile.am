@@ -33,6 +33,10 @@ if METALINK_IS_ENABLED
     Test-metalink-http-xml.py                       \
     Test-metalink-http-xml-trust.py                 \
     Test-metalink-http-xml-trust-name.py            \
+    Test-metalink-http-xml-type.py                  \
+    Test-metalink-http-xml-type-trust.py            \
+    Test-metalink-http-xml-type-content.py          \
+    Test-metalink-http-xml-type-trust-content.py    \
     Test-metalink-xml.py                            \
     Test-metalink-xml-continue.py                   \
     Test-metalink-xml-relpath.py                    \

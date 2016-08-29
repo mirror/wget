@@ -86,6 +86,10 @@ the mother URL is trusted.
 Any Metalink/HTTP application/metalink4+xml file is saved using the
 basename of its own Link header "name" field, if available.
 
+In conjunction with the option --content-disposition, a 'Content-Type:
+application/metalink4+xml' file is saved using the basename of its own
+Content-Disposition header "filename" field, if available.
+
 3.1.2 The final name
 ====================
 

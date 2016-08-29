@@ -523,6 +523,7 @@ without overwriting existing files.
 Issues HTTP HEAD request instead of GET and extracts Metalink metadata
 from response headers. Then it switches to Metalink download.
 If no valid Metalink metadata is found, it falls back to ordinary HTTP download.
+Enables @samp{Content-Type: application/metalink4+xml} files download/processing.
 
 @cindex metalink-index
 @item --metalink-index=@var{number}
@@ -1685,6 +1686,10 @@ to suffer from a few bugs, which is why it is not currently enabled by default.
 This option is useful for some file-downloading CGI programs that use
 @code{Content-Disposition} headers to describe what the name of a
 downloaded file should be.
+
+When combined with @samp{--metalink-over-http} and @samp{--trust-server-names},
+a @samp{Content-Type: application/metalink4+xml} file is named using the
+@code{Content-Disposition} filename field, if available.
 
 @cindex Content On Error
 @item --content-on-error

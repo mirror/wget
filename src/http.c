@@ -2570,6 +2570,87 @@ metalink_from_http (const struct response *resp, const struct http_stat *hs,
   mfile->resources = xnew0 (metalink_resource_t *);
   mfile->metaurls = xnew0 (metalink_metaurl_t *);
 
+  /* Process the Content-Type header.  */
+  if (resp_header_locate (resp, "Content-Type", 0, &val_beg, &val_end) != -1)
+    {
+      metalink_metaurl_t murl = {0};
+
+      const char *type_beg, *type_end;
+      char *typestr = NULL;
+      char *namestr = NULL;
+      size_t type_len;
+
+      DEBUGP (("Processing Content-Type header...\n"));
+
+      /* Find beginning of type.  */
+      type_beg = val_beg;
+      while (type_beg < val_end && c_isspace (*type_beg))
+        type_beg++;
+
+      /* Find end of type.  */
+      type_end = type_beg + 1;
+      while (type_end < val_end &&
+             *type_end != ';' &&
+             *type_end != ' ' &&
+             *type_end != '\r' &&
+             *type_end != '\n')
+        type_end++;
+
+      if (type_beg >= val_end || type_end > val_end)
+        {
+          DEBUGP (("Invalid Content-Type header. Ignoring.\n"));
+          goto skip_content_type;
+        }
+
+      type_len = type_end - type_beg;
+      typestr = xstrndup (type_beg, type_len);
+
+      DEBUGP (("Content-Type: %s\n", typestr));
+
+      if (strcmp (typestr, "application/metalink4+xml"))
+        {
+          xfree (typestr);
+          goto skip_content_type;
+        }
+
+      /*
+        Valid ranges for the "pri" attribute are from
+        1 to 999999.  Mirror servers with a lower value of the "pri"
+        attribute have a higher priority, while mirrors with an undefined
+        "pri" attribute are considered to have a value of 999999, which is
+        the lowest priority.
+
+        rfc6249 section 3.1
+      */
+      murl.priority = DEFAULT_PRI;
+
+      murl.mediatype = typestr;
+      typestr = NULL;
+
+      if (opt.content_disposition
+          && resp_header_locate (resp, "Content-Disposition", 0, &val_beg, &val_end) != -1)
+        {
+          find_key_value (val_beg, val_end, "filename", &namestr);
+          murl.name = namestr;
+          namestr = NULL;
+        }
+
+      murl.url = xstrdup (u->url);
+
+      DEBUGP (("URL=%s\n", murl.url));
+      DEBUGP (("MEDIATYPE=%s\n", murl.mediatype));
+      DEBUGP (("NAME=%s\n", murl.name ? murl.name : ""));
+      DEBUGP (("PRIORITY=%d\n", murl.priority));
+
+      /* 1 slot from new resource, 1 slot for null-termination.  */
+      mfile->metaurls = xrealloc (mfile->metaurls,
+                                  sizeof (metalink_metaurl_t *) * (meta_count + 2));
+      mfile->metaurls[meta_count] = xnew0 (metalink_metaurl_t);
+      *mfile->metaurls[meta_count] = murl;
+      meta_count++;
+    }
+skip_content_type:
+
   /* Find all Link headers.  */
   for (i = 0;
        (i = resp_header_locate (resp, "Link", i, &val_beg, &val_end)) != -1;
