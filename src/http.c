@@ -3378,6 +3378,9 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   if (metalink)
     {
       hs->metalink = metalink_from_http (resp, hs, u);
+      /* Bugfix: hs->local_file is NULL (opt.content_disposition).  */
+      if (!hs->local_file && hs->metalink && hs->metalink->origin)
+        hs->local_file = xstrdup (hs->metalink->origin);
       xfree (hs->message);
       retval = RETR_WITH_METALINK;
       CLOSE_FINISH (sock);
@@ -4497,7 +4500,10 @@ exit:
   if ((ret == RETROK || opt.content_on_error) && local_file)
     {
       xfree (*local_file);
-      *local_file = xstrdup (hstat.local_file);
+      /* Bugfix: Prevent SIGSEGV when hstat.local_file was left NULL
+         (i.e. due to opt.content_disposition).  */
+      if (hstat.local_file)
+        *local_file = xstrdup (hstat.local_file);
     }
   free_hstat (&hstat);
 
