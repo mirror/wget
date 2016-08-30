@@ -83,6 +83,9 @@ When --trust-server-names is on, the metalink:file "name" field parsed
 from Metalink/XML files is trusted. When no Metalink/XML is available,
 the mother URL is trusted.
 
+Any Metalink/HTTP application/metalink4+xml file is saved using the
+basename of its own Link header "name" field, if available.
+
 3.1.2 The final name
 ====================
 
@@ -182,6 +185,13 @@ Link: <http://example.com/example.ext.asc>; rel=describedby;
 type="application/pgp-signature"
 Digest: SHA-256=MWVkMWQxYTRiMzk5MDQ0MzI3NGU5NDEyZTk5OWY1ZGFmNzgyZTJlO
 DYzYjRjYzFhOTlmNTQwYzI2M2QwM2U2MQ==
+
+See [2 #section-4].
+
+Link: <http://example.com/example.ext.torrent>; rel=describedby;
+type="application/x-bittorrent"; name="differentname.ext"
+Link: <http://example.com/example.ext.meta4>; rel=describedby;
+type="application/metalink4+xml"
 
 5.4 Saving files
 ================

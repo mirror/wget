@@ -241,7 +241,7 @@ retrieve_from_metalink (const metalink_t* metalink)
                 metafile = xstrdup (safename);
 
                 if (opt.trustservernames)
-                  replace_metalink_basename (&metafile, murl->url);
+                  replace_metalink_basename (&metafile, murl->name ? murl->name : murl->url);
                 else
                   append_suffix_number (&metafile, ".meta#", meta_count);
 
