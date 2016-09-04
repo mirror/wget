@@ -118,7 +118,6 @@ from misc.wget_file import WgetFile
 
 It is recommended that a small description of the Test Case is provided next.
 This would be very helpful to future contributors.
-Next, is the const variable, TEST_NAME that defines the name of the Test.
 
 Each File in the Test must be represented as a WgetFile object. The WgetFile
 Class has the following prototype:
@@ -156,13 +155,11 @@ Various variables used consistently across all tests are:
 
 Both, the HTTPTest and FTPTest modules have the same prototype:
 {
-    name,
     pre_hook,
     test_options,
     post_hook,
     protocols
 }
-name should be a string, and is usually passed to the TEST_NAME variable,
 the three hooks should be Python dict objects and protocols should be a list of
 protocols, like [HTTP, HTTPS].
 
@@ -282,13 +279,6 @@ pass through. If a test mentioned in the XFAIL_TESTS variable passes, it gets
 red-flagged as a XPASS. Currently, tests expected to fail under valgrind are not
 explicitly marked as XFAIL. Tests failing under valgrind must always be
 considered a blocking error.
-
-Remember to always name the Test correctly using the TEST_NAME variable. This
-is essential since a directory with the Test Name is created and this can
-cause synchronization problems when the Parallel Test Harness is used.
-One can use the following command on Unix systems to check for TEST_NAME
-clashes:
-$ grep -r -h "TEST_NAME =" | cut -c13- | uniq -c -d
 
 Work Remaining:
 ================================================================================
