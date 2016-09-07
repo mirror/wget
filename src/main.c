@@ -61,6 +61,7 @@ as that of the covered work.  */
 #include "version.h"
 #include "c-strcase.h"
 #include "dirname.h"
+#include "xmemdup0.h"
 #include <getopt.h>
 #include <getpass.h>
 #include <quote.h>
@@ -1038,7 +1039,7 @@ prompt_for_password (void)
 
 
 /* Execute external application opt.use_askpass */
-void
+static void
 run_use_askpass (char *question, char **answer)
 {
   char tmp[1024];
@@ -1046,12 +1047,12 @@ run_use_askpass (char *question, char **answer)
   int status;
   int com[2];
   ssize_t bytes = 0;
-  char * const argv[] = { opt.use_askpass, question, NULL };
+  char *argv[3], *p;
   posix_spawn_file_actions_t fa;
 
   if (pipe (com) == -1)
     {
-      fprintf (stderr, _("Cannot create pipe"));
+      fprintf (stderr, _("Cannot create pipe\n"));
       exit (WGET_EXIT_GENERIC_ERROR);
     }
 
@@ -1059,7 +1060,7 @@ run_use_askpass (char *question, char **answer)
   if (status)
     {
       fprintf (stderr,
-              _("Error initializing spawn file actions for use-askpass: %d"),
+              _("Error initializing spawn file actions for use-askpass: %d\n"),
               status);
       exit (WGET_EXIT_GENERIC_ERROR);
     }
@@ -1068,15 +1069,21 @@ run_use_askpass (char *question, char **answer)
   if (status)
     {
       fprintf (stderr,
-              _("Error setting spawn file actions for use-askpass: %d"),
+              _("Error setting spawn file actions for use-askpass: %d\n"),
               status);
       exit (WGET_EXIT_GENERIC_ERROR);
     }
 
+  /* C89 initializer lists must be computable at load time,
+   * thus this explicit initialization. */
+  argv[0] = opt.use_askpass;
+  argv[1] = question;
+  argv[2] = NULL;
+
   status = posix_spawnp (&pid, opt.use_askpass, &fa, NULL, argv, environ);
   if (status)
     {
-      fprintf (stderr, "Error spawning %s: %d", opt.use_askpass, status);
+      fprintf (stderr, "Error spawning %s: %d\n", opt.use_askpass, status);
       exit (WGET_EXIT_GENERIC_ERROR);
     }
 
@@ -1090,19 +1097,19 @@ run_use_askpass (char *question, char **answer)
               opt.use_askpass, question, strerror (errno));
       exit (WGET_EXIT_GENERIC_ERROR);
     }
-  /* Set the end byte to \0, and decrement bytes */
-  tmp[bytes--] = '\0';
+
+  /* Make sure there is a trailing 0 */
+  tmp[bytes] = '\0';
 
   /* Remove a possible new line */
-  while (bytes >= 0 &&
-        (tmp[bytes] == '\0' || tmp[bytes] == '\n' || tmp[bytes] == '\r'))
-    tmp[bytes--] = '\0';
+  if ((p = strpbrk (tmp, "\r\n")))
+    bytes = p - tmp;
 
-  *answer = xmemdup (tmp, bytes + 2);
+  *answer = xmemdup0 (tmp, bytes);
 }
 
 /* set the user name and password*/
-void
+static void
 use_askpass (struct url *u)
 {
   static char question[1024];
