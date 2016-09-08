@@ -77,3 +77,7 @@ gen-ChangeLog:
 	    { rm -f $(distdir)/ChangeLog &&				\
 	      mv $(distdir)/cl-t $(distdir)/ChangeLog; }		\
 	fi
+
+check-valgrind:
+	TESTS_ENVIRONMENT="VALGRIND_TESTS=1" $(MAKE) check
+
