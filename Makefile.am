@@ -80,4 +80,3 @@ gen-ChangeLog:
 
 check-valgrind:
 	TESTS_ENVIRONMENT="VALGRIND_TESTS=1" $(MAKE) check
-
