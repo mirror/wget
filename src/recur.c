@@ -438,9 +438,14 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
               struct url *url_parsed = url_parse (url, NULL, i, true);
               struct iri *ci;
               char *referer_url = url;
-              bool strip_auth = (url_parsed != NULL
-                                 && url_parsed->user != NULL);
+              bool strip_auth;
+
               assert (url_parsed != NULL);
+
+              if (!url_parsed)
+                continue;
+
+              strip_auth = (url_parsed && url_parsed->user);
 
               /* Strip auth info if present */
               if (strip_auth)
