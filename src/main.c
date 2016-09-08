@@ -1454,7 +1454,8 @@ main (int argc, char **argv)
           append_to_log = true;
           break;
         case OPT__EXECUTE:
-          run_command (optarg);
+          if (optarg) /* check silences static analyzer */
+            run_command (optarg);
           break;
         case OPT__NO:
           {

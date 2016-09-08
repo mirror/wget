@@ -331,8 +331,10 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
       if (bufsize < 512)
         bufsize = 512;          /* avoid pathologically small values */
 #ifdef SO_RCVBUF
-      setsockopt (sock, SOL_SOCKET, SO_RCVBUF,
-                  (void *)&bufsize, (socklen_t)sizeof (bufsize));
+      if (setsockopt (sock, SOL_SOCKET, SO_RCVBUF,
+                  (void *) &bufsize, (socklen_t) sizeof (bufsize)))
+        logprintf (LOG_NOTQUIET, _("setsockopt SO_RCVBUF failed: %s\n"),
+                   strerror (errno));
 #endif
       /* When we add limit_rate support for writing, which is useful
          for POST, we should also set SO_SNDBUF here.  */
@@ -471,7 +473,9 @@ bind_local (const ip_address *bind_address, int *port)
     return -1;
 
 #ifdef SO_REUSEADDR
-  setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, setopt_ptr, setopt_size);
+  if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, setopt_ptr, setopt_size))
+    logprintf (LOG_NOTQUIET, _("setsockopt SO_REUSEADDR failed: %s\n"),
+               strerror (errno));
 #endif
 
   xzero (ss);

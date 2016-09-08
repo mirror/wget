@@ -235,14 +235,20 @@ xstrdup_lower (const char *s)
 
 /* Copy the string formed by two pointers (one on the beginning, other
    on the char after the last char) to a new, malloc-ed location.
-   0-terminate it.  */
+   0-terminate it.
+   If both pointers are NULL, the function returns an empty string.  */
 char *
 strdupdelim (const char *beg, const char *end)
 {
-  char *res = xmalloc (end - beg + 1);
-  memcpy (res, beg, end - beg);
-  res[end - beg] = '\0';
-  return res;
+  if (beg && beg <= end)
+    {
+      char *res = xmalloc (end - beg + 1);
+      memcpy (res, beg, end - beg);
+      res[end - beg] = '\0';
+      return res;
+    }
+
+  return xstrdup("");
 }
 
 /* Parse a string containing comma-separated elements, and return a
@@ -1327,7 +1333,7 @@ merge_vecs (char **v1, char **v2)
   for (j = 0; v2[j]; j++)
     ;
   /* Reallocate v1.  */
-  v1 = xrealloc (v1, (i + j + 1) * sizeof (char **));
+  v1 = xrealloc (v1, (i + j + 1) * sizeof (char *));
   memcpy (v1 + i, v2, (j + 1) * sizeof (char *));
   xfree (v2);
   return v1;
@@ -2425,8 +2431,9 @@ stable_sort (void *base, size_t nmemb, size_t size,
 {
   if (size > 1)
     {
-      void *temp = alloca (nmemb * size * sizeof (void *));
+      void *temp = malloc (nmemb * size * sizeof (void *));
       mergesort_internal (base, temp, size, 0, nmemb - 1, cmpfun);
+      xfree(temp);
     }
 }
 
