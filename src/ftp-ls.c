@@ -478,6 +478,7 @@ ftp_parse_winnt_ls (const char *file)
         }
       /* Now it is possible to determine the position of the first symbol in
          filename. */
+      memset(&cur, sizeof (cur), 0);
       cur.name = xstrdup(filename);
       DEBUGP (("Name: '%s'\n", cur.name));
 
