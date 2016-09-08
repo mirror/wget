@@ -1811,7 +1811,7 @@ time_to_rfc1123 (time_t time, char *buf, size_t bufsize)
 }
 
 static struct request *
-initialize_request (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
+initialize_request (const struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                     bool inhibit_keep_alive, bool *basic_auth_finished,
                     wgint *body_data_size, char **user, char **passwd, uerr_t *ret)
 {
@@ -1957,7 +1957,7 @@ initialize_request (struct url *u, struct http_stat *hs, int *dt, struct url *pr
 }
 
 static void
-initialize_proxy_configuration (struct url *u, struct request *req,
+initialize_proxy_configuration (const struct url *u, struct request *req,
                                 struct url *proxy, char **proxyauth)
 {
   char *proxy_user, *proxy_passwd;
@@ -1989,7 +1989,7 @@ initialize_proxy_configuration (struct url *u, struct request *req,
 }
 
 static uerr_t
-establish_connection (struct url *u, struct url **conn_ref,
+establish_connection (const struct url *u, const struct url **conn_ref,
                       struct http_stat *hs, struct url *proxy,
                       char **proxyauth,
                       struct request **req_ref, bool *using_ssl,
@@ -1999,7 +1999,7 @@ establish_connection (struct url *u, struct url **conn_ref,
   bool host_lookup_failed = false;
   int sock = *sock_ref;
   struct request *req = *req_ref;
-  struct url *conn = *conn_ref;
+  const struct url *conn = *conn_ref;
   struct response *resp;
   int write_error;
   int statcode;
@@ -2010,7 +2010,7 @@ establish_connection (struct url *u, struct url **conn_ref,
          proxy is used.  The exception is when SSL is in use, in which
          case the proxy is nothing but a passthrough to the target
          host, registered as a connection to the latter.  */
-      struct url *relevant = conn;
+      const struct url *relevant = conn;
 #ifdef HAVE_SSL
       if (u->scheme == SCHEME_HTTPS)
         relevant = u;
@@ -2231,7 +2231,7 @@ set_file_timestamp (struct http_stat *hs)
 }
 
 static uerr_t
-check_file_output (struct url *u, struct http_stat *hs,
+check_file_output (const struct url *u, struct http_stat *hs,
                    struct response *resp, char *hdrval, size_t hdrsize)
 {
   /* Determine the local filename if needed. Notice that if -O is used
@@ -2299,7 +2299,7 @@ check_file_output (struct url *u, struct http_stat *hs,
 }
 
 static uerr_t
-check_auth (struct url *u, char *user, char *passwd, struct response *resp,
+check_auth (const struct url *u, char *user, char *passwd, struct response *resp,
             struct request *req, bool *ntlm_seen_ref, bool *retry,
             bool *basic_auth_finished_ref, bool *auth_finished_ref)
 {
@@ -2914,7 +2914,7 @@ fail:
    If PROXY is non-NULL, the connection will be made to the proxy
    server, and u->url will be requested.  */
 static uerr_t
-gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
+gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
          int *dt, struct url *proxy, struct iri *iri, int count)
 {
   struct request *req = NULL;
@@ -2925,7 +2925,7 @@ gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
   int statcode;
   int write_error;
   wgint contlen, contrange;
-  struct url *conn;
+  const struct url *conn;
   FILE *fp;
   int err;
   uerr_t retval;
@@ -3815,7 +3815,7 @@ gethttp (struct url *u, struct url *original_url, struct http_stat *hs,
 /* The genuine HTTP loop!  This is the part where the retrieval is
    retried, and retried, and retried, and...  */
 uerr_t
-http_loop (struct url *u, struct url *original_url, char **newloc,
+http_loop (const struct url *u, struct url *original_url, char **newloc,
            char **local_file, const char *referer, int *dt, struct url *proxy,
            struct iri *iri)
 {
