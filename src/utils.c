@@ -2422,8 +2422,7 @@ mergesort_internal (void *base, void *temp, size_t size, size_t from, size_t to,
 }
 
 /* Stable sort with interface exactly like standard library's qsort.
-   Uses mergesort internally, allocating temporary storage with
-   alloca.  */
+   Uses mergesort internally. */
 
 void
 stable_sort (void *base, size_t nmemb, size_t size,
@@ -2431,7 +2430,7 @@ stable_sort (void *base, size_t nmemb, size_t size,
 {
   if (size > 1)
     {
-      void *temp = malloc (nmemb * size * sizeof (void *));
+      void *temp = malloc (nmemb * size);
       mergesort_internal (base, temp, size, 0, nmemb - 1, cmpfun);
       xfree(temp);
     }
