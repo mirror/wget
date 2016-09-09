@@ -518,7 +518,8 @@ hsts_store_open (const char *filename)
               /* abort! */
               hsts_store_close (store);
               xfree (store);
-              fclose (fp);
+              if (fp)
+                fclose (fp);
               goto out;
             }
 
