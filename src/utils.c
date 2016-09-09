@@ -2430,7 +2430,7 @@ stable_sort (void *base, size_t nmemb, size_t size,
 {
   if (size > 1)
     {
-      void *temp = malloc (nmemb * size);
+      void *temp = xmalloc (nmemb * size);
       mergesort_internal (base, temp, size, 0, nmemb - 1, cmpfun);
       xfree(temp);
     }
