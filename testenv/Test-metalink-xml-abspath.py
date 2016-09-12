@@ -2,7 +2,6 @@
 from sys import exit
 from test.http_test import HTTPTest
 from misc.wget_file import WgetFile
-import re
 import hashlib
 
 """
@@ -77,9 +76,9 @@ http_test.server_setup()
 ### Get and use dynamic server sockname
 srv_host, srv_port = http_test.servers[0].server_inst.socket.getsockname ()
 
-MetaXml = re.sub (r'{{FILE1_HASH}}', File1_sha256, MetaXml)
-MetaXml = re.sub (r'{{SRV_HOST}}', srv_host, MetaXml)
-MetaXml = re.sub (r'{{SRV_PORT}}', str (srv_port), MetaXml)
+MetaXml = MetaXml.replace('{{FILE1_HASH}}', File1_sha256)
+MetaXml = MetaXml.replace('{{SRV_HOST}}', srv_host)
+MetaXml = MetaXml.replace('{{SRV_PORT}}', str (srv_port))
 MetaFile.content = MetaXml
 
 err = http_test.begin ()
