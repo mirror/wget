@@ -42,9 +42,9 @@ MetaXml = \
 
 A_File = WgetFile ("File1", File1)
 B_File = WgetFile ("File1_lowPref", File1_lowPref)
-MetaFile = WgetFile ("test.meta4", MetaXml)
+MetaFile = WgetFile ("test.metalink", MetaXml)
 
-WGET_OPTIONS = "--input-metalink test.meta4"
+WGET_OPTIONS = "--input-metalink test.metalink"
 WGET_URLS = [[]]
 
 Files = [[A_File, B_File]]
