@@ -105,6 +105,7 @@ if HAVE_PYTHON3
     Test-Post.py                                    \
     Test-recursive-basic.py                         \
     Test-recursive-include.py                       \
+    Test-recursive-redirect.py                      \
     Test-redirect.py                                \
     Test-redirect-crash.py                          \
     Test--rejected-log.py                           \

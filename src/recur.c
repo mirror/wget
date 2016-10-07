@@ -806,6 +806,12 @@ descend_redirect (const char *redirected, struct url *orig_parsed, int depth,
 
   if (reason == WG_RR_SUCCESS)
     blacklist_add (blacklist, upos->url->url);
+  else if (reason == WG_RR_LIST || reason == WG_RR_REGEX)
+    {
+      DEBUGP (("Ignoring decision for redirects, decided to load it.\n"));
+      blacklist_add (blacklist, upos->url->url);
+      reason = WG_RR_SUCCESS;
+    }
   else
     DEBUGP (("Redirection \"%s\" failed the test.\n", redirected));
 
