@@ -33,7 +33,9 @@ as that of the covered work.  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <iconv.h>
+#ifdef HAVE_ICONV
+# include <iconv.h>
+#endif
 #include <stringprep.h>
 #include <idna.h>
 #include <idn-free.h>

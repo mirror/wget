@@ -43,7 +43,9 @@ as that of the covered work.  */
 #include "host.h"  /* for is_valid_ipv6_address */
 #include "c-strcase.h"
 
-#include <iconv.h>
+#ifdef HAVE_ICONV
+# include <iconv.h>
+#endif
 #include <langinfo.h>
 
 #ifdef __VMS
