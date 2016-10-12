@@ -3817,7 +3817,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
       goto cleanup;
     }
   if ((contrange != 0 && contrange != hs->restval)
-      || (H_PARTIAL (statcode) && !contrange))
+      || (H_PARTIAL (statcode) && !contrange && hs->restval))
     {
       /* The Range request was somehow misunderstood by the server.
          Bail out.  */
