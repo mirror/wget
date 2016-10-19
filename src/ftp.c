@@ -1191,6 +1191,7 @@ Error in server response, closing control connection.\n"));
       if (opt.spider)
         {
           bool exists = false;
+          bool all_exist = true;
           struct fileinfo *f;
           uerr_t _res = ftp_get_listing (u, original_url, con, &f);
           /* Set the DO_RETR command flag again, because it gets unset when
@@ -1206,6 +1207,8 @@ Error in server response, closing control connection.\n"));
                     {
                       exists = true;
                       break;
+                    } else {
+                      all_exist = false;
                     }
                   f = f->next;
                 }
@@ -1226,7 +1229,11 @@ Error in server response, closing control connection.\n"));
           con->csock = -1;
           fd_close (dtsock);
           fd_close (local_sock);
-          return RETRFINISHED;
+          if (all_exist) {
+              return RETRFINISHED;
+          } else {
+              return FTPNSFOD;
+          }
         }
 
       if (opt.verbose)
