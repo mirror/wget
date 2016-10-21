@@ -132,7 +132,7 @@ redirect_output_signal (int sig)
     signal_name = "SIGUSR1";
 #endif
 
-  log_request_redirect_output (signal_name);
+  redirect_output (true,signal_name);
   progress_schedule_redirect ();
   signal (sig, redirect_output_signal);
 }

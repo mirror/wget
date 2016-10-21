@@ -52,6 +52,7 @@ void log_init (const char *, bool);
 void log_close (void);
 void log_cleanup (void);
 void log_request_redirect_output (const char *);
+void redirect_output (bool, const char *);
 
 const char *escnonprint (const char *);
 const char *escnonprint_uri (const char *);
