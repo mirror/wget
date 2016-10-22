@@ -818,7 +818,7 @@ retrieve_from_metalink (const metalink_t* metalink)
                           & (GPGME_SIGSUM_VALID | GPGME_SIGSUM_GREEN))
                         {
                           logputs (LOG_VERBOSE,
-                                   _("Signature validation suceeded.\n"));
+                                   _("Signature validation succeeded.\n"));
                           sig_status = 1;
                           break;
                         }
