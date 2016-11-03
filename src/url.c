@@ -1213,7 +1213,7 @@ url_free (struct url *url)
   if (url)
     {
       if (url->idn_allocated) {
-        idn_free (url->host);      /* A dummy if !defined(ENABLE_IRI) */
+        idn2_free (url->host);      /* A dummy if !defined(ENABLE_IRI) */
         url->host = NULL;
       }
       else

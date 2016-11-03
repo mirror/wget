@@ -33,13 +33,14 @@ as that of the covered work.  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <langinfo.h>
+#include <errno.h>
 #ifdef HAVE_ICONV
 # include <iconv.h>
 #endif
-#include <stringprep.h>
-#include <idna.h>
-#include <idn-free.h>
-#include <errno.h>
+#include <idn2.h>
+#include <unicase.h>
+#include <unistr.h>
 
 #include "utils.h"
 #include "url.h"
@@ -90,10 +91,15 @@ parse_charset (const char *str)
 }
 
 /* Find the locale used, or fall back on a default value */
-char *
+const char *
 find_locale (void)
 {
-  return (char *) stringprep_locale_charset ();
+	const char *encoding = nl_langinfo(CODESET);
+
+	if (!encoding || !*encoding)
+		return "ASCII";
+
+   return encoding;
 }
 
 /* Basic check of an encoding name. */
@@ -284,32 +290,46 @@ idn_encode (const struct iri *i, const char *host)
   int ret;
   char *ascii_encoded;
   char *utf8_encoded = NULL;
+  const char *src;
+  uint8_t *lower;
+  size_t len = 0;
 
   /* Encode to UTF-8 if not done */
   if (!i->utf8_encode)
     {
       if (!remote_to_utf8 (i, host, &utf8_encoded))
           return NULL;  /* Nothing to encode or an error occured */
+      src = utf8_encoded;
     }
+  else
+    src = host;
 
-  if (!_utf8_is_valid(utf8_encoded ? utf8_encoded : host))
+  if (!_utf8_is_valid (src))
     {
       logprintf (LOG_VERBOSE, _("Invalid UTF-8 sequence: %s\n"),
-                 quote(utf8_encoded ? utf8_encoded : host));
+                 quote (src));
       xfree (utf8_encoded);
       return NULL;
     }
 
-  /* Store in ascii_encoded the ASCII UTF-8 NULL terminated string */
-  ret = idna_to_ascii_8z (utf8_encoded ? utf8_encoded : host, &ascii_encoded, IDNA_FLAGS);
-  xfree (utf8_encoded);
-
-  if (ret != IDNA_SUCCESS)
+  /* we need a conversion to lowercase */
+  lower = u8_tolower ((uint8_t *) src, u8_strlen ((uint8_t *) src) + 1, 0, UNINORM_NFKC, NULL, &len);
+  if (!lower)
     {
-      logprintf (LOG_VERBOSE, _("idn_encode failed (%d): %s\n"), ret,
-                 quote (idna_strerror (ret)));
+      logprintf (LOG_VERBOSE, _("Failed to convert to lower: %d: %s\n"),
+                 errno, quote (src));
+      xfree (utf8_encoded);
       return NULL;
     }
+
+  if ((ret = idn2_lookup_u8 (lower, (uint8_t **) &ascii_encoded, IDN2_NFC_INPUT)) != IDN2_OK)
+    {
+      logprintf (LOG_VERBOSE, _("idn_encode failed (%d): %s\n"), ret,
+                 quote (idn2_strerror (ret)));
+      ascii_encoded = NULL;
+    }
+
+  xfree (lower);
 
   return ascii_encoded;
 }
@@ -319,18 +339,24 @@ idn_encode (const struct iri *i, const char *host)
 char *
 idn_decode (const char *host)
 {
+/*
   char *new;
   int ret;
 
-  ret = idna_to_unicode_8zlz (host, &new, IDNA_FLAGS);
-  if (ret != IDNA_SUCCESS)
+  ret = idn2_register_u8 (NULL, host, (uint8_t **) &new, 0);
+  if (ret != IDN2_OK)
     {
-      logprintf (LOG_VERBOSE, _("idn_decode failed (%d): %s\n"), ret,
-                 quote (idna_strerror (ret)));
+      logprintf (LOG_VERBOSE, _("idn2_register_u8 failed (%d): %s: %s\n"), ret,
+                 quote (idn2_strerror (ret)), host);
       return NULL;
     }
 
   return new;
+*/
+  /* idn2_register_u8() just works label by label.
+   * That is pretty much overhead for just displaying the original ulabels.
+   * To keep at least the debug output format, return a cloned host. */
+  return xstrdup(host);
 }
 
 /* Try to transcode string str from remote encoding to UTF-8. On success, *new

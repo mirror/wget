@@ -100,8 +100,8 @@ struct url
   char *user;
   char *passwd;
 
-  /* 'host' is allocated by idna_to_ascii_8z() via idn_encode().
-   * Call 'idn_free()' to free this memory. */
+  /* 'host' is allocated by idn2_lookup_u8() via idn_encode().
+   * Call 'idn2_free()' to free this memory. */
   bool idn_allocated;
 };
 

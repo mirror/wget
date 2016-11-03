@@ -65,7 +65,7 @@ nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = iri.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB) $(INET_NTOP_LIB) $(LIBSOCKET)\
  $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO) $(LIB_SELECT) $(LTLIBICONV) $(LTLIBINTL) $(LTLIBTHREAD)\
- $(SERVENT_LIB)
+ $(LTLIBUNISTRING) $(SERVENT_LIB)
 AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
 

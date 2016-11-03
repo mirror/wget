@@ -964,12 +964,12 @@ check_redirect_output (void)
     {
       if (tcgetpgrp (STDIN_FILENO) != getpgrp ())
         {
-          // Process backgrounded
+          /* Process backgrounded */
           redirect_output (true,NULL);
         }
       else
         {
-          // Process foregrounded
+          /* Process foregrounded */
           redirect_output (false,NULL);
         }
     }

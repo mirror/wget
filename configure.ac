@@ -640,9 +640,6 @@ AC_ARG_ENABLE(iri,
   ]
 )
 
-AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
-                                   [Support IDN/IRIs (needs GNU Libidn)]),
-                                   libidn=$withval, libidn="")
 AS_IF([test "X$iri" != "Xno"],[
   AM_ICONV
 
@@ -660,33 +657,26 @@ AS_IF([test "X$iri" != "Xno"],[
   LIBICONV=
 ])
 
+AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
+                                   [Support IDN2008/IRIs (needs GNU libidn2 + libunicode)]),
+                                   libidn=$withval, libidn="")
 if test "X$iri" != "Xno"; then
-  if test "$libidn" != ""; then
-    LDFLAGS="${LDFLAGS} -L$libidn/lib"
-    CPPFLAGS="${CPPFLAGS} -I$libidn/include"
-  fi
+  AS_IF([test "x$with_libidn2" != xno], [
+    AC_SEARCH_LIBS(idn2_lookup_u8, idn2,
+      [with_libidn2=yes; AC_DEFINE([ENABLE_IRI], 1, [Define if IRI support is enabled.])],
+      [with_libidn2=no; iri=no; AC_MSG_WARN(*** LIBIDN2 was not found. You will not be able to use IDN2008 support)])
 
-  # If idna.h can't be found, check to see if it was installed under
-  # /usr/include/idn (OpenSolaris, at least, places it there).
-  # Check for idn-int.h in that case, because idna.h won't find
-  # idn-int.h until we've decided to add -I/usr/include/idn.
-  AC_CHECK_HEADER(idna.h, ,
-    [AC_CHECK_HEADER(idn/idn-int.h,
-                    [CPPFLAGS="${CPPFLAGS} -I/usr/include/idn"],
-                    [iri=no])]
-  )
-
-  if test "X$iri" != "Xno"; then
-    AC_CHECK_LIB(idn, stringprep_check_version,
-      [iri=yes LIBS="${LIBS} -lidn"], iri=no)
-  fi
-
-  if test "X$iri" != "Xno" ; then
-    AC_DEFINE([ENABLE_IRI], 1, [Define if IRI support is enabled.])
-    AC_MSG_NOTICE([Enabling support for IRI.])
-  else
-    AC_MSG_WARN([Libidn not found])
-  fi
+#    AS_IF([test "x$with_libidn2" = xyes], [
+#      AC_SEARCH_LIBS(u8_tolower, unistring,
+#        [AC_DEFINE([ENABLE_IRI], 1, [Define if IRI support is enabled.])],
+#        [iri=no; AC_MSG_WARN(*** LIBUNISTRING was not found. You will not be able to use IDN2008 support)])
+#    ])
+  ])
+fi
+if test "X$iri" = "Xno"; then
+  # we don't need libunistring - clear settings from gnulib module
+  LIBUNISTRING=""
+  LTLIBUNISTRING=""
 fi
 
 dnl
@@ -755,7 +745,7 @@ dnl
 dnl Check for libcares (resolver library)
 dnl
 
-AS_IF([test "X$with_cares" == "Xyes"],[
+AS_IF([test "X$with_cares" = "Xyes"],[
   PKG_CHECK_MODULES([CARES], libcares, [
     CFLAGS="$CARES_CFLAGS $CFLAGS"
     AC_CHECK_HEADER(ares.h, [
@@ -839,4 +829,5 @@ AC_MSG_NOTICE([Summary of build options:
   Metalink:          $with_metalink
   Resolver:          $RESOLVER_INFO
   GPGME:             $have_gpg
+  IRI:               $iri
 ])

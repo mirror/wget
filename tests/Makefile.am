@@ -136,7 +136,10 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES =
-LDADD = ../src/libunittest.a ../lib/libgnu.a @LIBICONV@ @LIBINTL@ $(LIBS) $(LIB_CLOCK_GETTIME)
+LDADD = ../src/libunittest.a ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB) $(INET_NTOP_LIB) $(LIBSOCKET)\
+ $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO) $(LIB_SELECT) $(LTLIBICONV) $(LTLIBINTL) $(LTLIBTHREAD)\
+ $(LTLIBUNISTRING) $(SERVENT_LIB)
+
 
 CLEANFILES = *~ *.bak core core.[0-9]*
 

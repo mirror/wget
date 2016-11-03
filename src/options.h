@@ -311,7 +311,7 @@ struct options
 
   bool enable_iri;
   char *encoding_remote;
-  char *locale;
+  const char *locale;
 
   bool trustservernames;
 #ifdef __VMS
