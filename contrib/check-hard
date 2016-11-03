@@ -12,7 +12,7 @@ if [ $CORES -lt 1 ]; then CORES=1; fi
 echo "Running: make distclean"
 make distclean > /dev/null || true
 
-CFLAGS="-std=c89 -pedantic -O2 -g -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
+CFLAGS="-std=c89 -pedantic -O0 -g -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
 
 CACHEFILE=$PWD/config_check.cache
 

@@ -21,7 +21,7 @@ CORES=3
 
 # Define a large number of Warning flags for the compiler. Hopefully, someone
 # will sit and analyze the output to clean the warnings from the codebase.
-CFLAGS="-std=c89 -pedantic -O2 -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
+CFLAGS="-std=c89 -pedantic -O0 -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
 
 # A cachefile for ./configure. Saves significant time when reconfiguring
 CACHEFILE=$PWD/config_check.cache
