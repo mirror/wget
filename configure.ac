@@ -329,10 +329,9 @@ AS_IF([test "x$with_libpsl" != xno], [
   ])
 ])
 
-# Check for custom PSL file
-AC_ARG_WITH(psl-file,
-  AC_HELP_STRING([--with-psl-file=[PATH]], [path to PSL file (plain text or DAFSA)]),
-  PSL_FILE=$withval AC_DEFINE_UNQUOTED([PSL_FILE], ["$PSL_FILE"], [path to PSL file (plain text or DAFSA)]))
+AS_IF([test x"$with_libpsl" = xyes], [
+  AC_CHECK_FUNCS(psl_latest)
+])
 
 AS_IF([test x"$with_zlib" != xno], [
   with_zlib=yes
@@ -818,7 +817,7 @@ AC_MSG_NOTICE([Summary of build options:
   Libs:              $LIBS
   SSL:               $with_ssl
   Zlib:              $with_zlib
-  PSL:               $with_libpsl $PSL_FILE
+  PSL:               $with_libpsl
   Digest:            $ENABLE_DIGEST
   NTLM:              $ENABLE_NTLM
   OPIE:              $ENABLE_OPIE

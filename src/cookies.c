@@ -538,15 +538,13 @@ check_domain_match (const char *cookie_domain, const char *host)
     {
       init_psl = 1;
 
-#ifdef PSL_FILE
-      /* If PSL_FILE is a DAFSA file, loading is very fast */
-      if ((psl = psl_load_file (PSL_FILE)))
+#ifdef HAVE_PSL_LATEST
+      if ((psl = psl_latest (NULL)))
         goto have_psl;
 
-      DEBUGP (("\nPSL: %s not found or not readable. "
-               "Falling back to built-in data.\n", quote (PSL_FILE)));
-#endif
-
+      DEBUGP (("\nPSL: Failed to load any PSL data. "
+               "Falling back to insecure heuristics.\n"));
+#else
       if ((psl = psl_builtin ()) && !psl_builtin_outdated ())
         goto have_psl;
 
@@ -564,9 +562,10 @@ check_domain_match (const char *cookie_domain, const char *host)
       if (!(psl = psl_builtin ()))
         {
           DEBUGP (("\nPSL: libpsl not built with a public suffix list. "
-                   "Falling back to simple heuristics.\n"));
+                   "Falling back to insecure heuristics.\n"));
           goto no_psl;
         }
+#endif
     }
   else if (!psl)
     goto no_psl;
