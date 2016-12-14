@@ -2977,7 +2977,7 @@ skip_content_type:
           char *bin_hash = alloca (dig_hash_str_len * 3 / 4 + 1);
           ssize_t hash_bin_len;
 
-          hash_bin_len = base64_decode (dig_hash, bin_hash);
+          hash_bin_len = wget_base64_decode (dig_hash, bin_hash);
 
           /* Detect malformed base64 input.  */
           if (hash_bin_len < 0)
@@ -4730,7 +4730,7 @@ basic_authentication_encode (const char *user, const char *passwd)
   sprintf (t1, "%s:%s", user, passwd);
 
   t2 = (char *)alloca (BASE64_LENGTH (len1) + 1);
-  base64_encode (t1, len1, t2);
+  wget_base64_encode (t1, len1, t2);
 
   return concat_strings ("Basic ", t2, (char *) 0);
 }

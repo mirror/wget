@@ -2149,7 +2149,7 @@ xsleep (double seconds)
    base64 data.  */
 
 size_t
-base64_encode (const void *data, size_t length, char *dest)
+wget_base64_encode (const void *data, size_t length, char *dest)
 {
   /* Conversion table.  */
   static const char tbl[64] = {
@@ -2217,7 +2217,7 @@ base64_encode (const void *data, size_t length, char *dest)
    This function originates from Free Recode.  */
 
 ssize_t
-base64_decode (const char *base64, void *dest)
+wget_base64_decode (const char *base64, void *dest)
 {
   /* Table of base64 values for first 128 characters.  Note that this
      assumes ASCII (but so does Wget in other places).  */
@@ -2597,7 +2597,7 @@ wg_pubkey_pem_to_der (const char *pem, unsigned char **der, size_t *der_len)
 
   base64data = xmalloc (BASE64_LENGTH(stripped_pem_count));
 
-  size = base64_decode (stripped_pem, base64data);
+  size = wget_base64_decode (stripped_pem, base64data);
 
   if (size < 0) {
     xfree (base64data);           /* malformed base64 from server */
@@ -2660,7 +2660,7 @@ wg_pin_peer_pubkey (const char *pinnedpubkey, const char *pubkey, size_t pubkeyl
           end_pos[0] = '\0';
 
         /* decode base64 pinnedpubkey, 8 is length of "sha256//" */
-        decoded_hash_length = base64_decode (begin_pos + 8, expectedsha256sumdigest);
+        decoded_hash_length = wget_base64_decode (begin_pos + 8, expectedsha256sumdigest);
         /* if valid base64, compare sha256 digests directly */
         if (SHA256_DIGEST_SIZE == decoded_hash_length &&
            !memcmp (sha256sumdigest, expectedsha256sumdigest, SHA256_DIGEST_SIZE)) {

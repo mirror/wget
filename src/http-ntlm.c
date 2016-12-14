@@ -122,7 +122,7 @@ ntlm_input (struct ntlmdata *ntlm, const char *header)
 
       DEBUGP (("Received a type-2 NTLM message.\n"));
 
-      size = base64_decode (header, buffer);
+      size = wget_base64_decode (header, buffer);
       if (size < 0)
         return false;           /* malformed base64 from server */
 
@@ -411,7 +411,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     size = 32 + hostlen + domlen;
 
     base64 = (char *) alloca (BASE64_LENGTH (size) + 1);
-    base64_encode (ntlmbuf, size, base64);
+    wget_base64_encode (ntlmbuf, size, base64);
 
     output = concat_strings ("NTLM ", base64, (char *) 0);
     break;
@@ -584,7 +584,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
 
     /* convert the binary blob into base64 */
     base64 = (char *) alloca (BASE64_LENGTH (size) + 1);
-    base64_encode (ntlmbuf, size, base64);
+    wget_base64_encode (ntlmbuf, size, base64);
 
     output = concat_strings ("NTLM ", base64, (char *) 0);
 
