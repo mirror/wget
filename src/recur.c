@@ -456,9 +456,16 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                   reject_reason r;
 
                   if (child->ignore_when_downloading)
-                    continue;
+                    {
+                      DEBUGP (("Not following due to 'ignore' flag: %s\n", child->url->url));
+                      continue;
+                    }
+
                   if (dash_p_leaf_HTML && !child->link_inline_p)
-                    continue;
+                    {
+                      DEBUGP (("Not following due to 'link inline' flag: %s\n", child->url->url));
+                      continue;
+                    }
 
                   r = download_child (child, url_parsed, depth,
                                       start_url_parsed, blacklist, i);
