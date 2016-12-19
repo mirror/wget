@@ -556,7 +556,6 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
       xfree(sni_hostname);
     }
 
-  gnutls_set_default_priority (session);
   gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, credentials);
 #ifndef FD_TO_SOCKET
 # define FD_TO_SOCKET(X) (X)
@@ -571,7 +570,8 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
   switch (opt.secure_protocol)
     {
     case secure_protocol_auto:
-      err = gnutls_priority_set_direct (session, "NORMAL:%COMPAT:-VERS-SSL3.0", NULL);
+      err = gnutls_set_default_priority (session);
+      gnutls_session_enable_compatibility_mode(session);
       break;
 
     case secure_protocol_sslv2:
@@ -608,6 +608,7 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
   switch (opt.secure_protocol)
     {
     case secure_protocol_auto:
+      err = gnutls_set_default_priority (session);
       break;
 
     case secure_protocol_sslv2:
