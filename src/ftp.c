@@ -359,12 +359,32 @@ getftp (struct url *u, struct url *original_url,
 
   *qtyread = restval;
 
-  user = u->user;
-  passwd = u->passwd;
-  search_netrc (u->host, (const char **)&user, (const char **)&passwd, 1);
-  user = user ? user : (opt.ftp_user ? opt.ftp_user : opt.user);
+  /* Find the username with priority */
+  if (u->user)
+    user = u->user;
+  else if (opt.user && (opt.use_askpass || opt.ask_passwd))
+    user = opt.user;
+  else if (opt.ftp_user)
+    user = opt.ftp_user;
+  else if (opt.user)
+    user = opt.user;
+  else
+    user = NULL;
+  /* Find the password with priority */
+  if (u->passwd)
+    passwd = u->passwd;
+  else if (opt.passwd && (opt.use_askpass || opt.ask_passwd))
+    passwd = opt.passwd;
+  else if (opt.ftp_passwd)
+    passwd = opt.ftp_passwd;
+  else if (opt.passwd)
+    passwd = opt.passwd;
+  else
+    passwd = NULL;
+  /* Check for ~/.netrc if none of the above match */
+  if (opt.netrc && (!user || !passwd))
+    search_netrc (u->host, (const char **)&user, (const char **)&passwd, 1);
   if (!user) user = "anonymous";
-  passwd = passwd ? passwd : (opt.ftp_passwd ? opt.ftp_passwd : opt.passwd);
   if (!passwd) passwd = "-wget@";
 
   dtsock = -1;

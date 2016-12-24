@@ -1875,12 +1875,31 @@ initialize_request (const struct url *u, struct http_stat *hs, int *dt, struct u
   request_set_header (req, "Accept", "*/*", rel_none);
   request_set_header (req, "Accept-Encoding", "identity", rel_none);
 
-  /* Find the username and password for authentication. */
-  *user = u->user;
-  *passwd = u->passwd;
-  search_netrc (u->host, (const char **)user, (const char **)passwd, 0);
-  *user = *user ? *user : (opt.http_user ? opt.http_user : opt.user);
-  *passwd = *passwd ? *passwd : (opt.http_passwd ? opt.http_passwd : opt.passwd);
+  /* Find the username with priority */
+  if (u->user)
+    *user = u->user;
+  else if (opt.user && (opt.use_askpass || opt.ask_passwd))
+    *user = opt.user;
+  else if (opt.http_user)
+    *user = opt.http_user;
+  else if (opt.user)
+    *user = opt.user;
+  else
+    *user = NULL;
+  /* Find the password with priority */
+  if (u->passwd)
+    *passwd = u->passwd;
+  else if (opt.passwd && (opt.use_askpass || opt.ask_passwd))
+    *passwd = opt.passwd;
+  else if (opt.http_passwd)
+    *passwd = opt.http_passwd;
+  else if (opt.passwd)
+    *passwd = opt.passwd;
+  else
+    *passwd = NULL;
+  /* Check for ~/.netrc if none of the above match */
+  if (opt.netrc && (!(*user) || !(*password)))
+    search_netrc (u->host, (const char **)user, (const char **)passwd, 0);
 
   /* We only do "site-wide" authentication with "global" user/password
    * values unless --auth-no-challange has been requested; URL user/password
