@@ -31,6 +31,7 @@ as that of the covered work.  */
 
 #include "wget.h"
 
+#include "exits.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -693,6 +694,11 @@ select_fd (int fd, double maxtime, int wait_for)
   struct timeval tmout;
   int result;
 
+  if (fd >= FD_SETSIZE)
+    {
+      logprintf (LOG_NOTQUIET, _("Too many fds open.  Cannot use select on a fd >= %d\n"), FD_SETSIZE);
+      exit (WGET_EXIT_GENERIC_ERROR);
+    }
   FD_ZERO (&fdset);
   FD_SET (fd, &fdset);
   if (wait_for & WAIT_FOR_READ)
@@ -735,6 +741,11 @@ test_socket_open (int sock)
   struct timeval to;
   int ret = 0;
 
+  if (sock >= FD_SETSIZE)
+    {
+      logprintf (LOG_NOTQUIET, _("Too many fds open.  Cannot use select on a fd >= %d\n"), FD_SETSIZE);
+      exit (WGET_EXIT_GENERIC_ERROR);
+    }
   /* Check if we still have a valid (non-EOF) connection.  From Andrew
    * Maholski's code in the Unix Socket FAQ.  */
 
