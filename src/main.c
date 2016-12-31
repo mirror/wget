@@ -1742,7 +1742,7 @@ for details.\n\n"));
       else if (opt.method)
         {
           fprintf (stderr, _("You cannot use --post-data or --post-file along with --method. "
-                             "--method expects data through --body-data and --body-file options"));
+                             "--method expects data through --body-data and --body-file options\n"));
           exit (WGET_EXIT_GENERIC_ERROR);
         }
     }
