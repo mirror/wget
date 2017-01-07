@@ -370,6 +370,7 @@ getftp (struct url *u, struct url *original_url,
     user = opt.user;
   else
     user = NULL;
+
   /* Find the password with priority */
   if (u->passwd)
     passwd = u->passwd;
@@ -381,9 +382,11 @@ getftp (struct url *u, struct url *original_url,
     passwd = opt.passwd;
   else
     passwd = NULL;
+
   /* Check for ~/.netrc if none of the above match */
   if (opt.netrc && (!user || !passwd))
-    search_netrc (u->host, (const char **)&user, (const char **)&passwd, 1);
+    search_netrc (u->host, (const char **) &user, (const char **) &passwd, 1);
+
   if (!user) user = "anonymous";
   if (!passwd) passwd = "-wget@";
 
