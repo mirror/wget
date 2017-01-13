@@ -221,8 +221,8 @@ save_hsts (void)
 
 /* Definition of command-line options. */
 
-static void _Noreturn print_help (void);
-static void _Noreturn print_version (void);
+_Noreturn static void print_help (void);
+_Noreturn static void print_version (void);
 
 #ifdef HAVE_SSL
 # define IF_SSL(x) x
@@ -555,7 +555,7 @@ print_usage (int error)
 
 /* Print the help message, describing all the available options.  If
    you add an option, be sure to update this list.  */
-static void _Noreturn
+_Noreturn static void
 print_help (void)
 {
   /* We split the help text this way to ease translation of individual
@@ -1198,7 +1198,7 @@ format_and_print_line (const char *prefix, const char *line,
   return 0;
 }
 
-static void _Noreturn
+_Noreturn static void
 print_version (void)
 {
   const char *wgetrc_title  = _("Wgetrc: ");
