@@ -238,50 +238,6 @@ locale_to_utf8 (const char *str)
   return str;
 }
 
-/*
- * Work around a libidn <= 1.30 vulnerability.
- *
- * The function checks for a valid UTF-8 character sequence before
- * passing it to idna_to_ascii_8z().
- *
- * [1] http://lists.gnu.org/archive/html/help-libidn/2015-05/msg00002.html
- * [2] https://lists.gnu.org/archive/html/bug-wget/2015-06/msg00002.html
- * [3] http://curl.haxx.se/mail/lib-2015-06/0143.html
- */
-static bool
-_utf8_is_valid(const char *utf8)
-{
-  const unsigned char *s = (const unsigned char *) utf8;
-
-  while (*s)
-    {
-      if ((*s & 0x80) == 0) /* 0xxxxxxx ASCII char */
-        s++;
-      else if ((*s & 0xE0) == 0xC0) /* 110xxxxx 10xxxxxx */
-        {
-          if ((s[1] & 0xC0) != 0x80)
-            return false;
-          s+=2;
-        }
-      else if ((*s & 0xF0) == 0xE0) /* 1110xxxx 10xxxxxx 10xxxxxx */
-        {
-          if ((s[1] & 0xC0) != 0x80 || (s[2] & 0xC0) != 0x80)
-            return false;
-          s+=3;
-        }
-      else if ((*s & 0xF8) == 0xF0) /* 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx */
-        {
-          if ((s[1] & 0xC0) != 0x80 || (s[2] & 0xC0) != 0x80 || (s[3] & 0xC0) != 0x80)
-            return false;
-          s+=4;
-        }
-      else
-        return false;
-    }
-
-  return true;
-}
-
 /* Try to "ASCII encode" UTF-8 host. Return the new domain on success or NULL
    on error. */
 char *
@@ -291,8 +247,10 @@ idn_encode (const struct iri *i, const char *host)
   char *ascii_encoded;
   char *utf8_encoded = NULL;
   const char *src;
+#if IDN2_VERSION_NUMBER < 0x00140000
   uint8_t *lower;
   size_t len = 0;
+#endif
 
   /* Encode to UTF-8 if not done */
   if (!i->utf8_encode)
@@ -303,14 +261,6 @@ idn_encode (const struct iri *i, const char *host)
     }
   else
     src = host;
-
-  if (!_utf8_is_valid (src))
-    {
-      logprintf (LOG_VERBOSE, _("Invalid UTF-8 sequence: %s\n"),
-                 quote (src));
-      xfree (utf8_encoded);
-      return NULL;
-    }
 
 #if IDN2_VERSION_NUMBER >= 0x00140000
   /* IDN2_TRANSITIONAL implies input NFC encoding */
