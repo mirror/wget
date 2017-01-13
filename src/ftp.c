@@ -1826,7 +1826,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
   char *tms, *locf;
   const char *tmrate = NULL;
   uerr_t err;
-  struct_stat st;
+  struct stat st;
 
   /* Declare WARC variables. */
   bool warc_enabled = (opt.warc_filename != NULL);
@@ -2249,7 +2249,7 @@ ftp_retrieve_list (struct url *u, struct url *original_url,
       dlthis = true;
       if (opt.timestamping && f->type == FT_PLAINFILE)
         {
-          struct_stat st;
+          struct stat st;
           /* If conversion of HTML files retrieved via FTP is ever implemented,
              we'll need to stat() <file>.orig here when -K has been specified.
              I'm not implementing it now since files on an FTP server are much
@@ -2312,7 +2312,7 @@ The sizes do not match (local %s) -- retrieving.\n\n"),
                          _("Invalid name of the symlink, skipping.\n"));
               else
                 {
-                  struct_stat st;
+                  struct stat st;
                   /* Check whether we already have the correct
                      symbolic link.  */
                   int rc = lstat (con->target, &st);
@@ -2740,7 +2740,7 @@ ftp_loop (struct url *u, struct url *original_url, char **local_file, int *dt,
                 {
                   if (!opt.output_document)
                     {
-                      struct_stat st;
+                      struct stat st;
                       wgint sz;
                       if (stat (filename, &st) == 0)
                         sz = st.st_size;

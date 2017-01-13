@@ -1250,7 +1250,7 @@ rotate_backups(const char *fname)
   int maxlen = strlen (fname) + sizeof (SEP) + numdigit (opt.backups) + AVSL;
   char *from = alloca (maxlen);
   char *to = alloca (maxlen);
-  struct_stat sb;
+  struct stat sb;
   int i;
 
   if (stat (fname, &sb) == 0)

@@ -573,7 +573,7 @@ int
 remove_link (const char *file)
 {
   int err = 0;
-  struct_stat st;
+  struct stat st;
 
   if (lstat (file, &st) == 0 && S_ISLNK (st.st_mode))
     {
@@ -599,7 +599,7 @@ file_exists_p (const char *filename)
 #ifdef HAVE_ACCESS
   return access (filename, F_OK) >= 0;
 #else
-  struct_stat buf;
+  struct stat buf;
   return stat (filename, &buf) >= 0;
 #endif
 }
@@ -609,7 +609,7 @@ file_exists_p (const char *filename)
 bool
 file_non_directory_p (const char *path)
 {
-  struct_stat buf;
+  struct stat buf;
   /* Use lstat() rather than stat() so that symbolic links pointing to
      directories can be identified correctly.  */
   if (lstat (path, &buf) != 0)
@@ -636,7 +636,7 @@ file_size (const char *filename)
   fclose (fp);
   return size;
 #else
-  struct_stat st;
+  struct stat st;
   if (stat (filename, &st) < 0)
     return -1;
   return st.st_size;
@@ -1190,7 +1190,7 @@ wget_read_file (const char *file)
 
 #ifdef HAVE_MMAP
   {
-    struct_fstat buf;
+    struct stat buf;
     if (fstat (fd, &buf) < 0)
       goto mmap_lose;
     fm->length = buf.st_size;

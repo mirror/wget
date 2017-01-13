@@ -343,7 +343,7 @@ hsts_store_dump (hsts_store_t store, FILE *fp)
 static bool
 hsts_file_access_valid (const char *filename)
 {
-  struct_stat st;
+  struct stat st;
 
   if (stat (filename, &st) == -1)
     return false;
@@ -510,7 +510,7 @@ hsts_store_open (const char *filename)
     {
       if (hsts_file_access_valid (filename))
         {
-          struct_stat st;
+          struct stat st;
           FILE *fp = fopen (filename, "r");
 
           if (!fp || !hsts_read_database (store, fp, false))
@@ -549,7 +549,7 @@ out:
 void
 hsts_store_save (hsts_store_t store, const char *filename)
 {
-  struct_stat st;
+  struct stat st;
   FILE *fp = NULL;
   int fd = 0;
 

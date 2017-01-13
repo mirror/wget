@@ -1893,7 +1893,7 @@ for details.\n\n"));
         }
       else
         {
-          struct_fstat st;
+          struct stat st;
 
 #ifdef __VMS
 /* Common fopen() optional arguments:

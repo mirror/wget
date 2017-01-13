@@ -2195,7 +2195,7 @@ set_file_timestamp (struct http_stat *hs)
   char *filename_plus_orig_suffix = alloca (filename_len + sizeof (ORIG_SFX));
   bool local_dot_orig_file_exists = false;
   char *local_filename = NULL;
-  struct_stat st;
+  struct stat st;
 
   if (opt.backup_converted)
     /* If -K is specified, we'll act on the assumption that it was specified
@@ -3998,7 +3998,7 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
   uerr_t err, ret = TRYLIMEXC;
   time_t tmr = -1;               /* remote time-stamp */
   struct http_stat hstat;        /* HTTP status */
-  struct_stat st;
+  struct stat st;
   bool send_head_first = true;
   bool force_full_retrieve = false;
 
