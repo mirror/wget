@@ -113,7 +113,7 @@ as that of the covered work.  */
 #include "exits.h"
 #include "c-strcase.h"
 
-static void _Noreturn
+_Noreturn static void
 memfatal (const char *context, long attempted_size)
 {
   /* Make sure we don't try to store part of the log line, and thus
@@ -1936,7 +1936,7 @@ random_float (void)
 
 static sigjmp_buf run_with_timeout_env;
 
-static void _Noreturn
+_Noreturn static void
 abort_run_with_timeout (int sig _GL_UNUSED)
 {
   assert (sig == SIGALRM);
