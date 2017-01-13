@@ -878,7 +878,7 @@ setval_internal (int comind, const char *com, const char *val)
 {
   assert (0 <= comind && ((size_t) comind) < countof (commands));
 
-  if (comind < 0 || comind >= countof (commands))
+  if ((unsigned) comind >= countof (commands))
     return NULL;
 
   DEBUGP (("Setting %s (%s) to %s\n", com, commands[comind].name, val));
