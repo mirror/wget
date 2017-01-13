@@ -264,7 +264,7 @@ idn_encode (const struct iri *i, const char *host)
 
 #if IDN2_VERSION_NUMBER >= 0x00140000
   /* IDN2_TRANSITIONAL implies input NFC encoding */
-  if ((ret = idn2_lookup_u8 (src, (uint8_t **) &ascii_encoded, IDN2_TRANSITIONAL)) != IDN2_OK)
+  if ((ret = idn2_lookup_u8 ((uint8_t *) src, (uint8_t **) &ascii_encoded, IDN2_NONTRANSITIONAL)) != IDN2_OK)
     {
       logprintf (LOG_VERBOSE, _("idn_encode failed (%d): %s\n"), ret,
                  quote (idn2_strerror (ret)));
