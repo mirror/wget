@@ -428,14 +428,12 @@ getaddrinfo_with_timeout (const char *node, const char *service,
 const char *
 print_address (const ip_address *addr)
 {
-#ifdef ENABLE_IPV6
   static char buf[64];
+
   if (!inet_ntop (addr->family, IP_INADDR_DATA (addr), buf, sizeof buf))
     snprintf (buf, sizeof buf, "<error: %s>", strerror (errno));
+
   return buf;
-#else
-  return inet_ntoa (addr->data.d4);
-#endif
 }
 
 /* The following two functions were adapted from glibc's

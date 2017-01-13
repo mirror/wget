@@ -290,15 +290,6 @@ AC_DEFINE([HAVE_STRNCASECMP], 1, [Define to 1 if you have the `strncasecmp' func
 AC_DEFINE([HAVE_STRDUP], 1, [Define to 1 if you have the `strdup' function.])
 AC_DEFINE([HAVE_ISATTY], 1, [Define to 1 if you have the `isatty' function.])
 
-dnl
-dnl Call Wget-specific macros defined in aclocal.
-dnl
-WGET_STRUCT_UTIMBUF
-WGET_FNMATCH
-WGET_NANOSLEEP
-WGET_POSIX_CLOCK
-WGET_NSL_SOCKET
-
 dnl Deal with specific hosts
 case $host_os in
   *mingw32* )

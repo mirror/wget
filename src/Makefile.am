@@ -63,9 +63,10 @@ wget_SOURCES = connect.c convert.c cookies.c ftp.c	\
 		exits.h version.h metalink.h xattr.h
 nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = iri.c
-LDADD = $(LIBOBJS) ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB) $(INET_NTOP_LIB) $(LIBSOCKET)\
- $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO) $(LIB_SELECT) $(LTLIBICONV) $(LTLIBINTL) $(LTLIBTHREAD)\
- $(LTLIBUNISTRING) $(SERVENT_LIB)
+LDADD = $(LIBOBJS) ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB)\
+ $(INET_NTOP_LIB) $(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO)\
+ $(LIB_NANOSLEEP) $(LIB_POSIX_SPAWN) $(LIB_SELECT) $(LTLIBICONV) $(LTLIBINTL)\
+ $(LTLIBTHREAD) $(LTLIBUNISTRING) $(SERVENT_LIB)
 AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
 
