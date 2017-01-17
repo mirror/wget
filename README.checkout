@@ -4,7 +4,7 @@ Compiling From Repository Sources
    does not contain automatically-generated files, even when these are
    normally present in the distribution tarballs. Therefore, to build GNU
    Wget from the sources in the repository, you'll need to have one or
-   more of the following (note that gettext, OpenSSL, GnuTLS, libidn,
+   more of the following (note that gettext, OpenSSL, GnuTLS, libidn2,
    libiconv, libpsl, libpcre, pkg-config, libmetalink and GnuPG are not
    absolutely required):
 
@@ -69,7 +69,7 @@ Compiling From Repository Sources
        If you want to compile+link a non-system library version use
        --with-libssl-prefix (or if having pkg-config: see description below).
 
-     * [31]libidn is required for IDN/IRI support (non-ASCII characters
+     * [31]libidn2 is required for IDN/IRI support (non-ASCII characters
        within what would otherwise be URLs).
 
      * [32]libiconv is required on non-GNU systems, for IDN/IRI support.
@@ -194,7 +194,7 @@ References
   28. http://www.gnu.org/software/gettext/
   29. http://www.gnu.org/software/gnutls/
   30. http://www.openssl.org/
-  31. http://www.gnu.org/software/libidn/
+  31. http://www.gnu.org/software/libidn/#libidn2
   32. http://www.gnu.org/software/libiconv/
   33. http://git-scm.com/
   34. https://github.com/rockdaboot/libpsl
