@@ -1,13 +1,16 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
-2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Free
-Software Foundation, Inc.
+Copyright (C) 1997-2017 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.Y.Z
+* Changes in Wget 1.19
+
+* New option --use-askpass=COMMAND. Fetch user/password by calling
+  an external program.
+
+* Use IDNA2008 (+ TR46 if available) through libidn2
 
 * When processing a Metalink header, --metalink-index=<number> allows
   to process the header's application/metalink4+xml files.
@@ -42,6 +45,12 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 * On a recursive download, append a .tmp suffix to temporary files
   that will be deleted after being parsed, and create them
   readable/writable only by the owner.
+
+* New make target 'check-valgrind'
+
+* Fix several bugs
+
+* Fix compatibility issues
 
 * Changes in Wget 1.18
 
