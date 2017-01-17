@@ -159,7 +159,7 @@ Testing and development
 
  Copyright (C) 2008,2010,2014,2015 Free Software Foundation, Inc.
  License GPLv3+: GNU GPL version 3 or later
- <http://www.gnu.org/licenses/gpl.html>.
+ <https://www.gnu.org/licenses/gpl.html>.
  This is free software: you are free to change and redistribute it.
  There is NO WARRANTY, to the extent permitted by law.
 
@@ -183,32 +183,32 @@ Testing and development
 
 References
 
-  20. http://www.gnu.org/software/autoconf/
-  21. http://www.gnu.org/software/automake/
-  22. http://flex.sourceforge.net/
-  23. http://www.perl.org/
+  20. https://www.gnu.org/software/autoconf/
+  21. https://www.gnu.org/software/automake/
+  22. https://github.com/westes/flex
+  23. https://www.perl.org/
   24. http://search.cpan.org/dist/libwww-perl/lib/Bundle/LWP.pm
   25. http://search.cpan.org/CPAN/authors/id/A/AN/ANDK/CPAN-1.9402.tar.gz
   26. http://apthorpe.cynistar.net/code/configuring_cpan.html
-  27. http://www.gnu.org/software/texinfo/
-  28. http://www.gnu.org/software/gettext/
-  29. http://www.gnu.org/software/gnutls/
-  30. http://www.openssl.org/
-  31. http://www.gnu.org/software/libidn/#libidn2
-  32. http://www.gnu.org/software/libiconv/
-  33. http://git-scm.com/
+  27. https://www.gnu.org/software/texinfo/
+  28. https://www.gnu.org/software/gettext/
+  29. https://www.gnu.org/software/gnutls/
+  30. https://www.openssl.org/
+  31. https://www.gnu.org/software/libidn/#libidn2
+  32. https://www.gnu.org/software/libiconv/
+  33. https://git-scm.com/
   34. https://github.com/rockdaboot/libpsl
   35. http://www.pcre.org
   36. http://wget.addictivecode.org/CompilingRepoSources?action=edit&editor=text
   37. http://wget.addictivecode.org/CompilingRepoSources
   38. http://wget.addictivecode.org/CompilingRepoSources?action=info
   39. http://wget.addictivecode.org/CompilingRepoSources?action=AttachFile
-  40. http://moinmo.in/
-  41. http://moinmo.in/Python
-  42. http://moinmo.in/GPL
-  43. http://validator.w3.org/check?uri=referer
+  40. https://moinmo.in/
+  41. https://moinmo.in/Python
+  42. https://moinmo.in/GPL
+  43. https://validator.w3.org/check?uri=referer
   44. http://wget.addictivecode.org/WikiLicense
   45. https://www.python.org/
   46. https://launchpad.net/libmetalink
   47. https://www.gnupg.org
-  48. http://c-ares.haxx.se/
+  48. https://c-ares.haxx.se/
