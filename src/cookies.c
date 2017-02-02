@@ -533,7 +533,7 @@ check_domain_match (const char *cookie_domain, const char *host)
   char *host_lower = NULL;
   int is_acceptable;
 
-  DEBUGP (("cdm: 1"));
+  DEBUGP (("cdm: 1\n"));
   if (!init_psl)
     {
       init_psl = 1;
@@ -595,13 +595,13 @@ no_psl:
 #endif
 
   /* For efficiency make some elementary checks first */
-  DEBUGP (("cdm: 2"));
+  DEBUGP (("cdm: 2\n"));
 
   /* For the sake of efficiency, check for exact match first. */
   if (0 == strcasecmp (cookie_domain, host))
     return true;
 
-  DEBUGP ((" 3"));
+  DEBUGP (("cdm: 3\n"));
 
   /* HOST must match the tail of cookie_domain. */
   if (!match_tail (host, cookie_domain, true))
@@ -641,7 +641,7 @@ no_psl:
     if (*p == '.')
       /* Ignore leading period in this calculation. */
       ++p;
-    DEBUGP ((" 4"));
+    DEBUGP (("cdm: 4\n"));
     for (out = 0; !out; p++)
       switch (*p)
         {
@@ -667,12 +667,12 @@ no_psl:
           ++ldcl;
         }
 
-    DEBUGP ((" 5"));
+    DEBUGP (("cdm: 5\n"));
 
     if (dccount < 2)
       return false;
 
-    DEBUGP ((" 6"));
+    DEBUGP (("cdm: 6\n"));
 
     if (dccount == 2)
       {
@@ -692,7 +692,7 @@ no_psl:
       }
   }
 
-  DEBUGP ((" 7"));
+  DEBUGP (("cdm: 7\n"));
 
   /* Don't allow the host "foobar.com" to set a cookie for domain
      "bar.com".  */
@@ -707,7 +707,7 @@ no_psl:
         return false;
     }
 
-  DEBUGP ((" 8"));
+  DEBUGP (("cdm: 8\n"));
 
   return true;
 }
