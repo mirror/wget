@@ -2372,6 +2372,7 @@ Already have correct symlink %s -> %s\n\n"),
             }
           break;
         case FT_UNKNOWN:
+        default:
           logprintf (LOG_NOTQUIET, _("%s: unknown/unsupported file type.\n"),
                      quote (f->name));
           break;
