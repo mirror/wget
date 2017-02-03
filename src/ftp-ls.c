@@ -167,12 +167,12 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
               /*cur.perms = 1023;*/     /* #### What is this?  --hniksic */
               cur.perms = 0644;
             }
-          DEBUGP (("implicit perms %0o; ", cur.perms));
+          DEBUGP (("implicit perms %0o; ", (unsigned) cur.perms));
         }
        else
          {
            cur.perms = symperms (tok + 1);
-           DEBUGP (("perms %0o; ", cur.perms));
+           DEBUGP (("perms %0o; ", (unsigned) cur.perms));
          }
 
       error = ignore = 0;       /* Erroneous and ignoring entries are
@@ -932,7 +932,7 @@ ftp_parse_vms_ls (const char *file)
                     }
                 }
               cur.perms = perms;
-              DEBUGP (("Prot.  perms = %0o.\n", cur.perms));
+              DEBUGP (("Prot.  perms = %0o.\n", (unsigned) cur.perms));
             }
           else
             {
