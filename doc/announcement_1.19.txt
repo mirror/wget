@@ -1,0 +1,104 @@
+Hello,
+
+we are pleased to announce the new version of GNU wget 1.19.
+
+It comes with major improvements for Metalink, IDNA2008 for
+international domain names, an option to call external tools
+for fetching user/password, several bugfixes and improvements.
+
+Many thanks go to all the contributors and list activists !
+
+Contributors (from the git log):
+Ander Juaristi
+Dale R. Worley 
+Eli Zaretskii 
+Gisle Vanem 
+Giuseppe Scrivano
+Göran Uddeborg 
+Jann Horn 
+Jeffery To
+Jérémie Courrèges-Anglas 
+Liam R. Howlett
+losgrandes
+Matthew White
+Misra, Deapesh 
+Nikos Mavrogiannopoulos
+Noël Köthe
+Piotr Wajda
+Rahul Bedarkar
+Sean Burford
+Tim Rühsen
+Tobias Stoeckmann
+vijeth-aradhya
+
+
+The new version is available for download here:
+
+https://ftp.gnu.org/gnu/wget/wget-1.19.tar.gz
+https://ftp.gnu.org/gnu/wget/wget-1.19.tar.xz
+
+and the GPG detached signatures using the key 0x08302DB6A2670428:
+
+https://ftp.gnu.org/gnu/wget/wget-1.19.tar.gz.sig
+https://ftp.gnu.org/gnu/wget/wget-1.19.tar.xz.sig
+
+To reduce load on the main server, you can use this redirector service
+which automatically redirects you to a mirror:
+
+http://ftpmirror.gnu.org/wget/wget-1.19.tar.gz
+http://ftpmirror.gnu.org/wget/wget-1.19.tar.xz
+
+
+Noteworthy changes:
+
+* New option --use-askpass=COMMAND. Fetch user/password by calling
+  an external program.
+
+* Use IDNA2008 (+ TR46 if available) through libidn2
+
+* When processing a Metalink header, --metalink-index=<number> allows
+  to process the header's application/metalink4+xml files.
+
+* When processing a Metalink file, --trust-server-names enables the
+  use of the destination file names specified in the Metalink file,
+  otherwise a safe destination file name is computed.
+
+* When processing a Metalink file, enforce a safe destination path.
+  Remove any drive letter prefix under w32, i.e. 'C:D:file'.  Call
+  libmetalink's metalink_check_safe_path() to prevent absolute,
+  relative, or home paths:
+  https://tools.ietf.org/html/rfc5854#section-4.1.2.1
+  https://tools.ietf.org/html/rfc5854#section-4.2.8.3
+
+* When processing a Metalink file, --directory-prefix=<prefix> sets
+  the top of the retrieval tree to prefix for Metalink downloads.
+
+* When processing a Metalink file, reject downloaded files which don't
+  agree with their own metalink:size value:
+  https://tools.ietf.org/html/rfc5854#section-4.2.16
+
+* When processing a Metalink file, with --continue resume partially
+  downloaded files and keep fully downloaded files even if they fail
+  the verification.
+
+* When processing a Metalink file, create the parent directories of a
+  "path/file" destination file name:
+  https://tools.ietf.org/html/rfc5854#section-4.1.2.1
+  https://tools.ietf.org/html/rfc5854#section-4.2.8.3
+
+* On a recursive download, append a .tmp suffix to temporary files
+  that will be deleted after being parsed, and create them
+  readable/writable only by the owner.
+
+* New make target 'check-valgrind'
+
+* Fix several bugs
+
+* Fix compatibility issues
+
+
+Please report any problem you may experience to the bug-wget@gnu.org
+mailing list.
+
+For the maintainers of Wget,
+Tim
