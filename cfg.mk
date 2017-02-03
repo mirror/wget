@@ -1,3 +1,6 @@
+# Explicit syntax-check exceptions.
+exclude_file_name_regexp--sc_trailing_blank = ^doc/annou.*$$
+
 export VC_LIST_EXCEPT_DEFAULT=^(lib/.*|m4/.*|md5/.*|build-aux/.*|src/gettext\.h|.*ChangeLog)$$
 
 local-checks-to-skip = \
@@ -21,6 +24,7 @@ local-checks-to-skip = \
     sc_program_name \
     sc_makefile_at_at_check \
     sc_cast_of_argument_to_free \
+    sc_prohibit_undesirable_word_seq
 
 #SHELL=bash -x
 show-vc-list-except:
