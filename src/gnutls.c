@@ -498,7 +498,7 @@ _do_handshake (gnutls_session_t session, int fd, double timeout)
             {
               gnutls_alert_description_t alert = gnutls_alert_get (session);
               const char *str = gnutls_alert_get_name (alert);
-              logprintf (LOG_NOTQUIET, "GnuTLS: received alert [%d]: %s\n",
+              logprintf (LOG_NOTQUIET, "GnuTLS: received alert [%u]: %s\n",
                          alert, str ? str : "(unknown)");
             }
         }
@@ -599,7 +599,8 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
       break;
 
     default:
-      logprintf (LOG_NOTQUIET, _("GnuTLS: unimplemented 'secure-protocol' option value %d\n"), opt.secure_protocol);
+      logprintf (LOG_NOTQUIET, _("GnuTLS: unimplemented 'secure-protocol' option value %u\n"),
+                 (unsigned) opt.secure_protocol);
       logprintf (LOG_NOTQUIET, _("Please report this issue to bug-wget@gnu.org\n"));
       abort ();
     }
