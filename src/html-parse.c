@@ -801,14 +801,6 @@ name_allowed (const struct hash_table *ht, const char *b, const char *e)
   }                                             \
 } while (0)
 
-/* Skip non-whitespace, if any. */
-
-#define SKIP_NON_WS(p) do {                     \
-  while (!c_isspace (*p)) {                       \
-    ADVANCE (p);                                \
-  }                                             \
-} while (0)
-
 #ifdef STANDALONE
 static int tag_backout_count;
 #endif
