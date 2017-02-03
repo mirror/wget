@@ -32,7 +32,6 @@ as that of the covered work.  */
 #define CSS_URL_H
 
 void get_urls_css (struct map_context *, int, int);
-void get_urls_css (struct map_context *, int, int);
 struct urlpos *get_urls_css_file (const char *, const char *);
 
 #endif /* CSS_URL_H */
