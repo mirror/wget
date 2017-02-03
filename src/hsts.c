@@ -80,7 +80,6 @@ enum hsts_kh_match {
 
 #define DEFAULT_HTTP_PORT 80
 #define DEFAULT_SSL_PORT  443
-#define CHECK_EXPLICIT_PORT(p1, p2) (p1 == 0 || p1 == p2)
 #define MAKE_EXPLICIT_PORT(s, p) (s == SCHEME_HTTPS ? (p == DEFAULT_SSL_PORT ? 0 : p) \
     : (p == DEFAULT_HTTP_PORT ? 0 : p))
 
