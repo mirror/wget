@@ -2533,7 +2533,7 @@ wg_hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len)
   for (i = 0; i < hex_len; i++)
     {
       /* Each byte takes 2 characters.  */
-      sprintf (str_buffer + 2 * i, "%02x", hex_buffer[i] & 0xFF);
+      sprintf (str_buffer + 2 * i, "%02x", (unsigned) (hex_buffer[i] & 0xFF));
     }
 
   /* Null-terminate result.  */
