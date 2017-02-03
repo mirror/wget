@@ -298,13 +298,6 @@ sepstring (const char *s)
    vsnprintf until the correct size is found.  Since Wget also ships a
    fallback implementation of vsnprintf, this should be portable.  */
 
-/* Constant is using for limits memory allocation for text buffer.
-   Applicable in situation when: vasprintf is not available in the system
-   and vsnprintf return -1 when long line is truncated (in old versions of
-   glibc and in other system where C99 doesn`t support) */
-
-#define FMT_MAX_LENGTH 1048576
-
 char *
 aprintf (const char *fmt, ...)
 {
@@ -323,6 +316,13 @@ aprintf (const char *fmt, ...)
     return NULL;
   return str;
 #else  /* not HAVE_VASPRINTF */
+
+/* Constant is using for limits memory allocation for text buffer.
+   Applicable in situation when: vasprintf is not available in the system
+   and vsnprintf return -1 when long line is truncated (in old versions of
+   glibc and in other system where C99 doesn`t support) */
+
+#define FMT_MAX_LENGTH 1048576
 
   /* vasprintf is unavailable.  snprintf into a small buffer and
      resize it as necessary. */
