@@ -892,11 +892,6 @@ get_eta (int *bcd)
   p += sizeof (s) - 1;                          \
 } while (0)
 
-/* Use move_to_end (s) to get S to point the end of the string (the
-   terminating \0).  This is faster than s+=strlen(s), but some people
-   are confused when they see strchr (s, '\0') in the code.  */
-#define move_to_end(s) s = strchr (s, '\0');
-
 static void
 create_image (struct bar_progress *bp, double dl_total_time, bool done)
 {
