@@ -167,7 +167,7 @@ do_conversion (const char *tocode, const char *fromcode, char const *in_org, siz
             if (!strchr(in_org, '@') && !strchr(*out, '@'))
               debug_logprintf ("converted '%s' (%s) -> '%s' (%s)\n", in_org, fromcode, *out, tocode);
             else
-              debug_logprintf ("%s: logging suppressed, strings may contain password\n", __func__);
+              debug_logprintf ("logging suppressed, strings may contain password\n");
           }
           return true;
         }
@@ -209,7 +209,7 @@ do_conversion (const char *tocode, const char *fromcode, char const *in_org, siz
       if (!strchr(in_org, '@') && !strchr(*out, '@'))
         debug_logprintf ("converted '%s' (%s) -> '%s' (%s)\n", in_org, fromcode, *out, tocode);
       else
-        debug_logprintf ("%s: logging suppressed, strings may contain password\n", __func__);
+        debug_logprintf ("logging suppressed, strings may contain password\n");
     }
     return false;
 }
