@@ -3595,16 +3595,16 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
         {
           /* process strict transport security */
           if (hsts_store_entry (hsts_store, u->scheme, u->host, u->port, max_age, include_subdomains))
-            DEBUGP(("Added new HSTS host: %s:%u (max-age: %u, includeSubdomains: %s)\n",
+            DEBUGP(("Added new HSTS host: %s:%u (max-age: %lu, includeSubdomains: %s)\n",
                    u->host,
-                   u->port,
-                   (unsigned int) max_age,
+                   (unsigned) u->port,
+                   (unsigned long) max_age,
                    (include_subdomains ? "true" : "false")));
           else
-            DEBUGP(("Updated HSTS host: %s:%u (max-age: %u, includeSubdomains: %s)\n",
+            DEBUGP(("Updated HSTS host: %s:%u (max-age: %lu, includeSubdomains: %s)\n",
                    u->host,
-                   u->port,
-                   (unsigned int) max_age,
+                   (unsigned) u->port,
+                   (unsigned long) max_age,
                    (include_subdomains ? "true" : "false")));
         }
     }
@@ -4859,7 +4859,8 @@ digest_authentication_encode (const char *au, const char *user,
     if (algorithm && !strcmp (algorithm, "MD5-sess"))
       {
         /* A1BUF = H( H(user ":" realm ":" password) ":" nonce ":" cnonce ) */
-        snprintf (cnonce, sizeof (cnonce), "%08x", random_number (INT_MAX));
+        snprintf (cnonce, sizeof (cnonce), "%08x",
+          (unsigned) random_number (INT_MAX));
 
         md5_init_ctx (&ctx);
         /* md5_process_bytes (hash, MD5_DIGEST_SIZE, &ctx); */
@@ -4886,7 +4887,8 @@ digest_authentication_encode (const char *au, const char *user,
         /* RFC 2617 Digest Access Authentication */
         /* generate random hex string */
         if (!*cnonce)
-          snprintf (cnonce, sizeof (cnonce), "%08x", random_number (INT_MAX));
+          snprintf (cnonce, sizeof (cnonce), "%08x",
+            (unsigned) random_number (INT_MAX));
 
         /* RESPONSE_DIGEST = H(A1BUF ":" nonce ":" noncecount ":" clientnonce ":" qop ": " A2BUF) */
         md5_init_ctx (&ctx);
