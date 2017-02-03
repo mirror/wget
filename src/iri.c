@@ -48,9 +48,6 @@ as that of the covered work.  */
 #include "c-strcasestr.h"
 #include "xstrndup.h"
 
-/* RFC3987 section 3.1 mandates STD3 ASCII RULES */
-#define IDNA_FLAGS  IDNA_USE_STD3_ASCII_RULES
-
 /* Note: locale encoding is kept in options struct (opt.locale) */
 
 /* Given a string containing "charset=XXX", return the encoding if found,
