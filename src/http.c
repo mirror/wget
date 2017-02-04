@@ -2486,7 +2486,7 @@ open_output_stream (struct http_stat *hs, int count, FILE **fp)
         }
       else if (ALLOW_CLOBBER || count > 0)
         {
-          if (opt.unlink && file_exists_p (hs->local_file))
+          if (opt.unlink_requested && file_exists_p (hs->local_file))
             {
               if (unlink (hs->local_file) < 0)
                 {

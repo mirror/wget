@@ -1463,7 +1463,7 @@ Error in server response, closing control connection.\n"));
       else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
                || opt.output_document || count > 0)
         {
-          if (opt.unlink && file_exists_p (con->target))
+          if (opt.unlink_requested && file_exists_p (con->target))
             {
               if (unlink (con->target) < 0)
                 {
