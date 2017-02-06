@@ -663,11 +663,6 @@ if test "X$iri" != "Xno"; then
 #    ])
   ])
 fi
-if test "X$iri" = "Xno"; then
-  # we don't need libunistring - clear settings from gnulib module
-  LIBUNISTRING=""
-  LTLIBUNISTRING=""
-fi
 
 dnl
 dnl Check for UUID
