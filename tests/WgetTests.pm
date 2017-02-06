@@ -359,8 +359,9 @@ sub _verify_download
               );
     if (@unexpected_downloads)
     {
-        return 'Test failed: unexpected downloaded files [' . join ', ',
-          @unexpected_downloads . "]\n";
+        return 'Test failed: unexpected downloaded files [' .
+          (join ', ', @unexpected_downloads) . "]\n";
+
     }
 
     return q{};
