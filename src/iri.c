@@ -286,6 +286,8 @@ idn_encode (const struct iri *i, const char *host)
   xfree (lower);
 #endif
 
+  xfree (utf8_encoded);
+
   return ret == IDN2_OK ? ascii_encoded : NULL;
 }
 

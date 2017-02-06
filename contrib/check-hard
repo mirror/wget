@@ -12,7 +12,8 @@ if [ $CORES -lt 1 ]; then CORES=1; fi
 echo "Running: make distclean"
 make distclean > /dev/null || true
 
-CFLAGS="-std=c89 -pedantic -O0 -g -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
+#CFLAGS="-std=c89 -pedantic -O0 -g -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
+CFLAGS="-Wall -Wextra -O2 -g"
 
 CACHEFILE=$PWD/config_check.cache
 
@@ -30,7 +31,7 @@ for CC in gcc clang; do
   # the compiler changed, so we have to remove the cache file here
   rm -f $CACHEFILE
 
-  for options in "" "--with-ssl=openssl"; do
+  for options in "" "--with-ssl=openssl" "--disable-iri"; do
     export DISTCHECK_CONFIGURE_FLAGS="-C --cache-file=$CACHEFILE $options"
     echo "  ./configure $DISTCHECK_CONFIGURE_FLAGS"
     ./configure $DISTCHECK_CONFIGURE_FLAGS CFLAGS="$CFLAGS" > /dev/null
