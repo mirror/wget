@@ -304,6 +304,7 @@ static const struct {
   { "restrictfilenames", NULL,                  cmd_spec_restrict_file_names },
   { "retrsymlinks",     &opt.retr_symlinks,     cmd_boolean },
   { "retryconnrefused", &opt.retry_connrefused, cmd_boolean },
+  { "retryonhttperror", &opt.retry_on_http_error, cmd_string },
   { "robots",           &opt.use_robots,        cmd_boolean },
   { "savecookies",      &opt.cookies_output,    cmd_file },
   { "saveheaders",      &opt.save_headers,      cmd_boolean },
@@ -1979,6 +1980,7 @@ cleanup (void)
   xfree (opt.body_file);
   xfree (opt.rejected_log);
   xfree (opt.use_askpass);
+  xfree (opt.retry_on_http_error);
 
 #ifdef HAVE_LIBCARES
 #include <ares.h>

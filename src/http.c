@@ -3982,6 +3982,22 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   return retval;
 }
 
+/* Check whether the supplied HTTP status code is among those
+   listed for the --retry-on-http-error option. */
+static bool
+check_retry_on_http_error (const int statcode)
+{
+  const char *tok = opt.retry_on_http_error;
+  while (tok && *tok)
+    {
+      if (atoi (tok) == statcode)
+        return true;
+      if (tok = strchr (tok, ','))
+        ++tok;
+    }
+  return false;
+}
+
 /* The genuine HTTP loop!  This is the part where the retrieval is
    retried, and retried, and retried, and...  */
 uerr_t
@@ -4318,6 +4334,11 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
               nonexisting_url (hurl);
               logprintf (LOG_NOTQUIET, _("\
 Remote file does not exist -- broken link!!!\n"));
+            }
+          else if (check_retry_on_http_error (hstat.statcode))
+            {
+              printwhat (count, opt.ntry);
+              continue;
             }
           else
             {
