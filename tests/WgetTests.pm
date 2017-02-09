@@ -13,7 +13,7 @@ use IO::Handle;
 use POSIX qw(locale_h);
 use locale;
 
-our $WGETPATH = '../src/wget';
+our $WGETPATH = '../src/wget --no-config';
 our $VALGRIND_SUPP_FILE = Cwd::getcwd();
 if (defined $ENV{'srcdir'}) {
     $VALGRIND_SUPP_FILE = $VALGRIND_SUPP_FILE
