@@ -404,7 +404,6 @@ static struct cmdline_option option_data[] =
     { "restrict-file-names", 0, OPT_BOOLEAN, "restrictfilenames", -1 },
     { "retr-symlinks", 0, OPT_BOOLEAN, "retrsymlinks", -1 },
     { "retry-connrefused", 0, OPT_BOOLEAN, "retryconnrefused", -1 },
-    { "retry-on-http-error", 0, OPT_VALUE, "retryonhttperror", -1 },
     { "save-cookies", 0, OPT_VALUE, "savecookies", -1 },
     { "save-headers", 0, OPT_BOOLEAN, "saveheaders", -1 },
     { IF_SSL ("secure-protocol"), 0, OPT_VALUE, "secureprotocol", -1 },

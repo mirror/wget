@@ -43,7 +43,6 @@ struct options
   bool quiet;                   /* Are we quiet? */
   int ntry;                     /* Number of tries per URL */
   bool retry_connrefused;       /* Treat CONNREFUSED as non-fatal. */
-  char *retry_on_http_error;    /* Treat given HTTP errors as non-fatal. */
   bool background;              /* Whether we should work in background. */
   bool ignore_length;           /* Do we heed content-length at all?  */
   bool recursive;               /* Are we recursive? */
