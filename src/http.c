@@ -3992,7 +3992,7 @@ check_retry_on_http_error (const int statcode)
     {
       if (atoi (tok) == statcode)
         return true;
-      if (tok = strchr (tok, ','))
+      if ((tok = strchr (tok, ',')))
         ++tok;
     }
   return false;
