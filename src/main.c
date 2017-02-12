@@ -424,7 +424,6 @@ static struct cmdline_option option_data[] =
     { "user", 0, OPT_VALUE, "user", -1 },
     { "user-agent", 'U', OPT_VALUE, "useragent", -1 },
     { "verbose", 'v', OPT_BOOLEAN, "verbose", -1 },
-    { "verbose", 0, OPT_BOOLEAN, "verbose", -1 },
     { "version", 'V', OPT_FUNCALL, (void *) print_version, no_argument },
     { "wait", 'w', OPT_VALUE, "wait", -1 },
     { "waitretry", 0, OPT_VALUE, "waitretry", -1 },
