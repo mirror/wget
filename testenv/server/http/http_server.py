@@ -204,7 +204,6 @@ class _Handler(BaseHTTPRequestHandler):
 
     def Response(self, resp_obj):
         self.send_response(resp_obj.response_code)
-        self.finish_headers()
         if resp_obj.response_code == 304:
             raise NoBodyServerError("Conditional get falling to head")
         raise ServerError("Custom Response code sent.")
@@ -329,7 +328,6 @@ class _Handler(BaseHTTPRequestHandler):
         except AuthError as se:
             self.send_response(401, "Authorization Required")
             self.send_challenge(auth_rule.auth_type, auth_rule.auth_parm)
-            self.finish_headers()
             raise se
 
     def handle_auth(self, auth_rule):
@@ -362,7 +360,6 @@ class _Handler(BaseHTTPRequestHandler):
             if header_recd is None or header_recd != exp_headers[header_line]:
                 self.send_error(400, "Expected Header %s not found" %
                                 header_line)
-                self.finish_headers()
                 raise ServerError("Header " + header_line + " not found")
 
     def RejectHeader(self, header_obj):
@@ -372,7 +369,6 @@ class _Handler(BaseHTTPRequestHandler):
             if header_recd and header_recd == rej_headers[header_line]:
                 self.send_error(400, 'Blacklisted Header %s received' %
                                 header_line)
-                self.finish_headers()
                 raise ServerError("Header " + header_line + ' received')
 
     def __log_request(self, method):
@@ -400,6 +396,7 @@ class _Handler(BaseHTTPRequestHandler):
 
             content = self.server.fileSys.get(path)
             content_length = len(content)
+
             for rule_name in self.rules:
                 try:
                     assert hasattr(self, rule_name)
@@ -410,12 +407,16 @@ class _Handler(BaseHTTPRequestHandler):
                     return(None, None)
                 except AuthError as ae:
                     print(ae.__str__())
+                    self.finish_headers()
                     return(None, None)
                 except NoBodyServerError as nbse:
                     print(nbse.__str__())
+                    self.finish_headers()
                     return(None, None)
                 except ServerError as se:
                     print(se.__str__())
+                    self.add_header("Content-Length", content_length)
+                    self.finish_headers()
                     return(content, None)
 
             try:

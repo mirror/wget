@@ -3476,7 +3476,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 
 #ifdef HAVE_METALINK
   /* We need to check for the Metalink data in the very first response
-     we get from the server (before redirectionrs, authorization, etc.).  */
+     we get from the server (before redirections, authorization, etc.).  */
   if (metalink)
     {
       hs->metalink = metalink_from_http (resp, hs, u);
@@ -3496,7 +3496,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
       uerr_t auth_err = RETROK;
       bool retry;
       /* Normally we are not interested in the response body.
-         But if we are writing a WARC file we are: we like to keep everyting.  */
+         But if we are writing a WARC file we are: we like to keep everything.  */
       if (warc_enabled)
         {
           int _err;
@@ -3555,20 +3555,6 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
       if (ntlm_seen)
         pconn.authorized = true;
     }
-
-  if (statcode == HTTP_STATUS_GATEWAY_TIMEOUT)
-    {
-      hs->len = 0;
-      hs->res = 0;
-      hs->restval = 0;
-
-      CLOSE_FINISH (sock);
-      xfree (hs->message);
-
-      retval = GATEWAYTIMEOUT;
-      goto cleanup;
-    }
-
 
   {
     uerr_t ret = check_file_output (u, hs, resp, hdrval, sizeof hdrval);
@@ -3910,8 +3896,8 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
               retval = _err;
               goto cleanup;
             }
-          else
-            CLOSE_FINISH (sock);
+
+          CLOSE_FINISH (sock);
         }
       else
         {
@@ -3934,7 +3920,11 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
             CLOSE_INVALIDATE (sock);
         }
 
-      retval = RETRFINISHED;
+      if (statcode == HTTP_STATUS_GATEWAY_TIMEOUT)
+        retval = GATEWAYTIMEOUT;
+      else
+        retval = RETRFINISHED;
+
       goto cleanup;
     }
 
@@ -4208,6 +4198,8 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
              bring them to "while" statement at the end, to judge
              whether the number of tries was exceeded.  */
           printwhat (count, opt.ntry);
+          xfree (hstat.message);
+          xfree (hstat.error);
           continue;
         case FWRITEERR: case FOPENERR:
           /* Another fatal error.  */
