@@ -641,10 +641,6 @@ AS_IF([test "X$iri" != "Xno"],[
       AC_MSG_NOTICE([disabling IRIs because libiconv wasn't found])
     fi
   fi
-],[  # else
-  # For some reason, this seems to be set even when we don't check.
-  # Explicitly unset.
-  LIBICONV=
 ])
 
 AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
