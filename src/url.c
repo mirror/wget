@@ -1732,6 +1732,9 @@ url_file_name (const struct url *u, char *replaced_filename)
         fname_len_check = concat_strings (u_file, FN_QUERY_SEP_STR, u->query, NULL);
       else
         fname_len_check = strdupdelim (u_file, u_file + strlen (u_file));
+
+      /* convert before concat with local path */
+      fname_len_check = convert_fname (fname_len_check);
     }
   else
     {
@@ -1792,8 +1795,6 @@ url_file_name (const struct url *u, char *replaced_filename)
   /* TODO: check fnres.base for path length problem */
 
   xfree (temp_fnres.base);
-
-  fname = convert_fname (fname);
 
   /* Check the cases in which the unique extensions are not used:
      1) Clobbering is turned off (-nc).
