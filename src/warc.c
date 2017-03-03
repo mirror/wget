@@ -1413,7 +1413,7 @@ warc_write_revisit_record (const char *url, const char *timestamp_str,
   warc_write_header ("WARC-Refers-To", refers_to);
   warc_write_header ("WARC-Profile", "http://netpreserve.org/warc/1.0/revisit/identical-payload-digest");
   warc_write_header ("WARC-Truncated", "length");
-  warc_write_header ("WARC-Target-URI", url);
+  warc_write_header_uri ("WARC-Target-URI", url);
   warc_write_date_header (timestamp_str);
   warc_write_ip_header (ip);
   warc_write_header ("Content-Type", "application/http;msgtype=response");
@@ -1505,7 +1505,7 @@ warc_write_response_record (const char *url, const char *timestamp_str,
   warc_write_header ("WARC-Record-ID", response_uuid);
   warc_write_header ("WARC-Warcinfo-ID", warc_current_warcinfo_uuid_str);
   warc_write_header ("WARC-Concurrent-To", concurrent_to_uuid);
-  warc_write_header ("WARC-Target-URI", url);
+  warc_write_header_uri ("WARC-Target-URI", url);
   warc_write_date_header (timestamp_str);
   warc_write_ip_header (ip);
   warc_write_header ("WARC-Block-Digest", block_digest);
@@ -1562,7 +1562,7 @@ warc_write_record (const char *record_type, const char *resource_uuid,
   warc_write_header ("WARC-Record-ID", resource_uuid);
   warc_write_header ("WARC-Warcinfo-ID", warc_current_warcinfo_uuid_str);
   warc_write_header ("WARC-Concurrent-To", concurrent_to_uuid);
-  warc_write_header ("WARC-Target-URI", url);
+  warc_write_header_uri ("WARC-Target-URI", url);
   warc_write_date_header (timestamp_str);
   warc_write_ip_header (ip);
   warc_write_digest_headers (body, payload_offset);
