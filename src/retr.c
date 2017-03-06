@@ -1141,7 +1141,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       if (parsed_url)
           url_free (parsed_url);
 
-      if (filename && opt.delete_after && file_exists_p (filename))
+      if (filename && opt.delete_after && file_exists_p (filename, NULL))
         {
           DEBUGP (("\
 Removing file due to --delete-after in retrieve_from_file():\n"));

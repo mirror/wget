@@ -2290,7 +2290,7 @@ check_file_output (const struct url *u, struct http_stat *hs,
     }
 
   /* TODO: perform this check only once. */
-  if (!hs->existence_checked && file_exists_p (hs->local_file))
+  if (!hs->existence_checked && file_exists_p (hs->local_file, NULL))
     {
       if (opt.noclobber && !opt.output_document)
         {
@@ -2486,7 +2486,7 @@ open_output_stream (struct http_stat *hs, int count, FILE **fp)
         }
       else if (ALLOW_CLOBBER || count > 0)
         {
-          if (opt.unlink_requested && file_exists_p (hs->local_file))
+          if (opt.unlink_requested && file_exists_p (hs->local_file, NULL))
             {
               if (unlink (hs->local_file) < 0)
                 {
@@ -4050,7 +4050,7 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
       got_name = true;
     }
 
-  if (got_name && file_exists_p (hstat.local_file) && opt.noclobber && !opt.output_document)
+  if (got_name && file_exists_p (hstat.local_file, NULL) && opt.noclobber && !opt.output_document)
     {
       /* If opt.noclobber is turned on and file already exists, do not
          retrieve the file. But if the output_document was given, then this
@@ -4087,7 +4087,7 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
     {
       /* Use conditional get request if requested
        * and if timestamp is known at this moment.  */
-      if (opt.if_modified_since && !send_head_first && got_name && file_exists_p (hstat.local_file))
+      if (opt.if_modified_since && !send_head_first && got_name && file_exists_p (hstat.local_file, NULL))
         {
           *dt |= IF_MODIFIED_SINCE;
           {
@@ -4098,7 +4098,7 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
         }
         /* Send preliminary HEAD request if -N is given and we have existing
          * destination file or content disposition is enabled.  */
-      else if (opt.content_disposition || file_exists_p (hstat.local_file))
+      else if (opt.content_disposition || file_exists_p (hstat.local_file, NULL))
         send_head_first = true;
     }
 
@@ -5103,13 +5103,13 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
       strcpy (hs->local_file + local_filename_len, ext);
       /* If clobbering is not allowed and the file, as named,
          exists, tack on ".NUMBER.html" instead. */
-      if (!ALLOW_CLOBBER && file_exists_p (hs->local_file))
+      if (!ALLOW_CLOBBER && file_exists_p (hs->local_file, NULL))
         {
           int ext_num = 1;
           do
             sprintf (hs->local_file + local_filename_len,
                      ".%d%s", ext_num++, ext);
-          while (file_exists_p (hs->local_file));
+          while (file_exists_p (hs->local_file, NULL));
         }
       *dt |= ADDED_HTML_EXTENSION;
     }

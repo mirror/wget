@@ -375,6 +375,7 @@ retrieve_from_metalink (const metalink_t* metalink)
           metalink_checksum_t **mchksum_ptr, *mchksum;
           struct iri *iri;
           struct url *url;
+          file_stats_t flstats;
           int url_err;
 
           clean_metalink_string (&mres->url);
@@ -490,8 +491,9 @@ retrieve_from_metalink (const metalink_t* metalink)
 
                 Bugfix: point output_stream to destname if it exists.
               */
-              if (!output_stream && file_exists_p (destname))
-                output_stream = fopen (destname, "ab");
+              memset(&flstats, 0, sizeof(&flstats));
+              if (!output_stream && file_exists_p (destname, &flstats))
+                output_stream = fopen_stat (destname, "ab", &flstats);
             }
           url_free (url);
           iri_free (iri);
@@ -901,7 +903,7 @@ gpg_skip_verification:
          Note: the file has been downloaded using *_loop. Therefore, it
          is not necessary to keep the file for continuated download.  */
       if (((retr_err != RETROK && !opt.always_rest) || opt.delete_after)
-           && destname != NULL && file_exists_p (destname))
+           && destname != NULL && file_exists_p (destname, NULL))
         {
           badhash_or_remove (destname);
         }

@@ -41,6 +41,6 @@ void setoptval (const char *, const char *, const char *);
 char *home_dir (void);
 void cleanup (void);
 void defaults (void);
-bool run_wgetrc (const char *file);
+bool run_wgetrc (const char *file, file_stats_t *);
 
 #endif /* INIT_H */

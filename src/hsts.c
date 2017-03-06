@@ -32,9 +32,9 @@ as that of the covered work.  */
 
 #ifdef HAVE_HSTS
 #include "hsts.h"
+#include "utils.h"
 #include "host.h" /* for is_valid_ip_address() */
 #include "init.h" /* for home_dir() */
-#include "utils.h"
 #include "hash.h"
 #include "c-ctype.h"
 #ifdef TESTING
@@ -500,18 +500,19 @@ hsts_store_t
 hsts_store_open (const char *filename)
 {
   hsts_store_t store = NULL;
+  file_stats_t fstats;
 
   store = xnew0 (struct hsts_store);
   store->table = hash_table_new (0, hsts_hash_func, hsts_cmp_func);
   store->last_mtime = 0;
   store->changed = false;
 
-  if (file_exists_p (filename))
+  if (file_exists_p (filename, &fstats))
     {
       if (hsts_file_access_valid (filename))
         {
           struct stat st;
-          FILE *fp = fopen (filename, "r");
+          FILE *fp = fopen_stat (filename, "r", &fstats);
 
           if (!fp || !hsts_read_database (store, fp, false))
             {

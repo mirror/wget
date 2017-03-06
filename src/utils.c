@@ -45,6 +45,7 @@ as that of the covered work.  */
 #include <assert.h>
 #include <stdarg.h>
 #include <locale.h>
+#include <errno.h>
 
 #if HAVE_UTIME
 # include <sys/types.h>
@@ -586,21 +587,43 @@ remove_link (const char *file)
   return err;
 }
 
-/* Does FILENAME exist?  This is quite a lousy implementation, since
-   it supplies no error codes -- only a yes-or-no answer.  Thus it
-   will return that a file does not exist if, e.g., the directory is
-   unreadable.  I don't mind it too much currently, though.  The
-   proper way should, of course, be to have a third, error state,
-   other than true/false, but that would introduce uncalled-for
-   additional complexity to the callers.  */
+/* Does FILENAME exist? */
 bool
-file_exists_p (const char *filename)
+file_exists_p (const char *filename, file_stats_t *fstats)
 {
-#ifdef HAVE_ACCESS
-  return access (filename, F_OK) >= 0;
-#else
   struct stat buf;
-  return stat (filename, &buf) >= 0;
+
+#if defined(WINDOWS) || defined(__VMS)
+    int ret = stat (filename, &buf);
+    if (ret >= 0)
+    {
+      if (fstats != NULL)
+        fstats->access_err = errno;
+    }
+    return ret >= 0;
+#else
+  errno = 0;
+  if (stat (filename, &buf) == 0 && S_ISREG(buf.st_mode) &&
+              (((S_IRUSR & buf.st_mode) && (getuid() == buf.st_uid))  ||
+               ((S_IRGRP & buf.st_mode) && group_member(buf.st_gid))  ||
+                (S_IROTH & buf.st_mode))) {
+    if (fstats != NULL)
+    {
+      fstats->access_err = 0;
+      fstats->st_ino = buf.st_ino;
+      fstats->st_dev = buf.st_dev;
+    }
+    return true;
+  }
+  else
+  {
+    if (fstats != NULL)
+      fstats->access_err = (errno == 0 ? EACCES : errno);
+    errno = 0;
+    return false;
+  }
+  __builtin_unreachable();
+  /* NOTREACHED */
 #endif
 }
 
@@ -668,7 +691,7 @@ unique_name_1 (const char *prefix)
 
   do
     number_to_string (template_tail, count++);
-  while (file_exists_p (template));
+  while (file_exists_p (template, NULL));
 
   return xstrdup (template);
 }
@@ -696,7 +719,7 @@ unique_name (const char *file, bool allow_passthrough)
 {
   /* If the FILE itself doesn't exist, return it without
      modification. */
-  if (!file_exists_p (file))
+  if (!file_exists_p (file, NULL))
     return allow_passthrough ? (char *)file : xstrdup (file);
 
   /* Otherwise, find a numeric suffix that results in unused file name
@@ -825,13 +848,120 @@ fopen_excl (const char *fname, int binary)
   /* Manually check whether the file exists.  This is prone to race
      conditions, but systems without O_EXCL haven't deserved
      better.  */
-  if (file_exists_p (fname))
+  if (file_exists_p (fname, NULL))
     {
       errno = EEXIST;
       return NULL;
     }
   return fopen (fname, binary ? "wb" : "w");
 #endif /* not O_EXCL */
+}
+
+/* fopen_stat() assumes that file_exists_p() was called earlier.
+   file_stats_t passed to this function was returned from file_exists_p()
+   This is to prevent TOCTTOU race condition.
+   Details : FIO45-C from https://www.securecoding.cert.org/
+   Note that for creating a new file, this check is not useful
+
+   Input:
+     fname  => Name of file to open
+     mode   => File open mode
+     fstats => Saved file_stats_t about file that was checked for existence
+
+   Returns:
+     NULL if there was an error
+     FILE * of opened file stream
+*/
+FILE *
+fopen_stat(const char *fname, const char *mode, file_stats_t *fstats)
+{
+  int fd;
+  FILE *fp;
+  struct stat fdstats;
+
+  fp = fopen (fname, mode);
+  if (fp == NULL)
+  {
+    logprintf (LOG_NOTQUIET, _("Failed to Fopen file %s\n"), fname);
+    return NULL;
+  }
+  fd = fileno (fp);
+  if (fd < 0)
+  {
+    logprintf (LOG_NOTQUIET, _("Failed to get FD for file %s\n"), fname);
+    fclose (fp);
+    return NULL;
+  }
+  memset(&fdstats, 0, sizeof(fdstats));
+  if (fstat (fd, &fdstats) == -1)
+  {
+    logprintf (LOG_NOTQUIET, _("Failed to stat file %s, (check permissions)\n"), fname);
+    fclose (fp);
+    return NULL;
+  }
+#if !(defined(WINDOWS) || defined(__VMS))
+  if (fstats != NULL &&
+      (fdstats.st_dev != fstats->st_dev ||
+       fdstats.st_ino != fstats->st_ino))
+  {
+    /* File changed since file_exists_p() : NOT SAFE */
+    logprintf (LOG_NOTQUIET, _("File %s changed since the last check. Security check failed."), fname);
+    fclose (fp);
+    return NULL;
+  }
+#endif
+
+  return fp;
+}
+
+/* open_stat assumes that file_exists_p() was called earlier to save file_stats
+   file_stats_t passed to this function was returned from file_exists_p()
+   This is to prevent TOCTTOU race condition.
+   Details : FIO45-C from https://www.securecoding.cert.org/
+   Note that for creating a new file, this check is not useful
+
+
+   Input:
+     fname  => Name of file to open
+     flags  => File open flags
+     mode   => File open mode
+     fstats => Saved file_stats_t about file that was checked for existence
+
+   Returns:
+     -1 if there was an error
+     file descriptor of opened file stream
+*/
+int
+open_stat(const char *fname, int flags, mode_t mode, file_stats_t *fstats)
+{
+  int fd;
+  struct stat fdstats;
+
+  fd = open (fname, flags, mode);
+  if (fd < 0)
+  {
+    logprintf (LOG_NOTQUIET, _("Failed to open file %s, reason :%s\n"), fname, strerror(errno));
+    return -1;
+  }
+  memset(&fdstats, 0, sizeof(fdstats));
+  if (fstat (fd, &fdstats) == -1)
+  {
+    logprintf (LOG_NOTQUIET, _("Failed to stat file %s, error: %s\n"), fname, strerror(errno));
+    return -1;
+  }
+#if !(defined(WINDOWS) || defined(__VMS))
+  if (fstats != NULL &&
+      (fdstats.st_dev != fstats->st_dev ||
+       fdstats.st_ino != fstats->st_ino))
+  {
+    /* File changed since file_exists_p() : NOT SAFE */
+    logprintf (LOG_NOTQUIET, _("Trying to open file %s but it changed since last check. Security check failed."), fname);
+    close (fd);
+    return -1;
+  }
+#endif
+
+  return fd;
 }
 
 /* Create DIRECTORY.  If some of the pathname components of DIRECTORY
@@ -862,7 +992,7 @@ make_directory (const char *directory)
       /* Check whether the directory already exists.  Allow creation of
          of intermediate directories to fail, as the initial path components
          are not necessarily directories!  */
-      if (!file_exists_p (dir))
+      if (!file_exists_p (dir, NULL))
         ret = mkdir (dir, 0777);
       else
         ret = 0;

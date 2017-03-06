@@ -1381,10 +1381,10 @@ main (int argc, char **argv)
             }
           else if (strcmp (config_opt->long_name, "config") == 0)
             {
-              bool userrc_ret = true;
-              userrc_ret &= run_wgetrc (optarg);
+              file_stats_t flstats;
               use_userconfig = true;
-              if (userrc_ret)
+              memset(&flstats, 0, sizeof(flstats));
+              if (file_exists_p(optarg, &flstats) && run_wgetrc (optarg, &flstats))
                 break;
               else
                 {
@@ -1620,7 +1620,7 @@ WARNING: timestamping does nothing in combination with -O. See the manual\n\
 for details.\n\n"));
           opt.timestamping = false;
         }
-      if (opt.noclobber && file_exists_p(opt.output_document))
+      if (opt.noclobber && file_exists_p(opt.output_document, NULL))
            {
               /* Check if output file exists; if it does, exit. */
               logprintf (LOG_VERBOSE,
@@ -2081,7 +2081,7 @@ only if outputting to a regular file.\n"));
                             &dt, opt.recursive, iri, true);
             }
 
-          if (opt.delete_after && filename != NULL && file_exists_p (filename))
+          if (opt.delete_after && filename != NULL && file_exists_p (filename, NULL))
             {
               DEBUGP (("Removing file due to --delete-after in main():\n"));
               logprintf (LOG_VERBOSE, _("Removing %s.\n"), filename);

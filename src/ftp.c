@@ -1463,7 +1463,7 @@ Error in server response, closing control connection.\n"));
       else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
                || opt.output_document || count > 0)
         {
-          if (opt.unlink_requested && file_exists_p (con->target))
+          if (opt.unlink_requested && file_exists_p (con->target, NULL))
             {
               if (unlink (con->target) < 0)
                 {
@@ -1857,7 +1857,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
   /* If we receive .listing file it is necessary to determine system type of the ftp
      server even if opn.noclobber is given. Thus we must ignore opt.noclobber in
      order to establish connection with the server and get system type. */
-  if (opt.noclobber && !opt.output_document && file_exists_p (con->target)
+  if (opt.noclobber && !opt.output_document && file_exists_p (con->target, NULL)
       && !((con->cmd & DO_LIST) && !(con->cmd & DO_RETR)))
     {
       logprintf (LOG_VERBOSE,
@@ -2413,7 +2413,7 @@ Already have correct symlink %s -> %s\n\n"),
               && !(f->type == FT_SYMLINK && !opt.retr_symlinks)
               && f->tstamp != -1
               && dlthis
-              && file_exists_p (con->target))
+              && file_exists_p (con->target, NULL))
             {
               touch (actual_target, f->tstamp);
             }

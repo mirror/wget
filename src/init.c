@@ -566,10 +566,11 @@ wgetrc_env_file_name (void)
   char *env = getenv ("WGETRC");
   if (env && *env)
     {
-      if (!file_exists_p (env))
+      file_stats_t flstat;
+      if (!file_exists_p (env, &flstat))
         {
-          fprintf (stderr, _("%s: WGETRC points to %s, which doesn't exist.\n"),
-                   exec_name, env);
+          fprintf (stderr, _("%s: WGETRC points to %s, which couldn't be accessed because of error: %s.\n"),
+                   exec_name, env, strerror(flstat.access_err));
           exit (WGET_EXIT_GENERIC_ERROR);
         }
       return xstrdup (env);
@@ -597,7 +598,7 @@ wgetrc_user_file_name (void)
 
   if (!file)
     return NULL;
-  if (!file_exists_p (file))
+  if (!file_exists_p (file, NULL))
     {
       xfree (file);
       return NULL;
@@ -630,7 +631,7 @@ wgetrc_file_name (void)
       if (home)
         {
           file = aprintf ("%s/wget.ini", home);
-          if (!file_exists_p (file))
+          if (!file_exists_p (file, NULL))
             {
               xfree (file);
             }
@@ -658,7 +659,7 @@ static bool setval_internal_tilde (int, const char *, const char *);
    there were errors in the file.  */
 
 bool
-run_wgetrc (const char *file)
+run_wgetrc (const char *file, file_stats_t *flstats)
 {
   FILE *fp;
   char *line = NULL;
@@ -666,7 +667,7 @@ run_wgetrc (const char *file)
   int ln;
   int errcnt = 0;
 
-  fp = fopen (file, "r");
+  fp = fopen_stat (file, "r", flstats);
   if (!fp)
     {
       fprintf (stderr, _("%s: Cannot read %s (%s).\n"), exec_name,
@@ -722,14 +723,16 @@ void
 initialize (void)
 {
   char *file, *env_sysrc;
+  file_stats_t flstats;
   bool ok = true;
 
+  memset(&flstats, 0, sizeof(flstats));
   /* Run a non-standard system rc file when the according environment
      variable has been set. For internal testing purposes only!  */
   env_sysrc = getenv ("SYSTEM_WGETRC");
-  if (env_sysrc && file_exists_p (env_sysrc))
+  if (env_sysrc && file_exists_p (env_sysrc, &flstats))
     {
-      ok &= run_wgetrc (env_sysrc);
+      ok &= run_wgetrc (env_sysrc, &flstats);
       /* If there are any problems parsing the system wgetrc file, tell
          the user and exit */
       if (! ok)
@@ -743,8 +746,8 @@ or specify a different file using --config.\n"), env_sysrc);
     }
   /* Otherwise, if SYSTEM_WGETRC is defined, use it.  */
 #ifdef SYSTEM_WGETRC
-  else if (file_exists_p (SYSTEM_WGETRC))
-    ok &= run_wgetrc (SYSTEM_WGETRC);
+  else if (file_exists_p (SYSTEM_WGETRC, &flstats))
+    ok &= run_wgetrc (SYSTEM_WGETRC, &flstats);
   /* If there are any problems parsing the system wgetrc file, tell
      the user and exit */
   if (! ok)
@@ -771,7 +774,7 @@ or specify a different file using --config.\n"), SYSTEM_WGETRC);
     }
   else
 #endif
-    ok &= run_wgetrc (file);
+    ok &= run_wgetrc (file, &flstats);
 
   /* If there were errors processing either `.wgetrc', abort. */
   if (!ok)

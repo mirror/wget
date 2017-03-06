@@ -1818,7 +1818,7 @@ url_file_name (const struct url *u, char *replaced_filename)
      directory (see `mkalldirs' for explanation).  */
 
   if (ALLOW_CLOBBER
-      && !(file_exists_p (fname) && !file_non_directory_p (fname)))
+      && !(file_exists_p (fname, NULL) && !file_non_directory_p (fname)))
     {
       unique = fname;
     }
