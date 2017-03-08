@@ -57,6 +57,9 @@ as that of the covered work.  */
 /* Declares getpid(). */
 #include <process.h>
 
+/* Declares inet_ntop() and inet_pton(). */
+#include <arpa/inet.h>
+
 /* We have strcasecmp and strncasecmp, just under different names.  */
 #ifndef HAVE_STRCASECMP
 # define strcasecmp stricmp
@@ -84,11 +87,6 @@ typedef __int64 wgint;
 #endif
 
 #define PATH_SEPARATOR '\\'
-
-/* Additional declarations needed for IPv6: */
-#ifdef ENABLE_IPV6
-const char *inet_ntop (int, const void *, char *, socklen_t);
-#endif
 
 /* ioctl needed by set_windows_fd_as_blocking_socket() */
 #include <sys/ioctl.h>
