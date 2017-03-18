@@ -698,7 +698,7 @@ addresses when accessing the first one fails.
 non-standard port.
 
 ** Wget now supports the robots.txt directives specified in
-<http://www.robotstxt.org/wc/norobots-rfc.txt>.
+<http://www.robotstxt.org/norobots-rfc.txt>.
 
 ** URL parser has been fixed, especially the infamous overzealous
 quoting.  Wget no longer dequotes reserved characters, e.g. `%3F' is

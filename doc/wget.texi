@@ -4266,7 +4266,7 @@ server.
 
 Until version 1.8, Wget supported the first version of the standard,
 written by Martijn Koster in 1994 and available at
-@url{http://www.robotstxt.org/robotstxt.html}.  As of version 1.8,
+@url{http://www.robotstxt.org/orig.html}.  As of version 1.8,
 Wget has supported the additional directives specified in the internet
 draft @samp{<draft-koster-robots-00.txt>} titled ``A Method for Web
 Robots Control''.  The draft, which has as far as I know never made to
@@ -4285,7 +4285,7 @@ this:
 @end example
 
 This is explained in some detail at
-@url{http://www.robotstxt.org/wc/meta-user.html}.  Wget supports this
+@url{http://www.robotstxt.org/meta.html}.  Wget supports this
 method of robot exclusion in addition to the usual @file{/robots.txt}
 exclusion.
 

@@ -37,12 +37,12 @@ as that of the covered work.  */
    disallow access to certain parts of the site.
 
    The first specification was written by Martijn Koster in 1994, and
-   is still available at <http://www.robotstxt.org/wc/norobots.html>.
+   is still available at <http://www.robotstxt.org/orig.html>.
    In 1996, Martijn wrote an Internet Draft specifying an improved RES
    specification; however, that work was apparently abandoned since
    the draft has expired in 1997 and hasn't been replaced since.  The
    draft is available at
-   <http://www.robotstxt.org/wc/norobots-rfc.html>.
+   <http://www.robotstxt.org/norobots-rfc.txt>.
 
    This file implements RES as specified by the draft.  Note that this
    only handles the "robots.txt" support.  The META tag that controls
@@ -428,7 +428,7 @@ free_specs (struct robot_specs *specs)
 
 /* The inner matching engine: return true if RECORD_PATH matches
    URL_PATH.  The rules for matching are described at
-   <http://www.robotstxt.org/wc/norobots-rfc.txt>, section 3.2.2.  */
+   <http://www.robotstxt.org/norobots-rfc.txt>, section 3.2.2.  */
 
 static bool
 matches (const char *record_path, const char *url_path)
