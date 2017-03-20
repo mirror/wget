@@ -39,8 +39,10 @@ as that of the covered work.  */
 # include <iconv.h>
 #endif
 #include <idn2.h>
-#include <unicase.h>
-#include <unistr.h>
+#if IDN2_VERSION_NUMBER < 0x00140000
+# include <unicase.h>
+# include <unistr.h>
+#endif
 
 #include "utils.h"
 #include "url.h"
