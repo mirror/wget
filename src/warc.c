@@ -32,6 +32,7 @@ as that of the covered work.  */
 #include "utils.h"
 #include "version.h"
 #include "dirname.h"
+#include "url.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1365,6 +1366,8 @@ warc_write_cdx_record (const char *url, const char *timestamp_str,
     mime_type = "-";
   if (redirect_location == NULL || strlen(redirect_location) == 0)
     redirect_location = "-";
+  else
+    redirect_location = url_escape(redirect_location);
 
   number_to_string (offset_string, offset);
 
