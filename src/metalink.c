@@ -491,7 +491,7 @@ retrieve_from_metalink (const metalink_t* metalink)
 
                 Bugfix: point output_stream to destname if it exists.
               */
-              memset(&flstats, 0, sizeof(&flstats));
+              memset(&flstats, 0, sizeof(flstats));
               if (!output_stream && file_exists_p (destname, &flstats))
                 output_stream = fopen_stat (destname, "ab", &flstats);
             }
