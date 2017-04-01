@@ -5,7 +5,7 @@ from misc.wget_file import WgetFile
 
 """
     This test ensures Wget's Basic Authorization Negotiation.
-    Also, we ensure that Wget saves the host after a successfull auth and
+    Also, we ensure that Wget saves the host after a successful auth and
     doesn't wait for a challenge the second time.
 """
 ############# File Definitions ###############################################

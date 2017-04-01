@@ -485,7 +485,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
 /* Check whether ADDR matches <digits>.<digits>.<digits>.<digits>.
 
    We don't want to call network functions like inet_addr() because
-   all we need is a check, preferrably one that is small, fast, and
+   all we need is a check, preferably one that is small, fast, and
    well-defined.  */
 
 static bool
@@ -516,7 +516,7 @@ numeric_address_p (const char *addr)
    psl on our own, if libpsl is compiled without a public suffix list,
    fall back to using the original "tail matching" heuristic. Also if
    libpsl is unable to convert the domain to lowercase, which means that
-   it doesnt have any runtime conversion support, we again fall back to
+   it doesn't have any runtime conversion support, we again fall back to
    "tail matching" since libpsl states the results are unpredictable with
    upper case strings.
    */

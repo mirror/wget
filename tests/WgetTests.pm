@@ -152,7 +152,7 @@ sub run
     $errcode >>= 8;    # XXX: should handle abnormal error codes.
 
     # Shutdown server
-    # if we didn't explicitely kill the server, we would have to call
+    # if we didn't explicitly kill the server, we would have to call
     # waitpid ($pid, 0) here in order to wait for the child process to
     # terminate
     kill 'TERM', $pid;

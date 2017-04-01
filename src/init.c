@@ -578,7 +578,7 @@ wgetrc_env_file_name (void)
   return NULL;
 }
 
-/* Check for the existance of '$HOME/.wgetrc' and return its path
+/* Check for the existence of '$HOME/.wgetrc' and return its path
    if it exists and is set.  */
 char *
 wgetrc_user_file_name (void)

@@ -1736,7 +1736,7 @@ numdigit (wgint number)
 {
   int cnt = 1;
   if (number < 0)
-    ++cnt;                      /* accomodate '-' */
+    ++cnt;                      /* accommodate '-' */
   while ((number /= 10) != 0)
     ++cnt;
   return cnt;
@@ -2336,7 +2336,7 @@ wget_base64_encode (const void *data, size_t length, char *dest)
 
 /* Decode data from BASE64 (a null-terminated string) into memory
    pointed to by DEST.  DEST is assumed to be large enough to
-   accomodate the decoded data, which is guaranteed to be no more than
+   accommodate the decoded data, which is guaranteed to be no more than
    3/4*strlen(base64).
 
    Since DEST is assumed to contain binary data, it is not

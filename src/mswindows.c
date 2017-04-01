@@ -580,7 +580,7 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 const char *
 inet_ntop (int af, const void *src, char *dst, socklen_t cnt)
 {
-  /* struct sockaddr can't accomodate struct sockaddr_in6. */
+  /* struct sockaddr can't accommodate struct sockaddr_in6. */
   union {
     struct sockaddr_in6 sin6;
     struct sockaddr_in sin;

@@ -4,7 +4,7 @@ Install Instructions:
 ================================================================================
 
 This Test Suite exploits the Parallel Test Harness available in GNU Autotools.
-Since it uses features from a relatively recent verion of Autotools, the minimum
+Since it uses features from a relatively recent version of Autotools, the minimum
 required version as been bumped up to 1.11.
 Run the './configure' command to generate the Makefile and then run 'make check'
 to execute the Test Suite. Use the '-j n' option with 'make check' to execute
@@ -122,7 +122,7 @@ This would be very helpful to future contributors.
 Each File in the Test must be represented as a WgetFile object. The WgetFile
 Class has the following prototype:
 WgetFile (str name, str contents, str timestamp, dict rules)
-None except name is a mandatory paramter, one may pass only those parameters
+None except name is a mandatory parameter, one may pass only those parameters
 that are required by the File object.
 
 The timestamp string should be in a format: "YYYY-MM-DD HH:MM:SS" in UTC zone.
@@ -288,7 +288,7 @@ Some amount of work still remains to be done.
     * Support parallel-wget branch
         * Support to spawn multiple servers is already in place. Need to handle
         multiple requests to a server simultaneously. Use THreading MixIn.
-    * SSL Tests. Use xyne's HTTPS server implemention
+    * SSL Tests. Use xyne's HTTPS server implementation
     * Complete support for FTP Tests
     * IRI Support. This shouldn't require much effort
 

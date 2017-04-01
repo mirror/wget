@@ -2129,7 +2129,7 @@ Removing file due to --delete-after in ftp_loop_internal():\n"));
 }
 
 /* Return the directory listing in a reusable format.  The directory
-   is specifed in u->dir.  */
+   is specified in u->dir.  */
 static uerr_t
 ftp_get_listing (struct url *u, struct url *original_url, ccon *con,
                  struct fileinfo **f)

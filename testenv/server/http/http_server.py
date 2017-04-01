@@ -63,7 +63,7 @@ class _Handler(BaseHTTPRequestHandler):
     request. For each HTTP Request Command that the server should be capable of
     responding to, there must exist a do_REQUESTNAME() method which details the
     steps in which such requests should be processed. The rest of the methods
-    in this class are auxilliary methods created to help in processing certain
+    in this class are auxiliary methods created to help in processing certain
     requests. """
 
     def get_rule_list(self, name):
@@ -98,7 +98,7 @@ class _Handler(BaseHTTPRequestHandler):
         resource. Hence, we call the handle for processing PUT requests if the
         resource requested does not already exist.
 
-        Currently, when the server recieves a POST request for a resource, we
+        Currently, when the server receives a POST request for a resource, we
         simply append the body data to the existing file and return the new
         file to the client. If the file does not exist, a new file is created
         using the contents of the request body. """
@@ -377,7 +377,7 @@ class _Handler(BaseHTTPRequestHandler):
 
     def send_head(self, method):
         """ Common code for GET and HEAD Commands.
-        This method is overriden to use the fileSys dict.
+        This method is overridden to use the fileSys dict.
 
         The method variable contains whether this was a HEAD or a GET Request.
         According to RFC 2616, the server should not differentiate between

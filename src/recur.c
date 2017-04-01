@@ -497,7 +497,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 
       if (file
           && (opt.delete_after
-              || opt.spider /* opt.recursive is implicitely true */
+              || opt.spider /* opt.recursive is implicitly true */
               || !acceptable (file)))
         {
           /* Either --delete-after was specified, or we loaded this
@@ -698,7 +698,7 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
      for directories (no file name to match) and for non-leaf HTMLs,
      which can lead to other files that do need to be downloaded.  (-p
      automatically implies non-leaf because with -p we can, if
-     necesary, overstep the maximum depth to get the page requisites.)  */
+     necessary, overstep the maximum depth to get the page requisites.)  */
   if (u->file[0] != '\0'
       && !(has_html_suffix_p (u->file)
            /* The exception only applies to non-leaf HTMLs (but -p

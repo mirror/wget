@@ -1024,7 +1024,7 @@ convert_cleanup (void)
 
 /* This table should really be merged with dl_file_url_map and
    downloaded_html_files.  This was originally a list, but I changed
-   it to a hash table beause it was actually taking a lot of time to
+   it to a hash table because it was actually taking a lot of time to
    find things in it.  */
 
 static struct hash_table *downloaded_files_hash;

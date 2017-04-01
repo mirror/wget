@@ -255,7 +255,7 @@ idn_encode (const struct iri *i, const char *host)
   if (!i->utf8_encode)
     {
       if (!remote_to_utf8 (i, host, &utf8_encoded))
-          return NULL;  /* Nothing to encode or an error occured */
+          return NULL;  /* Nothing to encode or an error occurred */
       src = utf8_encoded;
     }
   else

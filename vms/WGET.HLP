@@ -240,7 +240,7 @@
  RMS parameter values by default: BLOCK_COUNT = 127, BUFFER_COUNT = 2,
  EXTEND_QUANTITY = 16384.
 
- The user may overide these values by specifying different (non-zero)
+ The user may override these values by specifying different (non-zero)
  values for these parameters using the SET RMS_DEFAULT command.
 
 3 File_attributes

@@ -532,7 +532,7 @@ log_set_flush (bool flush)
     }
   else
     {
-      /* Reenable flushing.  If anything was printed in no-flush mode,
+      /* Re-enable flushing.  If anything was printed in no-flush mode,
          flush the log now.  */
       if (needs_flushing)
         logflush ();

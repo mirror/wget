@@ -176,8 +176,8 @@ struct pool {
   P->orig_size = P->size;                                       \
 } while (0)
 
-/* Grow the pool to accomodate at least SIZE new bytes.  If the pool
-   already has room to accomodate SIZE bytes of data, this is a no-op.  */
+/* Grow the pool to accommodate at least SIZE new bytes.  If the pool
+   already has room to accommodate SIZE bytes of data, this is a no-op.  */
 
 #define POOL_GROW(p, increase)                                  \
   GROW_ARRAY ((p)->contents, (p)->size, (p)->tail + (increase), \
