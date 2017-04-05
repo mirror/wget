@@ -310,7 +310,7 @@ sub _substitute_port
 {
     my $self = shift;
     my $ret  = shift;
-    $ret =~ s/{{port}}/$self->sockport/eg;
+    $ret =~ s/\Q{{port}}/$self->sockport/eg;
     return $ret;
 }
 

@@ -589,7 +589,7 @@ sub new
     foreach my $file (keys %{$self->{_input}})
     {
         my $ref = \$self->{_input}{$file}{content};
-        $$ref =~ s/{{port}}/$self->sockport/eg;
+        $$ref =~ s/\Q{{port}}/$self->sockport/eg;
     }
 
     return $self;

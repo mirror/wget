@@ -152,7 +152,7 @@ my $cmdline = $WgetTest::WGETPATH . " --user=fiddle-dee-dee"
     . " --password=Dodgson -e https_proxy=localhost:{{port}}"
     . " --no-check-certificate"
     . " https://no.such.domain/needs-auth.txt";
-$cmdline =~ s/{{port}}/$SOCKET->sockport()/e;
+$cmdline =~ s/\Q{{port}}/$SOCKET->sockport()/e;
 
 if (defined $srcdir) {
     $VALGRIND_SUPP_FILE = $srcdir . '/valgrind-suppressions-ssl';
