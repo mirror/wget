@@ -40,8 +40,6 @@ struct iri {
 
 #ifdef ENABLE_IRI
 
-# include <idn2.h>
-
 char *parse_charset (const char *str);
 const char *find_locale (void);
 bool check_encoding_name (const char *encoding);

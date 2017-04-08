@@ -99,10 +99,6 @@ struct url
   /* Username and password (unquoted). */
   char *user;
   char *passwd;
-
-  /* 'host' is allocated by idn2_lookup_u8() via idn_encode().
-   * Call 'idn2_free()' to free this memory. */
-  bool idn_allocated;
 };
 
 /* Function declarations */

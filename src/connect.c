@@ -56,10 +56,6 @@ as that of the covered work.  */
 #include <string.h>
 #include <sys/time.h>
 
-#ifdef ENABLE_IRI
-#include <idn2.h>
-#endif
-
 #include "utils.h"
 #include "host.h"
 #include "connect.h"
@@ -280,11 +276,8 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
 
           if (opt.enable_iri && (name = idn_decode ((char *) print)) != NULL)
             {
-              int len = strlen (print) + strlen (name) + 4;
-              str = xmalloc (len);
-              snprintf (str, len, "%s (%s)", name, print);
-              str[len-1] = '\0';
-              idn2_free (name);
+              str = aprintf ("%s (%s)", name, print);
+              xfree (name);
             }
 
           logprintf (LOG_VERBOSE, _("Connecting to %s|%s|:%d... "),

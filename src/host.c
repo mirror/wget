@@ -57,10 +57,6 @@ as that of the covered work.  */
 
 #include <errno.h>
 
-#ifdef ENABLE_IRI
-#include <idn2.h>
-#endif
-
 #include "utils.h"
 #include "host.h"
 #include "url.h"
@@ -846,11 +842,8 @@ lookup_host (const char *host, int flags)
 
       if (opt.enable_iri && (name = idn_decode ((char *) host)) != NULL)
         {
-          int len = strlen (host) + strlen (name) + 4;
-          str = xmalloc (len);
-          snprintf (str, len, "%s (%s)", name, host);
-          str[len-1] = '\0';
-          idn2_free (name);
+          str = aprintf ("%s (%s)", name, host);
+          xfree (name);
         }
 
       logprintf (LOG_VERBOSE, _("Resolving %s... "),
