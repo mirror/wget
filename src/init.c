@@ -774,7 +774,8 @@ or specify a different file using --config.\n"), SYSTEM_WGETRC);
     }
   else
 #endif
-    ok &= run_wgetrc (file, &flstats);
+	if (file_exists_p (file, &flstats))
+        ok &= run_wgetrc (file, &flstats);
 
   /* If there were errors processing either `.wgetrc', abort. */
   if (!ok)
