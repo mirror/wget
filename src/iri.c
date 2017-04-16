@@ -290,6 +290,13 @@ idn_encode (const struct iri *i, const char *host)
 
   xfree (utf8_encoded);
 
+  if (ret == IDN2_OK && ascii_encoded)
+    {
+      char *tmp = xstrdup (ascii_encoded);
+      idn2_free (ascii_encoded);
+      ascii_encoded = tmp;
+    }
+
   return ret == IDN2_OK ? ascii_encoded : NULL;
 }
 
