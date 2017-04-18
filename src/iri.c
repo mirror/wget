@@ -121,6 +121,7 @@ check_encoding_name (const char *encoding)
   return true;
 }
 
+#ifdef HAVE_ICONV
 /* Do the conversion according to the passed conversion descriptor cd. *out
    will contain the transcoded string on success. *out content is
    unspecified otherwise. */
@@ -212,6 +213,15 @@ do_conversion (const char *tocode, const char *fromcode, char const *in_org, siz
     }
     return false;
 }
+#else
+static bool
+do_conversion (const char *tocode _GL_UNUSED, const char *fromcode _GL_UNUSED,
+               char const *in_org _GL_UNUSED, size_t inlen _GL_UNUSED, char **out)
+{
+  *out = NULL;
+  return false;
+}
+#endif
 
 /* Try converting string str from locale to UTF-8. Return a new string
    on success, or str on error or if conversion isn't needed. */

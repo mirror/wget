@@ -1549,6 +1549,7 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
   append_null (dest);
 }
 
+#ifdef HAVE_ICONV
 static char *
 convert_fname (char *fname)
 {
@@ -1627,6 +1628,13 @@ convert_fname (char *fname)
 
   return converted_fname;
 }
+#else
+static char *
+convert_fname (char *fname)
+{
+  return fname;
+}
+#endif
 
 /* Append to DEST the directory structure that corresponds the
    directory part of URL's path.  For example, if the URL is
