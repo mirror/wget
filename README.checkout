@@ -116,7 +116,7 @@ Compiling From Repository Sources
  $  cd wget        # assumes you've cloned a repository to "./wget"
     2. Generate all the automatically-generated files required prior to
        configuring the package:
- $  ./bootstrap
+ $  ./bootstrap (or: bash ./bootstrap)
     3. Configure the package and compile it:
  $  ./configure --enable-assert [some_parameters]
  $  make
