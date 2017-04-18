@@ -622,7 +622,6 @@ file_exists_p (const char *filename, file_stats_t *fstats)
     errno = 0;
     return false;
   }
-  __builtin_unreachable();
   /* NOTREACHED */
 #endif
 }
