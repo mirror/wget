@@ -30,12 +30,12 @@ my $sslsock;
 my $plaincon;
 my %args;
 
-$HTTP::Daemon::DEBUG=5;
+#$HTTP::Daemon::DEBUG=5;
 #*DEBUG = \$HTTP::Daemon::DEBUG;
 
 $args{SSL_error_trap} ||= \&ssl_error;
 
-my $class = shift;
+my $class = 'SSLServer';
 my $self  = {};
 $self = bless $self, $class;
 
@@ -86,7 +86,7 @@ sub accept
     if ($sock) {
         ${*$sock}{'httpd_daemon'} = $self;
         ${*$self}{'httpd_daemon'} = $sock;
-        my $fileno = ${*$self}{'_SSL_fileno'} = fileno($self);
+        my $fileno = ${*$self}{'_SSL_fileno'} = &fileno($self);
         my $f = $sock->fileno;
         return wantarray ? ($sock, $peer) : $sock;
     }
@@ -157,19 +157,21 @@ sub run
 {
     my ($self, $urls, $synch_callback) = @_;
     my $initialized = 0;
+    my $sslsock;
 
     while (1)
     {
         if (!$initialized)
         {
+            $sslsock = $self->ssl_setup_conn();
+            $sslsock || warn "Failed to get ssl sock";
+
             $initialized = 1;
             open (LOGFILE, '>', "/tmp/wgetserver.log");
             LOGFILE->autoflush(1);
             print LOGFILE "Starting logging";
+            $synch_callback->() if $synch_callback;
         }
-        my $sslsock = $self->ssl_setup_conn();
-        $sslsock || warn "Failed to get ssl sock";
-        $synch_callback->() if $synch_callback;
 
         my $con = $self->accept();
         ${*$self}{'sslcon'} = $con;
@@ -216,7 +218,6 @@ sub run
         print LOGFILE "Closing connection\n" if $log;
         close(LOGFILE);
         $con->close();
-        last;
     }
 }
 

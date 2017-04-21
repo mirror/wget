@@ -45,6 +45,6 @@ my $sslsock = SSLTest->new(cmdline  => $cmdline,
                            errcode  => $expected_error_code,
                            existing => \%existing_files,
                            output   => \%expected_downloaded_files);
-$sslsock->run();
+exit $sslsock->run();
 
 # vim: et ts=4 sw=4

@@ -1,0 +1,155 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use SSLTest;
+
+###############################################################################
+
+# code, msg, headers, content
+my %urls = (
+    '/somefile.txt' => {
+        code => "200",
+        msg => "Dontcare",
+        headers => {
+            "Content-type" => "text/plain",
+        },
+        content => "blabla",
+    },
+);
+
+my $cdir = $ENV{'PWD'};
+
+# HOSTALIASES env variable allows us to create hosts file alias.
+my $testhostname = "wgettesterr";
+my $testhostfile = "$cdir/wgethosts";
+open(my $fh, '>', $testhostfile);
+print $fh "$testhostname 127.0.0.1\n";
+close $fh;
+$ENV{'HOSTALIASES'} = "$cdir/wgethosts";
+
+# Create certindex
+open  CERTID, ">", "$cdir/certs/certindex" or
+      warn "Cannot overwrite file $cdir/certs/certindex";
+close CERTID;
+
+# Create certserial
+open  CERTSN, ">", "$cdir/certs/certserial" or
+      warn "Cannot overwrite file $cdir/certs/certserial";
+print CERTSN "1122";
+close CERTSN;
+
+# Create crlnumber
+open  CRLN, ">", "$cdir/certs/crlnumber" or
+      warn "Cannot overwrite file $cdir/certs/crlnumber";
+close CRLN;
+
+# Create Intermediate CA
+my $caconf   = "certs/rootca.conf";
+my $icrtfile = "certs/interca.crt";
+my $ikeyfile = "certs/interca.key";
+my $icsrfile = "certs/interca.csr";
+my $icasubj  = "/C=US/ST=CA/L=Intermediate Mystery Spot/O=Int/CN=".
+               "ica-$testhostname/emailAddress=icatester";
+my $icacmd   = "openssl genrsa -out $ikeyfile 4096 && openssl req -new".
+               " -sha256 -key $ikeyfile -out $icsrfile -days 365 ".
+               " -subj \"$icasubj\" &&".
+               "openssl ca -batch -config $caconf -notext -in $icsrfile".
+               " -out $icrtfile";
+
+system($icacmd);
+my $icacheck=`(openssl x509 -noout -modulus -in $icrtfile | openssl md5 ;
+               openssl rsa  -noout -modulus -in $ikeyfile | openssl md5) |
+               uniq | wc -l`;
+# Check if certificate and key are made correctly.
+unless(-e $icrtfile && -e $ikeyfile && $icacheck == 1)
+{
+    exit 77; # skip
+}
+
+# Now create web of trust - Root CA + Intermediate CA
+open  WOT, ">", "$cdir/certs/wotca.pem" or
+      die "Cannot overwrite file $cdir/certs/wotca";
+open  ICA, "<", $icrtfile or die "Cannot read file $icrtfile";
+while (<ICA>)
+{
+  print WOT $_;
+}
+print WOT "\n";
+close ICA;
+open  RCA, "<", "$cdir/certs/test-ca-cert.pem" or
+      die "Cannot read file $cdir/certs/test-ca-cert.pem";
+while (<RCA>)
+{
+  print WOT $_;
+}
+print WOT "\n";
+close RCA;
+close WOT;
+
+# Create Test certificate using intermediate CA
+my $icaconf = "certs/interca.conf";
+my $usrcrt  = "certs/user.crt";
+my $usrkey  = "certs/user.key";
+my $usrcsr  = "certs/user.csr";
+my $usrsubj = "/C=US/ST=CA/L=User Mystery Spot/O=Int/CN=$testhostname/".
+              "emailAddress=usertester";
+my $usrcmd  = "openssl genrsa -out $usrkey 4096 && ".
+              "openssl req -new -sha256 -key $usrkey -out $usrcsr -days".
+              " 365 -subj \"$usrsubj\" && ".
+              "openssl ca -batch -config $icaconf -notext -in $usrcsr ".
+              "-out $usrcrt";
+
+system($usrcmd);
+my $usrcheck=`(openssl x509 -noout -modulus -in $usrcrt | openssl md5 ;
+               openssl rsa -noout -modulus -in $usrkey | openssl md5) |
+               uniq | wc -l`;
+# Check if certificate and key are made correctly.
+unless(-e $usrcrt && -e $ikeyfile && $usrcheck == 1)
+{
+    exit 77; # skip
+}
+
+# Try Wget using SSL using certificate signed by intermediate CA. Expect error.
+my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/".
+                "test-ca-cert.pem https://$testhostname:55443/somefile.txt";
+my $expected_error_code = 5;
+my %existing_files = (
+);
+
+my %expected_downloaded_files = (
+  'somefile.txt' => {
+    content => "blabla",
+  },
+);
+
+my $sslsock = SSLTest->new(cmdline   => $cmdline,
+                           input     => \%urls,
+                           errcode   => $expected_error_code,
+                           existing  => \%existing_files,
+                           output    => \%expected_downloaded_files,
+                           certfile  => $usrcrt,
+                           keyfile   => $usrkey,
+                           lhostname => $testhostname);
+if ($sslsock->run() == 0)
+{
+  exit 0;
+}
+
+# Retry the test with --no-check-certificate. expect success
+$cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/wotca.pem".
+                                 " https://$testhostname:55443/somefile.txt";
+
+$expected_error_code = 0;
+
+my $retryssl = SSLTest->new(cmdline  => $cmdline,
+                           input     => \%urls,
+                           errcode   => $expected_error_code,
+                           existing  => \%existing_files,
+                           output    => \%expected_downloaded_files,
+                           certfile  => $usrcrt,
+                           keyfile   => $usrkey,
+                           lhostname => $testhostname);
+exit $retryssl->run();
+# vim: et ts=4 sw=4
