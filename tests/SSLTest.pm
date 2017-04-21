@@ -16,6 +16,7 @@ my %ssl_defaults = (
     _cafile    => "certs/test-ca-cert.pem",
     _ciphers   => 'ALL',
     _lhostname => 'wgettestingserver',
+    _sslport   => 55443,
 );
 
 {

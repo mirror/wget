@@ -19,10 +19,17 @@ my %urls = (
     },
 );
 
+# Skip the test if openssl is not available
+my $ossl = `openssl version`;
+unless ($ossl =~ m/OpenSSL 1/)
+{
+  exit 77;
+}
+
 my $cdir = $ENV{'PWD'};
 
 # HOSTALIASES env variable allows us to create hosts file alias.
-my $testhostname = "wgettesterr";
+my $testhostname = "WgetTestingServer";
 my $testhostfile = "$cdir/wgethosts";
 open(my $fh, '>', $testhostfile);
 print $fh "$testhostname 127.0.0.1\n";
@@ -112,8 +119,9 @@ unless(-e $usrcrt && -e $ikeyfile && $usrcheck == 1)
 }
 
 # Try Wget using SSL using certificate signed by intermediate CA. Expect error.
+my $port    = 60443;
 my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/".
-                "test-ca-cert.pem https://$testhostname:55443/somefile.txt";
+                "test-ca-cert.pem https://$testhostname:$port/somefile.txt";
 my $expected_error_code = 5;
 my %existing_files = (
 );
@@ -138,8 +146,9 @@ if ($sslsock->run() == 0)
 }
 
 # Retry the test with --no-check-certificate. expect success
+$port    = 61443;
 $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/wotca.pem".
-                                 " https://$testhostname:55443/somefile.txt";
+                                 " https://$testhostname:$port/somefile.txt";
 
 $expected_error_code = 0;
 
@@ -150,6 +159,7 @@ my $retryssl = SSLTest->new(cmdline  => $cmdline,
                            output    => \%expected_downloaded_files,
                            certfile  => $usrcrt,
                            keyfile   => $usrkey,
-                           lhostname => $testhostname);
+                           lhostname => $testhostname,
+                           sslport   => $port);
 exit $retryssl->run();
 # vim: et ts=4 sw=4

@@ -19,10 +19,17 @@ my %urls = (
     },
 );
 
+# Skip the test if openssl is not available
+my $ossl = `openssl version`;
+unless ($ossl =~ m/OpenSSL 1/)
+{
+  exit 77;
+}
+
 my $cdir = $ENV{'PWD'};
 
 # HOSTALIASES env variable allows us to create hosts file alias.
-my $testhostname = "wgettesterr";
+my $testhostname = "WgetTestingServer";
 my $testhostfile = "$cdir/wgethosts";
 open(my $fh, '>', $testhostfile);
 print $fh "$testhostname 127.0.0.1\n";
@@ -50,8 +57,8 @@ my $cacrt      = "$cdir/certs/test-ca-cert.pem";
 my $cakey      = "$cdir/certs/test-ca-key.pem";
 
 # Prepare server certificate
-my $servercrt  = "certs/tmpserver.crt";
-my $serverkey  = "certs/tmpserver.key";
+my $servercrt  = "certs/tmpserver1.crt";
+my $serverkey  = "certs/tmpserver1.key";
 my $servercsr  = "$cdir/certs/tmpserver.csr";
 my $serversubj = "/C=US/ST=CA/L=Server Mystery Spot/O=Serv/CN=".
                  "$testhostname/emailAddress=servertester";
@@ -95,10 +102,11 @@ unless(-e $clientcert && -e $clientkey && $clientcheck == 1)
 }
 
 # Try Wget using SSL with mismatched client cert & key . Expect error
+my $port = 51443;
 my $cmdline = $WgetTest::WGETPATH . " --certificate=$clientcert ".
                                     " --private-key=$serverkey ".
                                     " --ca-certificate=$cacrt".
-                                    " https://$testhostname:55443/somefile.txt";
+                                    " https://$testhostname:$port/somefile.txt";
 my $expected_error_code = 5;
 my %existing_files = (
 );
@@ -116,17 +124,19 @@ my $sslsock = SSLTest->new(cmdline   => $cmdline,
                            output    => \%expected_downloaded_files,
                            certfile  => $servercrt,
                            keyfile   => $serverkey,
-                           lhostname => $testhostname);
+                           lhostname => $testhostname,
+                           sslport   => $port);
 if ($sslsock->run() == 0)
 {
   exit 0;
 }
 
 # Retry wget using SSL with client certificate. Expect success
+$port    = 52443;
 $cmdline = $WgetTest::WGETPATH . " --certificate=$clientcert".
                                  " --private-key=$clientkey ".
                                  " --ca-certificate=$cacrt".
-                                 " https://$testhostname:55443/somefile.txt";
+                                 " https://$testhostname:$port/somefile.txt";
 
 $expected_error_code = 0;
 
@@ -137,6 +147,7 @@ my $retryssl = SSLTest->new(cmdline  => $cmdline,
                            output    => \%expected_downloaded_files,
                            certfile  => $servercrt,
                            keyfile   => $serverkey,
-                           lhostname => $testhostname);
+                           lhostname => $testhostname,
+                           sslport   => $port);
 exit $retryssl->run();
 # vim: et ts=4 sw=4

@@ -46,6 +46,7 @@ sub init
 
     %ssl_params = %sargs;
     unless (exists($ssl_params{'lhostname'}) &&
+            exists($ssl_params{'sslport'})   &&
             exists($ssl_params{'ciphers'})   &&
             exists($ssl_params{'cafile'})    &&
             exists($ssl_params{'certfile'})  &&
@@ -57,7 +58,7 @@ sub init
 sub ssl_setup_conn
 {
     $sslsock = IO::Socket::SSL->new(LocalAddr       => $ssl_params{'lhostname'},
-                                    LocalPort       => 55443,
+                                    LocalPort       => $ssl_params{'sslport'},
                                     Listen          => 10,
                                     Timeout         => 30,
                                     ReuseAddr       => 1,
