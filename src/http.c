@@ -3625,6 +3625,8 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
     }
   hs->newloc = resp_header_strdup (resp, "Location");
   hs->remote_time = resp_header_strdup (resp, "Last-Modified");
+  if (!hs->remote_time) // now look for the Wayback Machine's timestamp
+    hs->remote_time = resp_header_strdup (resp, "X-Archive-Orig-last-modified");
 
   if (resp_header_copy (resp, "Content-Range", hdrval, sizeof (hdrval)))
     {
