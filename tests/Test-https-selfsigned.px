@@ -30,13 +30,9 @@ my $cdir = $ENV{'PWD'};
 
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
-my $testhostfile = "$cdir/wgethosts";
-open(my $fh, '>', $testhostfile);
-print $fh "$testhostname 127.0.0.1\n";
-close $fh;
-$ENV{'HOSTALIASES'} = "$cdir/wgethosts";
+$ENV{'HOSTALIASES'} = "$cdir/certs/wgethosts";
 
-# Prepare self-signed certifcates
+# Prepare self-signed certificates
 my $certfile="tmpsscert.pem";
 my $keyfile="tmpsskey.pem";
 my $certsubj="/C=US/ST=CA/L=Mystery Spot/O=Dis/CN=$testhostname/emailAddress=tester";
