@@ -808,7 +808,7 @@ HTTP options:\n"),
 HTTPS (SSL/TLS) options:\n"),
     N_("\
        --secure-protocol=PR        choose secure protocol, one of auto, SSLv2,\n\
-                                     SSLv3, TLSv1 and PFS\n"),
+                                     SSLv3, TLSv1, TLSv1_1, TLSv1_2 and PFS\n"),
     N_("\
        --https-only                only follow secure HTTPS links\n"),
     N_("\
