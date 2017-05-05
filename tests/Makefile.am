@@ -139,6 +139,7 @@ PX_TESTS = \
 #             Test-https-badcerts.px
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
+             SSLTest.pm SSLServer.pm \
              WgetTests.pm WgetFeature.pm WgetFeature.cfg $(PX_TESTS) \
              certs valgrind-suppressions valgrind-suppressions-ssl
 
