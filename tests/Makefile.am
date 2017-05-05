@@ -135,8 +135,8 @@ PX_TESTS = \
              Test-https-selfsigned.px \
              Test-https-weboftrust.px \
              Test-https-clientcert.px \
-             Test-https-crl.px \
-             Test-https-badcerts.px
+             Test-https-crl.px
+#             Test-https-badcerts.px
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              WgetTests.pm WgetFeature.pm WgetFeature.cfg $(PX_TESTS) \
