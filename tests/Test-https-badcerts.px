@@ -80,7 +80,7 @@ unless(-e $servercrt && -e $serverkey && $servercheck == 1)
 }
 
 # Try Wget using SSL with expired cert. Expect Failure.
-my $port    = 60443;
+my $port    = 30443;
 my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cacrt".
                                     " https://$testhostname:$port/somefile.txt";
 my $expected_error_code = 5;

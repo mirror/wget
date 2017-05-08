@@ -81,7 +81,7 @@ unless(-e $servercrt && -e $serverkey && $servercheck == 1)
 }
 
 # Try Wget using SSL first without --no-check-certificate. Expect Success.
-my $port    = 62443;
+my $port    = 32443;
 my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cacrt".
                                     " https://$testhostname:$port/somefile.txt";
 my $expected_error_code = 0;

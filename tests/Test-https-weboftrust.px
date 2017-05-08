@@ -115,7 +115,7 @@ unless(-e $usrcrt && -e $ikeyfile && $usrcheck == 1)
 }
 
 # Try Wget using SSL using certificate signed by intermediate CA. Expect error.
-my $port    = 60443;
+my $port    = 30443;
 my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/".
                 "test-ca-cert.pem https://$testhostname:$port/somefile.txt";
 my $expected_error_code = 5;
@@ -142,7 +142,7 @@ if ($sslsock->run() == 0)
 }
 
 # Retry the test with --no-check-certificate. expect success
-$port    = 61443;
+$port    = 31443;
 $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/wotca.pem".
                                  " https://$testhostname:$port/somefile.txt";
 
