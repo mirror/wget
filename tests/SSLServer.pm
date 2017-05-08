@@ -11,7 +11,16 @@ use HTTP::Daemon;
 use HTTP::Status;
 use HTTP::Headers;
 use HTTP::Response;
-use IO::Socket::SSL; # 'debug4';
+
+# Skip this test rather than fail it when the module isn't installed
+if (!eval {require IO::Socket::SSL;1;}) {
+    print STDERR "This test needs the perl module \"IO::Socket::SSL\".\n";
+    print STDERR "Install e.g. on Debian with 'apt-get install libio-socket-ssl-perl'\n";
+    print STDERR " or if using cpanminus 'cpanm IO::Socket::SSL' could be used to install it.\n";
+    exit 77; # skip
+}
+
+#use IO::Socket::SSLX; # 'debug4';
 use HTTPServer;
 
 our @ISA = qw(IO::Socket::SSL HTTP::Daemon::ClientConn HTTP::Daemon HTTPServer);
