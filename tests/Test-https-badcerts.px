@@ -128,7 +128,7 @@ unless(-e $servercrt && -e $serverkey && $servercheck == 1)
 
 
 # Retry the test with --no-check-certificate. expect success
-$port    = 50443;
+$port    = 20443;
 $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cacrt".
                                  " https://$testhostname:$port/somefile.txt";
 

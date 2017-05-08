@@ -3,6 +3,14 @@
 use strict;
 use warnings;
 
+# Skip this test rather than fail it when the module isn't installed
+if (!eval {require IO::Socket::SSL;1;}) {
+    print STDERR "This test needs the perl module \"IO::Socket::SSL\".\n";
+    print STDERR "Install e.g. on Debian with 'apt-get install libio-socket-ssl-perl'\n";
+    print STDERR " or if using cpanminus 'cpanm IO::Socket::SSL' could be used to install it.\n";
+    exit 77; # skip
+}
+
 use SSLTest;
 
 ###############################################################################
@@ -31,7 +39,7 @@ my $cdir = $ENV{'PWD'};
 my $testhostname = "WgetTestingServer";
 $ENV{'HOSTALIASES'} = "$cdir/certs/wgethosts";
 
-my $port    = 54443;
+my $port    = 24443;
 my $cmdline = $WgetTest::WGETPATH . " --secure-protocol=PFS".
                                     " --ca-certificate=$cdir/certs/test-ca-cert.pem".
                                     " https://$testhostname:$port/somefile.txt";

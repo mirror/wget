@@ -125,7 +125,7 @@ unless(-e $crlfile)
 # openssl crl -text -in certs/root.crl.pem
 
 # Retry the test with CRL. Expect Failure.
-$port    = 53443;
+$port    = 23443;
 $cmdline = $WgetTest::WGETPATH . " --crl-file=$crlfile ".
                                  " --ca-certificate=$cacrt".
                                  " https://$testhostname:$port/somefile.txt";

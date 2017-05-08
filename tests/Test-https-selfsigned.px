@@ -51,7 +51,7 @@ unless(-e $certfile && -e $keyfile && $sscheck == 1)
 }
 
 # Try Wget using SSL first without --no-check-certificate. expect error
-my $port    = 56443;
+my $port    = 26443;
 my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/test-ca-cert.pem".
                                     " https://$testhostname:$port/somefile.txt";
 my $expected_error_code = 5;
@@ -79,7 +79,7 @@ if ($sslsock->run() == 0)
 }
 
 # Retry the test with --no-check-certificate. expect success
-$port    = 57443;
+$port    = 27443;
 $cmdline = $WgetTest::WGETPATH . " --no-check-certificate ".
                                  " --ca-certificate=$cdir/certs/test-ca-cert.pem".
                                  " https://$testhostname:$port/somefile.txt";

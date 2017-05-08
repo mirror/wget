@@ -98,7 +98,7 @@ unless(-e $clientcert && -e $clientkey && $clientcheck == 1)
 }
 
 # Try Wget using SSL with mismatched client cert & key . Expect error
-my $port = 51443;
+my $port = 21443;
 my $cmdline = $WgetTest::WGETPATH . " --certificate=$clientcert ".
                                     " --private-key=$serverkey ".
                                     " --ca-certificate=$cacrt".
@@ -128,7 +128,7 @@ if ($sslsock->run() == 0)
 }
 
 # Retry wget using SSL with client certificate. Expect success
-$port    = 52443;
+$port    = 22443;
 $cmdline = $WgetTest::WGETPATH . " --certificate=$clientcert".
                                  " --private-key=$clientkey ".
                                  " --ca-certificate=$cacrt".
