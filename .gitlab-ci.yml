@@ -14,6 +14,9 @@ variables:
 Debian GNU/Linux build:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
+  - apt-get -y install texlive
+  - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
+  - cat /etc/hosts
   - touch .manywarnings
   - alias make="make -j$(nproc)"
   - ./bootstrap
