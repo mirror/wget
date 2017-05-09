@@ -5,26 +5,14 @@ use warnings;
 
 our $VERSION = 0.01;
 
-use Carp;
 use English qw(-no_match_vars);
-use FindBin;
 use WgetTests;
-
-our %SKIP_MESSAGES;
-{
-    my $cfgfile = "$FindBin::Bin/WgetFeature.cfg";
-    open my $fh, '<', $cfgfile
-      or croak "Cannot open '$cfgfile': $ERRNO";
-    my @lines = <$fh>;
-    close $fh or carp "Cannot close '$cfgfile': $ERRNO";
-    my $evalstr = join q{}, @lines;
-    eval { $evalstr } or carp "Cannot eval '$cfgfile': $ERRNO";
-}
 
 sub import
 {
-    my ($class, $feature) = @_;
+    my ($class, @required_feature) = @_;
 
+    # create a list of available features from 'wget --version' output
     my $output = `$WgetTest::WGETPATH --version`;
     my ($list) = $output =~ m/^([+-]\S+(?:\s+[+-]\S+)+)/msx;
     my %have_features;
@@ -34,10 +22,19 @@ sub import
         $feat =~ s/^.//msx;
         $have_features{$feat} = $f =~ m/^[+]/msx ? 1 : 0;
     }
-    if (!$have_features{$feature})
+
+    foreach (@required_feature)
     {
-        print "$SKIP_MESSAGES{$feature}\n";
-        exit 77;    # skip
+        if (!$have_features{$_})
+        {
+            print "Skipped test: Wget misses feature '$_'\n";
+            print "Features available from 'wget --version' output:\n";
+            foreach (keys %have_features)
+            {
+                print "    $_=$have_features{$_}\n";
+            }
+            exit 77; # skip
+        }
     }
 }
 
