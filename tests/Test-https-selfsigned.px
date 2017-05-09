@@ -5,10 +5,8 @@ use warnings;
 use Socket;
 use WgetFeature qw(https);
 use SSLTest;
-use File::Remove 'remove';
 
 ###############################################################################
-my @tempfiles;
 
 # code, msg, headers, content
 my %urls = (
@@ -37,7 +35,6 @@ if (@ARGV) {
 }
 $srcdir = Cwd::abs_path("$srcdir");
 
-my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
 $ENV{'HOSTALIASES'} = "$srcdir/certs/wgethosts";
@@ -55,14 +52,9 @@ unless (inet_ntoa($addr) =~ "127.0.0.1")
 }
 
 # Prepare self-signed certificates
-my $certfile="$cdir/tmpsscert.pem";
-my $keyfile="$cdir/tmpsskey.pem";
-push (@tempfiles, $certfile, $keyfile);
-my $certsubj="/C=US/ST=CA/L=Mystery Spot/O=Dis/CN=$testhostname/emailAddress=tester";
-my $sscertcmd="openssl req -x509 -nodes -newkey rsa:4096 -keyout $keyfile ".
-              " -out $certfile -days 365 -subj \"$certsubj\"";
+my $certfile="$srcdir/certs/selfsigned.crt";
+my $keyfile="$srcdir/certs/selfsigned.key";
 
-system($sscertcmd);
 my $sscheck=`(openssl x509 -noout -modulus -in $certfile | openssl md5 ;
               openssl rsa  -noout -modulus -in $keyfile | openssl md5) |
               uniq|wc -l`;
@@ -120,8 +112,3 @@ my $retryssl = SSLTest->new(cmdline  => $cmdline,
                            sslport   => $port);
 exit $retryssl->run();
 # vim: et ts=4 sw=4
-
-END {
-    print "remove(@tempfiles);\n";
-    remove(@tempfiles);
-}

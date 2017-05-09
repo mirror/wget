@@ -36,7 +36,6 @@ if (@ARGV) {
 }
 $srcdir = Cwd::abs_path("$srcdir");
 
-my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
 $ENV{'HOSTALIASES'} = "$srcdir/certs/wgethosts";

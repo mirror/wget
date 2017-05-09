@@ -6,10 +6,8 @@ use POSIX;
 use Socket;
 use WgetFeature qw(https ssl/openssl);
 use SSLTest;
-use File::Remove 'remove';
 
 ###############################################################################
-my @tempfiles;
 
 # code, msg, headers, content
 my %urls = (
@@ -38,10 +36,9 @@ if (@ARGV) {
 }
 $srcdir = Cwd::abs_path("$srcdir");
 
-my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
-$ENV{'HOSTALIASES'} = "$cdir/certs/wgethosts";
+$ENV{'HOSTALIASES'} = "$srcdir/certs/wgethosts";
 
 my $addr = gethostbyname($testhostname);
 unless ($addr)
@@ -55,45 +52,13 @@ unless (inet_ntoa($addr) =~ "127.0.0.1")
     exit 77;
 }
 
-# Create certindex
-push (@tempfiles, "$cdir/certindex");
-open  CERTID, ">", "$cdir/certindex" or
-      warn "Cannot overwrite file $cdir/certindex";
-close CERTID;
-
-# Create certserial
-push (@tempfiles, "$cdir/certserial");
-open  CERTSN, ">", "$cdir/certserial" or
-      warn "Cannot overwrite file $cdir/certserial";
-print CERTSN "1122";
-close CERTSN;
-
-# Create crlnumber
-push (@tempfiles, "$cdir/crlnumber");
-open  CRLN, ">", "$cdir/crlnumber" or
-      warn "Cannot overwrite file $cdir/crlnumber";
-print CRLN "1122";
-close CRLN;
-
 my $caconf     = "$srcdir/certs/rootca.conf";
 my $cacrt      = "$srcdir/certs/test-ca-cert.pem";
 my $cakey      = "$srcdir/certs/test-ca-key.pem";
 
-# Prepare expired server certificate
-my $servercrt  = "$cdir/tmpserver3.crt";
-my $serverkey  = "$cdir/tmpserver3.key";
-my $servercsr  = "$cdir/tmpserver3.csr";
-my $enddate    = strftime "%y%m%d%H%M%S%z", localtime(time-86400);
-my $startdate  = strftime "%y%m%d%H%M%S%z", localtime(time+86400);
-my $serversubj = "/C=US/ST=CA/L=Server Mystery Spot/O=Serv/CN=".
-                 "$testhostname/emailAddress=servertester";
-my $servercmd  = "openssl genrsa -out $serverkey 4096 && openssl req -new".
-                 " -sha256 -key $serverkey -out $servercsr -days 365 ".
-                 " -subj \"$serversubj\" &&".
-                 "openssl ca -batch -config $caconf -notext ".
-                 "-enddate $enddate -in $servercsr".
-                 " -out $servercrt";
-system($servercmd);
+# Use expired server certificate
+my $servercrt  = "$srcdir/certs/expired.crt";
+my $serverkey  = "$srcdir/certs/expired.key";
 
 my $servercheck =`(openssl x509 -noout -modulus -in $servercrt | openssl md5 ;
                    openssl rsa  -noout -modulus -in $serverkey | openssl md5) |
@@ -133,14 +98,9 @@ if ($sslsock->run() == 0)
 }
 print "Test successful.\n";
 
-system("/bin/rm $servercrt $serverkey $servercsr");
-$servercmd  = "openssl genrsa -out $serverkey 4096 && openssl req -new".
-              " -sha256 -key $serverkey -out $servercsr -days 365 ".
-              " -subj \"$serversubj\" &&".
-              "openssl ca -batch -config $caconf -notext ".
-              " -startdate $startdate -in $servercsr".
-              " -out $servercrt";
-system($servercmd);
+# Use certificate that is not yet valid
+$servercrt  = "$srcdir/certs/invalid.crt";
+$serverkey  = "$srcdir/certs/invalid.key";
 
 $servercheck =`(openssl x509 -noout -modulus -in $servercrt | openssl md5 ;
                 openssl rsa  -noout -modulus -in $serverkey | openssl md5) |
@@ -177,8 +137,3 @@ else
   exit -1;
 }
 # vim: et ts=4 sw=4
-
-END {
-    print "remove(@tempfiles);";
-    remove(@tempfiles);
-}
