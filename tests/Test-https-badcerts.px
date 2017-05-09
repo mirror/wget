@@ -6,8 +6,10 @@ use POSIX;
 use Socket;
 use WgetFeature qw(https ssl/openssl);
 use SSLTest;
+use File::Remove 'remove';
 
 ###############################################################################
+my @tempfiles;
 
 # code, msg, headers, content
 my %urls = (
@@ -54,17 +56,20 @@ unless (inet_ntoa($addr) =~ "127.0.0.1")
 }
 
 # Create certindex
+push (@tempfiles, "$cdir/certindex");
 open  CERTID, ">", "$cdir/certindex" or
       warn "Cannot overwrite file $cdir/certindex";
 close CERTID;
 
 # Create certserial
+push (@tempfiles, "$cdir/certserial");
 open  CERTSN, ">", "$cdir/certserial" or
       warn "Cannot overwrite file $cdir/certserial";
 print CERTSN "1122";
 close CERTSN;
 
 # Create crlnumber
+push (@tempfiles, "$cdir/crlnumber");
 open  CRLN, ">", "$cdir/crlnumber" or
       warn "Cannot overwrite file $cdir/crlnumber";
 print CRLN "1122";
@@ -172,3 +177,8 @@ else
   exit -1;
 }
 # vim: et ts=4 sw=4
+
+END {
+    print "remove(@tempfiles);";
+    remove(@tempfiles);
+}

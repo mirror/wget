@@ -5,8 +5,10 @@ use warnings;
 use Socket;
 use WgetFeature qw(https);
 use SSLTest;
+use File::Remove 'remove';
 
 ###############################################################################
+my @tempfiles;
 
 # code, msg, headers, content
 my %urls = (
@@ -53,17 +55,20 @@ unless (inet_ntoa($addr) =~ "127.0.0.1")
 }
 
 # Create certindex
+push (@tempfiles, "$cdir/certindex");
 open  CERTID, ">", "$cdir/certindex" or
       warn "Cannot overwrite file $cdir/certindex";
 close CERTID;
 
 # Create certserial
+push (@tempfiles, "$cdir/certserial");
 open  CERTSN, ">", "$cdir/certserial" or
       warn "Cannot overwrite file $cdir/certserial";
 print CERTSN "1122";
 close CERTSN;
 
 # Create crlnumber
+push (@tempfiles, "$cdir/crlnumber");
 open  CRLN, ">", "$cdir/crlnumber" or
       warn "Cannot overwrite file $cdir/crlnumber";
 close CRLN;
@@ -73,6 +78,7 @@ my $caconf   = "$srcdir/certs/rootca.conf";
 my $icrtfile = "$cdir/interca.crt";
 my $ikeyfile = "$cdir/interca.key";
 my $icsrfile = "$cdir/interca.csr";
+push (@tempfiles, $icrtfile, $ikeyfile, $icsrfile);
 my $icasubj  = "/C=US/ST=CA/L=Intermediate Mystery Spot/O=Int/CN=".
                "ica-$testhostname/emailAddress=icatester";
 my $icacmd   = "openssl genrsa -out $ikeyfile 4096 && openssl req -new".
@@ -92,6 +98,7 @@ unless(-e $icrtfile && -e $ikeyfile && $icacheck == 1)
 }
 
 # Now create web of trust - Root CA + Intermediate CA
+push (@tempfiles, "$cdir/wotca.pem");
 open  WOT, ">", "$cdir/wotca.pem" or
       die "Cannot overwrite file $cdir/wotca";
 open  ICA, "<", $icrtfile or die "Cannot read file $icrtfile";
@@ -116,6 +123,7 @@ my $icaconf = "$srcdir/certs/interca.conf";
 my $usrcrt  = "$cdir/user.crt";
 my $usrkey  = "$cdir/user.key";
 my $usrcsr  = "$cdir/user.csr";
+push (@tempfiles, $usrcrt, $usrkey, $usrcsr);
 my $usrsubj = "/C=US/ST=CA/L=User Mystery Spot/O=Int/CN=$testhostname/".
               "emailAddress=usertester";
 my $usrcmd  = "openssl genrsa -out $usrkey 4096 && ".
@@ -179,3 +187,8 @@ my $retryssl = SSLTest->new(cmdline  => $cmdline,
                            sslport   => $port);
 exit $retryssl->run();
 # vim: et ts=4 sw=4
+
+END {
+    print "remove(@tempfiles);\n";
+    remove(@tempfiles);
+}

@@ -5,8 +5,10 @@ use warnings;
 use Socket;
 use WgetFeature qw(https);
 use SSLTest;
+use File::Remove 'remove';
 
 ###############################################################################
+my @tempfiles;
 
 # code, msg, headers, content
 my %urls = (
@@ -55,6 +57,7 @@ unless (inet_ntoa($addr) =~ "127.0.0.1")
 # Prepare self-signed certificates
 my $certfile="$cdir/tmpsscert.pem";
 my $keyfile="$cdir/tmpsskey.pem";
+push (@tempfiles, $certfile, $keyfile);
 my $certsubj="/C=US/ST=CA/L=Mystery Spot/O=Dis/CN=$testhostname/emailAddress=tester";
 my $sscertcmd="openssl req -x509 -nodes -newkey rsa:4096 -keyout $keyfile ".
               " -out $certfile -days 365 -subj \"$certsubj\"";
@@ -117,3 +120,8 @@ my $retryssl = SSLTest->new(cmdline  => $cmdline,
                            sslport   => $port);
 exit $retryssl->run();
 # vim: et ts=4 sw=4
+
+END {
+    print "remove(@tempfiles);\n";
+    remove(@tempfiles);
+}
