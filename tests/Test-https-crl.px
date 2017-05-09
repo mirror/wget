@@ -5,10 +5,8 @@ use warnings;
 use Socket;
 use WgetFeature qw(https);
 use SSLTest;
-use File::Remove 'remove';
 
 ###############################################################################
-my @tempfiles;
 
 # code, msg, headers, content
 my %urls = (
@@ -37,7 +35,6 @@ if (@ARGV) {
 }
 $srcdir = Cwd::abs_path("$srcdir");
 
-my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
 $ENV{'HOSTALIASES'} = "$srcdir/certs/wgethosts";
@@ -54,49 +51,17 @@ unless (inet_ntoa($addr) =~ "127.0.0.1")
     exit 77;
 }
 
-# Create certindex
-push (@tempfiles, "$cdir/certindex");
-open  CERTID, ">", "$cdir/certindex" or
-      warn "Cannot overwrite file $cdir/certindex";
-close CERTID;
-
-# Create certserial
-push (@tempfiles, "$cdir/certserial");
-open  CERTSN, ">", "$cdir/certserial" or
-      warn "Cannot overwrite file $cdir/certserial";
-print CERTSN "1122";
-close CERTSN;
-
-# Create crlnumber
-push (@tempfiles, "$cdir/crlnumber");
-open  CRLN, ">", "$cdir/crlnumber" or
-      warn "Cannot overwrite file $cdir/crlnumber";
-print CRLN "1122";
-close CRLN;
-
-my $caconf     = "$srcdir/certs/rootca.conf";
 my $cacrt      = "$srcdir/certs/test-ca-cert.pem";
 my $cakey      = "$srcdir/certs/test-ca-key.pem";
 
-# Prepare server certificate
-my $servercrt  = "$cdir/tmpserver$$.crt";
-my $serverkey  = "$cdir/tmpserver$$.key";
-my $servercsr  = "$cdir/tmpserver$$.csr";
-push (@tempfiles, $servercrt, $serverkey, $servercsr);
-my $serversubj = "/C=US/ST=CA/L=Server Mystery Spot/O=Serv/CN=".
-                 "$testhostname/emailAddress=servertester";
-my $servercmd  = "openssl genrsa -out $serverkey 4096 && openssl req -new".
-                 " -sha256 -key $serverkey -out $servercsr -days 365 ".
-                 " -subj \"$serversubj\" &&".
-                 "openssl ca -batch -config $caconf -notext -in $servercsr".
-                 " -out $servercrt";
-
-system($servercmd);
+# Use a revoked certificate
+my $servercrt  = "$srcdir/certs/revoked.crt";
+my $serverkey  = "$srcdir/certs/revoked.key";
 
 my $servercheck =`(openssl x509 -noout -modulus -in $servercrt | openssl md5 ;
                    openssl rsa  -noout -modulus -in $serverkey | openssl md5) |
                    uniq | wc -l`;
-# Check if certificate and key are made correctly.
+# Check if certificate and key are correct.
 unless(-e $servercrt && -e $serverkey && $servercheck == 1)
 {
     exit 77; # skip
@@ -131,13 +96,8 @@ if ($sslsock->run() != 0)
 }
 
 # Revoke the certificate
-my $crlfile   = "$cdir/servercrl.pem";
-push (@tempfiles, $crlfile);
-my $revokecmd = "openssl ca -config $caconf -revoke $servercrt &&
-                 openssl ca -config $caconf -gencrl -keyfile $cakey ".
-                 "-cert $cacrt -out $crlfile";
+my $crlfile   = "$srcdir/certs/revokedcrl.pem";
 
-system($revokecmd);
 # Check if CRL file is generated.
 unless(-e $crlfile)
 {
@@ -174,8 +134,3 @@ else
   exit 0;
 }
 # vim: et ts=4 sw=4
-
-END {
-    print "remove(@tempfiles);\n";
-    remove(@tempfiles);
-}
