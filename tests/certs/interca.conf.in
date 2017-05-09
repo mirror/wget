@@ -6,12 +6,12 @@ issuerAltName=issuer:copy
 authorityKeyIdentifier=keyid:always
 
  [ myca ]
- dir = ./certs/
+ dir = @abs_srcdir@
  new_certs_dir = ./
  unique_subject = no
- certificate = $dir/test-ca-cert.pem
+ certificate = interca.crt
  database = certindex
- private_key = $dir/test-ca-key.pem
+ private_key = interca.key
  serial = certserial
  default_days = 730
  default_md = sha1
@@ -33,7 +33,7 @@ authorityKeyIdentifier=keyid:always
  keyUsage = critical,any
  subjectKeyIdentifier = hash
  authorityKeyIdentifier = keyid:always,issuer
- keyUsage = digitalSignature,keyEncipherment,cRLSign,keyCertSign
+ keyUsage = digitalSignature,keyEncipherment
  extendedKeyUsage = serverAuth
  crlDistributionPoints = @crl_section
  subjectAltName  = @alt_names
@@ -44,7 +44,7 @@ authorityKeyIdentifier=keyid:always
  keyUsage = critical,any
  subjectKeyIdentifier = hash
  authorityKeyIdentifier = keyid:always,issuer
- keyUsage = digitalSignature,keyEncipherment,cRLSign,keyCertSign
+ keyUsage = digitalSignature,keyEncipherment
  extendedKeyUsage = serverAuth
  crlDistributionPoints = @crl_section
  subjectAltName  = @alt_names
@@ -54,11 +54,11 @@ authorityKeyIdentifier=keyid:always
  DNS.0 = WgetTestingServer
 
  [crl_section]
- URI.0 = http://test.wgettest.org/Bogus.crl
- URI.1 = http://test.wgettest.org/Bogus.crl
+ URI.0 = http://intertest.wgettest.org/Bogus.crl
+ URI.1 = http://intertest.wgettest.org/Bogus.crl
 
  [ocsp_section]
- caIssuers;URI.0 = http://test.wgettest.com/Bogus.crt
- caIssuers;URI.1 = http://test.wgettest.com/Bogus.crt
- OCSP;URI.0 = http://test.wgettest.com/ocsp/
- OCSP;URI.1 = http://test.wgettest.com/ocsp/
+ caIssuers;URI.0 = http://intertest.wgettest.com/Bogus.crt
+ caIssuers;URI.1 = http://intertest.wgettest.com/Bogus.crt
+ OCSP;URI.0 = http://intertest.wgettest.com/ocsp/
+ OCSP;URI.1 = http://intertest.wgettest.com/ocsp/

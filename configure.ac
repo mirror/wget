@@ -784,7 +784,8 @@ dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
                  po/Makefile.in tests/Makefile
-                 lib/Makefile testenv/Makefile])
+                 lib/Makefile testenv/Makefile
+                 tests/certs/interca.conf tests/certs/rootca.conf])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT
 
