@@ -10,10 +10,17 @@ use HTTPTest;
 our @ISA = qw(WgetTest HTTPTest);
 my $VERSION = 0.01;
 
+my $srcdir;
+if (defined $ENV{srcdir}) {
+    $srcdir = Cwd::abs_path($ENV{srcdir});
+} else {
+    $srcdir = ".";
+}
+
 my %ssl_defaults = (
-    _certfile  => "certs/server.crt",
-    _keyfile   => "certs/server.key",
-    _cafile    => "certs/test-ca-cert.pem",
+    _certfile  => "$srcdir/certs/server.crt",
+    _keyfile   => "$srcdir/certs/server.key",
+    _cafile    => "$srcdir/certs/test-ca-cert.pem",
     _ciphers   => 'ALL',
     _lhostname => 'wgettestingserver',
     _sslport   => 55443,
@@ -49,15 +56,15 @@ sub _setup_server
         my ($argname) = ($attrname =~ m/^_(.*)/msx);
         $ssl_config{$argname} = $self->{$attrname};
     }
-    for my $attrname (keys %ssl_config)
-    {
-        if ($attrname =~ m/file$/)
-        {
-            my $cwd = $self->SUPER::_default_for('_workdir');
-            my $cfile = $ssl_config{$attrname};
-            $ssl_config{$attrname} = "$cwd/$cfile";
-        }
-    }
+#    for my $attrname (keys %ssl_config)
+#    {
+#        if ($attrname =~ m/file$/ && !$attrname =~ m/^\//)
+#        {
+#            my $cwd = $self->SUPER::_default_for('_workdir');
+#            my $cfile = $ssl_config{$attrname};
+#            $ssl_config{$attrname} = "$cwd/$cfile";
+#        }
+#    }
     $self->{_server}->init(%ssl_config);
 }
 

@@ -27,22 +27,34 @@ unless ($ossl =~ m/OpenSSL 1/)
   exit 77;
 }
 
+my $srcdir;
+if (@ARGV) {
+    $srcdir = shift @ARGV;
+} elsif (defined $ENV{srcdir}) {
+    $srcdir = $ENV{srcdir};
+}
+$srcdir = Cwd::abs_path("$srcdir");
+
 my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
-$ENV{'HOSTALIASES'} = "$cdir/certs/wgethosts";
+$ENV{'HOSTALIASES'} = "$srcdir/certs/wgethosts";
 
-my $addr = gethostbyname($testhostname) or
+my $addr = gethostbyname($testhostname);
+unless ($addr)
+{
+    warn "Failed to resolve $addr, using $srcdir/certs/wgethosts\n";
     exit 77;
+}
 unless (inet_ntoa($addr) =~ "127.0.0.1")
 {
-    warn "Failed to resolve $testhostname";
+    warn "Failed to resolve $$addr, using $srcdir/certs/wgethosts\n";
     exit 77;
 }
 
 my $port    = 24443;
 my $cmdline = $WgetTest::WGETPATH . " --secure-protocol=PFS".
-                                    " --ca-certificate=$cdir/certs/test-ca-cert.pem".
+                                    " --ca-certificate=$srcdir/certs/test-ca-cert.pem".
                                     " https://$testhostname:$port/somefile.txt";
 
 my $expected_error_code = 0;

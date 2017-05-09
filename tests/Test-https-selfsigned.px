@@ -27,23 +27,34 @@ unless ($ossl =~ m/OpenSSL 1/)
   exit 77;
 }
 
-my $cdir = $ENV{'PWD'};
+my $srcdir;
+if (@ARGV) {
+    $srcdir = shift @ARGV;
+} elsif (defined $ENV{srcdir}) {
+    $srcdir = $ENV{srcdir};
+}
+$srcdir = Cwd::abs_path("$srcdir");
 
+my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
-$ENV{'HOSTALIASES'} = "$cdir/certs/wgethosts";
+$ENV{'HOSTALIASES'} = "$srcdir/certs/wgethosts";
 
-my $addr = gethostbyname($testhostname) or
+my $addr = gethostbyname($testhostname);
+unless ($addr)
+{
+    warn "Failed to resolve $addr, using $srcdir/certs/wgethosts\n";
     exit 77;
+}
 unless (inet_ntoa($addr) =~ "127.0.0.1")
 {
-    warn "Failed to resolve $testhostname";
+    warn "Failed to resolve $$addr, using $srcdir/certs/wgethosts\n";
     exit 77;
 }
 
 # Prepare self-signed certificates
-my $certfile="tmpsscert.pem";
-my $keyfile="tmpsskey.pem";
+my $certfile="$cdir/tmpsscert.pem";
+my $keyfile="$cdir/tmpsskey.pem";
 my $certsubj="/C=US/ST=CA/L=Mystery Spot/O=Dis/CN=$testhostname/emailAddress=tester";
 my $sscertcmd="openssl req -x509 -nodes -newkey rsa:4096 -keyout $keyfile ".
               " -out $certfile -days 365 -subj \"$certsubj\"";
@@ -61,7 +72,7 @@ unless(-e $certfile && -e $keyfile && $sscheck == 1)
 
 # Try Wget using SSL first without --no-check-certificate. expect error
 my $port    = 26443;
-my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/test-ca-cert.pem".
+my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$srcdir/certs/test-ca-cert.pem".
                                     " https://$testhostname:$port/somefile.txt";
 my $expected_error_code = 5;
 my %existing_files = (
@@ -90,7 +101,7 @@ if ($sslsock->run() == 0)
 # Retry the test with --no-check-certificate. expect success
 $port    = 27443;
 $cmdline = $WgetTest::WGETPATH . " --no-check-certificate ".
-                                 " --ca-certificate=$cdir/certs/test-ca-cert.pem".
+                                 " --ca-certificate=$srcdir/certs/test-ca-cert.pem".
                                  " https://$testhostname:$port/somefile.txt";
 
 $expected_error_code = 0;

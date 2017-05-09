@@ -27,41 +27,52 @@ unless ($ossl =~ m/OpenSSL 1/)
   exit 77;
 }
 
-my $cdir = $ENV{'PWD'};
+my $srcdir;
+if (@ARGV) {
+    $srcdir = shift @ARGV;
+} elsif (defined $ENV{srcdir}) {
+    $srcdir = $ENV{srcdir};
+}
+$srcdir = Cwd::abs_path("$srcdir");
 
+my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
-$ENV{'HOSTALIASES'} = "$cdir/certs/wgethosts";
+$ENV{'HOSTALIASES'} = "$srcdir/certs/wgethosts";
 
-my $addr = gethostbyname($testhostname) or
+my $addr = gethostbyname($testhostname);
+unless ($addr)
+{
+    warn "Failed to resolve $addr, using $srcdir/certs/wgethosts\n";
     exit 77;
+}
 unless (inet_ntoa($addr) =~ "127.0.0.1")
 {
-    warn "Failed to resolve $testhostname";
+    warn "Failed to resolve $$addr, using $srcdir/certs/wgethosts\n";
     exit 77;
 }
 
 # Create certindex
-open  CERTID, ">", "$cdir/certs/certindex" or
-      warn "Cannot overwrite file $cdir/certs/certindex";
+open  CERTID, ">", "$cdir/certindex" or
+      warn "Cannot overwrite file $cdir/certindex";
 close CERTID;
 
 # Create certserial
-open  CERTSN, ">", "$cdir/certs/certserial" or
-      warn "Cannot overwrite file $cdir/certs/certserial";
+open  CERTSN, ">", "$cdir/certserial" or
+      warn "Cannot overwrite file $cdir/certserial";
 print CERTSN "1122";
 close CERTSN;
 
 # Create crlnumber
-open  CRLN, ">", "$cdir/certs/crlnumber" or
-      warn "Cannot overwrite file $cdir/certs/crlnumber";
+open  CRLN, ">", "$cdir/crlnumber" or
+      warn "Cannot overwrite file $cdir/crlnumber";
 close CRLN;
 
 # Create Intermediate CA
-my $caconf   = "certs/rootca.conf";
-my $icrtfile = "certs/interca.crt";
-my $ikeyfile = "certs/interca.key";
-my $icsrfile = "certs/interca.csr";
+my $caconf   = "$srcdir/certs/rootca.conf";
+my $icrtfile = "$cdir/interca.crt";
+my $ikeyfile = "$cdir/interca.key";
+my $icsrfile = "$cdir/interca.csr";
 my $icasubj  = "/C=US/ST=CA/L=Intermediate Mystery Spot/O=Int/CN=".
                "ica-$testhostname/emailAddress=icatester";
 my $icacmd   = "openssl genrsa -out $ikeyfile 4096 && openssl req -new".
@@ -81,8 +92,8 @@ unless(-e $icrtfile && -e $ikeyfile && $icacheck == 1)
 }
 
 # Now create web of trust - Root CA + Intermediate CA
-open  WOT, ">", "$cdir/certs/wotca.pem" or
-      die "Cannot overwrite file $cdir/certs/wotca";
+open  WOT, ">", "$cdir/wotca.pem" or
+      die "Cannot overwrite file $cdir/wotca";
 open  ICA, "<", $icrtfile or die "Cannot read file $icrtfile";
 while (<ICA>)
 {
@@ -90,8 +101,8 @@ while (<ICA>)
 }
 print WOT "\n";
 close ICA;
-open  RCA, "<", "$cdir/certs/test-ca-cert.pem" or
-      die "Cannot read file $cdir/certs/test-ca-cert.pem";
+open  RCA, "<", "$srcdir/certs/test-ca-cert.pem" or
+      die "Cannot read file $srcdir/certs/test-ca-cert.pem";
 while (<RCA>)
 {
   print WOT $_;
@@ -101,10 +112,10 @@ close RCA;
 close WOT;
 
 # Create Test certificate using intermediate CA
-my $icaconf = "certs/interca.conf";
-my $usrcrt  = "certs/user.crt";
-my $usrkey  = "certs/user.key";
-my $usrcsr  = "certs/user.csr";
+my $icaconf = "$srcdir/certs/interca.conf";
+my $usrcrt  = "$cdir/user.crt";
+my $usrkey  = "$cdir/user.key";
+my $usrcsr  = "$cdir/user.csr";
 my $usrsubj = "/C=US/ST=CA/L=User Mystery Spot/O=Int/CN=$testhostname/".
               "emailAddress=usertester";
 my $usrcmd  = "openssl genrsa -out $usrkey 4096 && ".
@@ -125,7 +136,7 @@ unless(-e $usrcrt && -e $ikeyfile && $usrcheck == 1)
 
 # Try Wget using SSL using certificate signed by intermediate CA. Expect error.
 my $port    = 30443;
-my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/".
+my $cmdline = $WgetTest::WGETPATH . " --ca-certificate=$srcdir/certs/".
                 "test-ca-cert.pem https://$testhostname:$port/somefile.txt";
 my $expected_error_code = 5;
 my %existing_files = (
@@ -152,7 +163,7 @@ if ($sslsock->run() == 0)
 
 # Retry the test with --no-check-certificate. expect success
 $port    = 31443;
-$cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/certs/wotca.pem".
+$cmdline = $WgetTest::WGETPATH . " --ca-certificate=$cdir/wotca.pem".
                                  " https://$testhostname:$port/somefile.txt";
 
 $expected_error_code = 0;
