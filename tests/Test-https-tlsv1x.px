@@ -2,7 +2,8 @@
 
 use strict;
 use warnings;
-
+use Socket;
+use WgetFeature qw(https);
 use SSLTest;
 
 ###############################################################################
@@ -30,6 +31,14 @@ my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
 $ENV{'HOSTALIASES'} = "$cdir/certs/wgethosts";
+
+my $addr = gethostbyname($testhostname) or
+    exit 77;
+unless (inet_ntoa($addr) =~ "127.0.0.1")
+{
+    warn "Failed to resolve $testhostname";
+    exit 77;
+}
 
 my $port    = 29443;
 my $cmdline = $WgetTest::WGETPATH . " --secure-protocol=TLSv1_1".

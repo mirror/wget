@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 use POSIX;
-
+use Socket;
+use WgetFeature qw(https ssl/openssl);
 use SSLTest;
 
 ###############################################################################
@@ -32,6 +33,14 @@ my $cdir = $ENV{'PWD'};
 # HOSTALIASES env variable allows us to create hosts file alias.
 my $testhostname = "WgetTestingServer";
 $ENV{'HOSTALIASES'} = "$cdir/certs/wgethosts";
+
+my $addr = gethostbyname($testhostname) or
+    exit 77;
+unless (inet_ntoa($addr) =~ "127.0.0.1")
+{
+    warn "Failed to resolve $testhostname";
+    exit 77;
+}
 
 # Create certindex
 open  CERTID, ">", "$cdir/certs/certindex" or
