@@ -65,26 +65,6 @@ unless(-e $icrtfile && -e $ikeyfile && $icacheck == 1)
     exit 77; # skip
 }
 
-# Now create web of trust - Root CA + Intermediate CA
-open  WOT, ">", "$srcdir/wotca.pem" or
-      die "Cannot overwrite file $srcdir/wotca";
-open  ICA, "<", $icrtfile or die "Cannot read file $icrtfile";
-while (<ICA>)
-{
-  print WOT $_;
-}
-print WOT "\n";
-close ICA;
-open  RCA, "<", "$srcdir/certs/test-ca-cert.pem" or
-      die "Cannot read file $srcdir/certs/test-ca-cert.pem";
-while (<RCA>)
-{
-  print WOT $_;
-}
-print WOT "\n";
-close RCA;
-close WOT;
-
 # User certificate using intermediate CA
 my $usrcrt  = "$srcdir/certs/user.crt";
 my $usrkey  = "$srcdir/certs/user.key";
@@ -127,7 +107,7 @@ if ($sslsock->run() == 0)
 
 # Retry the test with --no-check-certificate. expect success
 $port    = 31443;
-$cmdline = $WgetTest::WGETPATH . " --ca-certificate=$srcdir/wotca.pem".
+$cmdline = $WgetTest::WGETPATH . " --ca-certificate=$srcdir/certs/wotca.pem".
                                  " https://$testhostname:$port/somefile.txt";
 
 $expected_error_code = 0;
