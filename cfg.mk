@@ -1,7 +1,7 @@
 # Explicit syntax-check exceptions.
 exclude_file_name_regexp--sc_trailing_blank = ^doc/annou.*$$
 
-export VC_LIST_EXCEPT_DEFAULT=^(lib/.*|m4/.*|md5/.*|build-aux/.*|src/gettext\.h|.*ChangeLog)$$
+export VC_LIST_EXCEPT_DEFAULT=^(lib/.*|m4/.*|md5/.*|build-aux/.*|src/gettext\.h|.*ChangeLog|tests/certs/.*)$$
 
 local-checks-to-skip = \
     sc_const_long_option \
@@ -30,4 +30,4 @@ local-checks-to-skip = \
 show-vc-list-except:
 	@$(VC_LIST_EXCEPT)
 
-VC_LIST_ALWAYS_EXCLUDE_REGEX = ^ABOUT-NLS|((msdos|vms)/.*)|ChangeLog-2014-12-10|/.*.der$$
+VC_LIST_ALWAYS_EXCLUDE_REGEX = ^ABOUT-NLS|((msdos|vms)/.*)|ChangeLog-2014-12-10|/.*.der|^tests/certs/.*$$
