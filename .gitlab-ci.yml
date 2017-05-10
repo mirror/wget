@@ -25,7 +25,7 @@ Debian GNU/Linux build:
 #  - make abi-check
   - make distcheck
   - make check-valgrind
-  - ./configure -C --with-openssl
+  - ./configure -C --with-ssl=openssl
   - make clean
   - make check
 #  - ./configure -C --enable-fsanitize-asan
