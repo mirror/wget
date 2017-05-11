@@ -30,11 +30,11 @@ Enter a dnsName of the subject of the certificate:
 Enter a URI of the subject of the certificate:
 Enter the IP address of the subject of the certificate:
 Enter the e-mail of the subject of the certificate:
+Will the certificate be used to sign OCSP requests? (y/N):
+Will the certificate be used to sign code? (y/N):
+Will the certificate be used for time stamping? (y/N):
 Will the certificate be used to sign other certificates? (y/N): y
 Will the certificate be used to sign CRLs? (y/N): y
-Will the certificate be used to sign code? (y/N):
-Will the certificate be used to sign OCSP requests? (y/N): y
-Will the certificate be used for time stamping? (y/N):
 Enter the URI of the CRL distribution point:
 
 
