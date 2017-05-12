@@ -359,6 +359,7 @@ static struct cmdline_option option_data[] =
 #endif
     { "method", 0, OPT_VALUE, "method", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
+    { "netrc", 0, OPT_BOOLEAN, "netrc", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
     { "no-clobber", 0, OPT_BOOLEAN, "noclobber", -1 },
     { "no-config", 0, OPT_BOOLEAN, "noconfig", -1},
@@ -628,6 +629,8 @@ Download:\n"),
     N_("\
   -nc, --no-clobber                skip downloads that would download to\n\
                                      existing files (overwriting them)\n"),
+    N_("\
+       --no-netrc                  don't try to obtain credentials from .netrc\n"),
     N_("\
   -c,  --continue                  resume getting a partially-downloaded file\n"),
     N_("\

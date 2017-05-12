@@ -78,6 +78,7 @@ if HAVE_PYTHON3
     Test-auth-basic-netrc.py                        \
     Test-auth-basic-netrc-user-given.py             \
     Test-auth-basic-netrc-pass-given.py             \
+    Test-auth-basic-no-netrc-fail.py                \
     Test-auth-both.py                               \
     Test-auth-digest.py                             \
     Test-auth-no-challenge.py                       \

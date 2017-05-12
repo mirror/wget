@@ -703,6 +703,12 @@ Before (over)writing a file, back up an existing file by adding a
 files are rotated to @samp{.2}, @samp{.3}, and so on, up to
 @var{backups} (and lost beyond that).
 
+@cindex authentication credentials
+@item --no-netrc
+Do not try to obtain credentials from @file{.netrc} file. By default
+@file{.netrc} file is searched for credentials in case none have been
+passed on command line and authentication is required.
+
 @cindex continue retrieval
 @cindex incomplete downloads
 @cindex resume download
