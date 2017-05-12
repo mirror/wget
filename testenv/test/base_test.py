@@ -102,7 +102,7 @@ class BaseTest:
             time.sleep(float(os.getenv("SERVER_WAIT")))
 
         try:
-            ret_code = call(params)
+            ret_code = call(params, env={"HOME": os.getcwd()})
         except FileNotFoundError:
             raise TestFailed("The Wget Executable does not exist at the "
                              "expected path.")

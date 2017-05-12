@@ -75,6 +75,9 @@ if HAVE_PYTHON3
   TESTS = Test-504.py                               \
     Test-auth-basic-fail.py                         \
     Test-auth-basic.py                              \
+    Test-auth-basic-netrc.py                        \
+    Test-auth-basic-netrc-user-given.py             \
+    Test-auth-basic-netrc-pass-given.py             \
     Test-auth-both.py                               \
     Test-auth-digest.py                             \
     Test-auth-no-challenge.py                       \
