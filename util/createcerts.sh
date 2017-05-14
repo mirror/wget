@@ -200,9 +200,9 @@ function sign_cert {
 	local xopts=${4-'-days 365'};
 
 	local caconf;
-	if [ "$catype"x == "ROOT"x ]; then
+	if [ "$catype"x = "ROOT"x ]; then
 		caconf="./rootca.conf";
-	elif [ "$catype"x == "INTER"x ]; then
+	elif [ "$catype"x = "INTER"x ]; then
 		caconf="./interca.conf";
 	else
 		exit 1;
