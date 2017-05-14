@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use POSIX;
 use Socket;
-use WgetFeature qw(https ssl/openssl);
+use WgetFeature qw(https);
 use SSLTest;
 
 ###############################################################################
