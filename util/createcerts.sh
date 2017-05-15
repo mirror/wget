@@ -316,7 +316,7 @@ function create_invalid_cert {
 	local crtfile="${CERTSDIR}/invalid.crt";
 
 	tmpfilelist="${tmpfilelist} ${csrfile}";
-	local sdate=`date +%y%m%d%H%M%SZ --date=tomorrow`;
+	local sdate=`date +%y%m%d%H%M%SZ --date='+20 years'`;
 	generate_key ${keyfile};
 	generate_csr ${keyfile} ${csrfile} "ServerTester";
 	sign_cert ${csrfile} ${crtfile} "ROOT" "-startdate ${sdate}";
