@@ -30,6 +30,7 @@ Existing_Files = []
 ExpectedReturnCode = 0
 ExpectedDownloadedFiles = [File1_File, File2_File, File3_File]
 Request_List = [["GET /a/File1.html",
+                 "GET /robots.txt",
                  "GET /a/File2.html",
                  "GET /b/File3.html"]]
 
@@ -44,7 +45,8 @@ test_options = {
 }
 post_test = {
     "ExpectedFiles"     : ExpectedDownloadedFiles,
-    "ExpectedRetcode"   : ExpectedReturnCode
+    "ExpectedRetcode"   : ExpectedReturnCode,
+    "FilesCrawled"      : Request_List
 }
 
 err = HTTPTest (
