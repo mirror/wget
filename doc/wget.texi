@@ -193,6 +193,8 @@ options, or via the initialization file @file{.wgetrc} (@pxref{Startup
 File}).  Wget allows you to define @dfn{global} startup files
 (@file{/usr/local/etc/wgetrc} by default) for site settings. You can also
 specify the location of a startup file with the --config option.
+To disable the reading of config files, use --no-config.
+If both --config and --no-config are given, --no-config is ignored.
  
 
 @ignore
@@ -566,7 +568,10 @@ would be resolved to @samp{http://foo/baz/b.html}.
 
 @cindex specify config 
 @item --config=@var{FILE}
-Specify the location of a startup file you wish to use.
+Specify the location of a startup file you wish to use instead of the
+default one(s). Use --no-config to disable reading of config files.
+If both --config and --no-config are given, --no-config is ignored.
+
 
 @item --rejected-log=@var{logfile}
 Logs all URL rejections to @var{logfile} as comma separated values.  The values
