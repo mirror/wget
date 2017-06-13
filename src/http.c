@@ -3751,6 +3751,20 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 
   set_content_type (dt, type);
 
+  if (cond_get)
+    {
+      if (statcode == HTTP_STATUS_NOT_MODIFIED)
+        {
+          logprintf (LOG_VERBOSE,
+                     _ ("File %s not modified on server. Omitting download.\n\n"),
+                     quote (hs->local_file));
+          *dt |= RETROKF;
+          CLOSE_FINISH (sock);
+          retval = RETRUNNEEDED;
+          goto cleanup;
+        }
+    }
+
   if (opt.adjust_extension)
     {
       if (*dt & TEXTHTML)
@@ -3769,18 +3783,8 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 
   if (cond_get)
     {
-      if (statcode == HTTP_STATUS_NOT_MODIFIED)
-        {
-          logprintf (LOG_VERBOSE,
-                     _("File %s not modified on server. Omitting download.\n\n"),
-                     quote (hs->local_file));
-          *dt |= RETROKF;
-          CLOSE_FINISH (sock);
-          retval = RETRUNNEEDED;
-          goto cleanup;
-        }
       /* Handle the case when server ignores If-Modified-Since header.  */
-      else if (statcode == HTTP_STATUS_OK && hs->remote_time)
+      if (statcode == HTTP_STATUS_OK && hs->remote_time)
         {
           time_t tmr = http_atotm (hs->remote_time);
 
