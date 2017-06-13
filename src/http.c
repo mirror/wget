@@ -2998,7 +2998,7 @@ skip_content_type:
           char *bin_hash = alloca (dig_hash_str_len * 3 / 4 + 1);
           ssize_t hash_bin_len;
 
-          hash_bin_len = wget_base64_decode (dig_hash, bin_hash);
+          hash_bin_len = wget_base64_decode (dig_hash, bin_hash, dig_hash_str_len * 3 / 4 + 1);
 
           /* Detect malformed base64 input.  */
           if (hash_bin_len < 0)

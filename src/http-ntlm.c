@@ -122,7 +122,7 @@ ntlm_input (struct ntlmdata *ntlm, const char *header)
 
       DEBUGP (("Received a type-2 NTLM message.\n"));
 
-      size = wget_base64_decode (header, buffer);
+      size = wget_base64_decode (header, buffer, strlen (header));
       if (size < 0)
         return false;           /* malformed base64 from server */
 

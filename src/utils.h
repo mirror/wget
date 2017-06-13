@@ -149,7 +149,7 @@ void xsleep (double);
 #define BASE64_LENGTH(len) (4 * (((len) + 2) / 3))
 
 size_t wget_base64_encode (const void *, size_t, char *);
-ssize_t wget_base64_decode (const char *, void *);
+ssize_t wget_base64_decode (const char *, void *, size_t);
 
 #ifdef HAVE_LIBPCRE
 void *compile_pcre_regex (const char *);
