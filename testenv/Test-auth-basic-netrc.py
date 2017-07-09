@@ -30,7 +30,7 @@ File2_rules = {
     }
 }
 
-Netrc = "machine 127.0.0.1\n\tlogin {0}\n\tpassword {1}".format(User, Password)
+Netrc = "machine localhost\n\tlogin {0}\n\tpassword {1}".format(User, Password)
 
 A_File = WgetFile ("File1", File1, rules=File1_rules)
 B_File = WgetFile ("File2", File2, rules=File2_rules)

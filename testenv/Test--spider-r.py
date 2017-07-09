@@ -14,8 +14,8 @@ mainpage = """
 </head>
 <body>
   <p>
-    Some text and a link to a <a href="http://127.0.0.1:{{port}}/secondpage.html">second page</a>.
-    Also, a <a href="http://127.0.0.1:{{port}}/nonexistent">broken link</a>.
+    Some text and a link to a <a href="http://localhost:{{port}}/secondpage.html">second page</a>.
+    Also, a <a href="http://localhost:{{port}}/nonexistent">broken link</a>.
   </p>
 </body>
 </html>
@@ -29,8 +29,8 @@ secondpage = """
 </head>
 <body>
   <p>
-    Some text and a link to a <a href="http://127.0.0.1:{{port}}/thirdpage.html">third page</a>.
-    Also, a <a href="http://127.0.0.1:{{port}}/nonexistent">broken link</a>.
+    Some text and a link to a <a href="http://localhost:{{port}}/thirdpage.html">third page</a>.
+    Also, a <a href="http://localhost:{{port}}/nonexistent">broken link</a>.
   </p>
 </body>
 </html>
@@ -43,8 +43,8 @@ thirdpage = """
 </head>
 <body>
   <p>
-    Some text and a link to a <a href="http://127.0.0.1:{{port}}/dummy.txt">text file</a>.
-    Also, another <a href="http://127.0.0.1:{{port}}/againnonexistent">broken link</a>.
+    Some text and a link to a <a href="http://localhost:{{port}}/dummy.txt">text file</a>.
+    Also, another <a href="http://localhost:{{port}}/againnonexistent">broken link</a>.
   </p>
 </body>
 </html>

@@ -14,7 +14,7 @@ mainpage = """
 </head>
 <body>
   <p>
-    Recurse to a <a href="http://127.0.0.1:{{port}}/secondpage.html">second page</a>.
+    Recurse to a <a href="http://localhost:{{port}}/secondpage.html">second page</a>.
   </p>
 </body>
 </html>
@@ -27,8 +27,8 @@ secondpage = """
 </head>
 <body>
   <p>
-    Recurse to a <a href="http://127.0.0.1:{{port}}/thirdpage.html">third page</a>.
-    Try the blacklisted <a href="http://127.0.0.1:{{port}}/index.html">main page</a>.
+    Recurse to a <a href="http://localhost:{{port}}/thirdpage.html">third page</a>.
+    Try the blacklisted <a href="http://localhost:{{port}}/index.html">main page</a>.
   </p>
 </body>
 </html>
@@ -41,7 +41,7 @@ thirdpage = """
 </head>
 <body>
   <p>
-    Try a hidden <a href="http://127.0.0.1:{{port}}/dummy.txt">dummy file</a>.
+    Try a hidden <a href="http://localhost:{{port}}/dummy.txt">dummy file</a>.
     Try to leave to <a href="http://no.such.domain/">another domain</a>.
   </p>
 </body>
@@ -55,9 +55,9 @@ Disallow: /dummy.txt
 
 log = """\
 REASON\tU_URL\tU_SCHEME\tU_HOST\tU_PORT\tU_PATH\tU_PARAMS\tU_QUERY\tU_FRAGMENT\tP_URL\tP_SCHEME\tP_HOST\tP_PORT\tP_PATH\tP_PARAMS\tP_QUERY\tP_FRAGMENT
-BLACKLIST\thttp%3A//127.0.0.1%3A{{port}}/index.html\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tindex.html\t\t\t\thttp%3A//127.0.0.1%3A{{port}}/secondpage.html\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tsecondpage.html\t\t\t
-ROBOTS\thttp%3A//127.0.0.1%3A{{port}}/dummy.txt\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tdummy.txt\t\t\t\thttp%3A//127.0.0.1%3A{{port}}/thirdpage.html\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tthirdpage.html\t\t\t
-SPANNEDHOST\thttp%3A//no.such.domain/\tSCHEME_HTTP\tno.such.domain\t80\t\t\t\t\thttp%3A//127.0.0.1%3A{{port}}/thirdpage.html\tSCHEME_HTTP\t127.0.0.1\t{{port}}\tthirdpage.html\t\t\t
+BLACKLIST\thttp%3A//localhost%3A{{port}}/index.html\tSCHEME_HTTP\tlocalhost\t{{port}}\tindex.html\t\t\t\thttp%3A//localhost%3A{{port}}/secondpage.html\tSCHEME_HTTP\tlocalhost\t{{port}}\tsecondpage.html\t\t\t
+ROBOTS\thttp%3A//localhost%3A{{port}}/dummy.txt\tSCHEME_HTTP\tlocalhost\t{{port}}\tdummy.txt\t\t\t\thttp%3A//localhost%3A{{port}}/thirdpage.html\tSCHEME_HTTP\tlocalhost\t{{port}}\tthirdpage.html\t\t\t
+SPANNEDHOST\thttp%3A//no.such.domain/\tSCHEME_HTTP\tno.such.domain\t80\t\t\t\t\thttp%3A//localhost%3A{{port}}/thirdpage.html\tSCHEME_HTTP\tlocalhost\t{{port}}\tthirdpage.html\t\t\t
 """
 
 dummyfile = "Don't care."
