@@ -1581,6 +1581,7 @@ struct http_stat
 #endif
 
   encoding_t local_encoding;    /* the encoding of the local file */
+  encoding_t remote_encoding;   /* the encoding of the remote file */
 
   bool temporary;               /* downloading a temporary file */
 };
@@ -1692,6 +1693,9 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
     flags |= rb_skip_startpos;
   if (chunked_transfer_encoding)
     flags |= rb_chunked_transfer_encoding;
+
+  if (hs->remote_encoding == ENC_GZIP)
+    flags |= rb_compressed_gzip;
 
   hs->len = hs->restval;
   hs->rd_size = 0;
@@ -1886,7 +1890,12 @@ initialize_request (const struct url *u, struct http_stat *hs, int *dt, struct u
                         rel_value);
   SET_USER_AGENT (req);
   request_set_header (req, "Accept", "*/*", rel_none);
-  request_set_header (req, "Accept-Encoding", "identity", rel_none);
+#ifdef HAVE_LIBZ
+  if (opt.compression != compression_none)
+    request_set_header (req, "Accept-Encoding", "gzip", rel_none);
+  else
+#endif
+    request_set_header (req, "Accept-Encoding", "identity", rel_none);
 
   /* Find the username with priority */
   if (u->user)
@@ -3203,6 +3212,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   hs->error = NULL;
   hs->message = NULL;
   hs->local_encoding = ENC_NONE;
+  hs->remote_encoding = ENC_NONE;
 
   conn = u;
 
@@ -3694,6 +3704,30 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
           DEBUGP (("Unrecognized Content-Encoding: %s\n", hdrval));
           hs->local_encoding = ENC_NONE;
         }
+#ifdef HAVE_LIBZ
+      else if (hs->local_encoding == ENC_GZIP
+               && opt.compression != compression_none)
+        {
+          /* Make sure the Content-Type is not gzip before decompressing */
+          const char * p = strchr (type, '/');
+          if (p == NULL)
+            {
+              hs->remote_encoding = ENC_GZIP;
+              hs->local_encoding = ENC_NONE;
+            }
+          else
+            {
+              p++;
+              if (c_tolower(p[0]) == 'x' && p[1] == '-')
+                p += 2;
+              if (0 != c_strcasecmp (p, "gzip"))
+                {
+                  hs->remote_encoding = ENC_GZIP;
+                  hs->local_encoding = ENC_NONE;
+                }
+            }
+        }
+#endif
     }
 
   /* 20x responses are counted among successful by default.  */
@@ -3929,6 +3963,9 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
       goto cleanup;
     }
   if (contlen == -1)
+    hs->contlen = -1;
+  /* If the response is gzipped, the uncompressed size is unknown. */
+  else if (hs->remote_encoding == ENC_GZIP)
     hs->contlen = -1;
   else
     hs->contlen = contlen + contrange;

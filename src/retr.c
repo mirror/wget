@@ -41,6 +41,10 @@ as that of the covered work.  */
 # include <unixio.h>            /* For delete(). */
 #endif
 
+#ifdef HAVE_LIBZ
+# include <zlib.h>
+#endif
+
 #include "exits.h"
 #include "utils.h"
 #include "retr.h"
@@ -83,6 +87,22 @@ limit_bandwidth_reset (void)
 {
   xzero (limit_data);
 }
+
+#ifdef HAVE_LIBZ
+static voidpf
+zalloc (voidpf opaque, unsigned int items, unsigned int size)
+{
+  (void) opaque;
+  return (voidpf) xcalloc (items, size);
+}
+
+static void
+zfree (voidpf opaque, voidpf address)
+{
+  (void) opaque;
+  xfree (address);
+}
+#endif
 
 /* Limit the bandwidth by pausing the download for an amount of time.
    BYTES is the number of bytes received from the network, and TIMER
@@ -257,6 +277,44 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
   wgint sum_written = 0;
   wgint remaining_chunk_size = 0;
 
+#ifdef HAVE_LIBZ
+  /* try to minimize the number of calls to inflate() and write_data() per
+     call to fd_read() */
+  unsigned int gzbufsize = dlbufsize * 4;
+  char *gzbuf = NULL;
+  z_stream gzstream;
+
+  if (flags & rb_compressed_gzip)
+    {
+      gzbuf = xmalloc (gzbufsize);
+      if (gzbuf != NULL)
+        {
+          gzstream.zalloc = zalloc;
+          gzstream.zfree = zfree;
+          gzstream.opaque = Z_NULL;
+          gzstream.next_in = Z_NULL;
+          gzstream.avail_in = 0;
+
+          #define GZIP_DETECT 32 /* gzip format detection */
+          #define GZIP_WINDOW 15 /* logarithmic window size (default: 15) */
+          ret = inflateInit2 (&gzstream, GZIP_DETECT | GZIP_WINDOW);
+          if (ret != Z_OK)
+            {
+              xfree (gzbuf);
+              errno = (ret == Z_MEM_ERROR) ? ENOMEM : EINVAL;
+              ret = -1;
+              goto out;
+            }
+        }
+      else
+        {
+          errno = ENOMEM;
+          ret = -1;
+          goto out;
+        }
+    }
+#endif
+
   if (flags & rb_skip_startpos)
     skip = startpos;
 
@@ -383,12 +441,64 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
           int write_res;
 
           sum_read += ret;
-          write_res = write_data (out, out2, dlbuf, ret, &skip, &sum_written);
-          if (write_res < 0)
+
+#ifdef HAVE_LIBZ
+          if (gzbuf != NULL)
             {
-              ret = (write_res == -3) ? -3 : -2;
-              goto out;
+              int err;
+              int towrite;
+              gzstream.avail_in = ret;
+              gzstream.next_in = (unsigned char *) dlbuf;
+
+              do
+                {
+                  gzstream.avail_out = gzbufsize;
+                  gzstream.next_out = (unsigned char *) gzbuf;
+
+                  err = inflate (&gzstream, Z_NO_FLUSH);
+
+                  switch (err)
+                    {
+                    case Z_MEM_ERROR:
+                      errno = ENOMEM;
+                      ret = -1;
+                      goto out;
+                    case Z_NEED_DICT:
+                    case Z_DATA_ERROR:
+                      errno = EINVAL;
+                      ret = -1;
+                      goto out;
+                    case Z_STREAM_END:
+                      if (exact && sum_read != toread)
+                        {
+                          DEBUGP(("zlib stream ended unexpectedly after "
+                                  "%ld/%ld bytes\n", sum_read, toread));
+                        }
+                    }
+
+                  towrite = gzbufsize - gzstream.avail_out;
+                  write_res = write_data (out, out2, gzbuf, towrite, &skip,
+                                          &sum_written);
+                  if (write_res < 0)
+                    {
+                      ret = (write_res == -3) ? -3 : -2;
+                      goto out;
+                    }
+                }
+              while (gzstream.avail_out == 0);
             }
+          else
+#endif
+            {
+              write_res = write_data (out, out2, dlbuf, ret, &skip,
+                                      &sum_written);
+              if (write_res < 0)
+                {
+                  ret = (write_res == -3) ? -3 : -2;
+                  goto out;
+                }
+            }
+
           if (chunked)
             {
               remaining_chunk_size -= ret;
@@ -432,6 +542,31 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
     *elapsed = ptimer_read (timer);
   if (timer)
     ptimer_destroy (timer);
+
+#ifdef HAVE_LIBZ
+  if (gzbuf != NULL)
+    {
+      int err = inflateEnd (&gzstream);
+      if (ret >= 0)
+        {
+          /* with compression enabled, ret must be 0 if successful */
+          if (err == Z_OK)
+            ret = 0;
+          else
+            {
+              errno = EINVAL;
+              ret = -1;
+            }
+        }
+      xfree (gzbuf);
+
+      if (gzstream.total_in != sum_read)
+        {
+          DEBUGP(("zlib read size differs from raw read size (%lu/%lu)\n",
+                  gzstream.total_in, sum_read));
+        }
+    }
+#endif
 
   if (qtyread)
     *qtyread += sum_read;
