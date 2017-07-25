@@ -99,6 +99,9 @@ CMD_DECLARE (cmd_vector);
 
 CMD_DECLARE (cmd_use_askpass);
 
+#ifdef HAVE_LIBZ
+CMD_DECLARE (cmd_spec_compression);
+#endif
 CMD_DECLARE (cmd_spec_dirstruct);
 CMD_DECLARE (cmd_spec_header);
 CMD_DECLARE (cmd_spec_warc_header);
@@ -161,6 +164,9 @@ static const struct {
   { "checkcertificate", &opt.check_cert,        cmd_check_cert },
 #endif
   { "chooseconfig",     &opt.choose_config,     cmd_file },
+#ifdef HAVE_LIBZ
+  { "compression",      &opt.compression,       cmd_spec_compression },
+#endif
   { "connecttimeout",   &opt.connect_timeout,   cmd_time },
   { "contentdisposition", &opt.content_disposition, cmd_boolean },
   { "contentonerror",   &opt.content_on_error,  cmd_boolean },
@@ -443,6 +449,10 @@ defaults (void)
   opt.ftps_fallback_to_ftp = false;
   opt.ftps_implicit = false;
   opt.ftps_clear_data_connection = false;
+#endif
+
+#ifdef HAVE_LIBZ
+  opt.compression = compression_auto;
 #endif
 
   /* The default for file name restriction defaults to the OS type. */
@@ -1444,6 +1454,25 @@ cmd_cert_type (const char *com, const char *val, void *place)
    options specially.  */
 
 static bool check_user_specified_header (const char *);
+
+#ifdef HAVE_LIBZ
+static bool
+cmd_spec_compression (const char *com, const char *val, void *place)
+{
+  static const struct decode_item choices[] = {
+    { "auto", compression_auto },
+    { "gzip", compression_gzip },
+    { "none", compression_none },
+  };
+  int ok = decode_string (val, choices, countof (choices), place);
+  if (!ok)
+    {
+      fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com,
+               quote (val));
+    }
+  return ok;
+}
+#endif
 
 static bool
 cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored _GL_UNUSED)

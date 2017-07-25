@@ -275,6 +275,9 @@ static struct cmdline_option option_data[] =
     { IF_SSL ("certificate-type"), 0, OPT_VALUE, "certificatetype", -1 },
     { IF_SSL ("check-certificate"), 0, OPT_BOOLEAN, "checkcertificate", -1 },
     { "clobber", 0, OPT__CLOBBER, NULL, optional_argument },
+#ifdef HAVE_LIBZ
+    { "compression", 0, OPT_VALUE, "compression", -1 },
+#endif
     { "config", 0, OPT_VALUE, "chooseconfig", -1 },
     { "connect-timeout", 0, OPT_VALUE, "connecttimeout", -1 },
     { "continue", 'c', OPT_BOOLEAN, "continue", -1 },
@@ -763,6 +766,10 @@ HTTP options:\n"),
        --ignore-length             ignore 'Content-Length' header field\n"),
     N_("\
        --header=STRING             insert STRING among the headers\n"),
+#ifdef HAVE_LIBZ
+    N_("\
+       --compression=TYPE          choose compression, one of auto, gzip and none\n"),
+#endif
     N_("\
        --max-redirect              maximum redirections allowed per page\n"),
     N_("\
@@ -1674,6 +1681,26 @@ for details.\n\n"));
           opt.progress_type = xstrdup ("dot");
         }
     }
+
+#ifdef HAVE_LIBZ
+  if (opt.always_rest || opt.start_pos >= 0)
+    {
+      if (opt.compression == compression_auto)
+        {
+          /* Compression does not work with --continue or --start-pos.
+             Since compression was not explicitly set, it will be disabled. */
+          opt.compression = compression_none;
+        }
+      else if (opt.compression != compression_none)
+        {
+          fprintf (stderr,
+                   _("Compression does not work with --continue or"
+                     " --start-pos, they will be disabled.\n"));
+          opt.always_rest = false;
+          opt.start_pos = -1;
+        }
+    }
+#endif
 
   if (opt.ask_passwd && opt.passwd)
     {

@@ -326,6 +326,14 @@ struct options
                                    name. */
   bool report_bps;              /*Output bandwidth in bits format*/
 
+#ifdef HAVE_LIBZ
+  enum compression_options {
+    compression_auto,
+    compression_gzip,
+    compression_none
+  } compression;                /* type of HTTP compression to use */
+#endif
+
   char *rejected_log;           /* The file to log rejected URLS to. */
 
 #ifdef HAVE_HSTS

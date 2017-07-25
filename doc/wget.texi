@@ -1535,6 +1535,20 @@ wget --header="Host: foo.bar" http://localhost/
 In versions of Wget prior to 1.10 such use of @samp{--header} caused
 sending of duplicate headers.
 
+@cindex Content-Encoding, choose
+@item --compression=@var{type}
+Choose the type of compression to be used.  Legal values are
+@samp{auto}, @samp{gzip} and @samp{none}.
+
+If @samp{auto} or @samp{gzip} are specified, Wget asks the server to
+compress the file using the gzip compression format. If the server
+compresses the file and responds with the @code{Content-Encoding}
+header field set appropriately, the file will be decompressed
+automatically. This is the default.
+
+If @samp{none} is specified, wget will not ask the server to compress
+the file and will not decompress any server responses.
+
 @cindex redirect
 @item --max-redirect=@var{number}
 Specifies the maximum number of redirections to follow for a resource.
@@ -3367,6 +3381,11 @@ Turn globbing on/off---the same as @samp{--glob} and @samp{--no-glob}.
 @item header = @var{string}
 Define a header for HTTP downloads, like using
 @samp{--header=@var{string}}.
+
+@item compression = @var{string}
+Choose the compression type to be used.  Legal values are @samp{auto}
+(the default), @samp{gzip}, and @samp{none}.  The same as
+@samp{--compression=@var{string}}.
 
 @item adjust_extension = on/off
 Add a @samp{.html} extension to @samp{text/html} or
