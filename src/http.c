@@ -1539,6 +1539,16 @@ persistent_available_p (const char *host, int port, bool ssl,
   fd = -1;                                      \
 } while (0)
 
+typedef enum
+{
+  ENC_INVALID = -1,             /* invalid encoding */
+  ENC_NONE = 0,                 /* no special encoding */
+  ENC_GZIP,                     /* gzip compression */
+  ENC_DEFLATE,                  /* deflate compression */
+  ENC_COMPRESS,                 /* compress compression */
+  ENC_BROTLI                    /* brotli compression */
+} encoding_t;
+
 struct http_stat
 {
   wgint len;                    /* received length */
@@ -1569,6 +1579,9 @@ struct http_stat
 #ifdef HAVE_METALINK
   metalink_t *metalink;
 #endif
+
+  encoding_t local_encoding;    /* the encoding of the local file */
+
   bool temporary;               /* downloading a temporary file */
 };
 
@@ -3189,6 +3202,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   xfree (hs->remote_time);
   hs->error = NULL;
   hs->message = NULL;
+  hs->local_encoding = ENC_NONE;
 
   conn = u;
 
@@ -3639,6 +3653,49 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
         }
     }
 
+  if (resp_header_copy (resp, "Content-Encoding", hdrval, sizeof (hdrval)))
+    {
+      hs->local_encoding = ENC_INVALID;
+
+      switch (hdrval[0])
+        {
+        case 'b': case 'B':
+          if (0 == c_strcasecmp(hdrval, "br"))
+            hs->local_encoding = ENC_BROTLI;
+          break;
+        case 'c': case 'C':
+          if (0 == c_strcasecmp(hdrval, "compress"))
+            hs->local_encoding = ENC_COMPRESS;
+          break;
+        case 'd': case 'D':
+          if (0 == c_strcasecmp(hdrval, "deflate"))
+            hs->local_encoding = ENC_DEFLATE;
+          break;
+        case 'g': case 'G':
+          if (0 == c_strcasecmp(hdrval, "gzip"))
+            hs->local_encoding = ENC_GZIP;
+          break;
+        case 'i': case 'I':
+          if (0 == c_strcasecmp(hdrval, "identity"))
+            hs->local_encoding = ENC_NONE;
+          break;
+        case 'x': case 'X':
+          if (0 == c_strcasecmp(hdrval, "x-compress"))
+            hs->local_encoding = ENC_COMPRESS;
+          else if (0 == c_strcasecmp(hdrval, "x-gzip"))
+            hs->local_encoding = ENC_GZIP;
+          break;
+        case '\0':
+          hs->local_encoding = ENC_NONE;
+        }
+
+      if (hs->local_encoding == ENC_INVALID)
+        {
+          DEBUGP (("Unrecognized Content-Encoding: %s\n", hdrval));
+          hs->local_encoding = ENC_NONE;
+        }
+    }
+
   /* 20x responses are counted among successful by default.  */
   if (H_20X (statcode))
     *dt |= RETROKF;
@@ -3767,6 +3824,35 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 
   if (opt.adjust_extension)
     {
+      const char *encoding_ext = NULL;
+      switch (hs->local_encoding)
+        {
+        case ENC_INVALID:
+        case ENC_NONE:
+          break;
+        case ENC_BROTLI:
+          encoding_ext = ".br";
+          break;
+        case ENC_COMPRESS:
+          encoding_ext = ".Z";
+          break;
+        case ENC_DEFLATE:
+          encoding_ext = ".zlib";
+          break;
+        case ENC_GZIP:
+          encoding_ext = ".gz";
+          break;
+        default:
+          DEBUGP (("No extension found for encoding %d\n",
+                   hs->local_encoding));
+      }
+      if (encoding_ext != NULL)
+        {
+          char *file_ext = strrchr (hs->local_file, '.');
+          /* strip Content-Encoding extension (it will be re-added later) */
+          if (file_ext != NULL && 0 == strcasecmp (file_ext, encoding_ext))
+            *file_ext = '\0';
+        }
       if (*dt & TEXTHTML)
         /* -E / --adjust-extension / adjust_extension = on was specified,
            and this is a text/html file.  If some case-insensitive
@@ -3778,6 +3864,10 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
       else if (*dt & TEXTCSS)
         {
           ensure_extension (hs, ".css", dt);
+        }
+      if (encoding_ext != NULL)
+        {
+          ensure_extension (hs, encoding_ext, dt);
         }
     }
 

@@ -1346,6 +1346,11 @@ renamed from @samp{--html-extension}, to better reflect its new
 behavior. The old option name is still acceptable, but should now be
 considered deprecated.
 
+As of version 1.20, Wget will also ensure that any downloaded files with
+a @code{Content-Encoding} of @samp{br}, @samp{compress}, @samp{deflate}
+or @samp{gzip} end in the suffix @samp{.br}, @samp{.Z}, @samp{.zlib}
+and @samp{.gz} respectively.
+
 At some point in the future, this option may well be expanded to
 include suffixes for other types of content, including content types
 that are not parsed by Wget.
@@ -3365,8 +3370,9 @@ Define a header for HTTP downloads, like using
 
 @item adjust_extension = on/off
 Add a @samp{.html} extension to @samp{text/html} or
-@samp{application/xhtml+xml} files that lack one, or a @samp{.css}
-extension to @samp{text/css} files that lack one, like
+@samp{application/xhtml+xml} files that lack one, a @samp{.css}
+extension to @samp{text/css} files that lack one, and a @samp{.br},
+@samp{.Z}, @samp{.zlib} or @samp{.gz} to compressed files like
 @samp{-E}. Previously named @samp{html_extension} (still acceptable,
 but deprecated).
 
