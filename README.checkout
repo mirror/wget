@@ -104,6 +104,10 @@ Compiling From Repository Sources
        The command line options --dns-servers and --bind-dns-address are
        only available when configured with --with-cares.
 
+     * [49]Gpef is required by some gnulib modules, most notably "unicase". You
+	   need the application installed on the machine to compile Wget from git.
+
+
    For those who might be confused as to what to do once they check out
    the source code, considering configure and Makefile do not yet exist at
    that point, a shell script called bootstrap has been provided. After
@@ -212,3 +216,4 @@ References
   46. https://launchpad.net/libmetalink
   47. https://www.gnupg.org
   48. https://c-ares.haxx.se/
+  49. https://www.gnu.org/software/gperf/
