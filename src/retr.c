@@ -378,6 +378,12 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
               remaining_chunk_size = strtol (line, &endl, 16);
               xfree (line);
 
+              if (remaining_chunk_size < 0)
+                {
+                  ret = -1;
+                  break;
+                }
+
               if (remaining_chunk_size == 0)
                 {
                   ret = 0;
