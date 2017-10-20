@@ -973,6 +973,9 @@ skip_short_body (int fd, wgint contlen, bool chunked)
               remaining_chunk_size = strtol (line, &endl, 16);
               xfree (line);
 
+              if (remaining_chunk_size < 0)
+                return false;
+
               if (remaining_chunk_size == 0)
                 {
                   line = fd_read_line (fd);
