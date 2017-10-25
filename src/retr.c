@@ -1098,11 +1098,16 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       u = url_parse (origurl, NULL, iri, true);
       if (u)
         {
-          DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
-          xfree (url);
-          url = xstrdup (u->url);
-          iri_fallbacked = 1;
-          goto redirected;
+          if (strcmp(u->url, orig_parsed->url))
+            {
+              DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
+              xfree (url);
+              url = xstrdup (u->url);
+              iri_fallbacked = 1;
+              goto redirected;
+            }
+          else
+              DEBUGP (("[Needn't fallback to non-utf8 for %s\n", quote (url)));
         }
       else
           DEBUGP (("[Couldn't fallback to non-utf8 for %s\n", quote (url)));
