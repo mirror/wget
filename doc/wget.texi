@@ -1346,7 +1346,7 @@ renamed from @samp{--html-extension}, to better reflect its new
 behavior. The old option name is still acceptable, but should now be
 considered deprecated.
 
-As of version 1.20, Wget will also ensure that any downloaded files with
+As of version 1.19.2, Wget will also ensure that any downloaded files with
 a @code{Content-Encoding} of @samp{br}, @samp{compress}, @samp{deflate}
 or @samp{gzip} end in the suffix @samp{.br}, @samp{.Z}, @samp{.zlib}
 and @samp{.gz} respectively.

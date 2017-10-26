@@ -5,6 +5,29 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.19.2
+
+* Fix CVE-2017-13089 (Stack overflow in HTTP protocol handling)
+
+* Fix CVE-2017-13090 (Heap overflow in HTTP protocol handling)
+
+* New option --compression for gzip Content-Encoding
+
+* New option --[no]-netrc to control .netrc parsing
+
+* Added GNU extensions to .netrc parsing
+
+* Improved IDNA 2003 compatibility
+
+* Fix VPATH issues
+
+* Improved and extended the test suite
+
+* Support Wayback Machine's X-Archive-Orig-last-modified
+
+* Several bug fixes
+
+
 * Changes in Wget 1.19.1
 
 * Fix bugs, a regression, portability/build issues
