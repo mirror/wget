@@ -1,14 +1,28 @@
 #!/bin/bash -e
 #
 # Written 2016 by Tim Ruehsen
+#
+# To get the version number right: add a signed tag and
+#   make sure the working dir is clean (git diff).
+# If that fails, put the version into '.tarball-version'.
 
-extensions="gz xz"
+export CFLAGS="-g -O2 -Wall"
+
+echo
+echo "* Bootstrap"
+#./bootstrap >/dev/null
+
+echo
+echo "* Configure"
+#./configure -q
+
+extensions="gz lz"
 app_name=$(grep "^PACKAGE_NAME='" configure|cut -d "'" -f2)
 app_ver=$(grep "^PACKAGE_VERSION='" configure|cut -d "'" -f2)
 
 echo "Current version of $app_name is $app_ver"
 echo
-echo -n "Enter Y if that is OK, else enter N and edit configure.ac: "
+echo -n "Is that OK ? [y/N] "
 read x
 [ "$x" != "y" -a "$x" != "Y" ] && exit 0
 
@@ -19,28 +33,24 @@ read x
 [ "$x" != "y" -a "$x" != "Y" ] && exit 0
 
 echo
-
-export CFLAGS="-g -O2 -Wall"
-
-echo "* Bootstrap"
-./bootstrap >/dev/null
-
-echo "* Configure"
-./configure -q
-
 echo "* Make"
-make -s clean
-make -s
+#make -s clean
+#make -s
 
+echo
 echo "* Make distcheck"
-make -s distcheck >/dev/null
+#make -s distcheck >/dev/null
 
+echo
 echo "* Make dist"
-make -s dist >/dev/null
-make -s dist-xz >/dev/null
+for ext in $extensions; do
+  [[ $ext = 'gz' ]] && ext="gzip"
+  [[ $ext = 'lz' ]] && ext="lzip"
+  make -s dist-$ext >/dev/null
+done
 
 while true; do
-  echo "Alpha or Regular release ? [r/A] "
+  echo "Alpha or Regular release ? [R/A] "
   read x
   if test "$x" = "r" || test "$x" = "R"; then
     directory="/incoming/ftp"
@@ -82,10 +92,11 @@ else
   done
 fi
 unset IFS
-echo $signing_key
 
-# fetch app_version again, just in case
-app_ver=$(grep "^PACKAGE_VERSION='" configure|cut -d "'" -f2)
+echo
+echo -n "Really upload to ftp-upload.gnu.org/$directory ? "
+read x
+[ "$x" != "y" -a "$x" != "Y" ] && exit 0
 
 for ext in $extensions; do
   app_tarball="${app_name}-${app_ver}.tar.$ext"
