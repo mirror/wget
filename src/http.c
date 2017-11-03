@@ -104,7 +104,7 @@ static struct cookie_jar *wget_cookie_jar;
 #define H_REDIRECTED(x) ((x) == HTTP_STATUS_MOVED_PERMANENTLY          \
                          || (x) == HTTP_STATUS_MOVED_TEMPORARILY       \
                          || (x) == HTTP_STATUS_SEE_OTHER               \
-                         || (x) == HTTP_STATUS_TEMPORARY_REDIRECT)     \
+                         || (x) == HTTP_STATUS_TEMPORARY_REDIRECT      \
                          || (x) == HTTP_STATUS_PERMANENT_REDIRECT)
 
 /* HTTP/1.0 status codes from RFC1945, provided for reference.  */
