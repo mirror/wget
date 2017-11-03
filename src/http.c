@@ -104,7 +104,8 @@ static struct cookie_jar *wget_cookie_jar;
 #define H_REDIRECTED(x) ((x) == HTTP_STATUS_MOVED_PERMANENTLY          \
                          || (x) == HTTP_STATUS_MOVED_TEMPORARILY       \
                          || (x) == HTTP_STATUS_SEE_OTHER               \
-                         || (x) == HTTP_STATUS_TEMPORARY_REDIRECT)
+                         || (x) == HTTP_STATUS_TEMPORARY_REDIRECT)     \
+                         || (x) == HTTP_STATUS_PERMANENT_REDIRECT)
 
 /* HTTP/1.0 status codes from RFC1945, provided for reference.  */
 /* Successful 2xx.  */
@@ -121,6 +122,7 @@ static struct cookie_jar *wget_cookie_jar;
 #define HTTP_STATUS_SEE_OTHER             303 /* from HTTP/1.1 */
 #define HTTP_STATUS_NOT_MODIFIED          304
 #define HTTP_STATUS_TEMPORARY_REDIRECT    307 /* from HTTP/1.1 */
+#define HTTP_STATUS_PERMANENT_REDIRECT    308 /* from HTTP/1.1 */
 
 /* Client error 4xx.  */
 #define HTTP_STATUS_BAD_REQUEST           400
@@ -3821,6 +3823,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
           switch (statcode)
             {
             case HTTP_STATUS_TEMPORARY_REDIRECT:
+            case HTTP_STATUS_PERMANENT_REDIRECT:
               retval = NEWLOCATION_KEEP_POST;
               goto cleanup;
             case HTTP_STATUS_MOVED_PERMANENTLY:
