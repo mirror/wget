@@ -3714,22 +3714,30 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
                && opt.compression != compression_none)
         {
           /* Make sure the Content-Type is not gzip before decompressing */
-          const char * p = strchr (type, '/');
-          if (p == NULL)
+          if (type)
             {
-              hs->remote_encoding = ENC_GZIP;
-              hs->local_encoding = ENC_NONE;
-            }
-          else
-            {
-              p++;
-              if (c_tolower(p[0]) == 'x' && p[1] == '-')
-                p += 2;
-              if (0 != c_strcasecmp (p, "gzip"))
+              const char * p = strchr (type, '/');
+              if (p == NULL)
                 {
                   hs->remote_encoding = ENC_GZIP;
                   hs->local_encoding = ENC_NONE;
                 }
+              else
+                {
+                  p++;
+                  if (c_tolower(p[0]) == 'x' && p[1] == '-')
+                    p += 2;
+                  if (0 != c_strcasecmp (p, "gzip"))
+                    {
+                      hs->remote_encoding = ENC_GZIP;
+                      hs->local_encoding = ENC_NONE;
+                    }
+                }
+            }
+          else
+            {
+               hs->remote_encoding = ENC_GZIP;
+               hs->local_encoding = ENC_NONE;
             }
         }
 #endif
