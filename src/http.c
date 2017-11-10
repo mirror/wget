@@ -1869,7 +1869,7 @@ initialize_request (const struct url *u, struct http_stat *hs, int *dt, struct u
   if (*dt & SEND_NOCACHE)
     {
       /* Cache-Control MUST be obeyed by all HTTP/1.1 caching mechanisms...  */
-      request_set_header (req, "Cache-Control", "no-cache, must-revalidate", rel_none);
+      request_set_header (req, "Cache-Control", "no-cache", rel_none);
 
       /* ... but some HTTP/1.0 caches doesn't implement Cache-Control.  */
       request_set_header (req, "Pragma", "no-cache", rel_none);
