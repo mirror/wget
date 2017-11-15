@@ -1708,35 +1708,43 @@ url_file_name (const struct url *u, char *replaced_filename)
   /* If "dirstruct" is turned on (typically the case with -r), add
      the host and port (unless those have been turned off) and
      directory structure.  */
+  /* All safe remote chars are unescaped and stored in temp_fnres,
+     then converted to local and appended to fnres.
+     Internationalized URL/IDN will produce punycode to lookup IP from DNS:
+     https://en.wikipedia.org/wiki/URL
+     https://en.wikipedia.org/wiki/Internationalized_domain_name
+     Non-ASCII code chars in the path:
+     https://en.wikipedia.org/wiki/List_of_Unicode_characters
+     https://en.wikipedia.org/wiki/List_of_writing_systems */
   if (opt.dirstruct)
     {
       if (opt.protocol_directories)
         {
-          if (fnres.tail)
-            append_char ('/', &fnres);
-          append_string (supported_schemes[u->scheme].name, &fnres);
+          if (temp_fnres.tail)
+            append_char ('/', &temp_fnres);
+          append_string (supported_schemes[u->scheme].name, &temp_fnres);
         }
       if (opt.add_hostdir)
         {
-          if (fnres.tail)
-            append_char ('/', &fnres);
+          if (temp_fnres.tail)
+            append_char ('/', &temp_fnres);
           if (0 != strcmp (u->host, ".."))
-            append_string (u->host, &fnres);
+            append_string (u->host, &temp_fnres);
           else
             /* Host name can come from the network; malicious DNS may
                allow ".." to be resolved, causing us to write to
                "../<file>".  Defang such host names.  */
-            append_string ("%2E%2E", &fnres);
+            append_string ("%2E%2E", &temp_fnres);
           if (u->port != scheme_default_port (u->scheme))
             {
               char portstr[24];
               number_to_string (portstr, u->port);
-              append_char (FN_PORT_SEP, &fnres);
-              append_string (portstr, &fnres);
+              append_char (FN_PORT_SEP, &temp_fnres);
+              append_string (portstr, &temp_fnres);
             }
         }
 
-      append_dir_structure (u, &fnres);
+      append_dir_structure (u, &temp_fnres);
     }
 
   if (!replaced_filename)
@@ -1750,9 +1758,6 @@ url_file_name (const struct url *u, char *replaced_filename)
         fname_len_check = concat_strings (u_file, FN_QUERY_SEP_STR, u->query, NULL);
       else
         fname_len_check = strdupdelim (u_file, u_file + strlen (u_file));
-
-      /* convert before concat with local path */
-      fname_len_check = convert_fname (fname_len_check);
     }
   else
     {
@@ -1760,11 +1765,22 @@ url_file_name (const struct url *u, char *replaced_filename)
       fname_len_check = strdupdelim (u_file, u_file + strlen (u_file));
     }
 
+  if (temp_fnres.tail)
+    append_char ('/', &temp_fnres);
+
   append_uri_pathel (fname_len_check,
-    fname_len_check + strlen (fname_len_check), false, &temp_fnres);
+    fname_len_check + strlen (fname_len_check), true, &temp_fnres);
 
   /* Zero-terminate the temporary file name. */
   append_char ('\0', &temp_fnres);
+
+  /* convert all remote chars before length check and appending to local path */
+  fname = convert_fname (temp_fnres.base);
+  temp_fnres.base = NULL;
+  temp_fnres.size = 0;
+  temp_fnres.tail = 0;
+  append_string (fname, &temp_fnres);
+  xfree (fname);
 
   /* Check that the length of the file name is acceptable. */
 #ifdef WINDOWS
