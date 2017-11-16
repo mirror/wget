@@ -344,7 +344,9 @@ get_warc_log_fp (void)
     return NULL;
   if (warclogfp)
     return warclogfp;
-  return NULL;
+  if (logfp)
+    return NULL;
+  return stderr;
 }
 
 /* Sets the file descriptor for the secondary log file.  */
