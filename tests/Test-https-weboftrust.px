@@ -99,7 +99,8 @@ my $sslsock = SSLTest->new(cmdline   => $cmdline,
                            output    => \%expected_downloaded_files,
                            certfile  => $usrcrt,
                            keyfile   => $usrkey,
-                           lhostname => $testhostname);
+                           lhostname => $testhostname,
+                           sslport   => $port);
 if ($sslsock->run() == 0)
 {
   exit 0;
