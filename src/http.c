@@ -3854,8 +3854,6 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
         }
     }
 
-  set_content_type (dt, type);
-
   if (cond_get)
     {
       if (statcode == HTTP_STATUS_NOT_MODIFIED)
@@ -3869,6 +3867,8 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
           goto cleanup;
         }
     }
+
+  set_content_type (dt, type);
 
   if (opt.adjust_extension)
     {
