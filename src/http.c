@@ -3969,11 +3969,16 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
       hs->res = 0;
       /* Mark as successfully retrieved. */
       *dt |= RETROKF;
-      if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE)
+
+      /* Try to maintain the keep-alive connection. It is often cheaper to
+       * consume some bytes which have already been sent than to negotiate
+       * a new connection. However, if the body is too large, or we don't
+       * care about keep-alive, then simply terminate the connection */
+      if (keep_alive &&
+          skip_short_body (sock, contlen, chunked_transfer_encoding))
         CLOSE_FINISH (sock);
       else
-        CLOSE_INVALIDATE (sock);        /* would be CLOSE_FINISH, but there
-                                   might be more bytes in the body. */
+        CLOSE_INVALIDATE (sock);
       retval = RETRUNNEEDED;
       goto cleanup;
     }
