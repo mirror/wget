@@ -73,6 +73,7 @@ endif
 
 if HAVE_PYTHON3
   TESTS = Test-504.py                               \
+    Test-416.py                                     \
     Test-auth-basic-fail.py                         \
     Test-auth-basic.py                              \
     Test-auth-basic-netrc.py                        \
