@@ -964,7 +964,9 @@ check_redirect_output (void)
    * we check if process is fg or bg before every line is printed.*/
   if (!redirect_request_signal_name && shell_is_interactive && !opt.lfilename)
     {
-      if (tcgetpgrp (STDIN_FILENO) != getpgrp ())
+      pid_t foreground_pgrp = tcgetpgrp (STDIN_FILENO);
+
+      if (foreground_pgrp != -1 && foreground_pgrp != getpgrp ())
         {
           /* Process backgrounded */
           redirect_output (true,NULL);
