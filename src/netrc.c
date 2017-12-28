@@ -42,7 +42,11 @@ as that of the covered work.  */
 #include "netrc.h"
 #include "init.h"
 
-#define NETRC_FILE_NAME ".netrc"
+#ifdef WINDOWS
+#  define NETRC_FILE_NAME "_netrc"
+#else
+#  define NETRC_FILE_NAME ".netrc"
+#endif
 
 static acc_t *netrc_list;
 
