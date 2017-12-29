@@ -637,7 +637,7 @@ wgetrc_file_name (void)
      SYSTEM_WGETRC should not be defined under WINDOWS.  */
   if (!file)
     {
-      char *home = ws_mypath ();
+      const char *home = ws_mypath ();
       if (home)
         {
           file = aprintf ("%s/wget.ini", home);
@@ -645,7 +645,6 @@ wgetrc_file_name (void)
             {
               xfree (file);
             }
-          xfree (home);
         }
     }
 #endif /* WINDOWS */
