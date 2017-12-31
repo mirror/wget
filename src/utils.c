@@ -2819,7 +2819,7 @@ wg_pin_peer_pubkey (const char *pinnedpubkey, const char *pubkey, size_t pubkeyl
             }
           else
             logprintf (LOG_VERBOSE, _ ("Skipping key with wrong size (%d/%d): %s\n"),
-                       (strlen (begin_pos + 8) * 3) / 4, SHA256_DIGEST_SIZE,
+                       (int) (strlen (begin_pos + 8) * 3) / 4, SHA256_DIGEST_SIZE,
                        quote (begin_pos + 8));
 
           /*
