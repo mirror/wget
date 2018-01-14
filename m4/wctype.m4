@@ -2,7 +2,7 @@
 
 dnl A placeholder for ISO C99 <wctype.h>, for platforms that lack it.
 
-dnl Copyright (C) 2006, 2007, 2008, 2010, 2011 Free Software Foundation,
+dnl Copyright (C) 2006-2008, 2010-2011, 2018 Free Software Foundation,
 dnl Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,

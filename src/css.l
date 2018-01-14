@@ -6,7 +6,7 @@
 %{
 /* Lex source for CSS tokenizing.
    Taken from http://www.w3.org/TR/CSS21/grammar.html#q2
-   Copyright (C) 2006, 2009, 2010, 2011, 2015 Free Software Foundation,
+   Copyright (C) 2006, 2009-2011, 2015, 2018 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
