@@ -5,6 +5,21 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.19.3
+
+* Prevent erroneous decompression of .gz and .tgz files with broken servers
+
+* Added support for HTTP 308 Permanent Redirect response
+
+* Fix a segfault in some cases where the Content-Type header is not sent
+
+* Support OpenSSL 1.1 builds without using deprecated features
+
+* Fix netrc file detection on Windows
+
+* Several minor bug fixes
+
+
 * Changes in Wget 1.19.2
 
 * Fix CVE-2017-13089 (Stack overflow in HTTP protocol handling)
