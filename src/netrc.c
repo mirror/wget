@@ -461,6 +461,9 @@ free_netrc(acc_t *l)
 #ifdef STANDALONE
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "exits.h"
+
+const char *program_argstring = NULL; /* Needed by warc.c */
 
 int
 main (int argc, char **argv)
