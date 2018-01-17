@@ -1017,18 +1017,25 @@ sufmatch (const char **list, const char *what)
   int i, j, k, lw;
 
   lw = strlen (what);
+
   for (i = 0; list[i]; i++)
     {
-      if (list[i][0] == '\0')
-        continue;
+      j = strlen (list[i]);
+      if (lw < j)
+        continue; /* what is no (sub)domain of list[i] */
 
-      for (j = strlen (list[i]), k = lw; j >= 0 && k >= 0; j--, k--)
+      for (k = lw; j >= 0 && k >= 0; j--, k--)
         if (c_tolower (list[i][j]) != c_tolower (what[k]))
           break;
-      /* The domain must be first to reach to beginning.  */
-      if (j == -1)
+
+      /* Domain or subdomain match
+       * k == -1: exact match
+       * k >= 0 && what[k] == '.': subdomain match
+       */
+      if (j == -1 && (k == -1 || what[k] == '.'))
         return true;
     }
+
   return false;
 }
 
