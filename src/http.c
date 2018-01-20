@@ -3717,7 +3717,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
           /* Make sure the Content-Type is not gzip before decompressing */
           if (type)
             {
-              const char * p = strchr (type, '/');
+              p = strchr (type, '/');
               if (p == NULL)
                 {
                   hs->remote_encoding = ENC_GZIP;
@@ -3744,8 +3744,9 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
           /* don't uncompress if a file ends with '.gz' or '.tgz' */
           if (hs->remote_encoding == ENC_GZIP
               && (p = strrchr(u->file, '.'))
-              && (c_strcasecmp(p, ".gz") || c_strcasecmp(p, ".tgz")))
+              && (c_strcasecmp(p, ".gz") == 0 || c_strcasecmp(p, ".tgz") == 0))
             {
+               DEBUGP (("Enabling broken server workaround. Will not decompress this GZip file.\n"));
                hs->remote_encoding = ENC_NONE;
             }
         }
