@@ -777,7 +777,7 @@ HTTP options:\n"),
        --header=STRING             insert STRING among the headers\n"),
 #ifdef HAVE_LIBZ
     N_("\
-       --compression=TYPE          choose compression, one of auto, gzip and none\n"),
+       --compression=TYPE          choose compression, one of auto, gzip and none. (default: none)\n"),
 #endif
     N_("\
        --max-redirect              maximum redirections allowed per page\n"),

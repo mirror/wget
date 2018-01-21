@@ -1543,10 +1543,13 @@ If @samp{auto} or @samp{gzip} are specified, Wget asks the server to
 compress the file using the gzip compression format. If the server
 compresses the file and responds with the @code{Content-Encoding}
 header field set appropriately, the file will be decompressed
-automatically. This is the default.
+automatically.
 
 If @samp{none} is specified, wget will not ask the server to compress
-the file and will not decompress any server responses.
+the file and will not decompress any server responses. This is the default.
+
+Compression support is currently experimental. In case it is turned on,
+please report any bugs to @code{bug-wget@gnu.org}.
 
 @cindex redirect
 @item --max-redirect=@var{number}
