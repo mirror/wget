@@ -1,0 +1,113 @@
+#!/usr/bin/env sh
+
+# GNU Wget: Make a new release
+#
+# This is a helper script to make a new release of GNU Wget
+#
+# Make sure that
+
+set -e
+set -o pipefail
+set -u
+
+export CFLAGS="-g -O2 -Wall"
+
+EXTENSIONS="gzip lzip"
+
+ask_continue() {
+	printf "Continue? [y/N]: "
+	read inp
+	[ "$inp" != "y" ] && [ "$inp" != "Y" ] && exit 1
+	# For some completely weird reason, this set +x is required. Else, the test
+	# *ALWAYS* fails
+	set +x
+}
+
+if [ ! -d ".git" ]; then
+	echo "Please run this script from the root of the git repository"
+fi
+
+echo "This script will make a new release and upload it to the GNU FTP Servers"
+echo "Will run git clean -dxf to get a clean dir"
+ask_continue
+
+# Make sure we have a clean working directory
+git clean -dxfq
+
+echo "=> Bootstrap"
+./bootstrap > /dev/null 2>&1
+
+echo "=> Configure"
+./configure -q
+
+APP_NAME=$(grep "^PACKAGE_NAME='" configure | cut -d "'" -f2)
+APP_VER=$(grep "^PACKAGE_VERSION='" configure | cut -d "'" -f2)
+
+echo "Making release for $APP_NAME $APP_VER"
+ask_continue
+
+NEWS_VERSION=$(grep -i "Changes in $APP_NAME" NEWS | head -1 | awk '{print $5}')
+if [ "$NEWS_VERSION" != "$APP_VER" ]; then
+	echo "Latest version in NEWS file does not match latest tag"
+	exit 1
+fi
+CUR_VER=$(git describe | sed 's/^v//')
+PREV_VER=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1) | sed 's/^v//')
+LNO_CVER=$(grep -in "Changes in $APP_NAME" NEWS | head -1 | cut -f1 -d:)
+LNO_PVER=$(grep -in "Changes in $APP_NAME" NEWS | head -2 | tail -1 | cut -f1 -d:)
+sed -n "${LNO_CVER},${LNO_PVER}p" NEWS
+echo "This is the current contents of your NEWS"
+ask_continue
+
+echo "=> Make distcheck"
+make -s distcheck > /dev/null 2>&1
+
+for ext in $EXTENSIONS; do
+	[ "$ext" = 'gz' ] && ext="gzip"
+	[ "$ext" = 'lz' ] && ext="lzip"
+	echo "=> Making $APP_NAME-$CUR_VER.tar.$ext"
+	make -s "dist-$ext" > /dev/null
+done
+
+echo ""
+REL_TYPE=
+REL_LOC=
+while [ -z $REL_TYPE ]; do
+	printf "Enter release type (alpha, beta, stable): "
+	read x
+	case $x in
+		a|A|alpha|Alpha) REL_TYPE=alpha && REL_LOC="alpha.gnu.org";;
+		b|B|beta|Beta) REL_TYPE=beta && REL_LOC="alpha.gnu.org";;
+		s|S|stable|Stable) REL_TYPE=stable && REL_LOC="ftp.gnu.org";;
+	esac
+done
+
+GPG_KEY=
+while [ -z $GPG_KEY ]; do
+	printf "Enter GPG Key ID for Signing: "
+	read key
+	gpg --list-keys "$key" || continue
+	printf "Will use this key to sign releases. Continue? [y/N]: "
+	read x
+	[ "$x" = "y" ] || [ "$x" = "Y" ] && GPG_KEY="$key"
+done
+
+echo ""
+
+APP_LOWER="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
+./build-aux/gnupload --to "$REL_LOC:$APP_LOWER" --user "$GPG_KEY" --symlink-regex "$APP_LOWER-$CUR_VER".tar.*
+
+echo ""
+
+build-aux/announce-gen --release-type "$REL_TYPE" --package-name "$APP_LOWER" --previous-version="$PREV_VER" --current-version "$CUR_VER" --gpg-key-id="$GPG_KEY" --url-directory "https://${REL_LOC}/gnu/${APP_LOWER}" --news=NEWS > "$APP_NAME-$APP_VER.announce"
+
+echo ""
+echo "Announce email template placed at $APP_NAME-$APP_VER.announce"
+
+prev_tag=$(git tag | tail -2 | head -1)
+echo ""
+echo "Don't forget to mention the following contributors in the announcement:"
+(
+  git log "${prev_tag}.." --format="%aN" --reverse
+  git log "${prev_tag}.." --reverse | grep -i reported | cut -d':' -f2 | cut -d'<' -f1 | cut -d' ' -f2- | tr -d '"'
+) | sort -u
