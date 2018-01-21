@@ -451,7 +451,7 @@ defaults (void)
 #endif
 
 #ifdef HAVE_LIBZ
-  opt.compression = compression_auto;
+  opt.compression = compression_none;
 #endif
 
   /* The default for file name restriction defaults to the OS type. */
