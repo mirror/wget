@@ -1005,7 +1005,8 @@ Recursive accept/reject:\n"),
     N_("\
   -np, --no-parent                 don't ascend to the parent directory\n"),
     "\n",
-    N_("Mail bug reports and suggestions to <bug-wget@gnu.org>\n")
+    N_("Email bug reports, questions, discussions to <bug-wget@gnu.org>\n"),
+    N_("and/or open issues at https://savannah.gnu.org/bugs/?func=additem&group=wget.\n")
   };
 
   size_t i;

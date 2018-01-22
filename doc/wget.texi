@@ -4133,7 +4133,11 @@ via IRC at @code{irc.freenode.org}, @code{#wget}. Come check it out!
 
 @c man begin BUGS
 You are welcome to submit bug reports via the GNU Wget bug tracker (see
-@url{https://savannah.gnu.org/bugs/?func=additem&group=wget}).
+@url{https://savannah.gnu.org/bugs/?func=additem&group=wget}) or to our
+mailing list @email{bug-wget@@gnu.org}.
+
+Visit @url{https://lists.gnu.org/mailman/listinfo/bug-wget} to
+get more info (how to subscribe, list archives, ...).
 
 Before actually submitting a bug report, please try to follow a few
 simple guidelines.
