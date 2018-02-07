@@ -469,7 +469,7 @@ fork_to_background (void)
 #else /* def __VMS */
 
 #if !defined(WINDOWS) && !defined(MSDOS)
-void
+bool
 fork_to_background (void)
 {
   pid_t pid;
@@ -514,6 +514,8 @@ fork_to_background (void)
     DEBUGP (("Failed to redirect stdout to /dev/null.\n"));
   if (freopen ("/dev/null", "w", stderr) == NULL)
     DEBUGP (("Failed to redirect stderr to /dev/null.\n"));
+
+  return logfile_changed;
 }
 #endif /* !WINDOWS && !MSDOS */
 

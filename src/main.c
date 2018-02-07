@@ -1880,7 +1880,12 @@ for details.\n\n"));
   sock_init();
 #else
   if (opt.background)
-    fork_to_background ();
+    {
+      bool logfile_changed = fork_to_background ();
+
+      if (logfile_changed)
+        log_init (opt.lfilename, append_to_log);
+    }
 #endif
 
   /* Initialize progress.  Have to do this after the options are
