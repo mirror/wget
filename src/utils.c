@@ -103,7 +103,7 @@ as that of the covered work.  */
 #endif /* def __VMS */
 
 #ifdef TESTING
-#include "test.h"
+#include "../tests/unit-tests.h"
 #endif
 
 #include "exits.h"

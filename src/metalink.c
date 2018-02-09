@@ -53,7 +53,7 @@ as that of the covered work.  */
 #endif
 
 #ifdef TESTING
-#include "test.h"
+#include "../tests/unit-tests.h"
 #endif
 
 /* Loop through all files in metalink structure and retrieve them.

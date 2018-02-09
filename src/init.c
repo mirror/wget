@@ -72,7 +72,7 @@ as that of the covered work.  */
 #include "c-strcase.h"
 
 #ifdef TESTING
-#include "test.h"
+#include "../tests/unit-tests.h"
 #endif
 
 

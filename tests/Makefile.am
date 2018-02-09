@@ -142,11 +142,12 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              certs valgrind-suppressions valgrind-suppressions-ssl
 
 check_PROGRAMS = unit-tests
-unit_tests_SOURCES =
+unit_tests_SOURCES = unit-tests.c unit-tests.h
 LDADD = ../src/libunittest.a ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB)\
  $(INET_NTOP_LIB) $(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO)\
  $(LIB_NANOSLEEP) $(LIB_POSIX_SPAWN) $(LIB_SELECT) $(LIBICONV) $(LIBINTL)\
  $(LIBTHREAD) $(LIBUNISTRING) $(SERVENT_LIB)
+AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib -DLOCALEDIR=\"$(localedir)\"
 
 
 CLEANFILES = *~ *.bak core core.[0-9]*

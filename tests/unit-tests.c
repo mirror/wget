@@ -34,11 +34,7 @@ as that of the covered work.  */
 # include <locale.h>
 #endif
 
-#include "test.h"
-
-#ifndef TESTING
-#error "TESTING not set!!!"
-#endif
+#include "unit-tests.h"
 
 const char *program_argstring = "TEST";
 

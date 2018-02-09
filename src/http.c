@@ -71,7 +71,7 @@ as that of the covered work.  */
 #endif
 
 #ifdef TESTING
-#include "test.h"
+#include "../tests/unit-tests.h"
 #endif
 
 #ifdef __VMS

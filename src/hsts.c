@@ -36,7 +36,7 @@ as that of the covered work.  */
 #include "hash.h"
 #include "c-ctype.h"
 #ifdef TESTING
-#include "test.h"
+#include "../tests/unit-tests.h"
 #endif
 
 #include <unistd.h>
