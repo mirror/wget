@@ -502,8 +502,14 @@ static unsigned char optmap[96];
 static void
 init_switches (void)
 {
+  static bool initialized;
   char *p = short_options;
   size_t i, o = 0;
+
+  if (initialized)
+    return;
+  initialized = 1;
+
   for (i = 0; i < countof (option_data); i++)
     {
       struct cmdline_option *cmdopt = &option_data[i];
@@ -565,10 +571,14 @@ init_switches (void)
 
 /* Print the usage message.  */
 static int
-print_usage (int error)
+print_usage (_GL_UNUSED int error)
 {
+#ifndef TESTING
   return fprintf (error ? stderr : stdout,
                   _("Usage: %s [OPTION]... [URL]...\n"), exec_name);
+#else
+  return 0;
+#endif
 }
 
 /* Print the help message, describing all the available options.  If
@@ -576,6 +586,7 @@ print_usage (int error)
 _Noreturn static void
 print_help (void)
 {
+#ifndef TESTING
   /* We split the help text this way to ease translation of individual
      entries.  */
   static const char *help[] = {
@@ -1027,7 +1038,7 @@ Recursive accept/reject:\n"),
   for (i = 0; i < countof (help); i++)
     if (fputs (_(help[i]), stdout) < 0)
       exit (WGET_EXIT_IO_FAIL);
-
+#endif /* TESTING */
   exit (WGET_EXIT_SUCCESS);
 }
 
@@ -1325,6 +1336,7 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
 
 const char *program_name; /* Needed by lib/error.c. */
 const char *program_argstring; /* Needed by wget_warc.c. */
+struct ptimer *timer;
 
 int
 main (int argc, char **argv)
@@ -1338,7 +1350,7 @@ main (int argc, char **argv)
   bool noconfig = false;
   bool append_to_log = false;
 
-  struct ptimer *timer = ptimer_new ();
+  timer = ptimer_new ();
   double start_time = ptimer_measure (timer);
 
   total_downloaded_bytes = 0;
@@ -1745,12 +1757,14 @@ for details.\n\n"));
       )
     {
       /* No URL specified.  */
+#ifndef TESTING
       fprintf (stderr, _("%s: missing URL\n"), exec_name);
       print_usage (1);
       fprintf (stderr, "\n");
       /* #### Something nicer should be printed here -- similar to the
          pre-1.5 `--help' page.  */
       fprintf (stderr, _("Try `%s --help' for more options.\n"), exec_name);
+#endif
       exit (WGET_EXIT_GENERIC_ERROR);
     }
 
@@ -2225,7 +2239,7 @@ only if outputting to a regular file.\n"));
       char *wall_time = xstrdup (secs_to_human_time (end_time - start_time));
       char *download_time = xstrdup (secs_to_human_time (total_download_time));
 
-      ptimer_destroy (timer);
+      ptimer_destroy (timer); timer = NULL;
 
       logprintf (LOG_NOTQUIET,
                  _("FINISHED --%s--\nTotal wall clock time: %s\n"

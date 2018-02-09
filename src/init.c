@@ -69,6 +69,7 @@ as that of the covered work.  */
 #include "warc.h"               /* for warc_close */
 #include "spider.h"             /* for spider_cleanup */
 #include "html-url.h"           /* for cleanup_html_url */
+#include "ptimer.h"             /* for ptimer_destroy */
 #include "c-strcase.h"
 
 #ifdef TESTING
@@ -1925,6 +1926,8 @@ decode_string (const char *val, const struct decode_item *items, int itemcount,
   return false;
 }
 
+extern struct ptimer *timer;
+
 /* Free the memory allocated by global variables.  */
 void
 cleanup (void)
@@ -1952,7 +1955,7 @@ cleanup (void)
      because then you can find the real leaks, i.e. the allocated
      memory which grows with the size of the program.  */
 
-#ifdef DEBUG_MALLOC
+#if defined DEBUG_MALLOC || defined TESTING
   convert_cleanup ();
   res_cleanup ();
   http_cleanup ();
@@ -2015,6 +2018,10 @@ cleanup (void)
   xfree (opt.use_askpass);
   xfree (opt.retry_on_http_error);
 
+  xfree (exec_name);
+  xfree (program_argstring);
+  ptimer_destroy (timer); timer = NULL;
+
 #ifdef HAVE_LIBCARES
 #include <ares.h>
   {
@@ -2027,7 +2034,7 @@ cleanup (void)
   }
 #endif
 
-#endif /* DEBUG_MALLOC */
+#endif /* DEBUG_MALLOC || TESTING */
 }
 
 /* Unit testing routines.  */

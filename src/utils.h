@@ -30,7 +30,8 @@ as that of the covered work.  */
 #ifndef UTILS_H
 #define UTILS_H
 
-# include <stdlib.h>
+#include <stdlib.h>
+#include <wget.h>
 
 /* Constant is using when we don`t know attempted size exactly */
 #define UNKNOWN_ATTEMPTED_SIZE -3

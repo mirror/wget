@@ -87,6 +87,19 @@ dnl
 dnl Process features
 dnl
 
+AC_ARG_ENABLE([fuzzing],
+  [AS_HELP_STRING([--enable-fuzzing], [Turn on fuzzing build (for developers)])],
+  [enable_fuzzing=yes; AC_SUBST([LIB_FUZZING_ENGINE])], [enable_fuzzing=no; LIB_FUZZING_ENGINE=""])
+#FUZZ_LIBS=$LIBS
+#if test $enable_fuzzing = "yes"; then
+#  OLD_LIBS=$LIBS
+#  AC_SEARCH_LIBS([dlsym], [dl dld])
+#  FUZZ_LIBS=$LIBS
+#  LIBS=$OLD_LIBS
+#fi
+#AC_SUBST([FUZZ_LIBS])
+AM_CONDITIONAL([FUZZING], [test "$enable_fuzzing" = "yes"])
+
 dnl Opie: Support for opie s/key FTP logins
 AC_ARG_ENABLE([opie],
   [AS_HELP_STRING([--disable-opie], [disable support for opie or s/key FTP login])],
@@ -184,7 +197,7 @@ dnl
 dnl Gettext
 dnl
 AM_GNU_GETTEXT([external],[need-ngettext])
-AM_GNU_GETTEXT_VERSION([0.18.1])
+AM_GNU_GETTEXT_VERSION([0.17])
 
 AC_PROG_RANLIB
 
@@ -237,7 +250,7 @@ dnl
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(unistd.h sys/time.h)
 AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h utime.h sys/utime.h)
-AC_CHECK_HEADERS(stdint.h inttypes.h pwd.h wchar.h)
+AC_CHECK_HEADERS(stdint.h inttypes.h pwd.h wchar.h dlfcn.h)
 
 AC_CHECK_DECLS(h_errno,,,[#include <netdb.h>])
 
@@ -275,7 +288,7 @@ AC_FUNC_MMAP
 AC_FUNC_FSEEKO
 AC_CHECK_FUNCS(strptime timegm vsnprintf vasprintf drand48 pathconf)
 AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr wcwidth mbtowc)
-AC_CHECK_FUNCS(sleep symlink utime strlcpy random)
+AC_CHECK_FUNCS(sleep symlink utime strlcpy random fmemopen)
 
 if test x"$ENABLE_OPIE" = xyes; then
   AC_LIBOBJ([ftp-opie])
@@ -783,7 +796,7 @@ dnl
 dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
-                 po/Makefile.in tests/Makefile
+                 po/Makefile.in tests/Makefile fuzz/Makefile
                  lib/Makefile testenv/Makefile
                  tests/certs/interca.conf tests/certs/rootca.conf])
 AC_CONFIG_HEADERS([src/config.h])
@@ -812,4 +825,5 @@ AC_MSG_NOTICE([Summary of build options:
   Resolver:          $RESOLVER_INFO
   GPGME:             $have_gpg
   IRI:               $iri
+  Fuzzing build:     $enable_fuzzing, $LIB_FUZZING_ENGINE
 ])
