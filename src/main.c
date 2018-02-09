@@ -64,6 +64,12 @@ as that of the covered work.  */
 #include <getpass.h>
 #include <quote.h>
 
+#ifdef TESTING
+/* Rename the main function so we can have a main() in fuzzing code
+   and call the original main. */
+# define main main_wget
+#endif
+
 #ifdef HAVE_METALINK
 # include <metalink/metalink_parser.h>
 # include "metalink.h"
@@ -109,7 +115,6 @@ const char *exec_name;
 /* Number of successfully downloaded URLs */
 int numurls = 0;
 
-#ifndef TESTING
 /* Initialize I18N/L10N.  That amounts to invoking setlocale, and
    setting up gettext's message catalog using bindtextdomain and
    textdomain.  Does nothing if NLS is disabled or missing.  */
@@ -2256,8 +2261,6 @@ only if outputting to a regular file.\n"));
 
   exit (get_exit_status ());
 }
-
-#endif /* TESTING */
 
 /*
  * vim: et ts=2 sw=2
