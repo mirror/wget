@@ -1930,7 +1930,7 @@ initialize_request (const struct url *u, struct http_stat *hs, int *dt, struct u
     search_netrc (u->host, (const char **) user, (const char **) passwd, 0);
 
   /* We only do "site-wide" authentication with "global" user/password
-   * values unless --auth-no-challange has been requested; URL user/password
+   * values unless --auth-no-challenge has been requested; URL user/password
    * info overrides. */
   if (*user && *passwd && (!u->user || opt.auth_without_challenge))
     {
@@ -3795,7 +3795,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
           hs->restval = 0;
 
           /* Normally we are not interested in the response body of a redirect.
-             But if we are writing a WARC file we are: we like to keep everyting.  */
+             But if we are writing a WARC file we are: we like to keep everything.  */
           if (warc_enabled)
             {
               int _err = read_response_body (hs, sock, NULL, contlen, 0,
