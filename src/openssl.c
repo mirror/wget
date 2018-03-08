@@ -265,7 +265,7 @@ ssl_init (void)
       break;
 
     case secure_protocol_tlsv1_3:
-#if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >=  0x10100000L)
+#if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >= 0x10100000L) && defined TLS1_3_VERSION
       meth = TLS_client_method();
       ssl_proto_version = TLS1_3_VERSION;
 #else
