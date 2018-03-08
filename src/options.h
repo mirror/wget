@@ -228,6 +228,7 @@ struct options
     secure_protocol_tlsv1,
     secure_protocol_tlsv1_1,
     secure_protocol_tlsv1_2,
+    secure_protocol_tlsv1_3,
     secure_protocol_pfs
   } secure_protocol;            /* type of secure protocol to use. */
   int check_cert;               /* whether to validate the server's cert */

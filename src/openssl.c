@@ -263,6 +263,16 @@ ssl_init (void)
       meth = TLSv1_2_client_method ();
 #endif
       break;
+
+    case secure_protocol_tlsv1_3:
+#if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >=  0x10100000L)
+      meth = TLS_client_method();
+      ssl_proto_version = TLS1_3_VERSION;
+#else
+      logprintf (LOG_NOTQUIET, _("Your OpenSSL version is too old to support TLS 1.3\n"));
+      goto error;
+#endif
+      break;
 #else
     case secure_protocol_tlsv1_1:
       logprintf (LOG_NOTQUIET, _("Your OpenSSL version is too old to support TLSv1.1\n"));
@@ -271,6 +281,7 @@ ssl_init (void)
     case secure_protocol_tlsv1_2:
       logprintf (LOG_NOTQUIET, _("Your OpenSSL version is too old to support TLSv1.2\n"));
       goto error;
+
 #endif
 
     default:
