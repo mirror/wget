@@ -849,6 +849,9 @@ fopen_stat(const char *fname, const char *mode, file_stats_t *fstats)
   struct stat fdstats;
 
   fp = fopen (fname, mode);
+#ifdef TESTING
+  return fp;
+#endif
   if (fp == NULL)
   {
     logprintf (LOG_NOTQUIET, _("Failed to Fopen file %s\n"), fname);
