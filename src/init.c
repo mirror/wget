@@ -787,11 +787,12 @@ or specify a different file using --config.\n"), SYSTEM_WGETRC);
 	if (file_exists_p (file, &flstats))
         ok &= run_wgetrc (file, &flstats);
 
+  xfree (file);
+
   /* If there were errors processing either `.wgetrc', abort. */
   if (!ok)
     exit (WGET_EXIT_PARSE_ERROR);
 
-  xfree (file);
   return;
 }
 
