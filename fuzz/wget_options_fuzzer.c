@@ -125,6 +125,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 	g_data = data;
 	g_size = size;
 
+	FILE *bak = stderr;
+	stderr = fopen("/dev/null", "w");
+
 	dont_write = 1;
 
 // try not to open/write to the file system
@@ -132,6 +135,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 	if (setjmp(jmpbuf)) {
 		cleanup();
 		dont_write = 0;
+		fclose(stderr);
+		stderr = bak;
 		return 0;
 	}
 
@@ -141,6 +146,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 #endif
 
 	dont_write = 0;
+	fclose(stderr);
+	stderr = bak;
 
 	return 0;
 }
