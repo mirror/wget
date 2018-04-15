@@ -1890,7 +1890,11 @@ extern struct ptimer *timer;
 void
 cleanup (void)
 {
+  static int cleaned_up;
   /* Free external resources, close files, etc. */
+
+  if (cleaned_up++)
+    return; /* cleanup() must not be called twice */
 
   /* Close WARC file. */
   if (opt.warc_filename != 0)
