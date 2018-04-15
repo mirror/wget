@@ -83,6 +83,9 @@ enum hsts_kh_match {
 
 /* Hashing and comparison functions for the hash table */
 
+#ifdef __clang__
+__attribute__((no_sanitize("integer")))
+#endif
 static unsigned long
 hsts_hash_func (const void *key)
 {
