@@ -1083,13 +1083,16 @@ cmd_check_cert (const char *com, const char *val, void *place)
 static bool
 cmd_number (const char *com, const char *val, void *place)
 {
-  if (!simple_atoi (val, val + strlen (val), place)
-      || *(int *) place < 0)
+  long l = strtol(val, NULL, 10);
+
+  if (((l == LONG_MIN || l == LONG_MAX) && errno == ERANGE)
+      || l < 0 || l > INT_MAX)
     {
       fprintf (stderr, _("%s: %s: Invalid number %s.\n"),
                exec_name, com, quote (val));
       return false;
     }
+  *(int *) place = (int) l;
   return true;
 }
 
@@ -1786,54 +1789,6 @@ cmd_spec_verbose (const char *com, const char *val, void *place_ignored _GL_UNUS
 }
 
 /* Miscellaneous useful routines.  */
-
-/* A very simple atoi clone, more useful than atoi because it works on
-   delimited strings, and has error reportage.  Returns true on success,
-   false on failure.  If successful, stores result to *DEST.  */
-
-static bool
-simple_atoi (const char *beg, const char *end, int *dest)
-{
-  int result = 0;
-  bool negative = false;
-  const char *p = beg;
-
-  while (p < end && c_isspace (*p))
-    ++p;
-  if (p < end && (*p == '-' || *p == '+'))
-    {
-      negative = (*p == '-');
-      ++p;
-    }
-  if (p == end)
-    return false;
-
-  /* Read negative numbers in a separate loop because the most
-     negative integer cannot be represented as a positive number.  */
-
-  if (!negative)
-    for (; p < end && c_isdigit (*p); p++)
-      {
-        int next = (10 * result) + (*p - '0');
-        if (next < result)
-          return false;         /* overflow */
-        result = next;
-      }
-  else
-    for (; p < end && c_isdigit (*p); p++)
-      {
-        int next = (10 * result) - (*p - '0');
-        if (next > result)
-          return false;         /* underflow */
-        result = next;
-      }
-
-  if (p != end)
-    return false;
-
-  *dest = result;
-  return true;
-}
 
 /* Trivial atof, with error reporting.  Handles "<digits>[.<digits>]",
    doesn't handle exponential notation.  Returns true on success,
