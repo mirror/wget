@@ -227,6 +227,7 @@ save_hsts (void)
         }
 
       hsts_store_close (hsts_store);
+      xfree (hsts_store);
 
       xfree (filename);
     }
