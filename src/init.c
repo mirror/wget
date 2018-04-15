@@ -1546,7 +1546,7 @@ cmd_spec_htmlify (const char *com, const char *val, void *place_ignored _GL_UNUS
 static bool
 cmd_spec_mirror (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
-  int mirror;
+  bool mirror;
 
   if (!cmd_boolean (com, val, &mirror))
     return false;
