@@ -1951,7 +1951,7 @@ cleanup (void)
   /* We're exiting anyway so there's no real need to call free()
      hundreds of times.  Skipping the frees will make Wget exit
      faster.
-
+   *
      However, when detecting leaks, it's crucial to free() everything
      because then you can find the real leaks, i.e. the allocated
      memory which grows with the size of the program.  */
@@ -1975,24 +1975,36 @@ cleanup (void)
   xfree (opt.preferred_location);
 #endif
   xfree (opt.output_document);
+  xfree (opt.default_page);
+  xfree (opt.acceptregex);
+  xfree (opt.acceptregex_s);
+  xfree (opt.rejectregex);
+  xfree (opt.rejectregex_s);
   free_vec (opt.accepts);
   free_vec (opt.rejects);
   free_vec ((char **)opt.excludes);
   free_vec ((char **)opt.includes);
   free_vec (opt.domains);
+  free_vec (opt.exclude_domains);
   free_vec (opt.follow_tags);
   free_vec (opt.ignore_tags);
   xfree (opt.progress_type);
+  xfree (opt.warc_filename);
+  xfree (opt.warc_tempdir);
+  xfree (opt.warc_cdx_dedup_filename);
   xfree (opt.ftp_user);
   xfree (opt.ftp_passwd);
   xfree (opt.ftp_proxy);
   xfree (opt.https_proxy);
   xfree (opt.http_proxy);
   free_vec (opt.no_proxy);
+  xfree (opt.proxy_user);
+  xfree (opt.proxy_passwd);
   xfree (opt.useragent);
   xfree (opt.referer);
   xfree (opt.http_user);
   xfree (opt.http_passwd);
+  xfree (opt.dot_style);
   free_vec (opt.user_headers);
   free_vec (opt.warc_user_headers);
 # ifdef HAVE_SSL
@@ -2001,6 +2013,7 @@ cleanup (void)
   xfree (opt.ca_directory);
   xfree (opt.ca_cert);
   xfree (opt.crl_file);
+  xfree (opt.pinnedpubkey);
   xfree (opt.random_file);
   xfree (opt.egd_file);
 # endif
@@ -2019,6 +2032,9 @@ cleanup (void)
   xfree (opt.use_askpass);
   xfree (opt.retry_on_http_error);
 
+  xfree (opt.encoding_remote);
+  xfree (opt.hsts_file);
+
   xfree (exec_name);
   xfree (program_argstring);
   ptimer_destroy (timer); timer = NULL;
@@ -2034,6 +2050,8 @@ cleanup (void)
     ares_library_cleanup ();
   }
 #endif
+
+  quotearg_free ();
 
 #endif /* DEBUG_MALLOC || TESTING */
 }
