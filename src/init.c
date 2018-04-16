@@ -593,17 +593,14 @@ wgetrc_env_file_name (void)
 char *
 wgetrc_user_file_name (void)
 {
-  char *home;
   char *file = NULL;
   /* If that failed, try $HOME/.wgetrc (or equivalent).  */
 
 #ifdef __VMS
   file = "SYS$LOGIN:.wgetrc";
 #else /* def __VMS */
-  home = home_dir ();
-  if (home)
-    file = aprintf ("%s/.wgetrc", home);
-  xfree (home);
+  if (opt.homedir)
+    file = aprintf ("%s/.wgetrc", opt.homedir);
 #endif /* def __VMS [else] */
 
   if (!file)
@@ -906,7 +903,6 @@ setval_internal_tilde (int comind, const char *com, const char *val)
 {
   bool ret;
   int homelen;
-  char *home;
   char **pstring;
   ret = setval_internal (comind, com, val);
 
@@ -916,17 +912,20 @@ setval_internal_tilde (int comind, const char *com, const char *val)
       && ret && (*val == '~' && ISSEP (val[1])))
     {
       pstring = commands[comind].place;
-      home = home_dir ();
-      if (home)
+      if (opt.homedir)
         {
+          char *home = xstrdup(opt.homedir);
           homelen = strlen (home);
           while (homelen && ISSEP (home[homelen - 1]))
                  home[--homelen] = '\0';
+
+          xfree (*pstring);
 
           /* Skip the leading "~/". */
           for (++val; ISSEP (*val); val++)
             ;
           *pstring = concat_strings (home, "/", val, (char *)0);
+          xfree (home);
         }
     }
   return ret;
@@ -1884,12 +1883,12 @@ decode_string (const char *val, const struct decode_item *items, int itemcount,
 }
 
 extern struct ptimer *timer;
+extern int cleaned_up;
 
 /* Free the memory allocated by global variables.  */
 void
 cleanup (void)
 {
-  static int cleaned_up;
   /* Free external resources, close files, etc. */
 
   if (cleaned_up++)
@@ -2002,6 +2001,7 @@ cleanup (void)
   xfree (opt.encoding_remote);
   xfree (opt.hsts_file);
 
+  xfree (opt.homedir);
   xfree (exec_name);
   xfree (program_argstring);
   ptimer_destroy (timer); timer = NULL;

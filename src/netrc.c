@@ -91,18 +91,15 @@ search_netrc (const char *host, const char **acc, const char **passwd,
 
 #else /* def __VMS */
 
-      char *home = home_dir ();
-
       netrc_list = NULL;
       processed_netrc = 1;
-      if (home)
+      if (opt.homedir)
         {
           int err;
           struct stat buf;
-          char *path = (char *)alloca (strlen (home) + 1
+          char *path = (char *)alloca (strlen (opt.homedir) + 1
                                        + strlen (NETRC_FILE_NAME) + 1);
-          sprintf (path, "%s/%s", home, NETRC_FILE_NAME);
-          xfree (home);
+          sprintf (path, "%s/%s", opt.homedir, NETRC_FILE_NAME);
           err = stat (path, &buf);
           if (err == 0)
             netrc_list = parse_netrc (path);

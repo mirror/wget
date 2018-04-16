@@ -339,6 +339,8 @@ struct options
   bool hsts;
   char *hsts_file;
 #endif
+
+  const char *homedir;          /* the homedir of the running process */
 };
 
 extern struct options opt;

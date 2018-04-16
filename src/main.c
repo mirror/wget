@@ -172,16 +172,12 @@ hsts_store_t hsts_store;
 static char*
 get_hsts_database (void)
 {
-  char *home;
-
   if (opt.hsts_file)
     return xstrdup (opt.hsts_file);
 
-  home = home_dir ();
-  if (home)
+  if (opt.homedir)
     {
-      char *dir = aprintf ("%s/.wget-hsts", home);
-      xfree(home);
+      char *dir = aprintf ("%s/.wget-hsts", opt.homedir);
       return dir;
     }
 
@@ -1338,6 +1334,7 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
 const char *program_name; /* Needed by lib/error.c. */
 const char *program_argstring; /* Needed by wget_warc.c. */
 struct ptimer *timer;
+int cleaned_up;
 
 int
 main (int argc, char **argv)
@@ -1350,6 +1347,8 @@ main (int argc, char **argv)
   bool use_userconfig = false;
   bool noconfig = false;
   bool append_to_log = false;
+
+  cleaned_up = 0; /* do cleanup later */
 
   timer = ptimer_new ();
   double start_time = ptimer_measure (timer);
@@ -1396,6 +1395,7 @@ main (int argc, char **argv)
 
   /* Load the hard-coded defaults.  */
   defaults ();
+  opt.homedir = home_dir();
 
   init_switches ();
 
