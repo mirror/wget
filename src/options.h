@@ -341,6 +341,7 @@ struct options
 #endif
 
   const char *homedir;          /* the homedir of the running process */
+  const char *wgetrcfile;       /* the wgetrc file to be loaded */
 };
 
 extern struct options opt;

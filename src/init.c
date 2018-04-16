@@ -729,7 +729,7 @@ run_wgetrc (const char *file, file_stats_t *flstats)
 void
 initialize (void)
 {
-  char *file, *env_sysrc;
+  char *env_sysrc;
   file_stats_t flstats;
   bool ok = true;
 
@@ -767,24 +767,24 @@ or specify a different file using --config.\n"), SYSTEM_WGETRC);
     }
 #endif
   /* Override it with your own, if one exists.  */
-  file = wgetrc_file_name ();
-  if (!file)
+  opt.wgetrcfile = wgetrc_file_name ();
+  if (!opt.wgetrcfile)
     return;
   /* #### We should canonicalize `file' and SYSTEM_WGETRC with
      something like realpath() before comparing them with `strcmp'  */
 #ifdef SYSTEM_WGETRC
-  if (!strcmp (file, SYSTEM_WGETRC))
+  if (!strcmp (opt.wgetrcfile, SYSTEM_WGETRC))
     {
       fprintf (stderr, _("\
 %s: Warning: Both system and user wgetrc point to %s.\n"),
-               exec_name, quote (file));
+               exec_name, quote (opt.wgetrcfile));
     }
   else
 #endif
-	if (file_exists_p (file, &flstats))
-        ok &= run_wgetrc (file, &flstats);
+	if (file_exists_p (opt.wgetrcfile, &flstats))
+        ok &= run_wgetrc (opt.wgetrcfile, &flstats);
 
-  xfree (file);
+  xfree (opt.wgetrcfile);
 
   /* If there were errors processing either `.wgetrc', abort. */
   if (!ok)
@@ -2002,8 +2002,10 @@ cleanup (void)
   xfree (opt.retry_on_http_error);
 
   xfree (opt.encoding_remote);
+  xfree (opt.locale);
   xfree (opt.hsts_file);
 
+  xfree (opt.wgetrcfile);
   xfree (opt.homedir);
   xfree (exec_name);
   xfree (program_argstring);
