@@ -1866,7 +1866,7 @@ for details.\n\n"));
         opt.locale = find_locale ();
 
       if (opt.encoding_remote && !check_encoding_name (opt.encoding_remote))
-        opt.encoding_remote = NULL;
+        xfree (opt.encoding_remote);
     }
 #else
   memset (&dummy_iri, 0, sizeof (dummy_iri));
