@@ -1901,8 +1901,11 @@ cleanup (void)
   log_close ();
 
   if (output_stream)
-    if (fclose (output_stream) == EOF)
-      inform_exit_status (CLOSEFAILED);
+    {
+      if (fclose (output_stream) == EOF)
+        inform_exit_status (CLOSEFAILED);
+      output_stream = NULL;
+    }
 
   /* No need to check for error because Wget flushes its output (and
      checks for errors) after any data arrives.  */
