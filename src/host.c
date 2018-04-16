@@ -731,6 +731,8 @@ wait_ares (ares_channel channel)
       else
         ares_process (channel, &read_fds, &write_fds);
     }
+  if (timer)
+    timer = ptimer_destroy (timer);
 }
 
 static void
