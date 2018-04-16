@@ -1432,7 +1432,7 @@ cmd_use_askpass (const char *com _GL_UNUSED, const char *val, void *place)
   if (!(env && *env))
     {
       fprintf (stderr, _("use-askpass requires a string or either environment variable WGET_ASKPASS or SSH_ASKPASS to be set.\n"));
-      exit (WGET_EXIT_GENERIC_ERROR);
+      return false;
     }
 
   return cmd_string (com, env, place);
