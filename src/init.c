@@ -988,7 +988,6 @@ struct decode_item {
   int code;
 };
 static bool decode_string (const char *, const struct decode_item *, int, int *);
-static bool simple_atoi (const char *, const char *, int *);
 static bool simple_atof (const char *, const char *, double *);
 
 #define CMP1(p, c0) (c_tolower((p)[0]) == (c0) && (p)[1] == '\0')
@@ -1937,9 +1936,16 @@ cleanup (void)
 #endif
   xfree (opt.output_document);
   xfree (opt.default_page);
+  if (opt.regex_type == regex_type_posix)
+    {
+      if (opt.acceptregex)
+        regfree (opt.acceptregex);
+      if (opt.rejectregex)
+        regfree (opt.rejectregex);
+    }
   xfree (opt.acceptregex);
-  xfree (opt.acceptregex_s);
   xfree (opt.rejectregex);
+  xfree (opt.acceptregex_s);
   xfree (opt.rejectregex_s);
   free_vec (opt.accepts);
   free_vec (opt.rejects);
