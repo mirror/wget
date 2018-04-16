@@ -2444,6 +2444,11 @@ void *
 compile_posix_regex (const char *str)
 {
   regex_t *regex = xmalloc (sizeof (regex_t));
+#ifdef TESTING
+  /* regcomp might be *very* cpu+memory intensive,
+   *  see https://sourceware.org/glibc/wiki/Security%20Exceptions */
+  str = "a";
+#endif
   int errcode = regcomp ((regex_t *) regex, str, REG_EXTENDED | REG_NOSUB);
   if (errcode != 0)
     {
