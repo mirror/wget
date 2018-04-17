@@ -524,7 +524,10 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
     }
 
   if (rejectedlog)
-    fclose (rejectedlog);
+    {
+      fclose (rejectedlog);
+      rejectedlog = NULL;
+    }
 
   /* If anything is left of the queue due to a premature exit, free it
      now.  */

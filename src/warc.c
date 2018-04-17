@@ -1240,9 +1240,15 @@ warc_close (void)
       warc_write_metadata ();
       *warc_current_warcinfo_uuid_str = 0;
       fclose (warc_current_file);
+      warc_current_file = NULL;
     }
+
   if (warc_current_cdx_file != NULL)
-    fclose (warc_current_cdx_file);
+    {
+      fclose (warc_current_cdx_file);
+      warc_current_cdx_file = NULL;
+    }
+
   if (warc_log_fp != NULL)
     {
       fclose (warc_log_fp);

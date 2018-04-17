@@ -676,9 +676,16 @@ log_close (void)
 {
   int i;
 
-  if (logfp && (logfp != stderr))
-    fclose (logfp);
+  if (logfp && logfp != stderr && logfp != stdout)
+    {
+      if (logfp == stdlogfp)
+        stdlogfp = NULL;
+      if (logfp == filelogfp)
+        filelogfp = NULL;
+      fclose (logfp);
+    }
   logfp = NULL;
+
   inhibit_logging = true;
   save_context_p = false;
 

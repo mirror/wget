@@ -1900,11 +1900,12 @@ cleanup (void)
 
   log_close ();
 
-  if (output_stream)
+  if (output_stream && output_stream != stderr)
     {
-      if (fclose (output_stream) == EOF)
-        inform_exit_status (CLOSEFAILED);
+      FILE *fp = output_stream;
       output_stream = NULL;
+      if (fclose (fp) == EOF)
+        inform_exit_status (CLOSEFAILED);
     }
 
   /* No need to check for error because Wget flushes its output (and

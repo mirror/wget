@@ -1982,7 +1982,10 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
 #endif
           /* Fatal errors, give up.  */
           if (warc_tmp != NULL)
+            {
               fclose (warc_tmp);
+              warc_tmp = NULL;
+            }
           return err;
         case CONSOCKERR: case CONERROR: case FTPSRVERR: case FTPRERR:
         case WRITEFAILED: case FTPUNKNOWNTYPE: case FTPSYSERR:
@@ -2110,7 +2113,10 @@ Removing file due to --delete-after in ftp_loop_internal():\n"));
         *local_file = xstrdup (locf);
 
       if (warc_tmp != NULL)
-        fclose (warc_tmp);
+        {
+          fclose (warc_tmp);
+          warc_tmp = NULL;
+        }
 
       return RETROK;
     } while (!opt.ntry || (count < opt.ntry));
