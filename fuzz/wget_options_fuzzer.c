@@ -87,10 +87,15 @@ FILE *fopen(const char *pathname, const char *mode)
 
 	if (dont_write) {
 		size_t len = strlen(pathname);
+		const char *p;
 
 		if (len >= 7 && !strcmp(pathname + len - 7, ".wgetrc") && !strcmp(mode, "r"))
 			return fmemopen((void *) g_data, g_size, mode);
 
+		if ((p = strstr(pathname, "crash-")) && strlen(p) == 46) {
+			printf("open %s, %s\n", pathname, mode);
+			return libc_fopen(pathname, mode);
+		}
 
 //		if (*mode == 'w')
 			return libc_fopen("/dev/null", mode);
