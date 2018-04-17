@@ -848,9 +848,11 @@ fopen_stat(const char *fname, const char *mode, file_stats_t *fstats)
   FILE *fp;
   struct stat fdstats;
 
-  fp = fopen (fname, mode);
-#ifdef TESTING
+#if defined FUZZING && defined TESTING
+  fp = fopen_wgetrc (fname, mode);
   return fp;
+#else
+  fp = fopen (fname, mode);
 #endif
   if (fp == NULL)
   {
@@ -1277,6 +1279,7 @@ wget_read_file (const char *file)
 
   /* Some magic in the finest tradition of Perl and its kin: if FILE
      is "-", just use stdin.  */
+#ifndef FUZZING
   if (HYPHENP (file))
     {
       fd = fileno (stdin);
@@ -1285,6 +1288,7 @@ wget_read_file (const char *file)
          redirected from a regular file, mmap() will still work.  */
     }
   else
+#endif
     fd = open (file, O_RDONLY);
   if (fd < 0)
     return NULL;

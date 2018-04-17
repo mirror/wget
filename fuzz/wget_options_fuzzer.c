@@ -80,6 +80,7 @@ DIR *opendir(const char *name)
 */
 }
 
+/*
 FILE *fopen(const char *pathname, const char *mode)
 {
 	FILE *(*libc_fopen)(const char *, const char *) =
@@ -105,6 +106,7 @@ FILE *fopen(const char *pathname, const char *mode)
 
 	return libc_fopen(pathname, mode);
 }
+*/
 
 void exit(int status)
 {
@@ -118,6 +120,16 @@ void exit(int status)
 }
 #endif
 #endif
+
+FILE *fopen_wget(const char *pathname, const char *mode)
+{
+	return fopen("/dev/null", mode);
+}
+
+FILE *fopen_wgetrc(const char *pathname, const char *mode)
+{
+	return fmemopen((void *) g_data, g_size, mode);
+}
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
