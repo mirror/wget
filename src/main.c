@@ -1072,7 +1072,12 @@ prompt_for_password (void)
     fprintf (stderr, _("Password for user %s: "), quote (opt.user));
   else
     fprintf (stderr, _("Password: "));
+#ifndef TESTING
+  /* gnulib's getpass() uses static variables internally, bad for fuzing */
   return getpass("");
+#else
+  return xstrdup("");
+#endif
 }
 
 
