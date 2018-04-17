@@ -599,7 +599,9 @@ debug_logprintf (const char *fmt, ...)
       struct logvprintf_state lpstate;
       bool done;
 
+#ifndef TESTING
       check_redirect_output ();
+#endif
       if (inhibit_logging)
         return;
 
