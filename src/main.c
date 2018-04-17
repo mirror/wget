@@ -1901,7 +1901,7 @@ for details.\n\n"));
   if (opt.wdebug)
      dbug_init();
   sock_init();
-#else
+#elif ! defined TESTING
   if (opt.background)
     {
       bool logfile_changed = fork_to_background ();
