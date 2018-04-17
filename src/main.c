@@ -1437,7 +1437,8 @@ main (int argc, char **argv)
 
   /* If the user did not specify a config, read the system wgetrc and ~/.wgetrc. */
   if (noconfig == false && use_userconfig == false)
-    initialize ();
+    if ((ret = initialize ()))
+      return ret;
 
   opterr = 0;
   optind = 0;

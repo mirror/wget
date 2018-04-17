@@ -726,7 +726,7 @@ run_wgetrc (const char *file, file_stats_t *flstats)
 
 /* Initialize the defaults and run the system wgetrc and user's own
    wgetrc.  */
-void
+int
 initialize (void)
 {
   char *env_sysrc;
@@ -748,7 +748,7 @@ initialize (void)
 Parsing system wgetrc file (env SYSTEM_WGETRC) failed.  Please check\n\
 '%s',\n\
 or specify a different file using --config.\n"), env_sysrc);
-          exit (WGET_EXIT_PARSE_ERROR);
+          return WGET_EXIT_PARSE_ERROR;
         }
     }
   /* Otherwise, if SYSTEM_WGETRC is defined, use it.  */
@@ -763,13 +763,13 @@ or specify a different file using --config.\n"), env_sysrc);
 Parsing system wgetrc file failed.  Please check\n\
 '%s',\n\
 or specify a different file using --config.\n"), SYSTEM_WGETRC);
-      exit (WGET_EXIT_PARSE_ERROR);
+      return WGET_EXIT_PARSE_ERROR;
     }
 #endif
   /* Override it with your own, if one exists.  */
   opt.wgetrcfile = wgetrc_file_name ();
   if (!opt.wgetrcfile)
-    return;
+    return 0;
   /* #### We should canonicalize `file' and SYSTEM_WGETRC with
      something like realpath() before comparing them with `strcmp'  */
 #ifdef SYSTEM_WGETRC
@@ -788,9 +788,9 @@ or specify a different file using --config.\n"), SYSTEM_WGETRC);
 
   /* If there were errors processing either `.wgetrc', abort. */
   if (!ok)
-    exit (WGET_EXIT_PARSE_ERROR);
+    return WGET_EXIT_PARSE_ERROR;
 
-  return;
+  return 0;
 }
 
 /* Remove dashes and underscores from S, modifying S in the
