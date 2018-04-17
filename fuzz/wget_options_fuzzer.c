@@ -33,6 +33,8 @@
   // declarations for wget internal functions
   int main_wget(int argc, const char **argv);
   void cleanup(void);
+  FILE *fopen_wget(const char *pathname, const char *mode);
+  FILE *fopen_wgetrc(const char *pathname, const char *mode);
 #ifdef __cplusplus
   }
 #endif
