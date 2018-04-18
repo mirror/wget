@@ -9,6 +9,7 @@ LDADD = ../lib/libgnu.a \
  -ldl
 
 WGET_TESTS = \
+ wget_css_fuzzer$(EXEEXT) \
  wget_options_fuzzer$(EXEEXT)
 
 if FUZZING
@@ -29,9 +30,11 @@ endif
 ../src/libunittest.a:
 	$(MAKE) $(AM_MAKEFLAGS) -C ../src libunittest.a
 
+wget_css_fuzzer_SOURCES = wget_css_fuzzer.c $(MAIN)
+wget_css_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
 wget_options_fuzzer_SOURCES = wget_options_fuzzer.c $(MAIN)
 wget_options_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
-
 
 #EXTRA_DIST = $(wildcard *.options) $(wildcard *.dict) \
 # $(wildcard *.in) $(wildcard *.repro)
