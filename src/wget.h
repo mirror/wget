@@ -397,11 +397,13 @@ typedef enum
 /* Rename fopen so we can have our own version in fuzz/main.c to
    not create random files. */
 #  define fopen(fp, mode) fopen_wget(fp, mode)
+#  define exit(status) exit_wget(status)
 
 /* In run_wgetrc() we call fopen_wgetrc() instead of fopen, so we can catch
    the call in our fuzzers. */
 FILE *fopen_wget(const char *pathname, const char *mode);
 FILE *fopen_wgetrc(const char *pathname, const char *mode);
+void exit_wget(int status);
 #else
 /* When not fuzzing, we want to call fopen() instead of fopen_wgetrc() */
 #  define fopen_wgetrc(fp) fopen(fp)
