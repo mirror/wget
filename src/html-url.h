@@ -31,6 +31,10 @@ as that of the covered work.  */
 #ifndef HTML_URL_H
 #define HTML_URL_H
 
+#include <stdbool.h>
+#include "convert.h"
+#include "iri.h"
+
 struct map_context {
   char *text;                   /* HTML text. */
   char *base;                   /* Base URI of the document, possibly
