@@ -61,6 +61,7 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 extern YY_BUFFER_STATE yy_scan_bytes (const char *bytes,int len  );
 extern void yy_delete_buffer (YY_BUFFER_STATE  b);
 extern int yylex (void);
+extern void yylex_destroy(void);
 
 /*
   Given a detected URI token, get only the URI specified within.
@@ -192,6 +193,7 @@ get_urls_css (struct map_context *ctx, int offset, int buf_length)
     }
 
   yy_delete_buffer(b);
+  yylex_destroy();
 
   DEBUGP (("\n"));
 }
