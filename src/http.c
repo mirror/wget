@@ -4594,7 +4594,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
                   bool finished = true;
                   if (opt.recursive)
                     {
-                      if (*dt & TEXTHTML)
+                      if ((*dt & TEXTHTML) || (*dt & TEXTCSS))
                         {
                           logputs (LOG_VERBOSE, _("\
 Remote file exists and could contain links to other resources -- retrieving.\n\n"));
@@ -4609,7 +4609,7 @@ Remote file exists but does not contain any link -- not retrieving.\n\n"));
                     }
                   else
                     {
-                      if (*dt & TEXTHTML)
+                      if ((*dt & TEXTHTML) || (*dt & TEXTCSS))
                         {
                           logprintf (LOG_VERBOSE, _("\
 Remote file exists and could contain further links,\n\
