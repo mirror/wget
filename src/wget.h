@@ -406,7 +406,7 @@ FILE *fopen_wgetrc(const char *pathname, const char *mode);
 void exit_wget(int status);
 #else
 /* When not fuzzing, we want to call fopen() instead of fopen_wgetrc() */
-#  define fopen_wgetrc(fp) fopen(fp)
+#  define fopen_wgetrc(fp, mode) fopen(fp, mode)
 #endif /* FUZZING && TESTING */
 
 #endif /* WGET_H */
