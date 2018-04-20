@@ -75,6 +75,9 @@ extern void yylex_destroy(void);
 static char *
 get_uri_string (const char *at, int *pos, int *length)
 {
+  if (*length < 4)
+    return NULL;
+
   if (0 != strncasecmp (at + *pos, "url(", 4))
     return NULL;
 
