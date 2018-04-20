@@ -55,6 +55,7 @@ FILE *fopen_wget(const char *pathname, const char *mode)
 	return fopen("/dev/null", mode);
 }
 
+#undef fopen_wgetrc
 FILE *fopen_wgetrc(const char *pathname, const char *mode)
 {
 #ifdef HAVE_FMEMOPEN
