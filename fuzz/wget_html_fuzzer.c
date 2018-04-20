@@ -29,7 +29,10 @@
 #include <unistd.h>  // close
 #include <setjmp.h> // longjmp, setjmp
 
-#ifdef  __cplusplus
+#include "wget.h"
+#undef fopen_wgetrc
+
+#ifdef __cplusplus
   extern "C" {
 #endif
   #include "utils.h"
@@ -56,7 +59,6 @@ FILE *fopen_wget(const char *pathname, const char *mode)
 	return fopen("/dev/null", mode);
 }
 
-#undef fopen_wgetrc
 FILE *fopen_wgetrc(const char *pathname, const char *mode)
 {
 #ifdef HAVE_FMEMOPEN
