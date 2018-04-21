@@ -731,8 +731,8 @@ ftp_parse_vms_ls (FILE *fp)
       */
 
 #if (!defined( __VMS) && !defined( PRESERVE_VMS_VERSIONS))
-      for (p = tok + strlen (tok); (--p > tok) && c_isdigit( *p); );
-      if ((*p == ';') && (*(p- 1) != '^'))
+      for (p = tok + strlen (tok); (--p > tok) && c_isdigit(*p); );
+      if (p > tok && (*p == ';') && (*(p - 1) != '^'))
         {
           *p = '\0';
         }
