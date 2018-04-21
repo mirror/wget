@@ -49,9 +49,9 @@ fi
 mkdir -p ${fuzzer}.new
 
 if test -f ${fuzzer}.dict; then
-  ./${fuzzer} -detect_leaks=0 -dict=${fuzzer}.dict ${fuzzer}.new ${fuzzer}.in -jobs=$jobs -workers=$workers
+  ./${fuzzer} -dict=${fuzzer}.dict ${fuzzer}.new ${fuzzer}.in -jobs=$jobs -workers=$workers
 else
-  ./${fuzzer} ${fuzzer}.new ${fuzzer}.in -jobs=$jobs -workers=$workers -detect_leaks=0
+  ./${fuzzer} ${fuzzer}.new ${fuzzer}.in -jobs=$jobs -workers=$workers
 fi
 
 exit 0
