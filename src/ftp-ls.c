@@ -423,6 +423,7 @@ ftp_parse_winnt_ls (FILE *fp)
   struct fileinfo *dir, *l, cur; /* list creation */
 
   dir = l = NULL;
+  cur.name = NULL;
 
   /* Line loop to end of file: */
   while ((len = getline (&line, &bufsize, fp)) > 0)
@@ -461,6 +462,7 @@ ftp_parse_winnt_ls (FILE *fp)
         }
       /* Now it is possible to determine the position of the first symbol in
          filename. */
+      xfree (cur.name);
       memset(&cur, 0, sizeof (cur));
       cur.name = xstrdup(filename);
       DEBUGP (("Name: '%s'\n", cur.name));
@@ -544,8 +546,10 @@ ftp_parse_winnt_ls (FILE *fp)
           memcpy (l, &cur, sizeof (cur));
           l->next = NULL;
         }
+      cur.name = NULL;
     }
 
+  xfree (cur.name);
   xfree (line);
   return dir;
 }
