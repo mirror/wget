@@ -2185,7 +2185,6 @@ static uerr_t ftp_retrieve_dirs (struct url *, struct url *,
                                  struct fileinfo *, ccon *);
 static uerr_t ftp_retrieve_glob (struct url *, struct url *, ccon *, int);
 static struct fileinfo *delelement (struct fileinfo *, struct fileinfo **);
-static void freefileinfo (struct fileinfo *f);
 
 /* Retrieve a list of files given in struct fileinfo linked list.  If
    a file is a symbolic link, do not retrieve it, but rather try to
@@ -2828,7 +2827,7 @@ delelement (struct fileinfo *f, struct fileinfo **start)
 }
 
 /* Free the fileinfo linked list of files.  */
-static void
+void
 freefileinfo (struct fileinfo *f)
 {
   while (f)

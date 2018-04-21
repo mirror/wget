@@ -90,9 +90,8 @@ clean_line (char *line, int len)
    The time stamps are stored in a separate variable, time_t
    compatible (I hope).  The timezones are ignored.  */
 static struct fileinfo *
-ftp_parse_unix_ls (const char *file, int ignore_perms)
+ftp_parse_unix_ls (FILE *fp, int ignore_perms)
 {
-  FILE *fp;
   static const char *months[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -107,12 +106,6 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
   char *line = NULL, *tok, *ptok;      /* tokenizer */
   struct fileinfo *dir, *l, cur;       /* list creation */
 
-  fp = fopen (file, "rb");
-  if (!fp)
-    {
-      logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
-      return NULL;
-    }
   dir = l = NULL;
 
   /* Line loop to end of file: */
@@ -413,14 +406,12 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
     }
 
   xfree (line);
-  fclose (fp);
   return dir;
 }
 
 static struct fileinfo *
-ftp_parse_winnt_ls (const char *file)
+ftp_parse_winnt_ls (FILE *fp)
 {
-  FILE *fp;
   int len;
   int year, month, day;         /* for time analysis */
   int hour, min;
@@ -431,12 +422,6 @@ ftp_parse_winnt_ls (const char *file)
   char *filename;
   struct fileinfo *dir, *l, cur; /* list creation */
 
-  fp = fopen (file, "rb");
-  if (!fp)
-    {
-      logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
-      return NULL;
-    }
   dir = l = NULL;
 
   /* Line loop to end of file: */
@@ -562,7 +547,6 @@ ftp_parse_winnt_ls (const char *file)
     }
 
   xfree (line);
-  fclose(fp);
   return dir;
 }
 
@@ -677,25 +661,18 @@ static void eat_carets( char *str)
 
 
 static struct fileinfo *
-ftp_parse_vms_ls (const char *file)
+ftp_parse_vms_ls (FILE *fp)
 {
-  FILE *fp;
   int dt, i, j, len;
   int perms;
   size_t bufsize = 0;
   time_t timenow;
   struct tm *timestruct;
-  char date_str[ 32];
+  char date_str[32];
 
   char *line = NULL, *tok; /* tokenizer */
   struct fileinfo *dir, *l, cur; /* list creation */
 
-  fp = fopen (file, "r");
-  if (!fp)
-    {
-      logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
-      return NULL;
-    }
   dir = l = NULL;
 
   /* Skip blank lines, Directory heading, and more blank lines. */
@@ -1003,7 +980,6 @@ ftp_parse_vms_ls (const char *file)
     }
 
   xfree (line);
-  fclose (fp);
   return dir;
 }
 
@@ -1017,38 +993,50 @@ ftp_parse_vms_ls (const char *file)
 struct fileinfo *
 ftp_parse_ls (const char *file, const enum stype system_type)
 {
+  FILE *fp;
+  struct fileinfo *fi;
+
+  fp = fopen (file, "rb");
+  if (!fp)
+    {
+      logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
+      return NULL;
+    }
+
+  fi = ftp_parse_ls_fp (fp, system_type);
+  fclose(fp);
+
+  return fi;
+}
+
+struct fileinfo *
+ftp_parse_ls_fp (FILE *fp, const enum stype system_type)
+{
   switch (system_type)
     {
     case ST_UNIX:
-      return ftp_parse_unix_ls (file, 0);
+      return ftp_parse_unix_ls (fp, 0);
     case ST_WINNT:
       {
         /* Detect whether the listing is simulating the UNIX format */
-        FILE *fp;
-        int   c;
-        fp = fopen (file, "rb");
-        if (!fp)
-        {
-          logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
-          return NULL;
-        }
-        c = fgetc(fp);
-        fclose(fp);
+        int   c = fgetc(fp);
+        rewind(fp);
+
         /* If the first character of the file is '0'-'9', it's WINNT
            format. */
         if (c >= '0' && c <='9')
-          return ftp_parse_winnt_ls (file);
+          return ftp_parse_winnt_ls (fp);
         else
-          return ftp_parse_unix_ls (file, 1);
+          return ftp_parse_unix_ls (fp, 1);
       }
     case ST_VMS:
-      return ftp_parse_vms_ls (file);
+      return ftp_parse_vms_ls (fp);
     case ST_MACOS:
-      return ftp_parse_unix_ls (file, 1);
+      return ftp_parse_unix_ls (fp, 1);
     default:
       logprintf (LOG_NOTQUIET, _("\
 Unsupported listing type, trying Unix listing parser.\n"));
-      return ftp_parse_unix_ls (file, 0);
+      return ftp_parse_unix_ls (fp, 0);
     }
 }
 
