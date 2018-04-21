@@ -605,11 +605,13 @@ wgetrc_user_file_name (void)
 
   if (!file)
     return NULL;
+#ifndef FUZZING
   if (!file_exists_p (file, NULL))
     {
       xfree (file);
       return NULL;
     }
+#endif
   return file;
 }
 
@@ -781,8 +783,10 @@ or specify a different file using --config.\n"), SYSTEM_WGETRC);
     }
   else
 #endif
-	if (file_exists_p (opt.wgetrcfile, &flstats))
-        ok &= run_wgetrc (opt.wgetrcfile, &flstats);
+#ifndef FUZZING
+    if (file_exists_p (opt.wgetrcfile, &flstats))
+#endif
+      ok &= run_wgetrc (opt.wgetrcfile, &flstats);
 
   xfree (opt.wgetrcfile);
 
