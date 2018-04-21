@@ -704,6 +704,7 @@ ftp_parse_vms_ls (FILE *fp)
 
   /* Read remainder of file until the next blank line or EOF. */
 
+  cur.name = NULL;
   while (i > 0)
     {
       char *p;
@@ -772,6 +773,7 @@ ftp_parse_vms_ls (FILE *fp)
           cur.perms = VMS_DEFAULT_PROT_FILE;
           DEBUGP (("File\n"));
         }
+      xfree (cur.name);
       cur.name = xstrdup (tok);
       DEBUGP (("Name: '%s'\n", cur.name));
 
@@ -966,6 +968,7 @@ ftp_parse_vms_ls (FILE *fp)
           memcpy (l, &cur, sizeof (cur));
           l->next = NULL;
         }
+      cur.name = NULL;
 
       i = getline (&line, &bufsize, fp);
       if (i > 0)
@@ -979,6 +982,7 @@ ftp_parse_vms_ls (FILE *fp)
         }
     }
 
+  xfree (cur.name);
   xfree (line);
   return dir;
 }
