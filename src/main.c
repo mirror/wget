@@ -1866,7 +1866,7 @@ for details.\n\n"));
   if (opt.enable_iri)
     {
       if (opt.locale && !check_encoding_name (opt.locale))
-        opt.locale = NULL;
+        xfree (opt.locale);
 
       if (!opt.locale)
         opt.locale = find_locale ();
