@@ -753,16 +753,16 @@ ftp_parse_vms_ls (FILE *fp)
          what will work in a CWD command.
       */
       len = strlen (tok);
-      if (!c_strncasecmp((tok + (len - 4)), ".DIR", 4))
+      if (len >= 4 && !c_strncasecmp(tok + (len - 4), ".DIR", 4))
         {
-          *(tok+ (len - 4)) = '\0'; /* Discard ".DIR". */
+          *(tok + (len - 4)) = '\0'; /* Discard ".DIR". */
           cur.type  = FT_DIRECTORY;
           cur.perms = VMS_DEFAULT_PROT_DIR;
           DEBUGP (("Directory (nv)\n"));
         }
-      else if (!c_strncasecmp ((tok + (len - 6)), ".DIR;1", 6))
+      else if (len >= 6 && !c_strncasecmp (tok + len - 6, ".DIR;1", 6))
         {
-          *(tok+ (len - 6)) = '\0'; /* Discard ".DIR;1". */
+          *(tok + (len - 6)) = '\0'; /* Discard ".DIR;1". */
           cur.type  = FT_DIRECTORY;
           cur.perms = VMS_DEFAULT_PROT_DIR;
           DEBUGP (("Directory (v)\n"));
