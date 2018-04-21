@@ -592,7 +592,6 @@ static void eat_carets( char *str)
   char *strd;   /* Destination pointer. */
   char hdgt;
   unsigned char uchr;
-  unsigned char prop;
 
   /* Skip ahead to the first "^", if any. */
   while ((*str != '\0') && (*str != '^'))
@@ -609,11 +608,10 @@ static void eat_carets( char *str)
       if (uchr == '^')
       {
         /* Found a caret.  Skip it, and check the next character. */
-        uchr = *(++str);
-        prop = char_prop[ uchr];
-        if (prop& 64)
+        if ((char_prop[(unsigned char) str[0]] & 64) && (char_prop[(unsigned char) str[1]] & 64))
         {
           /* Hex digit.  Get char code from this and next hex digit. */
+          uchr = *(++str);
           if (uchr <= '9')
           {
             hdgt = uchr- '0';           /* '0' - '9' -> 0 - 9. */
