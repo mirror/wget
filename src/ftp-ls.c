@@ -458,6 +458,7 @@ ftp_parse_winnt_ls (FILE *fp)
       else if (year >= 1900)
         {
           year -= 1900;
+          if (len < 42) continue;
           filename += 2;
         }
       /* Now it is possible to determine the position of the first symbol in
