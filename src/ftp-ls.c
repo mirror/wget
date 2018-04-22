@@ -478,7 +478,7 @@ ftp_parse_winnt_ls (FILE *fp)
       min = atoi(tok);
       /* Adjust hour from AM/PM. Just for the record, the sequence goes
          11:00AM, 12:00PM, 01:00PM ... 11:00PM, 12:00AM, 01:00AM . */
-      tok+=2;
+      if (tok[0] && tok[1]) tok+=2;
       if (hour == 12)  hour  = 0;
       if (*tok == 'P') hour += 12;
 
