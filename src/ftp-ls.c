@@ -443,8 +443,8 @@ ftp_parse_winnt_ls (FILE *fp)
          january will be assumed.  */
       tok = strtok(line, "-");
       if (tok == NULL) continue;
-      month = atoi(tok) - 1;
-      if (month < 0) month = 0;
+      month = atoi(tok);
+      if (month < 0) month = 0; else month--;
       tok = strtok(NULL, "-");
       if (tok == NULL) continue;
       day = atoi(tok);
