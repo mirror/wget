@@ -1,0 +1,14 @@
+User-Agent: *
+Disallow: : *
+Disallow: /x
+Disallow: /  *
+Disallow: : *
+Disallow: /x*
+
+*
+D: *
+Disallow: /x
+Disallow: ix
+Disallow:	zw *
+allow: ox
+Diwww

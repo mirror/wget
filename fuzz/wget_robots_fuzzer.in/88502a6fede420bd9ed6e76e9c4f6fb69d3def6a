@@ -1,0 +1,10 @@
+User-Agent: *
+Dn|
+Disallow:	/n
+Disallow: /x
+Disallow:	/x
+Disallow:*
+Dn
+Disallow: /x
+Disallow;	x
+Disallow:az

@@ -12,7 +12,8 @@ WGET_TESTS = \
  wget_css_fuzzer$(EXEEXT) \
  wget_ftpls_fuzzer$(EXEEXT) \
  wget_html_fuzzer$(EXEEXT) \
- wget_options_fuzzer$(EXEEXT)
+ wget_options_fuzzer$(EXEEXT) \
+ wget_robots_fuzzer$(EXEEXT)
 
 if FUZZING
   bin_PROGRAMS = $(WGET_TESTS)
@@ -43,6 +44,9 @@ wget_html_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_options_fuzzer_SOURCES = wget_options_fuzzer.c $(MAIN)
 wget_options_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
+wget_robots_fuzzer_SOURCES = wget_robots_fuzzer.c $(MAIN)
+wget_robots_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 #EXTRA_DIST = $(wildcard *.options) $(wildcard *.dict) \
 # $(wildcard *.in) $(wildcard *.repro)
