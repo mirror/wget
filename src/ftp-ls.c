@@ -891,12 +891,12 @@ ftp_parse_vms_ls (FILE *fp)
                       if (j == 0)
                         {
                           perms = 0;
-                          j = 1;
                         }
-                      else
+                      else if (j < 4)
                         {
                           perms <<= 3;
                         }
+                      j++;
                       break;
                     case 'R':
                       perms |= 4;
