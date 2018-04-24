@@ -242,24 +242,25 @@ ftp_parse_unix_ls (FILE *fp, int ignore_perms)
               /* We must deal with digits.  */
               if (c_isdigit (*tok))
                 {
-                  /* Suppose it's year.  */
-                  for (; c_isdigit (*tok); tok++)
+                  /* Suppose it's year.  Limit to year 99999 to avoid integer overflow. */
+                  for (; c_isdigit (*tok) && year <= 99999; tok++)
                     year = (*tok - '0') + 10 * year;
                   if (*tok == ':')
                     {
+                      int n;
                       /* This means these were hours!  */
                       hour = year;
                       year = 0;
                       ptype = TT_HOUR_MIN;
                       ++tok;
                       /* Get the minutes...  */
-                      for (; c_isdigit (*tok); tok++)
+                      for (n = 0; c_isdigit (*tok) && n < 2; tok++, n++)
                         min = (*tok - '0') + 10 * min;
                       if (*tok == ':')
                         {
                           /* ...and the seconds.  */
                           ++tok;
-                          for (; c_isdigit (*tok); tok++)
+                          for (n = 0; c_isdigit (*tok) && n < 2; tok++, n++)
                             sec = (*tok - '0') + 10 * sec;
                         }
                     }
