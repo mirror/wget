@@ -143,7 +143,7 @@ get_urls_css (struct map_context *ctx, int offset, int buf_length)
                 {
                   uri = get_uri_string (ctx->text, &pos, &length);
                 }
-              else
+              else if (length >= 2)
                 {
                   /* cut out quote characters */
                   pos++;
@@ -152,6 +152,8 @@ get_urls_css (struct map_context *ctx, int offset, int buf_length)
                   memcpy (uri, yytext + 1, length);
                   uri[length] = '\0';
                 }
+              else
+                uri = NULL;
 
               if (uri)
                 {
