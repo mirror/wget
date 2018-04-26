@@ -83,8 +83,9 @@ get_uri_string (const char *at, int *pos, int *length)
 
   *pos += 4;
   *length -= 5; /* url() */
+
   /* skip leading space */
-  while (isspace (at[*pos]))
+  while (*length > 0 && isspace (at[*pos]))
     {
       (*pos)++;
       if (--(*length) == 0)
@@ -92,16 +93,20 @@ get_uri_string (const char *at, int *pos, int *length)
     }
 
   /* skip trailing space */
-  while (isspace (at[*pos + *length - 1]))
+  while (*length > 0 && isspace (at[*pos + *length - 1]))
     {
       (*length)--;
     }
+
   /* trim off quotes */
-  if (at[*pos] == '\'' || at[*pos] == '"')
+  if (*length >= 2 && (at[*pos] == '\'' || at[*pos] == '"'))
     {
       (*pos)++;
       *length -= 2;
     }
+
+  if (*length <= 0)
+    return NULL;
 
   return xstrndup (at + *pos, *length);
 }
