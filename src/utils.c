@@ -1153,7 +1153,7 @@ accdir (const char *directory)
 bool
 match_tail (const char *string, const char *tail, bool fold_case)
 {
-  int pos = strlen (string) - strlen (tail);
+  int pos = (int) strlen (string) - (int) strlen (tail);
 
   if (pos < 0)
     return false;  /* tail is longer than string.  */
