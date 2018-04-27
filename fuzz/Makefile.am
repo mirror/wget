@@ -10,6 +10,7 @@ LDADD = ../lib/libgnu.a \
 
 WGET_TESTS = \
  wget_css_fuzzer$(EXEEXT) \
+ wget_cookie_fuzzer$(EXEEXT) \
  wget_ftpls_fuzzer$(EXEEXT) \
  wget_html_fuzzer$(EXEEXT) \
  wget_options_fuzzer$(EXEEXT) \
@@ -36,6 +37,9 @@ endif
 
 wget_css_fuzzer_SOURCES = wget_css_fuzzer.c $(MAIN)
 wget_css_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
+wget_cookie_fuzzer_SOURCES = wget_cookie_fuzzer.c $(MAIN)
+wget_cookie_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_ftpls_fuzzer_SOURCES = wget_ftpls_fuzzer.c $(MAIN)
 wget_ftpls_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
