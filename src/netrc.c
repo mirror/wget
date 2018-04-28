@@ -313,7 +313,10 @@ parse_netrc_fp (const char *path, FILE *fp)
             {
             case tok_login:
               if (current)
-                current->acc = xstrdup (tok);
+                {
+                  xfree (current->acc);
+                  current->acc = xstrdup (tok);
+                }
               else
                 premature_token = "login";
               break;
@@ -326,7 +329,10 @@ parse_netrc_fp (const char *path, FILE *fp)
 
             case tok_password:
               if (current)
-                current->passwd = xstrdup (tok);
+                {
+                  xfree (current->passwd);
+                  current->passwd = xstrdup (tok);
+                }
               else
                 premature_token = "password";
               break;
