@@ -67,10 +67,6 @@ init_prng (void)
   char namebuf[256];
   const char *random_file;
 
-  if (RAND_status ())
-    /* The PRNG has been seeded; no further action is necessary. */
-    return;
-
   /* Seed from a file specified by the user.  This will be the file
      specified with --random-file, $RANDFILE, if set, or ~/.rnd, if it
      exists.  */
@@ -88,17 +84,11 @@ init_prng (void)
        curl) from random file. */
     RAND_load_file (random_file, 16384);
 
-  if (RAND_status ())
-    return;
-
 #ifdef HAVE_RAND_EGD
   /* Get random data from EGD if opt.egd_file was used.  */
   if (opt.egd_file && *opt.egd_file)
     RAND_egd (opt.egd_file);
 #endif
-
-  if (RAND_status ())
-    return;
 
 #ifdef WINDOWS
   /* Under Windows, we can try to seed the PRNG using screen content.
@@ -637,6 +627,15 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
   if (!SSL_set_fd (conn, FD_TO_SOCKET (fd)))
     goto error;
   SSL_set_connect_state (conn);
+
+  /* Re-seed the PRNG before the SSL handshake */
+  init_prng ();
+  if (RAND_status () != 1)
+    {
+      logprintf(LOG_NOTQUIET,
+		_("WARNING: Could not seed PRNG. Consider using --random-file.\n"));
+      goto error;
+    }
 
   scwt_ctx.ssl = conn;
   if (run_with_timeout(opt.read_timeout, ssl_connect_with_timeout_callback,
