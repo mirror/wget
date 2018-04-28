@@ -1,0 +1,153 @@
+#
+machine x.y login y password x
+machine a.b
+login b
+password a
+macmacdef mm
+  c1 a
+  c2m
+  c1 a
+  c2 b
+
+macdef mm
+  c1 a
+  c2 z
+#
+m
+achilogyn b
+password a
+macdef"
+ÿ
+ó
+!
+ó
+
+a
+!
+ó
+ÿ
+ó
+!
+
+a
+!
+ó
+
+a
+ó
+!
+ó
+
+a
+ÿ
+ó
+!
+ó
+
+a
+!
+ó
+ÿ
+ó
+!
+
+a
+!
+ó
+
+a
+ó
+!
+ó
+
+a
+!
+ó
+ÿ
+ó
+!
+
+a
+!
+ó
+
+a
+ó
+!
+ó
+
+a m
+  c1 
+ÿ
+ó
+!
+ó
+
+a
+!
+ó
+ÿ
+ó
+!
+
+a
+!
+ó
+
+a
+ó
+!
+ó
+
+a
+!
+ó
+
+a
+ò
+:
+!
+ó
+
+a
+!
+ó
+
+a
+ò
+:
+!
+ó
+
+a
+ó
+!
+ó
+
+a
+!
+ó
+
+a
+ò
+:
+!
+ó
+
+a
+!
+ó
+
+a
+ò
+:
+!
+ó
+a
+  c2 b
+
+macdef mm
+a
+  c1 a
+  c2 z
+

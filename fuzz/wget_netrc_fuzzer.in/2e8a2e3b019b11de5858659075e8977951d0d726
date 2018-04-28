@@ -1,0 +1,13 @@
+#logyn
+machine x.y login y padefaultx
+machine a.b
+login b
+pass÷ord x
+machine a.b
+loginy login y padefaultx
+machine a.b
+login b
+pass÷ord x
+machine a.g
+login  c2 z
+

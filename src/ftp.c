@@ -384,7 +384,7 @@ getftp (struct url *u, struct url *original_url,
 
   /* Check for ~/.netrc if none of the above match */
   if (opt.netrc && (!user || !passwd))
-    search_netrc (u->host, (const char **) &user, (const char **) &passwd, 1);
+    search_netrc (u->host, (const char **) &user, (const char **) &passwd, 1, NULL);
 
   if (!user) user = "anonymous";
   if (!passwd) passwd = "-wget@";

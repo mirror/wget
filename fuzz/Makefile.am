@@ -13,6 +13,7 @@ WGET_TESTS = \
  wget_cookie_fuzzer$(EXEEXT) \
  wget_ftpls_fuzzer$(EXEEXT) \
  wget_html_fuzzer$(EXEEXT) \
+ wget_netrc_fuzzer$(EXEEXT) \
  wget_options_fuzzer$(EXEEXT) \
  wget_robots_fuzzer$(EXEEXT) \
  wget_url_fuzzer$(EXEEXT)
@@ -46,6 +47,9 @@ wget_ftpls_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_html_fuzzer_SOURCES = wget_html_fuzzer.c $(MAIN)
 wget_html_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
+wget_netrc_fuzzer_SOURCES = wget_netrc_fuzzer.c $(MAIN)
+wget_netrc_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_options_fuzzer_SOURCES = wget_options_fuzzer.c $(MAIN)
 wget_options_fuzzer_LDADD = ../src/libunittest.a $(LDADD)

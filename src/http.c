@@ -1927,7 +1927,7 @@ initialize_request (const struct url *u, struct http_stat *hs, int *dt, struct u
 
   /* Check for ~/.netrc if none of the above match */
   if (opt.netrc && (!*user || !*passwd))
-    search_netrc (u->host, (const char **) user, (const char **) passwd, 0);
+    search_netrc (u->host, (const char **) user, (const char **) passwd, 0, NULL);
 
   /* We only do "site-wide" authentication with "global" user/password
    * values unless --auth-no-challenge has been requested; URL user/password
