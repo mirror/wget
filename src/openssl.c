@@ -173,6 +173,7 @@ ssl_init (void)
 {
   SSL_METHOD const *meth;
   long ssl_options = 0;
+  char *ciphers_string = NULL;
 #if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >= 0x10100000L)
   int ssl_proto_version = 0;
 #endif
@@ -305,10 +306,29 @@ ssl_init (void)
 #endif
 
   /* OpenSSL ciphers: https://www.openssl.org/docs/apps/ciphers.html
-   * Since we want a good protection, we also use HIGH (that excludes MD4 ciphers and some more)
+   *
+   * Rules:
+   *  1. --ciphers overrides everything
+   *  2. We allow RSA key exchange by default (secure_protocol_auto)
+   *  3. We disallow RSA key exchange if PFS was requested (secure_protocol_pfs)
    */
-  if (opt.secure_protocol == secure_protocol_pfs)
-    SSL_CTX_set_cipher_list (ssl_ctx, "HIGH:MEDIUM:!RC4:!SRP:!PSK:!RSA:!aNULL@STRENGTH");
+  if (!opt.tls_ciphers_string)
+    {
+      if (opt.secure_protocol == secure_protocol_auto)
+	      ciphers_string = "HIGH:!aNULL:!RC4:!MD5:!SRP:!PSK";
+      else if (opt.secure_protocol == secure_protocol_pfs)
+	      ciphers_string = "HIGH:!aNULL:!RC4:!MD5:!SRP:!PSK:!kRSA";
+    }
+  else
+    {
+      ciphers_string = opt.tls_ciphers_string;
+    }
+
+  if (ciphers_string && !SSL_CTX_set_cipher_list(ssl_ctx, ciphers_string))
+    {
+      logprintf(LOG_NOTQUIET, _("OpenSSL: Invalid cipher list: %s\n"), ciphers_string);
+      goto error;
+    }
 
   SSL_CTX_set_default_verify_paths (ssl_ctx);
   SSL_CTX_load_verify_locations (ssl_ctx, opt.ca_cert, opt.ca_directory);

@@ -392,6 +392,7 @@ static struct cmdline_option option_data[] =
     { "preferred-location", 0, OPT_VALUE, "preferredlocation", -1 },
 #endif
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
+    { IF_SSL ("ciphers"), 0, OPT_VALUE, "ciphers", -1 },
     { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
     { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
@@ -875,6 +876,10 @@ HTTPS (SSL/TLS) options:\n"),
        --egd-file=FILE             file naming the EGD socket with random data\n"),
 #endif
     "\n",
+    N_("\
+       --ciphers=STR           Set the priority string (GnuTLS) or cipher list string (OpenSSL) directly.\n\
+                                   Use with care. This option overrides --secure-protocol.\n\
+                                   The format and syntax of this string depend on the specific SSL/TLS engine.\n"),
 #endif /* HAVE_SSL */
 
 #ifdef HAVE_HSTS
