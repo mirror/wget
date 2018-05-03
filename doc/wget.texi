@@ -1794,10 +1794,19 @@ the correct protocol version.  Fortunately, such servers are quite rare.
 Specifying @samp{PFS} enforces the use of the so-called Perfect Forward
 Security cipher suites. In short, PFS adds security by creating a one-time
 key for each SSL connection. It has a bit more CPU impact on client and server.
-We use known to be secure ciphers (e.g. no MD4) and the TLS protocol.
+We use known to be secure ciphers (e.g. no MD4) and the TLS protocol. This mode
+also explicitly excludes non-PFS key exchange methods, such as RSA.
 
 @item --https-only
 When in recursive mode, only HTTPS links are followed.
+
+@item --ciphers
+Set the cipher list string. Typically this string sets the
+cipher suites and other SSL/TLS options that the user wish should be used, in a
+set order of preference (GnuTLS calls it 'priority string'). This string
+will be fed verbatim to the SSL/TLS engine (OpenSSL or GnuTLS) and hence
+its format and syntax is dependant on that. Wget will not process or manipulate it
+in any way. Refer to the OpenSSL or GnuTLS documentation for more information.
 
 @cindex SSL certificate, check
 @item --no-check-certificate
