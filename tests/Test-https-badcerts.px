@@ -123,17 +123,9 @@ my $retryssl = SSLTest->new(cmdline  => $cmdline,
                            input     => \%urls,
                            errcode   => $expected_error_code,
                            existing  => \%existing_files,
-                           output    => \%expected_downloaded_files,
                            certfile  => $servercrt,
                            keyfile   => $serverkey,
                            lhostname => $testhostname,
                            sslport   => $port);
-if ($retryssl->run() == 0)
-{
-  exit 0;
-}
-else
-{
-  exit -1;
-}
+exit $retryssl->run();
 # vim: et ts=4 sw=4
