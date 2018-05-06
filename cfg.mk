@@ -34,4 +34,4 @@ local-checks-to-skip = \
 show-vc-list-except:
 	@$(VC_LIST_EXCEPT)
 
-VC_LIST_ALWAYS_EXCLUDE_REGEX = ^ABOUT-NLS|((msdos|vms)/.*)|ChangeLog-2014-12-10|/.*.der|^tests/certs/.*|^fuzz/.*.in/.*$$
+VC_LIST_ALWAYS_EXCLUDE_REGEX = ^ABOUT-NLS|((msdos|vms)/.*)|ChangeLog-2014-12-10|/.*\.der|^tests/certs/.*|^fuzz/.*\.(in|repro)/.*$$

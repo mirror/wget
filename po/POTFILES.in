@@ -33,6 +33,7 @@ src/ptimer.c
 src/recur.c
 src/res.c
 src/retr.c
+src/spider.c
 src/url.c
 src/utils.c
 src/warc.c
