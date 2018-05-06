@@ -164,6 +164,9 @@ static const struct {
   { "checkcertificate", &opt.check_cert,        cmd_check_cert },
 #endif
   { "chooseconfig",     &opt.choose_config,     cmd_file },
+#ifdef HAVE_SSL
+  { "ciphers",          &opt.tls_ciphers_string, cmd_string },
+#endif
 #ifdef HAVE_LIBZ
   { "compression",      &opt.compression,       cmd_spec_compression },
 #endif
@@ -281,7 +284,6 @@ static const struct {
 #endif
   { "preservepermissions", &opt.preserve_perm,  cmd_boolean },
 #ifdef HAVE_SSL
-  { "ciphers",          &opt.tls_ciphers_string, cmd_string },
   { "privatekey",       &opt.private_key,       cmd_file },
   { "privatekeytype",   &opt.private_key_type,  cmd_cert_type },
 #endif
