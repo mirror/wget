@@ -5,6 +5,25 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.19.5
+
+* Fix cookie injection (CVE-2018-0494)
+
+* Enable TLS1.3 with recent OpenSSL environment
+
+* New option --ciphers to set GnuTLS / OpenSSL ciphers directly
+
+* Updated CSS grammar to CSS 2.2
+
+* Fixed several memleaks found by OSS-Fuzz
+
+* Fixed several buffer overflows found by OSS-Fuzz
+
+* Fixed several integer overflows found by OSS-Fuzz
+
+* Several minor bug fixes
+
+
 * Changes in Wget 1.19.4
 
 * A major bug that caused GZip'ed pages to never be decompressed has been fixed
