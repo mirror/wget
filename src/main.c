@@ -1263,7 +1263,7 @@ print_version (void)
         {
           if (printf ("%s ", compiled_features[i]) < 0)
             exit (WGET_EXIT_IO_FAIL);
-          line_length -= strlen (compiled_features[i]) + 2;
+          line_length -= (int) strlen (compiled_features[i]) + 2;
           i++;
         }
       if (printf ("\n") < 0)
