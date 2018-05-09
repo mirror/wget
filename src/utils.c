@@ -563,6 +563,9 @@ file_exists_p (const char *filename, file_stats_t *fstats)
 {
   struct stat buf;
 
+  if (!filename)
+	  return false;
+
 #if defined(WINDOWS) || defined(__VMS)
     int ret = stat (filename, &buf);
     if (ret >= 0)
