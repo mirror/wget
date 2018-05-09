@@ -1,0 +1,9 @@
+User-Agent: *
+Disallow:aÿ%aß$
+Disallow:aÿ%a:
+allow: aÿ%a:
+allow:	aÿ%a$
+allow:aÿ%a:
+Disallow: aÿ%aò 
+allow:aÿ%a:
+Disallow: aÿ%awÿ
