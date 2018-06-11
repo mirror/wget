@@ -313,6 +313,7 @@ static const struct {
   { "restrictfilenames", NULL,                  cmd_spec_restrict_file_names },
   { "retrsymlinks",     &opt.retr_symlinks,     cmd_boolean },
   { "retryconnrefused", &opt.retry_connrefused, cmd_boolean },
+  { "retryonhosterror", &opt.retry_on_host_error, cmd_boolean },
   { "retryonhttperror", &opt.retry_on_http_error, cmd_string },
   { "robots",           &opt.use_robots,        cmd_boolean },
   { "savecookies",      &opt.cookies_output,    cmd_file },

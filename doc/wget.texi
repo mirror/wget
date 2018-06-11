@@ -1750,6 +1750,10 @@ some few obscure servers, which never send HTTP authentication
 challenges, but accept unsolicited auth info, say, in addition to
 form-based authentication.
 
+@item --retry-on-host-error
+Consider host errors, such as ``Temporary failure in name resolution'',
+as non-fatal, transient errors.
+
 @item --retry-on-http-error=@var{code[,code,...]}
 Consider given HTTP response codes as non-fatal, transient errors.
 Supply a comma-separated list of 3-digit HTTP response codes as

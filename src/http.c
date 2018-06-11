@@ -4386,7 +4386,18 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
           logputs (LOG_VERBOSE, "\n");
           logprintf (LOG_NOTQUIET, _("Cannot write to %s (%s).\n"),
                      quote (hstat.local_file), strerror (errno));
-        case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case SSLINITFAILED:
+        case HOSTERR:
+          /* Fatal unless option set otherwise. */
+          if ( opt.retry_on_host_error )
+            {
+              printwhat (count, opt.ntry);
+              xfree (hstat.message);
+              xfree (hstat.error);
+              continue;
+            }
+          ret = err;
+          goto exit;
+        case CONIMPOSSIBLE: case PROXERR: case SSLINITFAILED:
         case CONTNOTSUPPORTED: case VERIFCERTERR: case FILEBADFILE:
         case UNKNOWNATTR:
           /* Fatal errors just return from the function.  */
