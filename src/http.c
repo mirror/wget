@@ -4386,6 +4386,8 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
           logputs (LOG_VERBOSE, "\n");
           logprintf (LOG_NOTQUIET, _("Cannot write to %s (%s).\n"),
                      quote (hstat.local_file), strerror (errno));
+          ret = err;
+          goto exit;
         case HOSTERR:
           /* Fatal unless option set otherwise. */
           if ( opt.retry_on_host_error )
