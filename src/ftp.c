@@ -1806,7 +1806,7 @@ Error in server response, closing control connection.\n"));
 exit_error:
 
   /* If fp is a regular file, close and try to remove it */
-  if (fp && !output_stream)
+  if (fp && (!output_stream || con->cmd & DO_LIST))
     fclose (fp);
   return err;
 }
