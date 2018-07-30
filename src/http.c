@@ -2451,6 +2451,8 @@ check_auth (const struct url *u, char *user, char *passwd, struct response *resp
                                               auth_stat);
 
           auth_err = *auth_stat;
+          xfree (auth_stat);
+          xfree (pth);
           if (auth_err == RETROK)
             {
               request_set_header (req, "Authorization", value, rel_value);
@@ -2464,8 +2466,6 @@ check_auth (const struct url *u, char *user, char *passwd, struct response *resp
                   register_basic_auth_host (u->host);
                 }
 
-              xfree (pth);
-              xfree (auth_stat);
               *retry = true;
               goto cleanup;
             }
