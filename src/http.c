@@ -4505,6 +4505,7 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
               && (hstat.statcode == 500 || hstat.statcode == 501))
             {
               got_head = true;
+              xfree (hurl);
               continue;
             }
           /* Maybe we should always keep track of broken links, not just in
@@ -4523,6 +4524,7 @@ Remote file does not exist -- broken link!!!\n"));
           else if (check_retry_on_http_error (hstat.statcode))
             {
               printwhat (count, opt.ntry);
+              xfree (hurl);
               continue;
             }
           else
