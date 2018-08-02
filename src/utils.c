@@ -924,6 +924,7 @@ open_stat(const char *fname, int flags, mode_t mode, file_stats_t *fstats)
   if (fstat (fd, &fdstats) == -1)
   {
     logprintf (LOG_NOTQUIET, _("Failed to stat file %s, error: %s\n"), fname, strerror(errno));
+    close (fd);
     return -1;
   }
 #if !(defined(WINDOWS) || defined(__VMS))
