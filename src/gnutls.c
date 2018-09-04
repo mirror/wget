@@ -565,6 +565,15 @@ set_prio_default (gnutls_session_t session)
       err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1", NULL);
       break;
 
+    case secure_protocol_tlsv1_3:
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0:+VERS-TLS1.3:-VERS-TLS1.0:-VERS-TLS1.1:-VERS-TLS1.2", NULL);
+      break;
+#else
+      logprintf (LOG_NOTQUIET, _("Your GnuTLS version is too old to support TLS 1.3\n"));
+      return -1;
+#endif
+
     case secure_protocol_pfs:
       err = gnutls_priority_set_direct (session, "PFS:-VERS-SSL3.0", NULL);
       if (err != GNUTLS_E_SUCCESS)
@@ -596,19 +605,38 @@ set_prio_default (gnutls_session_t session)
       allowed_protocols[0] = GNUTLS_TLS1_0;
       allowed_protocols[1] = GNUTLS_TLS1_1;
       allowed_protocols[2] = GNUTLS_TLS1_2;
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      allowed_protocols[3] = GNUTLS_TLS1_3;
+#endif
       err = gnutls_protocol_set_priority (session, allowed_protocols);
       break;
 
     case secure_protocol_tlsv1_1:
       allowed_protocols[0] = GNUTLS_TLS1_1;
       allowed_protocols[1] = GNUTLS_TLS1_2;
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      allowed_protocols[2] = GNUTLS_TLS1_3;
+#endif
       err = gnutls_protocol_set_priority (session, allowed_protocols);
       break;
 
     case secure_protocol_tlsv1_2:
       allowed_protocols[0] = GNUTLS_TLS1_2;
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      allowed_protocols[1] = GNUTLS_TLS1_3;
+#endif
       err = gnutls_protocol_set_priority (session, allowed_protocols);
       break;
+
+    case secure_protocol_tlsv1_3:
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      allowed_protocols[0] = GNUTLS_TLS1_3;
+      err = gnutls_protocol_set_priority (session, allowed_protocols);
+      break;
+#else
+      logprintf (LOG_NOTQUIET, _("Your GnuTLS version is too old to support TLS 1.3\n"));
+      return -1;
+#endif
 
     default:
       logprintf (LOG_NOTQUIET, _("GnuTLS: unimplemented 'secure-protocol' option value %d\n"), opt.secure_protocol);
