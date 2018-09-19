@@ -715,18 +715,39 @@ AS_IF([test "x$uuid_mode" = x1], [
 ])
 
 dnl
-dnl Check for PCRE
+dnl Check for PCRE2 / PCRE
 dnl
 
+AC_ARG_ENABLE(pcre2, AC_HELP_STRING([--disable-pcre2],
+                                   [Disable PCRE2 style regular expressions]))
 AC_ARG_ENABLE(pcre, AC_HELP_STRING([--disable-pcre],
                                    [Disable PCRE style regular expressions]))
 
-AS_IF([test "X$enable_pcre" != "Xno"],[
+AS_IF([test "X$enable_pcre2" != "Xno"],[
+  enable_pcre2=no
+  PKG_CHECK_MODULES([PCRE2], libpcre2-8, [
+    CFLAGS="$PCRE2_CFLAGS $CFLAGS"
+    LIBS="$PCRE2_LIBS $LIBS"
+    AC_DEFINE([HAVE_LIBPCRE2], [1], [Define if libpcre2 is available.])
+    enable_pcre2=yes
+  ], [
+    AC_CHECK_HEADER(pcre2.h, [
+      AC_CHECK_LIB(pcre2-8, pcre2_compile_8, [
+        LIBS="${LIBS} -lpcre2-8"
+        AC_DEFINE([HAVE_LIBPCRE2], 1, [Define if libpcre2 is available.])
+        enable_pcre2=yes
+      ])
+    ])
+  ])
+])
+
+AS_IF([test "X$enable_pcre" != "Xno" && test "X$enable_pcre2" != "Xyes"],[
   PKG_CHECK_MODULES([PCRE], libpcre, [
     CFLAGS="$PCRE_CFLAGS $CFLAGS"
     AC_CHECK_HEADER(pcre.h, [
       LIBS="$PCRE_LIBS $LIBS"
       AC_DEFINE([HAVE_LIBPCRE], [1], [Define if libpcre is available.])
+      enable_pcre=yes
     ])
   ], [
     AC_CHECK_HEADER(pcre.h, [
@@ -737,6 +758,8 @@ AS_IF([test "X$enable_pcre" != "Xno"],[
     ])
   ])
 ])
+
+AS_IF([test "X$enable_pcre2" = Xyes], [PCRE_INFO="yes, via libpcre2"], [test "X$enable_pcre" = Xyes], [PCRE_INFO="yes, via libpcre"], [PCRE_INFO=no])
 
 dnl
 dnl Check for libcares (resolver library)
@@ -817,6 +840,7 @@ AC_MSG_NOTICE([Summary of build options:
   SSL:               $with_ssl
   Zlib:              $with_zlib
   PSL:               $with_libpsl
+  PCRE:              $PCRE_INFO
   Digest:            $ENABLE_DIGEST
   NTLM:              $ENABLE_NTLM
   OPIE:              $ENABLE_OPIE

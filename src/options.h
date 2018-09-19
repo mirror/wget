@@ -92,7 +92,7 @@ struct options
   void *acceptregex;            /* Patterns to accept (a regex struct). */
   void *rejectregex;            /* Patterns to reject (a regex struct). */
   enum {
-#ifdef HAVE_LIBPCRE
+#if defined HAVE_LIBPCRE || HAVE_LIBPCRE2
     regex_type_pcre,
 #endif
     regex_type_posix

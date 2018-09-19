@@ -47,9 +47,6 @@ as that of the covered work.  */
 #endif
 
 #include <regex.h>
-#ifdef HAVE_LIBPCRE
-# include <pcre.h>
-#endif
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>
@@ -1636,7 +1633,7 @@ cmd_spec_regex_type (const char *com, const char *val, void *place_ignored _GL_U
 {
   static const struct decode_item choices[] = {
     { "posix", regex_type_posix },
-#ifdef HAVE_LIBPCRE
+#if defined HAVE_LIBPCRE || defined HAVE_LIBPCRE2
     { "pcre",  regex_type_pcre },
 #endif
   };

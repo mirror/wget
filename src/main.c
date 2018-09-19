@@ -995,7 +995,7 @@ Recursive accept/reject:\n"),
        --accept-regex=REGEX        regex matching accepted URLs\n"),
     N_("\
        --reject-regex=REGEX        regex matching rejected URLs\n"),
-#ifdef HAVE_LIBPCRE
+#if defined HAVE_LIBPCRE || defined HAVE_LIBPCRE2
     N_("\
        --regex-type=TYPE           regex type (posix|pcre)\n"),
 #else
@@ -1784,6 +1784,12 @@ for details.\n\n"));
   /* Compile the regular expressions.  */
   switch (opt.regex_type)
     {
+#ifdef HAVE_LIBPCRE2
+      case regex_type_pcre:
+        opt.regex_compile_fun = compile_pcre2_regex;
+        opt.regex_match_fun = match_pcre2_regex;
+        break;
+#endif
 #ifdef HAVE_LIBPCRE
       case regex_type_pcre:
         opt.regex_compile_fun = compile_pcre_regex;
