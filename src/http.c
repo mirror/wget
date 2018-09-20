@@ -648,10 +648,13 @@ resp_new (char *head)
         {
           char *end = strchr (hdr, '\n');
 
-          if (end)
-            hdr = end + 1;
-          else
-            hdr += strlen (hdr);
+          if (!end)
+            {
+              hdr += strlen (hdr);
+              break;
+            }
+
+          hdr = end + 1;
 
           if (*hdr != ' ' && *hdr != '\t')
             break;
