@@ -493,35 +493,6 @@ else
   fi
 fi
 
-dnl
-dnl Check for libmetalink
-dnl
-AS_IF([test x"$with_metalink" != xno], [
-  PKG_CHECK_MODULES([METALINK], libmetalink, [
-      LIBS="$METALINK_LIBS $LIBS"
-      CFLAGS="$METALINK_CFLAGS $CFLAGS"
-      AC_DEFINE([HAVE_METALINK], [1], [Define if using metalink.])
-      with_metalink=yes
-    ], [
-      with_metalink=no
-    ])
-
-  have_gpg=no
-  AS_IF([test x"$with_metalink" = xyes], [
-    dnl
-    dnl Check for GPGME
-    dnl
-    m4_ifdef([AM_PATH_GPGME], [
-      AM_PATH_GPGME([], [
-        LIBS="$GPGME_LIBS $LIBS"
-        CFLAGS="$GPGME_CFLAGS $CFLAGS"
-        AC_DEFINE([HAVE_GPGME], [1], [Define if GPGME is available.])
-        have_gpg=yes
-      ])
-    ])
-  ])
-])
-
 dnl **********************************************************************
 dnl Checks for IPv6
 dnl **********************************************************************
@@ -784,6 +755,38 @@ AS_IF([test "X$with_cares" = "Xyes"],[
   ])
 ], [
   RESOLVER_INFO="libc, --bind-dns-address and --dns-servers not available"
+])
+
+dnl
+dnl Check for libmetalink
+dnl
+AS_IF([test x"$with_metalink" != xno], [
+  PKG_CHECK_MODULES([METALINK], libmetalink, [
+      LIBS="$METALINK_LIBS $LIBS"
+      CFLAGS="$METALINK_CFLAGS $CFLAGS"
+      AC_DEFINE([HAVE_METALINK], [1], [Define if using metalink.])
+      with_metalink=yes
+    ], [
+      with_metalink=no
+    ])
+
+  have_gpg=no
+  AS_IF([test x"$with_metalink" = xyes], [
+    dnl
+    dnl Check for GPGME
+    dnl
+    m4_ifdef([AM_PATH_GPGME], [
+      AM_PATH_GPGME([], [
+        # Put libgpgme to the end of the library list since it introduces a -L linker flags.
+        # That -L might break the build if there are two different version of
+        # a library (e.g. GnuTLS) in /usr/local and in the system directory.
+        LIBS="$LIBS $GPGME_LIBS"
+        CFLAGS="$GPGME_CFLAGS $CFLAGS"
+        AC_DEFINE([HAVE_GPGME], [1], [Define if GPGME is available.])
+        have_gpg=yes
+      ])
+    ])
+  ])
 ])
 
 dnl
