@@ -1,0 +1,7 @@
+extraction:
+  cpp:
+    prepare:
+      packages:
+        - libgpgme11-dev
+    configure:
+      command: ./bootstrap && ./configure
