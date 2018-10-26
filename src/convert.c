@@ -322,8 +322,8 @@ convert_links (const char *file, struct urlpos *links)
             xfree (newname);
             xfree (quoted_newname);
             ++to_file_count;
-            break;
           }
+          break;
         case CO_CONVERT_BASENAME_ONLY:
           {
             char *newname = convert_basename (p, link);
