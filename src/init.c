@@ -885,8 +885,10 @@ parse_line (const char *line, char **com, char **val, int *comind)
 
 #if defined(WINDOWS) || defined(MSDOS)
 # define ISSEP(c) ((c) == '/' || (c) == '\\')
+# define SEPSTRING "/\\"
 #else
 # define ISSEP(c) ((c) == '/')
+# define SEPSTRING "/"
 #endif
 
 /* Run commands[comind].action. */
@@ -927,8 +929,7 @@ setval_internal_tilde (int comind, const char *com, const char *val)
           xfree (*pstring);
 
           /* Skip the leading "~/". */
-          for (++val; ISSEP (*val); val++)
-            ;
+          val += strspn(val + 1, SEPSTRING) + 1;
           *pstring = concat_strings (home, "/", val, (char *)0);
           xfree (home);
         }
