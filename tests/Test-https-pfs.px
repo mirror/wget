@@ -20,13 +20,6 @@ my %urls = (
     },
 );
 
-# Skip the test if openssl is not available
-my $ossl = `openssl version`;
-unless ($ossl =~ m/OpenSSL 1/)
-{
-  exit 77;
-}
-
 my $srcdir;
 if (@ARGV) {
     $srcdir = shift @ARGV;
