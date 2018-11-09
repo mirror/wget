@@ -3966,16 +3966,6 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
     }
 
   if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE
-      && hs->restval < (contlen + contrange))
-    {
-      /* The file was not completely downloaded,
-         yet the server claims the range is invalid.
-         Bail out.  */
-      CLOSE_INVALIDATE (sock);
-      retval = RANGEERR;
-      goto cleanup;
-    }
-  if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE
       || (!opt.timestamping && hs->restval > 0 && statcode == HTTP_STATUS_OK
           && contrange == 0 && contlen >= 0 && hs->restval >= contlen))
     {
