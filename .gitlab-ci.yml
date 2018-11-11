@@ -4,7 +4,7 @@
 # name to allow expiration of old caches.
 
 cache:
-  key: "$CI_JOB_NAME-ver4"
+  key: "$CI_JOB_NAME-ver5"
   paths:
     - cache/
 
@@ -34,7 +34,7 @@ variables:
   GET_SOURCES_ATTEMPTS: "3"
   GIT_DEPTH: "5"
   CONFIGURE_BASE_FLAGS: --enable-assert --cache-file cache/config.cache
-  CFLAGS_DEFAULT: -O0 -g -ggdb3
+  CFLAGS_DEFAULT: -O0 -g -ggdb3 -Wall -Wextra
 
 
 VPATH/Debian:
@@ -42,7 +42,7 @@ VPATH/Debian:
   script:
     - cp -a /builds/common/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
-    - ./bootstrap --skip-po && touch .manywarnings
+    - ./bootstrap --skip-po
     - mkdir vpath && cd vpath
     - ../configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
     - make -j$(nproc)
@@ -65,22 +65,41 @@ VPATH/Debian:
 #  * build/valgrind-check
 #  * build/asan-check
 #  * build w/Werror and ubsan-check
-Debian GNU/Linux build:
+OpenSSL/Debian:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
   - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
   - cat /etc/hosts
-  - touch .manywarnings
   - alias make="make -j$(nproc)"
   - ./bootstrap --skip-po
-  - ./configure -C --with-ssl=gnutls
+  - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=gnutls
   - make syntax-check
   - make check
   - make distcheck
   - make check-valgrind
-  - ./configure -C --with-ssl=openssl
-  - make clean
+  tags:
+  - shared
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+GnuTLS/Debian:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
+  script:
+  - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
+  - cat /etc/hosts
+  - alias make="make -j$(nproc)"
+  - ./bootstrap --skip-po
+  - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=openssl
+  - make syntax-check
   - make check
+  - make distcheck
+  - make check-valgrind
   tags:
   - shared
   artifacts:
