@@ -102,7 +102,14 @@ echo ""
 build-aux/announce-gen --release-type "$REL_TYPE" --package-name "$APP_LOWER" --previous-version="$PREV_VER" --current-version "$CUR_VER" --gpg-key-id="$GPG_KEY" --url-directory "https://${REL_LOC}/gnu/${APP_LOWER}" --news=NEWS > "$APP_NAME-$APP_VER.announce"
 
 echo ""
-echo "Announce email template placed at $APP_NAME-$APP_VER.announce"
+echo "Remaining Release Checklist:
+  1. Send a mail to coordinator@translationproject.org with the subject
+	 \"Requesting Translations for $APP_NAME-$APP_VER.POT\"
+  2. Announce email template placed at $APP_NAME-$APP_VER.announce.
+     Send an announce mail to info-gnu@gnu.org
+"
+
+echo ""
 
 prev_tag=$(git tag | tail -2 | head -1)
 echo ""
