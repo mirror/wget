@@ -33,7 +33,7 @@ dnl
 AC_INIT([wget],
         m4_esyscmd([build-aux/git-version-gen .tarball-version]),
 	[bug-wget@gnu.org])
-AC_PREREQ(2.61)
+AC_PREREQ(2.63)
 
 dnl
 dnl What version of Wget are we building?
