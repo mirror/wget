@@ -2626,6 +2626,12 @@ ftp_retrieve_glob (struct url *u, struct url *original_url,
           continue;
         }
 
+      if (!accept_url (f->name))
+        {
+          logprintf (LOG_VERBOSE, _("%s is excluded/not-included through regex.\n"), f->name);
+          f = delelement (f, &start);
+          continue;
+        }
 
       /* Now weed out the files that do not match our globbing pattern.
          If we are dealing with a globbing pattern, that is.  */
@@ -2657,8 +2663,6 @@ ftp_retrieve_glob (struct url *u, struct url *original_url,
                 }
             }
         }
-
-
       f = f->next;
     }
 
