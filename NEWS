@@ -5,6 +5,9 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget X.YY
+
+
 * Changes in Wget 1.20
 
 ** Add new option `--retry-on-host-error` to treat local errors as transient
