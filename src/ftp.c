@@ -1580,7 +1580,7 @@ Error in server response, closing control connection.\n"));
 
 #ifdef ENABLE_XATTR
   if (opt.enable_xattr)
-    set_file_metadata (u->url, NULL, fp);
+    set_file_metadata (u, NULL, fp);
 #endif
 
   fd_close (local_sock);

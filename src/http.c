@@ -4113,9 +4113,9 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   if (opt.enable_xattr)
     {
       if (original_url != u)
-        set_file_metadata (u->url, original_url->url, fp);
+        set_file_metadata (u, original_url, fp);
       else
-        set_file_metadata (u->url, NULL, fp);
+        set_file_metadata (u, NULL, fp);
     }
 #endif
 
