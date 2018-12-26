@@ -5,7 +5,15 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.YY
+* Changes in Wget 1.20.1
+
+** --xattr is no longer default since it introduces privacy issues.
+
+** --xattr saves the Referer as scheme/host/port, user/pw/path/query/fragment
+   are no longer saved to prevent privacy issues.
+
+** --xattr saves the Original URL without user/password to prevent
+   privacy issues.
 
 
 * Changes in Wget 1.20
