@@ -540,6 +540,14 @@ right NUMBER.
 Set preferred location for Metalink resources. This has effect if multiple
 resources with same priority are available.
 
+@cindex xattr
+@item --xattr
+Enable use of file system's extended attributes to save the
+original URL and the Referer HTTP header value if used.
+
+Be aware that the URL might contain private information like
+access tokens or credentials.
+
 
 @cindex force html
 @item -F

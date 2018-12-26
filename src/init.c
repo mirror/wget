@@ -507,11 +507,7 @@ defaults (void)
   opt.hsts = true;
 #endif
 
-#ifdef ENABLE_XATTR
-  opt.enable_xattr = true;
-#else
   opt.enable_xattr = false;
-#endif
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
