@@ -209,6 +209,9 @@ typedef double SUM_SIZE_INT;
 
 /* Everything uses this, so include them here directly.  */
 #include <alloca.h>
+#ifdef __cplusplus
+#  undef _Noreturn
+#endif
 #include "xalloc.h"
 
 /* Likewise for logging functions.  */
