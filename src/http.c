@@ -388,7 +388,7 @@ request_send (const struct request *req, int fd, FILE *warc_tmp)
 }
 
 /* Release the resources used by REQ.
-   It is safe to call it with a vaild pointer to a NULL pointer.
+   It is safe to call it with a valid pointer to a NULL pointer.
    It is not safe to call it with an invalid or NULL pointer.  */
 
 static void
@@ -1077,7 +1077,7 @@ modify_param_name (param_token *name)
   return result;
 }
 
-/* extract_param extract the paramater value into VALUE.
+/* extract_param extract the parameter value into VALUE.
    Like modify_param_name this function modifies VALUE by
    stripping off the encoding information from the actual value
 */
@@ -1355,7 +1355,7 @@ static struct {
   char *host;
   int port;
 
-  /* Whether a ssl handshake has occoured on this connection.  */
+  /* Whether a ssl handshake has occurred on this connection.  */
   bool ssl;
 
   /* Whether the connection was authorized.  This is only done by
@@ -5365,8 +5365,8 @@ test_parse_content_disposition (void)
     { "attachment; filename=\"file.ext\"", "file.ext", true },
     { "attachment; filename=\"file.ext\"; dummy", "file.ext", true },
     { "attachment", NULL, false },
-    { "attachement; filename*=UTF-8'en-US'hello.txt", "hello.txt", true },
-    { "attachement; filename*0=\"hello\"; filename*1=\"world.txt\"",
+    { "attachment; filename*=UTF-8'en-US'hello.txt", "hello.txt", true },
+    { "attachment; filename*0=\"hello\"; filename*1=\"world.txt\"",
       "helloworld.txt", true },
     { "attachment; filename=\"A.ext\"; filename*=\"B.ext\"", "B.ext", true },
     { "attachment; filename*=\"A.ext\"; filename*0=\"B\"; filename*1=\"B.ext\"",

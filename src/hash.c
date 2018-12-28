@@ -199,7 +199,7 @@ struct hash_table {
    being HASHFUN.  */
 #define HASH_POSITION(key, hashfun, size) ((hashfun) (key) % size)
 
-/* Find a prime near, but greather than or equal to SIZE.  The primes
+/* Find a prime near, but greater than or equal to SIZE.  The primes
    are looked up from a table with a selection of primes convenient
    for this purpose.
 

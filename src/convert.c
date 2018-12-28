@@ -255,9 +255,9 @@ convert_links (const char *file, struct urlpos *links)
     write_backup_file (file, downloaded_file_return);
 
   /* Before opening the file for writing, unlink the file.  This is
-     important if the data in FM is mmaped.  In such case, nulling the
+     important if the data in FM is mapped.  In such case, nulling the
      file, which is what fopen() below does, would make us read all
-     zeroes from the mmaped region.  */
+     zeroes from the mapped region.  */
   if (unlink (file) < 0 && errno != ENOENT)
     {
       logprintf (LOG_NOTQUIET, _("Unable to delete %s: %s\n"),

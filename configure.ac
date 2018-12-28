@@ -51,7 +51,7 @@ dnl
 AM_INIT_AUTOMAKE([1.9])
 
 dnl
-dnl Get cannonical host
+dnl Get canonical host
 dnl
 AC_CANONICAL_HOST
 AC_DEFINE_UNQUOTED([OS_TYPE], "$host_os",

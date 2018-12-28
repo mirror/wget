@@ -1817,7 +1817,7 @@ Set the cipher list string. Typically this string sets the
 cipher suites and other SSL/TLS options that the user wish should be used, in a
 set order of preference (GnuTLS calls it 'priority string'). This string
 will be fed verbatim to the SSL/TLS engine (OpenSSL or GnuTLS) and hence
-its format and syntax is dependant on that. Wget will not process or manipulate it
+its format and syntax is dependent on that. Wget will not process or manipulate it
 in any way. Refer to the OpenSSL or GnuTLS documentation for more information.
 
 @cindex SSL certificate, check
@@ -2005,7 +2005,7 @@ the same time over the HSTS database. Before dumping the updated HSTS entries
 on the file, Wget will re-read it and merge the changes.
 
 Using a custom HSTS database and/or modifying an existing one is discouraged.
-For more information about the potential security threats arised from such practice,
+For more information about the potential security threats arose from such practice,
 see section 14 "Security Considerations" of RFC 6797, specially section 14.9
 "Creative Manipulation of HSTS Policy Store".
 @end table
@@ -4198,7 +4198,7 @@ from the debug log before sending it to the bug address.  The
 @code{-d} won't go out of its way to collect sensitive information,
 but the log @emph{will} contain a fairly complete transcript of Wget's
 communication with the server, which may include passwords and pieces
-of downloaded data.  Since the bug address is publically archived, you
+of downloaded data.  Since the bug address is publicly archived, you
 may assume that all bug reports are visible to the public.
 
 @item
@@ -4447,7 +4447,7 @@ Tomislav Petrović, Mario Mikočević---many bug reports and
 suggestions.
 
 @item
-François Pinard---many thorough bug reports and discussions.
+Françis Pinard---many thorough bug reports and discussions.
 
 @item
 Karl Eichwalder---lots of help with internationalization, Makefile

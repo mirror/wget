@@ -70,7 +70,7 @@ as that of the covered work.  */
 # endif
 #endif /* ENABLE_IPV6 */
 
-/* Fill SA as per the data in IP and PORT.  SA shoult point to struct
+/* Fill SA as per the data in IP and PORT.  SA should point to struct
    sockaddr_storage if ENABLE_IPV6 is defined, to struct sockaddr_in
    otherwise.  */
 
@@ -714,7 +714,7 @@ select_fd (int fd, double maxtime, int wait_for)
   return result;
 }
 
-/* Return true iff the connection to the remote site established
+/* Return true if the connection to the remote site established
    through SOCK is still open.
 
    Specifically, this function returns true if SOCK is not ready for

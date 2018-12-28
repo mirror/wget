@@ -904,7 +904,7 @@ ftp_epsv (int csock, ip_address *ip, int *port)
   for (tport = 0, i = 0; i < 5 && c_isdigit (*s); i++, s++)
       tport = (*s - '0') + 10 * tport;
 
-  /* Make sure that the response terminates correcty */
+  /* Make sure that the response terminates correctly */
   if (*s++ != delim)
     {
       xfree (respline);

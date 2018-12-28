@@ -900,7 +900,7 @@ path_matches (const char *full_path, const char *prefix)
   return len + 1;
 }
 
-/* Return true iff COOKIE matches the provided parameters of the URL
+/* Return true if COOKIE matches the provided parameters of the URL
    being downloaded: HOST, PORT, PATH, and SECFLAG.
 
    If PATH_GOODNESS is non-NULL, store the "path goodness" value

@@ -994,7 +994,7 @@ ftp_parse_vms_ls (FILE *fp)
 
 /* This function switches between the correct parsing routine depending on
    the SYSTEM_TYPE. The system type should be based on the result of the
-   "SYST" response of the FTP server. According to this repsonse we will
+   "SYST" response of the FTP server. According to this response we will
    use on of the three different listing parsers that cover the most of FTP
    servers used nowadays.  */
 

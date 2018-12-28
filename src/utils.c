@@ -616,7 +616,7 @@ file_non_directory_p (const char *path)
 }
 
 /* Return the size of file named by FILENAME, or -1 if it cannot be
-   opened or seeked into. */
+   opened or sought into. */
 wgint
 file_size (const char *filename)
 {

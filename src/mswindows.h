@@ -48,7 +48,7 @@ as that of the covered work.  */
 # define EAI_SYSTEM -1   /* value doesn't matter */
 #endif
 
-/* Declares file access functions, such as open, creat, access, and
+/* Declares file access functions, such as open, create, access, and
    chmod.  Unix declares these in unistd.h and fcntl.h.  */
 #include <io.h>
 

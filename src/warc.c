@@ -490,7 +490,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
 
           if (n == 0)
             {
-              /* Check for the error flag IFF N == 0, so that we don't
+              /* Check for the error flag IF N == 0, so that we don't
                  exit the loop after a partial read due to e.g., EAGAIN
                  or EWOULDBLOCK.  */
               if (ferror (stream))
