@@ -111,6 +111,32 @@ GnuTLS/Debian:
       - tests/*.log
       - testenv/*.log
 
+Minimal/Debian:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
+  script:
+    - cp -a /builds/common/gnulib .
+    - export CFLAGS=$CFLAGS_DEFAULT
+    - ./bootstrap --skip-po
+    - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
+      --disable-nls --without-ssl --enable-ipv6 --without-zlib --without-libiconv-prefix
+      --disable-iri --disable-ntlm --disable-pcre --without-libpsl --without-libuuid
+      --without-libintl-prefix
+    - make -j$(nproc)
+    - make -j$(nproc) check
+    - make check-valgrind
+  tags:
+    - shared
+    - docker
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+
 #Centos7 build:
 #  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$CENTOS7_BUILD
 #  script:
