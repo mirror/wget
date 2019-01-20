@@ -2005,7 +2005,9 @@ cleanup (void)
 
   xfree (opt.encoding_remote);
   xfree (opt.locale);
+#ifdef HAVE_HSTS
   xfree (opt.hsts_file);
+#endif
 
   xfree (opt.wgetrcfile);
   xfree (opt.homedir);
