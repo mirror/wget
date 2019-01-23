@@ -1402,10 +1402,10 @@ to the inability of server-side scripts to cope with the connections.
 @cindex cache
 @item --no-cache
 Disable server-side cache.  In this case, Wget will send the remote
-server an appropriate directive (@samp{Pragma: no-cache}) to get the
-file from the remote service, rather than returning the cached version.
-This is especially useful for retrieving and flushing out-of-date
-documents on proxy servers.
+server appropriate directives (@samp{Cache-Control: no-cache} and
+@samp{Pragma: no-cache}) to get the file from the remote service,
+rather than returning the cached version. This is especially useful
+for retrieving and flushing out-of-date documents on proxy servers.
 
 Caching is allowed by default.
 
