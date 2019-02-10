@@ -1,6 +1,6 @@
 /* File retrieval.
-   Copyright (C) 1996-2011, 2014-2015, 2018 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2011, 2014-2015, 2018-2019 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 

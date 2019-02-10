@@ -1,5 +1,6 @@
 /* NTLM code.
-   Copyright (C) 2005-2011, 2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 2005-2011, 2015, 2018-2019 Free Software Foundation,
+   Inc.
    Contributed by Daniel Stenberg.
 
 This file is part of GNU Wget.

@@ -1,6 +1,6 @@
 # getpagesize.m4 serial 7
-dnl Copyright (C) 2002, 2004-2005, 2007, 2010-2011, 2018 Free Software
-dnl Foundation, Inc.
+dnl Copyright (C) 2002, 2004-2005, 2007, 2010-2011, 2018-2019 Free
+dnl Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.

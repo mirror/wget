@@ -1,5 +1,6 @@
 /* SSL support.
-   Copyright (C) 2000-2012, 2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 2000-2012, 2015, 2018-2019 Free Software Foundation,
+   Inc.
    Originally contributed by Christian Fraenkel.
 
 This file is part of GNU Wget.
