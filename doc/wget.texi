@@ -863,7 +863,7 @@ files.  In such a case, wget could simply be invoked with this parameter to get
 a much cleaner output on the screen.
 
 This option will also force the progress bar to be printed to @file{stderr} when
-used alongside the @samp{--logfile} option.
+used alongside the @samp{--output-file} option.
 
 @item -N
 @itemx --timestamping
