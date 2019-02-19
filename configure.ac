@@ -290,7 +290,8 @@ AC_CHECK_TYPES(sig_atomic_t, [], [], [
 #include <signal.h>
 ])
 
-# gnulib
+# gnulib, AM_ICONV should be placed before gl_INIT
+AM_ICONV
 gl_INIT
 
 dnl
@@ -627,8 +628,6 @@ AC_ARG_ENABLE(iri,
 )
 
 AS_IF([test "X$iri" != "Xno"],[
-  AM_ICONV
-
   if test "X$am_cv_func_iconv" != "Xyes"; then
     iri=no
     if test "X$force_iri" = "Xyes"; then
