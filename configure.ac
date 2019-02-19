@@ -103,6 +103,15 @@ AC_ARG_ENABLE([fuzzing],
 #AC_SUBST([FUZZ_LIBS])
 AM_CONDITIONAL([FUZZING], [test "$enable_fuzzing" = "yes"])
 
+dnl needed for some fuzzers
+OLD_LIBS="$LIBS"
+AC_SEARCH_LIBS([dlopen], [dl dld])
+if [[ "${ac_cv_search_dlopen#-l}" != "${ac_cv_search_dlopen}" ]]; then
+  FUZZ_LIBS="${ac_cv_search_dlopen}"
+  AC_SUBST([FUZZ_LIBS])
+fi
+LIBS="$OLD_LIBS"
+
 dnl Opie: Support for opie s/key FTP logins
 AC_ARG_ENABLE([opie],
   [AS_HELP_STRING([--disable-opie], [disable support for opie or s/key FTP login])],
