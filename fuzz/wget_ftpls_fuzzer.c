@@ -71,14 +71,13 @@ void exit(int status)
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
-	FILE *fp, *bak;
+	FILE *fp;
 	struct fileinfo *fi;
 
 	if (size > 4096) // same as max_len = ... in .options file
 		return 0;
 
-	bak = stderr;
-	stderr = fopen("/dev/null", "w");
+	CLOSE_STDERR
 
 	fp = fmemopen((void *) data, size, "r");
 	if (!fp) return 0;
@@ -100,8 +99,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 
 	fclose(fp);
 
-	fclose(stderr);
-	stderr = bak;
+	RESTORE_STDERR
 
 	return 0;
 }

@@ -20,6 +20,16 @@
 #include <stddef.h> // size_t
 #include <stdint.h> // uint8_t
 
+#define CLOSE_STDERR \
+	int bak = dup(STDERR_FILENO); \
+	int fd = open("/dev/null", O_WRONLY); \
+	dup2(fd, STDERR_FILENO); \
+	close(fd);
+
+#define RESTORE_STDERR \
+	dup2(bak, STDERR_FILENO); \
+	close(bak);
+
 #ifdef __cplusplus
 extern "C"
 #endif

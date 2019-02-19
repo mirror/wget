@@ -25,6 +25,8 @@
 #include <string.h>  // strncmp
 #include <stdlib.h>  // free
 #include <unistd.h>  // close
+#include <fcntl.h>  // open flags
+#include <unistd.h>  // close
 
 #include "wget.h"
 #undef fopen_wgetrc
@@ -68,7 +70,6 @@ void exit(int status)
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
-	FILE *bak;
 	struct url *url;
 	struct iri iri;
 	char *in;
@@ -76,8 +77,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 	if (size > 4096) // same as max_len = ... in .options file
 		return 0;
 
-	bak = stderr;
-	stderr = fopen("/dev/null", "w");
+	CLOSE_STDERR
 
 	in = (char *) malloc(size + 1);
 	memcpy(in, data, size);
@@ -103,8 +103,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 	free(iri.orig_url);
 	free(in);
 
-	fclose(stderr);
-	stderr = bak;
+	RESTORE_STDERR
 
 	return 0;
 }

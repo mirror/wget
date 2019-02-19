@@ -83,8 +83,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 	g_data = data;
 	g_size = size;
 
-	FILE *bak = stderr;
-	stderr = fopen("/dev/null", "w");
+	CLOSE_STDERR
 
 	if (setjmp(jmpbuf))
 		goto done;
@@ -94,8 +93,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 done:
 	cleanup();
 
-	fclose(stderr);
-	stderr = bak;
+	RESTORE_STDERR
 
 	return 0;
 }

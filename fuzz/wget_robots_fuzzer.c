@@ -71,14 +71,12 @@ void exit(int status)
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
-	FILE *fp, *bak;
 	struct robot_specs *specs;
 
 	if (size > 4096) // same as max_len = ... in .options file
 		return 0;
 
-	bak = stderr;
-	stderr = fopen("/dev/null", "w");
+	CLOSE_STDERR
 
 	specs = res_parse((char *) data, (int) size);
 	if (!specs)
@@ -90,8 +88,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 
 	res_cleanup();
 
-	fclose(stderr);
-	stderr = bak;
+	RESTORE_STDERR
 
 	return 0;
 }
