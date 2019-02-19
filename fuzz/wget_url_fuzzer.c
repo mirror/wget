@@ -62,10 +62,6 @@ FILE *fopen_wgetrc(const char *pathname, const char *mode)
 void exit_wget(int status)
 {
 }
-#else
-void exit(int status)
-{
-}
 #endif
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
