@@ -1,4 +1,4 @@
-AM_CFLAGS = $(WERROR_CFLAGS) $(WARN_CFLAGS) -Wno-unused-parameter -Wno-pedantic
+AM_CFLAGS = $(WERROR_CFLAGS) $(WARN_CFLAGS)
 AM_CPPFLAGS = -I$(top_srcdir)/src -I$(srcdir) -I$(top_builddir)/lib -I$(top_srcdir)/lib \
  -DSRCDIR=\"$(abs_srcdir)\"
 LDADD = ../lib/libgnu.a \
