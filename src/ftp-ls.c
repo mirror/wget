@@ -857,8 +857,7 @@ ftp_parse_vms_ls (FILE *fp)
             {
               /* Date. */
               DEBUGP (("Date.\n"));
-              strcpy( date_str, tok);
-              strcat( date_str, " ");
+				  snprintf(date_str, sizeof(date_str), "%s ", tok);
             }
           else if ((strlen (tok) < 12) && (strchr( tok, ':') != NULL))
             {
