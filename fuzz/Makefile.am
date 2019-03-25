@@ -16,7 +16,8 @@ WGET_TESTS = \
  wget_netrc_fuzzer$(EXEEXT) \
  wget_options_fuzzer$(EXEEXT) \
  wget_robots_fuzzer$(EXEEXT) \
- wget_url_fuzzer$(EXEEXT)
+ wget_url_fuzzer$(EXEEXT) \
+ wget_read_hunk_fuzzer$(EXEEXT)
 
 if FUZZING
   bin_PROGRAMS = $(WGET_TESTS)
@@ -59,6 +60,9 @@ wget_robots_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_url_fuzzer_SOURCES = wget_url_fuzzer.c $(MAIN)
 wget_url_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
+wget_read_hunk_fuzzer_SOURCES = wget_read_hunk_fuzzer.c $(MAIN)
+wget_read_hunk_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 #EXTRA_DIST = $(wildcard *.options) $(wildcard *.dict) \
 # $(wildcard *.in) $(wildcard *.repro)

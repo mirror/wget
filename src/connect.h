@@ -78,5 +78,6 @@ int fd_write (int, char *, int, double);
 int fd_peek (int, char *, int, double);
 const char *fd_errstr (int);
 void fd_close (int);
+void connect_cleanup (void);
 
 #endif /* CONNECT_H */

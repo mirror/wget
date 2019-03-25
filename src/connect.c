@@ -1042,3 +1042,18 @@ fd_close (int fd)
       ++transport_map_modified_tick;
     }
 }
+
+void
+connect_cleanup(void)
+{
+  if (transport_map)
+    {
+      hash_table_iterator iter;
+      for (hash_table_iterate (transport_map, &iter); hash_table_iter_next (&iter); )
+        {
+          xfree (iter.value);
+        }
+      hash_table_destroy (transport_map);
+      transport_map = NULL;
+    }
+}
