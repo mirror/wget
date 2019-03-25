@@ -553,7 +553,7 @@ response_head_terminator (const char *start, const char *peeked, int peeklen)
           return p + 2;
       }
   /* p==end-2: check for \n\n directly preceding END. */
-  if (p[0] == '\n' && p[1] == '\n')
+  if (peeklen >= 2 && p[0] == '\n' && p[1] == '\n')
     return p + 2;
 
   return NULL;
