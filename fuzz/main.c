@@ -51,11 +51,12 @@ static int test_all_from(const char *dirname)
 			char fname[strlen(dirname) + strlen(dp->d_name) + 2];
 			snprintf(fname, sizeof(fname), "%s/%s", dirname, dp->d_name);
 
-                        struct file_memory *fmem;
+			struct file_memory *fmem;
 			if ((fmem = wget_read_file(fname))) {
 				printf("testing %ld bytes from '%s'\n", fmem->length, fname);
+				fflush(stdout);
 				LLVMFuzzerTestOneInput((uint8_t *)fmem->content, fmem->length);
-                                wget_read_file_free(fmem);
+				wget_read_file_free(fmem);
 			}
 		}
 		closedir(dirp);
