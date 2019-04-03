@@ -328,6 +328,7 @@ ssl_init (void)
   SSL_CTX_set_default_verify_paths (ssl_ctx);
   SSL_CTX_load_verify_locations (ssl_ctx, opt.ca_cert, opt.ca_directory);
 
+#ifdef X509_V_FLAG_PARTIAL_CHAIN
   /* Set X509_V_FLAG_PARTIAL_CHAIN to allow the client to anchor trust in
    * a non-self-signed certificate. This defies RFC 4158 (Path Building)
    * which defines a trust anchor in terms of a self-signed certificate.
@@ -356,6 +357,7 @@ ssl_init (void)
       logprintf(LOG_NOTQUIET, _("OpenSSL: Failed to allocate verification param\n"));
       /* We continue on error */
     }
+#endif
 
   if (opt.crl_file)
     {
