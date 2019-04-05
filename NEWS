@@ -5,12 +5,14 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.20.3
+
+** Fixed a buffer overflow vulnerability
+
 
 * Changes in Wget 1.20.2
 
 ** NTLM authentication will retry under certain cases
-
-** Fixed a buffer overflow vulnerability
 
 
 * Changes in Wget 1.20.1
