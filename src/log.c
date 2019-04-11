@@ -427,6 +427,9 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
   FILE *fp = get_log_fp ();
   FILE *warcfp = get_warc_log_fp ();
 
+  if (fp == NULL)
+      return false;
+
   if (!save_context_p && warcfp == NULL)
     {
       /* In the simple case just call vfprintf(), to avoid needless
