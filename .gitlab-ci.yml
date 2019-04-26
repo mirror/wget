@@ -40,7 +40,7 @@ variables:
 VPATH/Debian:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-    - cp -a /builds/common/gnulib .
+    - cp -a /usr/local/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po
     - mkdir vpath && cd vpath
@@ -114,7 +114,7 @@ GnuTLS/Debian:
 Minimal/Debian:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-    - cp -a /builds/common/gnulib .
+    - cp -a /usr/local/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po
     - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
