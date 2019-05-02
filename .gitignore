@@ -14,6 +14,7 @@
 /config.status
 /configure
 /lib/
+!/lib/Makefile.am
 /maint.mk
 # Wildcard Ignores
 *~
