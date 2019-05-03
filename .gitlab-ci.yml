@@ -3,6 +3,10 @@
 # to speed up compilation. We include a version number in cache
 # name to allow expiration of old caches.
 
+stages:
+  - stage1-testing
+  - stage2-tarball
+
 cache:
   key: "$CI_JOB_NAME-ver5"
   paths:
@@ -20,12 +24,13 @@ after_script:
   # somehow after_script loses environment
   - export CCACHE_BASEDIR=${PWD}
   - export CCACHE_DIR=${PWD}/cache
-  - ccache -s
+  - if which ccache >/dev/null; then ccache -s; fi
 
 variables:
   BUILD_IMAGES_PROJECT: gnuwget/build-images
   DEBIAN_BUILD: buildenv-debian-stretch
-  FEDORA_BUILD: buildenv-f27
+  DEBIAN_TESTING_BUILD: buildenv-debian-testing
+  FEDORA_BUILD: buildenv-fedora
   CENTOS7_BUILD: buildenv-centos7
   MINGW_BUILD: buildenv-mingw
   ALPINE_BUILD: buildenv-alpine
@@ -34,19 +39,21 @@ variables:
   GET_SOURCES_ATTEMPTS: "3"
   GIT_DEPTH: "5"
   CONFIGURE_BASE_FLAGS: --enable-assert --cache-file cache/config.cache
-  CFLAGS_DEFAULT: -O0 -g -ggdb3 -Wall -Wextra
+  CFLAGS_DEFAULT: -O0 -g -ggdb3
 
 
 VPATH/Debian:
+  stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
     - cp -a /usr/local/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
-    - ./bootstrap --skip-po
+    - ./bootstrap --skip-po && touch .manywarnings
     - mkdir vpath && cd vpath
     - ../configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
     - make -j$(nproc)
     - make -j$(nproc) distcheck
+    - mv wget-*.gz ..
   tags:
     - shared
     - docker
@@ -58,6 +65,11 @@ VPATH/Debian:
       - fuzz/*.log
       - tests/*.log
       - testenv/*.log
+  artifacts:
+    expire_in: 2 weeks
+    when: on_success
+    paths:
+      - wget-*.gz
 
 # In this build we combine
 #  * syntax-check
@@ -66,29 +78,7 @@ VPATH/Debian:
 #  * build/asan-check
 #  * build w/Werror and ubsan-check
 OpenSSL/Debian:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
-  script:
-  - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
-  - cat /etc/hosts
-  - alias make="make -j$(nproc)"
-  - ./bootstrap --skip-po
-  - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=gnutls
-  - make syntax-check
-  - make check
-  - make distcheck
-  - make check-valgrind
-  tags:
-  - shared
-  artifacts:
-    expire_in: 2 weeks
-    when: on_failure
-    paths:
-      - ./*.log
-      - fuzz/*.log
-      - tests/*.log
-      - testenv/*.log
-
-GnuTLS/Debian:
+  stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
   - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
@@ -111,7 +101,32 @@ GnuTLS/Debian:
       - tests/*.log
       - testenv/*.log
 
+GnuTLS/Debian:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
+  script:
+  - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
+  - cat /etc/hosts
+  - alias make="make -j$(nproc)"
+  - ./bootstrap --skip-po
+  - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=gnutls
+  - make syntax-check
+  - make check
+  - make distcheck
+  - make check-valgrind
+  tags:
+  - shared
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
 Minimal/Debian:
+  stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
     - cp -a /usr/local/gnulib .
@@ -136,37 +151,122 @@ Minimal/Debian:
       - tests/*.log
       - testenv/*.log
 
+# In this build we combine
+#  * clang
+#  * ASan, UBSan
+#  * check, syntax-check
+Sanitizers/Debian:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
+  script:
+    - cp -a /usr/local/gnulib .
+#    - export CFLAGS="$CFLAGS_DEFAULT -Werror"
+    - export CFLAGS="$CFLAGS_DEFAULT"
+    - ./bootstrap --skip-po && touch .manywarnings
+    - export CC="ccache clang"
+    - export UBSAN_OPTIONS=print_stacktrace=1
+    - export ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-7/bin/llvm-symbolizer
+#    - export LSAN_OPTIONS=suppressions="$PWD/tests/clang-asan-suppressions"
+    - ./configure $CONFIGURE_BASE_FLAGS --enable-fsanitize-asan --enable-fsanitize-ubsan
+    - make -j$(nproc) check
+  tags:
+    - shared
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
 
-#Centos7 build:
-#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$CENTOS7_BUILD
-#  script:
-#  - sed -i 's/AM_GNU_GETTEXT_VERSION(0.19.3)/AM_GNU_GETTEXT_VERSION(0.18.2)/g' configure.ac
-#  - ./bootstrap && ./configure --enable-gcc-warnings --disable-doc && make -j$(nproc) check
-#  tags:
-#  - shared
-#  artifacts:
-#    expire_in: 2 weeks
-#    when: on_failure
-#    paths:
-#      - tests/*.log
-#      - compat_reports/
+Scan-Build/Debian:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
+  script:
+    - cp -a /usr/local/gnulib .
+    - export CFLAGS=$CFLAGS_DEFAULT
+    - ./bootstrap --skip-po
+    - scan-build ./configure $CONFIGURE_BASE_FLAGS
+    - make -C lib -j$(nproc)
+    - scan-build -v -enable-checker nullability --status-bugs -o scan-build make -j$(nproc)
+  tags:
+    - shared
+  except:
+    - tags
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - scan-build/*
 
-#clang-analyzer/Fedora:
-#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+Valgrind/Debian:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
+  script:
+    - cp -a /usr/local/gnulib .
+    - export CFLAGS=$CFLAGS_DEFAULT
+    - ./bootstrap --skip-po
+    - ./configure $CONFIGURE_BASE_FLAGS --enable-valgrind-tests
+    - make -j$(nproc)
+    - make check -j$(nproc)
+  tags:
+    - shared
+  except:
+    - tags
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+Simple/Fedora:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+    - cp -a /usr/local/gnulib .
+#    - export CFLAGS="$CFLAGS_DEFAULT -Werror"
+    - export CFLAGS="$CFLAGS_DEFAULT"
+    - ./bootstrap --skip-po && touch .manywarnings
+    - ./configure $CONFIGURE_BASE_FLAGS
+    - make -j$(nproc) check
+  tags:
+    - shared
+  except:
+    - tags
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+#Alpine:
+#  stage: stage1-testing
+#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$ALPINE_BUILD
 #  script:
-#  - ./bootstrap
-#  - scan-build ./configure --disable-doc --enable-gcc-warnings
-#  - make -j$(nproc) -C gl
-#  - scan-build --status-bugs -o scan-build-lib make -j$(nproc) -C lib
+#    - cp -a /usr/local/gnulib .
+#    - export CFLAGS="$CFLAGS_DEFAULT"
+#    - ./bootstrap --skip-po
+#    - ./configure $CONFIGURE_BASE_FLAGS
+#    - make -j$(nproc) check
 #  tags:
-#  - shared
+#    - shared
 #  except:
-#  - tags
+#    - tags
 #  artifacts:
 #    expire_in: 2 weeks
 #    when: on_failure
 #    paths:
-#      - scan-build-lib/*
+#      - ./*.log
+#      - fuzz/*.log
+#      - tests/*.log
+#      - testenv/*.log
 
 #pages:
 #  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
@@ -192,24 +292,91 @@ Minimal/Debian:
 #  only:
 #    - master
 
-#MinGW64:
-#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
-#  before_script:
-#  - mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc &&
-#    echo ':DOSWin:M::MZ::/usr/bin/wine64:' > /proc/sys/fs/binfmt_misc/register
-#  script:
-#  - ./bootstrap
-#  - mingw64-configure --disable-valgrind-tests --disable-doc
-#  - mingw64-make -j$(nproc)
-#  - mingw64-make -j$(nproc) check
-#  tags:
-#  - shared
-#  - docker
-#  except:
-#  - tags
-#  artifacts:
-#    expire_in: 2 weeks
-#    when: on_failure
-#    paths:
-#      - ./*.log
-#      - tests/*.log
+MinGW64:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$MINGW_BUILD
+  script:
+#    - apt-get install libhttp-daemon-perl libio-socket-ssl-perl python3
+    - ./bootstrap --skip-po
+#    - cp pthread_sigmask.c.mingw lib/pthread_sigmask.c
+    - export CC="ccache $PREFIX-gcc"
+    - export GCCLIB=$(dirname $(find /usr/lib/gcc/$PREFIX -name libgcc_s_seh-1.dll|grep posix))
+    - export WINEPATH="$WINEPATH;/usr/$PREFIX/bin;/usr/$PREFIX/lib;$PWD/libwget/.libs;$GCCLIB"
+    - echo "WINEPATH=$WINEPATH"
+    - LIBS="-ldl -lpsapi" ./configure $CONFIGURE_BASE_FLAGS --build=x86_64-pc-linux-gnu --host=$PREFIX --enable-shared
+    - make -j$(nproc)
+    - make clean
+    - LIBS="-ldl -lpsapi" ./configure $CONFIGURE_BASE_FLAGS --build=x86_64-pc-linux-gnu --host=$PREFIX --enable-shared --disable-threads
+    - make -j$(nproc)
+    - make check -j$(nproc) LOG_COMPILER=wine
+  tags:
+    - shared
+    - docker
+  except:
+    - tags
+  allow_failure: true
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./config.h
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+Build/Arch:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$ARCH_BUILD
+  script:
+    - export CFLAGS="$CFLAGS_DEFAULT"
+    - ./bootstrap --skip-po && touch .manywarnings
+    - ./configure $CONFIGURE_BASE_FLAGS
+    - make -j$(nproc)
+    - make check -j$(nproc)
+  tags:
+    - shared
+    - docker
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+
+# Test building from tarball in a non-dev environment
+Tarball:
+  stage: stage2-tarball
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$BASIC_BUILD
+  variables:
+    GIT_STRATEGY: none
+  script:
+    # remove all files from git repo
+    - mv wget-*.gz /tmp
+    - rm -rf * .git* .travis*
+    - mv /tmp/wget-*.gz .
+    # unpack and build from tarball
+    - tar xvf wget-*.gz
+    - cd wget-*
+    - unset CC
+    - ./configure $CONFIGURE_BASE_FLAGS
+    - make -j$(nproc)
+    - make -j$(nproc) check
+    # check if essential files are accidentally cleaned
+    - make clean
+    - make -j$(nproc)
+  tags:
+    - shared
+  dependencies:
+    - VPATH/Debian
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - wget-*/*.log
+      - wget-*/fuzz/*.log
+      - wget-*/tests/*.log
+      - wget-*/testenv/*.log
