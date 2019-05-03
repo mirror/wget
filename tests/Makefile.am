@@ -150,6 +150,7 @@ LDADD = ../src/libunittest.a ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB)\
  $(LIBTHREAD) $(LIBUNISTRING) $(SERVENT_LIB)
 AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib \
  -I$(top_srcdir)/src -DLOCALEDIR=\"$(localedir)\"
+AM_CFLAGS = $(WERROR_CFLAGS) $(WARN_CFLAGS)
 
 
 CLEANFILES = *~ *.bak core core.[0-9]*

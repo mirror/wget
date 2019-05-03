@@ -93,14 +93,6 @@ AC_ARG_ENABLE([fuzzing],
    AC_SUBST([LIB_FUZZING_ENGINE])
    AC_DEFINE([FUZZING], 1, [Define to 1 if this is a fuzzing build])
   ], [enable_fuzzing=no; LIB_FUZZING_ENGINE=""])
-#FUZZ_LIBS=$LIBS
-#if test $enable_fuzzing = "yes"; then
-#  OLD_LIBS=$LIBS
-#  AC_SEARCH_LIBS([dlsym], [dl dld])
-#  FUZZ_LIBS=$LIBS
-#  LIBS=$OLD_LIBS
-#fi
-#AC_SUBST([FUZZ_LIBS])
 AM_CONDITIONAL([FUZZING], [test "$enable_fuzzing" = "yes"])
 
 dnl needed for some fuzzers
@@ -111,6 +103,59 @@ if [[ "${ac_cv_search_dlopen#-l}" != "${ac_cv_search_dlopen}" ]]; then
   AC_SUBST([FUZZ_LIBS])
 fi
 LIBS="$OLD_LIBS"
+
+
+AC_ARG_ENABLE([fsanitize-ubsan],
+  [AS_HELP_STRING([--enable-fsanitize-ubsan], [Turn on Undefined Behavior Sanitizer (for developers)])],
+  [gl_cc_sanitize_ubsan=yes], [gl_cc_sanitize_ubsan=no])
+
+AC_ARG_ENABLE([fsanitize-asan],
+  [AS_HELP_STRING([--enable-fsanitize-asan], [Turn on Address Sanitizer (for developers) (mutually exclusive with Memory/Thread sanitizer or Valgrind tests)])],
+  [gl_cc_sanitize_asan=yes], [gl_cc_sanitize_asan=no])
+
+AC_ARG_ENABLE([fsanitize-msan],
+  [AS_HELP_STRING([--enable-fsanitize-msan], [Turn on Memory Sanitizer (for developers) (mutually exclusive with Address/Thread sanitizer or Valgrind tests)])],
+  [gl_cc_sanitize_msan=yes], [gl_cc_sanitize_msan=no])
+
+if test "$gl_cc_sanitize_asan" = yes; then
+  if test "$gl_cc_sanitize_msan" = yes; then
+    AC_MSG_ERROR([Address Sanitizer and Memory Sanitizer are mutually exclusive])
+  fi
+fi
+
+if test "$gl_cc_sanitize_ubsan" = yes; then
+  gl_WARN_ADD([-fsanitize=undefined])
+  gl_WARN_ADD([-fno-sanitize-recover=undefined])
+
+  # additional clang options
+  gl_WARN_ADD([-fsanitize=integer])
+  gl_WARN_ADD([-fsanitize=nullability])
+  gl_WARN_ADD([-fno-sanitize-recover=integer])
+  gl_WARN_ADD([-fno-sanitize-recover=nullability])
+fi
+
+if test "$gl_cc_sanitize_asan" = yes; then
+  gl_WARN_ADD([-fsanitize=address])
+  gl_WARN_ADD([-fno-omit-frame-pointer])
+
+  # additional clang option
+  gl_WARN_ADD([-fsanitize-address-use-after-scope])
+fi
+
+if test "$gl_cc_sanitize_msan" = yes; then
+  # clang options
+  gl_WARN_ADD([-fsanitize=memory])
+  gl_WARN_ADD([-fsanitize-memory-track-origins])
+
+  # gcc options
+  if test "$CCNAME" = "gcc"; then
+    gl_WARN_ADD([-fsanitize=leak])
+  fi
+
+  gl_WARN_ADD([-fno-omit-frame-pointer])
+  gl_WARN_ADD([-fPIE])
+fi
+
 
 dnl Opie: Support for opie s/key FTP logins
 AC_ARG_ENABLE([opie],
@@ -164,6 +209,12 @@ AC_ARG_ENABLE(valgrind-tests,
 AS_IF([test "x$ENABLE_VALGRIND" != xno], [
   AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
   AS_IF([test "x$HAVE_VALGRIND" = xyes], [
+    if test "$gl_cc_sanitize_asan" = yes; then
+      AC_MSG_ERROR([Valgrind and Address Sanitizer are mutually exclusive])
+    elif test "$gl_cc_sanitize_msan" = yes; then
+      AC_MSG_ERROR([Valgrind and Memory Sanitizer are mutually exclusive])
+    fi
+
     VALGRIND_TESTS="1"
     AC_SUBST(VALGRIND_TESTS)
     VALGRIND_INFO="Test suite will be run under Valgrind"
@@ -329,7 +380,9 @@ esac
 # to enable by default: create a file '.manywarnings'
 # enable explicitly : ./configure --enable-manywarnings
 # disable explicitly: ./configure --disable-manywarnings
+sanitizer_flags="$WARN_CFLAGS"
 wget_MANYWARNINGS(WARN_CFLAGS, C)
+WARN_CFLAGS="$WARN_CFLAGS $sanitizer_flags"
 
 if test -n "$WARN_CFLAGS"; then
   if test "$CCNAME" = "gcc"; then
