@@ -175,8 +175,8 @@ static const unsigned char urlchr_table[256] =
 static void
 url_unescape_1 (char *s, unsigned char mask)
 {
-  char *t = s;                  /* t - tortoise */
-  char *h = s;                  /* h - hare     */
+  unsigned char *t = (unsigned char *) s; /* t - tortoise */
+  unsigned char *h = (unsigned char *) s; /* h - hare     */
 
   for (; *h; h++, t++)
     {
@@ -187,7 +187,7 @@ url_unescape_1 (char *s, unsigned char mask)
         }
       else
         {
-          char c;
+          unsigned char c;
           /* Do nothing if '%' is not followed by two hex digits. */
           if (!h[1] || !h[2] || !(c_isxdigit (h[1]) && c_isxdigit (h[2])))
             goto copychar;

@@ -419,7 +419,7 @@ free_specs (struct robot_specs *specs)
 #define DECODE_MAYBE(c, ptr) do {                               \
   if (c == '%' && c_isxdigit (ptr[1]) && c_isxdigit (ptr[2]))       \
     {                                                           \
-      char decoded = X2DIGITS_TO_NUM (ptr[1], ptr[2]);          \
+      unsigned char decoded = X2DIGITS_TO_NUM (ptr[1], ptr[2]);          \
       if (decoded != '/')                                       \
         {                                                       \
           c = decoded;                                          \

@@ -386,7 +386,7 @@ decode_entity (const char **ptr, const char *end)
         value = 0;
         if (*p == 'x')
           for (++p; value < 256 && p < end && c_isxdigit (*p); p++, digits++)
-            value = (value << 4) + XDIGIT_TO_NUM (*p);
+            value = (value << 4) + _unhex (*p);
         else
           for (; value < 256 && p < end && c_isdigit (*p); p++, digits++)
             value = (value * 10) + (*p - '0');

@@ -516,7 +516,7 @@ is_valid_ipv6_address (const char *str, const char *end)
       if (c_isxdigit (ch))
         {
           val <<= 4;
-          val |= XDIGIT_TO_NUM (ch);
+          val |= _unhex (ch);
           if (val > 0xffff)
             return false;
           saw_xdigit = true;

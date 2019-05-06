@@ -239,10 +239,13 @@ typedef double SUM_SIZE_INT;
 #define xzero(x) memset (&(x), '\0', sizeof (x))
 
 /* Convert an ASCII hex digit to the corresponding number between 0
-   and 15.  H should be a hexadecimal digit that satisfies isxdigit;
+   and 15.  c should be a hexadecimal digit that satisfies c_isxdigit;
    otherwise, the result is undefined.  */
-#define XDIGIT_TO_NUM(h) ((h) < 'A' ? (h) - '0' : c_toupper (h) - 'A' + 10)
-#define X2DIGITS_TO_NUM(h1, h2) ((XDIGIT_TO_NUM (h1) << 4) + XDIGIT_TO_NUM (h2))
+static unsigned char _unhex(unsigned char c)
+{
+	return c <= '9' ? c - '0' : (c <= 'F' ? c - 'A' + 10 : c - 'a' + 10);
+}
+#define X2DIGITS_TO_NUM(h1, h2) ((_unhex (h1) << 4) + _unhex (h2))
 
 /* The reverse of the above: convert a number in the [0, 16) range to
    the ASCII representation of the corresponding hexadecimal digit.
