@@ -1463,14 +1463,18 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
 {
   const char *p;
   int quoted, outlen;
-
   int mask;
+
+  if (!dest)
+    return;
+
   if (opt.restrict_files_os == restrict_unix)
     mask = filechr_not_unix;
   else if (opt.restrict_files_os == restrict_vms)
     mask = filechr_not_vms;
   else
     mask = filechr_not_windows;
+
   if (opt.restrict_files_ctrl)
     mask |= filechr_control;
 
