@@ -486,7 +486,7 @@ convert_basename (const char *p, const struct urlpos *link)
 {
   int len = link->size;
   char *url = NULL;
-  char *org_basename = NULL, *local_basename = NULL;
+  char *org_basename = NULL, *local_basename;
   char *result = NULL;
 
   if (*p == '"' || *p == '\'')
@@ -503,7 +503,7 @@ convert_basename (const char *p, const struct urlpos *link)
   else
     org_basename = url;
 
-  local_basename = strrchr (link->local_name, '/');
+  local_basename = link->local_name ? strrchr (link->local_name, '/') : NULL;
   if (local_basename)
     local_basename++;
   else
