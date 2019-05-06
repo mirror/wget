@@ -686,6 +686,9 @@ select_fd (int fd, double maxtime, int wait_for)
   struct timeval tmout;
   int result;
 
+  if (fd < 0)
+    return -1;
+
   if (fd >= FD_SETSIZE)
     {
       logprintf (LOG_NOTQUIET, _("Too many fds open.  Cannot use select on a fd >= %d\n"), FD_SETSIZE);
