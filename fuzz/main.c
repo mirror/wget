@@ -88,10 +88,12 @@ int main(int argc, char **argv)
 		return system(cmd) != 0;
 	}
 
-	if ((target = strrchr(argv[0], SLASH)))
-		target = strrchr(target, '/');
-	else
+	if ((target = strrchr(argv[0], SLASH))) {
+		if (strrchr(target, '/'))
+			target = strrchr(target, '/');
+	} else
 		target = strrchr(argv[0], '/');
+
 	target = target ? target + 1 : argv[0];
 
 	if (strncmp(target, "lt-", 3) == 0)
