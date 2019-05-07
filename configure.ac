@@ -130,7 +130,6 @@ if test "$gl_cc_sanitize_ubsan" = yes; then
   # additional clang options
   gl_WARN_ADD([-fsanitize=integer])
   gl_WARN_ADD([-fsanitize=nullability])
-  gl_WARN_ADD([-fno-sanitize-recover=integer])
   gl_WARN_ADD([-fno-sanitize-recover=nullability])
 fi
 
