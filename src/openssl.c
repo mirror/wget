@@ -285,6 +285,12 @@ ssl_init (void)
   if (ssl_options)
     SSL_CTX_set_options (ssl_ctx, ssl_options);
 
+#if ((OPENSSL_VERSION_NUMBER >= 0x10101000L) && \
+     !defined(LIBRESSL_VERSION_NUMBER) && \
+     !defined(OPENSSL_IS_BORINGSSL))
+     SSL_CTX_set_post_handshake_auth (ssl_ctx, 1);
+#endif
+
 #if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >= 0x10100000L)
   if (ssl_proto_version)
     SSL_CTX_set_min_proto_version(ssl_ctx, ssl_proto_version);
