@@ -483,7 +483,7 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
   if (save_context_p)
     saved_append (write_ptr);
   FPUTS (write_ptr, fp);
-  if (warcfp != NULL)
+  if (warcfp != NULL && warcfp != fp)
     FPUTS (write_ptr, warcfp);
   xfree (state->bigmsg);
 
