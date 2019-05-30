@@ -370,6 +370,14 @@ class _Handler(BaseHTTPRequestHandler):
                                 header_line)
                 raise ServerError("Header " + header_line + ' received')
 
+    def RejectHeaderField(self, header_fields_obj):
+        rej_header_fields = header_fields_obj.header_fields
+        for field in rej_header_fields:
+            if field in self.headers:
+                self.send_error(400, 'Blacklisted Header Field %s received' %
+                                field)
+                raise ServerError('Header Field %s received' % field)
+
     def __log_request(self, method):
         req = method + " " + self.path
         self.server.request_headers.append(req)

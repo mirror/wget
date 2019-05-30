@@ -1405,6 +1405,49 @@ wget_read_file_free (struct file_memory *fm)
   xfree (fm);
 }
 
+/* Removes a header from a request headers vector */
+char **
+vec_remove_header (char **vec, const char *str)
+{
+  char* s;
+  int i, cnt;                   /* count of vector elements */
+  size_t n;
+
+  if (vec != NULL)
+    {
+      for (cnt = 0; vec[cnt]; cnt++)
+        ;
+      /* remove all duplicates */
+      i = 0;
+      while (vec[i])
+        {
+          s = strchrnul (vec[i], ':');
+          n = (size_t) (s - vec[i]);
+          if (n == strlen (str) && 0 == strncmp (vec[i], str, n))
+            {
+              if (cnt == 1)
+                {
+                  xfree (vec[0]);
+                  vec = xrealloc (vec, sizeof (char *));
+                  vec[0] = NULL;
+                  return vec;
+                }
+              else
+                {
+                  vec[i] = xstrdup (vec[cnt-1]);
+                  xfree (vec[cnt-1]);
+                  vec = xrealloc (vec, cnt * sizeof (char *));
+                  vec[cnt - 1] = NULL;
+                  --cnt;
+                }
+            }
+          else
+            ++i;
+        }
+    }
+  return vec;
+}
+
 /* Free the pointers in a NULL-terminated vector of pointers, then
    free the pointer itself.  */
 void

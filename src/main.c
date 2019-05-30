@@ -304,6 +304,7 @@ static struct cmdline_option option_data[] =
     { "delete-after", 0, OPT_BOOLEAN, "deleteafter", -1 },
     { "directories", 0, OPT_BOOLEAN, "dirstruct", -1 },
     { "directory-prefix", 'P', OPT_VALUE, "dirprefix", -1 },
+    { "disable-header", 0, OPT_VALUE, "disableheader", -1 },
     { "dns-cache", 0, OPT_BOOLEAN, "dnscache", -1 },
 #ifdef HAVE_LIBCARES
     { "dns-servers", 0, OPT_VALUE, "dnsservers", -1 },
@@ -792,6 +793,8 @@ HTTP options:\n"),
        --ignore-length             ignore 'Content-Length' header field\n"),
     N_("\
        --header=STRING             insert STRING among the headers\n"),
+    N_("\
+       --disable-header=LIST       comma-separated list of disabled header fields\n"),
 #ifdef HAVE_LIBZ
     N_("\
        --compression=TYPE          choose compression, one of auto, gzip and none. (default: none)\n"),
