@@ -110,7 +110,6 @@ bool has_html_suffix_p (const char *);
 struct file_memory *wget_read_file (const char *);
 void wget_read_file_free (struct file_memory *);
 
-char ** vec_remove_header (char **, const char *);
 void free_vec (char **);
 char **merge_vecs (char **, char **);
 char **vec_append (char **, const char *);

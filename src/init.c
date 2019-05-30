@@ -101,7 +101,6 @@ CMD_DECLARE (cmd_spec_compression);
 #endif
 CMD_DECLARE (cmd_spec_dirstruct);
 CMD_DECLARE (cmd_spec_header);
-CMD_DECLARE (cmd_dis_header);
 CMD_DECLARE (cmd_spec_warc_header);
 CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
@@ -184,7 +183,6 @@ static const struct {
   { "deleteafter",      &opt.delete_after,      cmd_boolean },
   { "dirprefix",        &opt.dir_prefix,        cmd_directory },
   { "dirstruct",        NULL,                   cmd_spec_dirstruct },
-  { "disableheader",    NULL,                   cmd_dis_header },
   { "dnscache",         &opt.dns_cache,         cmd_boolean },
 #ifdef HAVE_LIBCARES
   { "dnsservers",       &opt.dns_servers,       cmd_string },
@@ -400,7 +398,6 @@ defaults (void)
   opt.metalink_index = -1;
 #endif
 
-  opt.disabled_headers = NULL;
   opt.cookies = true;
   opt.verbose = -1;
   opt.ntry = 20;
@@ -1461,7 +1458,7 @@ cmd_cert_type (const char *com, const char *val, void *place)
 /* Specialized helper functions, used by `commands' to handle some
    options specially.  */
 
-static bool check_user_specified_header (const char *, bool);
+static bool check_user_specified_header (const char *);
 
 #ifdef HAVE_LIBZ
 static bool
@@ -1497,33 +1494,6 @@ cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored _GL_UN
 }
 
 static bool
-cmd_dis_header (const char *com, const char *val, void *place_ignored _GL_UNUSED)
-{
-  /* Empty value means reset the list of headers. */
-  if (*val == '\0')
-    {
-      free_vec (opt.disabled_headers);
-      opt.disabled_headers = NULL;
-      return true;
-    }
-  cmd_vector (com, val, &opt.disabled_headers);
-  char **p = opt.disabled_headers;
-  for (; *p; ++p)
-    {
-      if (!check_user_specified_header (*p, false))
-	{
-	  fprintf (stderr, _("%s: %s: Invalid header field %s.\n"),
-		   exec_name, com, quote (*p));
-	  free_vec (opt.disabled_headers);
-	  opt.disabled_headers = NULL;
-	  return false;
-	}
-      opt.user_headers = vec_remove_header (opt.user_headers, *p);
-    }
-  return true;
-}
-
-static bool
 cmd_spec_header (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   /* Empty value means reset the list of headers. */
@@ -1534,7 +1504,7 @@ cmd_spec_header (const char *com, const char *val, void *place_ignored _GL_UNUSE
       return true;
     }
 
-  if (!check_user_specified_header (val, true))
+  if (!check_user_specified_header (val))
     {
       fprintf (stderr, _("%s: %s: Invalid header %s.\n"),
                exec_name, com, quote (val));
@@ -1555,7 +1525,7 @@ cmd_spec_warc_header (const char *com, const char *val, void *place_ignored _GL_
       return true;
     }
 
-  if (!check_user_specified_header (val, true))
+  if (!check_user_specified_header (val))
     {
       fprintf (stderr, _("%s: %s: Invalid WARC header %s.\n"),
                exec_name, com, quote (val));
@@ -1881,17 +1851,18 @@ simple_atof (const char *beg, const char *end, double *dest)
    contain newlines.  */
 
 static bool
-check_user_specified_header (const char *s, bool full_header)
+check_user_specified_header (const char *s)
 {
   const char *p;
 
   for (p = s; *p && *p != ':' && !c_isspace (*p); p++)
     ;
-  if (*p != ':' && full_header)
-    return false;     /* The header MUST contain `:' preceded by at least one
-			 non-whitespace character.  */
+  /* The header MUST contain `:' preceded by at least one
+     non-whitespace character.  */
+  if (*p != ':' || p == s)
+    return false;
   /* The header MUST NOT contain newlines.  */
-  if (p == s || strchr (s, '\n'))
+  if (strchr (s, '\n'))
     return false;
   return true;
 }
@@ -2006,7 +1977,6 @@ cleanup (void)
   xfree (opt.http_passwd);
   xfree (opt.dot_style);
   free_vec (opt.user_headers);
-  free_vec (opt.disabled_headers);
   free_vec (opt.warc_user_headers);
 # ifdef HAVE_SSL
   xfree (opt.cert_file);

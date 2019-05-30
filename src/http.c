@@ -88,7 +88,6 @@ static char *basic_authentication_encode (const char *, const char *);
 static bool known_authentication_scheme_p (const char *, const char *);
 static void ensure_extension (struct http_stat *, const char *, int *);
 static void load_cookies (void);
-static bool disabled_header (const char*);
 
 static bool cookies_loaded_p;
 static struct cookie_jar *wget_cookie_jar;
@@ -237,7 +236,7 @@ request_set_header (struct request *req, const char *name, const char *value,
   struct request_header *hdr;
   int i;
 
-  if (disabled_header (name) || !value)
+  if (!value)
     {
       /* A NULL value is a no-op; if freeing the name is requested,
          free it now to avoid leaks.  */
@@ -1843,27 +1842,6 @@ time_to_rfc1123 (time_t time, char *buf, size_t bufsize)
   return RETROK;
 }
 
-static bool
-disabled_header (const char* header_name)
-{
-  char** p = opt.disabled_headers;
-  char *s;
-  size_t n;
-
-  if (!p)
-    return 0;
-
-  for (; *p; ++p)
-    {
-      s = strchrnul (header_name, ':');
-      n = (size_t) (s - header_name);
-      if (n == strlen (*p) && 0 == strncmp (header_name, *p, n))
-        return 1;
-    }
-
-  return 0;
-}
-
 static struct request *
 initialize_request (const struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                     bool inhibit_keep_alive, bool *basic_auth_finished,
@@ -3285,10 +3263,6 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   if (opt.user_headers)
     {
       int i;
-      /* Empty the disabled headers as they are no longer used
-	 and this will let headers to be overriden by the user */
-      free_vec (opt.disabled_headers);
-      opt.disabled_headers = NULL;
       for (i = 0; opt.user_headers[i]; i++)
         request_set_user_header (req, opt.user_headers[i]);
     }

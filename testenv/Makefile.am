@@ -95,9 +95,6 @@ if HAVE_PYTHON3
     Test-cookie-domain-mismatch.py                  \
     Test-cookie-expires.py                          \
     Test-cookie.py                                  \
-    Test-disable-default-headers.py                 \
-    Test-disable-headers-after.py                   \
-    Test-disable-headers-before.py                  \
     Test-Head.py                                    \
     Test-hsts.py                                    \
     Test--https.py                                  \

@@ -147,7 +147,6 @@ struct options
   char *http_user;              /* HTTP username. */
   char *http_passwd;            /* HTTP password. */
   char **user_headers;          /* User-defined header(s). */
-  char **disabled_headers;       /* User-disabled header(s) */
   bool http_keep_alive;         /* whether we use keep-alive */
 
   bool use_proxy;               /* Do we use proxy? */

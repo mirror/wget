@@ -1542,21 +1542,6 @@ wget --header="Host: foo.bar" http://localhost/
 In versions of Wget prior to 1.10 such use of @samp{--header} caused
 sending of duplicate headers.
 
-@cindex disable header, choose
-@item --disable-header=@var{list}
-Specify comma-separated header fields to remove from the @sc{http}
-request.
-
-@example
-@group
-wget --disable-header='Accept,User-Agent,Authorization' \
-        https://example.com/
-@end group
-@end example
-
-Specifying a header field with @samp{--header} after disabling it
-will override it and include it in the @sc{http} request headers.
-
 @cindex Content-Encoding, choose
 @item --compression=@var{type}
 Choose the type of compression to be used.  Legal values are

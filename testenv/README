@@ -182,10 +182,6 @@ This section lists the currently supported File Rules and their structure.
     * RejectHeader  : This list of Headers must NEVER occur in a request. It
     uses the same value format as ExpectHeader.
 
-    * RejectHeaderField  : This list of Headers Fields must NOT appear in a request.
-    The value for this key is a list of strings where each header field is represented as:
-    |-->Header Field: <Header Field Name>
-
     * SendHeader    : This list of Headers will be sent in EVERY response to a
     request for the respective file. It follows the same value format as
     ExpectHeader. Additionally you can specify a list of strings as <Header Data>
