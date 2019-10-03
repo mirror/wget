@@ -403,6 +403,7 @@ if test -n "$WARN_CFLAGS"; then
     nw="$nw -Wcast-function-type" # gcc 8, very noisy
     nw="$nw -Wabi" # gcc 8, very noisy
     nw="$nw -Wunused-macros" # triggers in auto-generated lex css parser, #pragma doesn't work, conflicts with -Werror
+	nw="$nw -Wchkp" # Deprecated option
     if test "$cross_compiling" = yes; then
       nw="$nw -Wformat"
     fi
