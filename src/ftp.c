@@ -2184,7 +2184,7 @@ ftp_get_listing (struct url *u, struct url *original_url, ccon *con,
 static uerr_t ftp_retrieve_dirs (struct url *, struct url *,
                                  struct fileinfo *, ccon *);
 static uerr_t ftp_retrieve_glob (struct url *, struct url *, ccon *, int);
-static struct fileinfo *delelement (struct fileinfo *, struct fileinfo **);
+static struct fileinfo *delelement (struct fileinfo **, struct fileinfo **);
 
 /* Retrieve a list of files given in struct fileinfo linked list.  If
    a file is a symbolic link, do not retrieve it, but rather try to
@@ -2612,7 +2612,7 @@ ftp_retrieve_glob (struct url *u, struct url *original_url,
         {
           logprintf (LOG_VERBOSE, _("Rejecting %s.\n"),
                      quote (f->name));
-          f = delelement (f, &start);
+          f = delelement (&f, &start);
           continue;
         }
 
@@ -2622,14 +2622,14 @@ ftp_retrieve_glob (struct url *u, struct url *original_url,
         {
           logprintf (LOG_VERBOSE, _("Rejecting %s (Invalid Entry).\n"),
                      quote (f->name));
-          f = delelement (f, &start);
+          f = delelement (&f, &start);
           continue;
         }
 
       if (!accept_url (f->name))
         {
           logprintf (LOG_VERBOSE, _("%s is excluded/not-included through regex.\n"), f->name);
-          f = delelement (f, &start);
+          f = delelement (&f, &start);
           continue;
         }
 
@@ -2650,7 +2650,7 @@ ftp_retrieve_glob (struct url *u, struct url *original_url,
                 }
               if (matchres == FNM_NOMATCH)
                 {
-                  f = delelement (f, &start); /* delete the element from the list */
+                  f = delelement (&f, &start); /* delete the element from the list */
                   continue;
                 }
             }
@@ -2658,7 +2658,7 @@ ftp_retrieve_glob (struct url *u, struct url *original_url,
             {
               if (0 != cmp(u->file, f->name))
                 {
-                  f = delelement (f, &start);
+                  f = delelement (&f, &start);
                   continue;
                 }
             }
@@ -2810,14 +2810,15 @@ ftp_loop (struct url *u, struct url *original_url, char **local_file, int *dt,
    address of the next element, or NULL if the list is exhausted.  It
    can modify the start of the list.  */
 static struct fileinfo *
-delelement (struct fileinfo *f, struct fileinfo **start)
+delelement (struct fileinfo **f, struct fileinfo **start)
 {
-  struct fileinfo *prev = f->prev;
-  struct fileinfo *next = f->next;
+  struct fileinfo *prev = (*f)->prev;
+  struct fileinfo *next = (*f)->next;
 
-  xfree (f->name);
-  xfree (f->linkto);
-  xfree (f);
+  xfree ((*f)->name);
+  xfree ((*f)->linkto);
+  xfree (*f);
+  *f = NULL;
 
   if (next)
     next->prev = prev;
