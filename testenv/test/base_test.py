@@ -51,6 +51,7 @@ class BaseTest:
 
         self.wget_options = ''
         self.urls = []
+        self.envs = dict()
 
         self.tests_passed = True
         self.ready = False
@@ -97,12 +98,15 @@ class BaseTest:
         cmd_line = self.gen_cmd_line()
         params = shlex.split(cmd_line)
         print(params)
+        envs = {"HOME": os.getcwd()}
+        envs.update(**self.envs)
+        print(envs)
 
         if os.getenv("SERVER_WAIT"):
             time.sleep(float(os.getenv("SERVER_WAIT")))
 
         try:
-            ret_code = call(params, env={"HOME": os.getcwd()})
+            ret_code = call(params, env=envs)
         except FileNotFoundError:
             raise TestFailed("The Wget Executable does not exist at the "
                              "expected path.")

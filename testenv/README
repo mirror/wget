@@ -224,6 +224,9 @@ executed. The currently supported options are:
     file. While all Download URL's are passed to Urls, a notable exception is
     when in-url authentication is used. In such a case, the URL is specified in
     the WgetCommands string.
+    * EnvironmentVariables: A dictionary with key-value items, which will be
+    defined as environment variables during the execution of wget command in
+    test.
 
 Post-Test Hooks:
 ================================================================================
