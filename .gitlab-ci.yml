@@ -194,6 +194,7 @@ Scan-Build/Debian:
     - shared
   except:
     - tags
+  allow_failure: true
   artifacts:
     expire_in: 2 weeks
     when: on_failure
@@ -214,6 +215,7 @@ Valgrind/Debian:
     - shared
   except:
     - tags
+  allow_failure: true
   artifacts:
     expire_in: 2 weeks
     when: on_failure
