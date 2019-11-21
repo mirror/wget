@@ -45,7 +45,7 @@ endif
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
 
-EXTRA_DIST = css.l css.c css_.c build_info.c.in
+EXTRA_DIST = css.l css.c css_.c build_info.c.in build_info.c
 
 bin_PROGRAMS = wget
 wget_SOURCES = connect.c convert.c cookies.c ftp.c	\
