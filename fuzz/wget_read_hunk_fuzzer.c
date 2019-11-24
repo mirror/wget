@@ -189,7 +189,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 	g_size = size;
 	g_read = 0;
 
-	struct my_context *ctx = calloc(1, sizeof(struct my_context));
+	struct my_context *ctx = (struct my_context *) calloc(1, sizeof(struct my_context));
 	fd_register_transport(99, &my_transport, ctx);
 
 	while ((hunk = fd_read_hunk(99, response_head_terminator, 512, 65536)))
