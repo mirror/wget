@@ -950,6 +950,12 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   if (progress_size < 5)
     progress_size = 0;
 
+  // sanitize input
+  if (dl_total_time >= INT_MAX)
+    dl_total_time = INT_MAX - 1;
+  else if (dl_total_time < 0)
+    dl_total_time = 0;
+
   if (orig_filename_cols <= MAX_FILENAME_COLS)
     {
       padding = MAX_FILENAME_COLS - orig_filename_cols;
