@@ -51,7 +51,7 @@ struct progress_implementation {
   void (*update) (void *, wgint, double);
   void (*draw) (void *);
   void (*finish) (void *, double);
-  void (*set_params) (char *);
+  void (*set_params) (const char *);
 };
 
 /* Necessary forward declarations. */
@@ -60,13 +60,13 @@ static void *dot_create (const char *, wgint, wgint);
 static void dot_update (void *, wgint, double);
 static void dot_finish (void *, double);
 static void dot_draw (void *);
-static void dot_set_params (char *);
+static void dot_set_params (const char *);
 
 static void *bar_create (const char *, wgint, wgint);
 static void bar_update (void *, wgint, double);
 static void bar_draw (void *);
 static void bar_finish (void *, double);
-static void bar_set_params (char *);
+static void bar_set_params (const char *);
 
 static struct progress_implementation implementations[] = {
   { "dot", 0, dot_create, dot_update, dot_draw, dot_finish, dot_set_params },
@@ -112,7 +112,7 @@ set_progress_implementation (const char *name)
 {
   size_t i, namelen;
   struct progress_implementation *pi = implementations;
-  char *colon;
+  const char *colon;
 
   if (!name)
     name = DEFAULT_PROGRESS_IMPLEMENTATION;
@@ -437,7 +437,7 @@ dot_finish (void *progress, double dltime)
    giga.  */
 
 static void
-dot_set_params (char *params)
+dot_set_params (const char *params)
 {
   if (!params || !*params)
     params = opt.dot_style;
@@ -1217,18 +1217,20 @@ display_image (char *buf)
 }
 
 static void
-bar_set_params (char *params)
+bar_set_params (const char *params)
 {
   if (params)
     {
-      char *param = strtok (params, ":");
-      do
+      for (const char *param = params; *param; )
         {
-          if (0 == strcmp (param, "force"))
+          if (!strncmp (param, "force", 5))
             current_impl_locked = 1;
-          else if (0 == strcmp (param, "noscroll"))
+          else if (!strncmp (param, "noscroll", 8))
             opt.noscroll = true;
-        } while ((param = strtok (NULL, ":")) != NULL);
+
+          if (*(param = strchrnul(param, ':')))
+            param++;
+        }
     }
 
   if (((opt.lfilename && opt.show_progress != 1)
