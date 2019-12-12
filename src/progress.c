@@ -386,7 +386,8 @@ dot_draw (void *progress)
       ++dp->dots;
       if (dp->dots >= opt.dots_in_line)
         {
-          ++dp->rows;
+          if (dp->rows < INT_MAX)
+            ++dp->rows;
           dp->dots = 0;
 
           print_row_stats (dp, dp->dltime, false);
