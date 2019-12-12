@@ -826,7 +826,7 @@ calc_rate (wgint bytes, double secs, int *units)
        0 and the timer's resolution, assume half the resolution.  */
     secs = ptimer_resolution () / 2.0;
 
-  dlrate = convert_to_bits (bytes) / secs;
+  dlrate = secs ? convert_to_bits (bytes) / secs : 0;
   if (dlrate < bibyte)
     *units = 0;
   else if (dlrate < (bibyte * bibyte))
