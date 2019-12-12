@@ -23,7 +23,7 @@ export CFLAGS="-O1 -fno-omit-frame-pointer -gline-tables-only -DFUZZING_BUILD_MO
 export CFLAGS="-O1 -fno-omit-frame-pointer -gline-tables-only -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -fsanitize=bool,array-bounds,float-divide-by-zero,function,integer-divide-by-zero,return,shift,signed-integer-overflow,vla-bound,vptr -fno-sanitize-recover=bool,array-bounds,float-divide-by-zero,function,integer-divide-by-zero,return,shift,signed-integer-overflow,vla-bound,vptr -fsanitize=fuzzer-no-link"
 export CXXFLAGS="$CFLAGS -stdlib=libc++"
 export LIB_FUZZING_ENGINE="-lFuzzer -lstdc++"
-./configure --enable-fuzzing --without-metalink --without-zlib --disable-pcre --without-libuuid
+./configure --enable-fuzzing --without-metalink --without-zlib --disable-pcre --without-libuuid --enable-assert
 make clean
 make -j$(nproc)
 cd fuzz
