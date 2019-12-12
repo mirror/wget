@@ -184,6 +184,15 @@ progress_interactive_p (void *progress _GL_UNUSED)
 void
 progress_update (void *progress, wgint howmuch, double dltime)
 {
+  // sanitize input
+  if (dltime >= INT_MAX)
+    dltime = INT_MAX - 1;
+  else if (dltime < 0)
+    dltime = 0;
+
+  if (howmuch < 0)
+	  howmuch = 0;
+
   current_impl->update (progress, howmuch, dltime);
   current_impl->draw (progress);
 }
@@ -194,6 +203,12 @@ progress_update (void *progress, wgint howmuch, double dltime)
 void
 progress_finish (void *progress, double dltime)
 {
+  // sanitize input
+  if (dltime >= INT_MAX)
+    dltime = INT_MAX - 1;
+  else if (dltime < 0)
+    dltime = 0;
+
   current_impl->finish (progress, dltime);
 }
 
@@ -612,8 +627,8 @@ bar_create (const char *f_download, wgint initial, wgint total)
   bp->width = screen_width - 1;
   /* + enough space for the terminating zero, and hopefully enough room
    * for multibyte characters. */
-#define BUF_LEN (bp->width + 100)
-  bp->buffer = xmalloc (BUF_LEN);
+#define BUF_LEN (bp->width * 2 + 100)
+  bp->buffer = xcalloc (BUF_LEN, 1);
 
   logputs (LOG_VERBOSE, "\n");
 
@@ -965,8 +980,6 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   int cols_diff;
   const char *down_size;
 
-  memset (bp->buffer, '\0', BUF_LEN);
-
   if (progress_size < 5)
     progress_size = 0;
 
@@ -976,15 +989,20 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   else if (dl_total_time < 0)
     dl_total_time = 0;
 
-  if (orig_filename_cols <= MAX_FILENAME_COLS)
+  if (orig_filename_cols < MAX_FILENAME_COLS)
     {
-      padding = MAX_FILENAME_COLS - orig_filename_cols;
-      p += sprintf (p, "%s ", bp->f_download);
+      p += sprintf (p, "%s", bp->f_download);
+      padding = MAX_FILENAME_COLS - orig_filename_cols + 1;
       memset (p, ' ', padding);
       p += padding;
     }
   else
     {
+      memcpy(p, bp->f_download, MAX_FILENAME_COLS);
+      p += MAX_FILENAME_COLS;
+      *p++ = ' ';
+    }
+/*
       int offset_cols;
       int bytes_in_filename, offset_bytes, col;
       int *cols_ret = &col;
@@ -1021,6 +1039,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       memset (p, ' ', padding + 1);
       p += padding + 1;
     }
+*/
 
   /* "xx% " */
   if (bp->total_length > 0)
@@ -1109,8 +1128,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   /* " 12.52Kb/s or 12.52KB/s" */
   if (hist->total_time > 0 && hist->total_bytes)
     {
-      static const char *short_units[] = { " B/s", "KB/s", "MB/s", "GB/s" };
-      static const char *short_units_bits[] = { " b/s", "Kb/s", "Mb/s", "Gb/s" };
+      static const char *short_units[] = { " B/s", "KB/s", "MB/s", "GB/s", "TB/s" };
+      static const char *short_units_bits[] = { " b/s", "Kb/s", "Mb/s", "Gb/s", "Tb/s" };
       int units = 0;
       /* Calculate the download speed using the history ring and
          recent data that hasn't made it to the ring yet.  */
@@ -1192,12 +1211,18 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
         }
     }
 
+  *p = '\0';
+
   padding = bp->width - count_cols (bp->buffer);
   assert (padding >= 0 && "Padding length became non-positive!");
-  padding = padding > 0 ? padding : 0;
-  memset (p, ' ', padding);
-  p += padding;
-  *p = '\0';
+  if (padding > 0)
+  {
+//    if (padding > BUF_LEN - (p - bp->buffer) - 1)
+//    padding = BUF_LEN - (p - bp->buffer) - 1;
+    memset (p, ' ', padding);
+    p += padding;
+    *p = '\0';
+  }
 
   /* 2014-11-14  Darshit Shah  <darnir@gmail.com>
    * Assert that the length of the progress bar is lesser than the size of the
