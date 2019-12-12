@@ -327,6 +327,8 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
           /* The quantity downloaded in this download run. */
           wgint bytes_sofar = bytes_displayed - dp->initial_length;
           double eta = dltime * bytes_remaining / bytes_sofar;
+          if (eta < 0)
+            eta = 0;
           if (eta < INT_MAX - 1)
             logprintf (LOG_PROGRESS, " %s",
                        eta_to_human_short ((int) (eta + 0.5), true));
