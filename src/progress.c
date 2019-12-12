@@ -348,6 +348,15 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
 static void
 dot_update (void *progress, wgint howmuch, double dltime)
 {
+  // sanitize input
+  if (dltime >= INT_MAX)
+    dltime = INT_MAX - 1;
+  else if (dltime < 0)
+    dltime = 0;
+
+  if (howmuch < 0)
+	  howmuch = 0;
+
   struct dot_progress *dp = progress;
   dp->accumulated += howmuch;
   dp->dltime = dltime;
@@ -405,6 +414,12 @@ dot_finish (void *progress, double dltime)
         logputs (LOG_PROGRESS, " ");
       logputs (LOG_PROGRESS, " ");
     }
+
+  // sanitize input
+  if (dltime >= INT_MAX)
+    dltime = INT_MAX - 1;
+  else if (dltime < 0)
+    dltime = 0;
 
   print_row_stats (dp, dltime, true);
   logputs (LOG_VERBOSE, "\n\n");
