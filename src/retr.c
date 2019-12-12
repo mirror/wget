@@ -816,9 +816,6 @@ calc_rate (wgint bytes, double secs, int *units)
   else
     bibyte = 1000.0;
 
-  assert (secs >= 0);
-  assert (bytes >= 0);
-
   if (secs == 0)
     /* If elapsed time is exactly zero, it means we're under the
        resolution of the timer.  This can easily happen on systems
