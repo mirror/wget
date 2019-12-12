@@ -809,11 +809,12 @@ double
 calc_rate (wgint bytes, double secs, int *units)
 {
   double dlrate;
-  double bibyte = 1000.0;
+  double bibyte;
 
   if (!opt.report_bps)
     bibyte = 1024.0;
-
+  else
+    bibyte = 1000.0;
 
   assert (secs >= 0);
   assert (bytes >= 0);
@@ -832,10 +833,13 @@ calc_rate (wgint bytes, double secs, int *units)
     *units = 1, dlrate /= bibyte;
   else if (dlrate < (bibyte * bibyte * bibyte))
     *units = 2, dlrate /= (bibyte * bibyte);
-
-  else
-    /* Maybe someone will need this, one day. */
+  else if (dlrate < (bibyte * bibyte * bibyte * bibyte))
     *units = 3, dlrate /= (bibyte * bibyte * bibyte);
+  else {
+    *units = 4, dlrate /= (bibyte * bibyte * bibyte * bibyte);
+    if (dlrate > 99.99)
+		 dlrate = 99.99; // upper limit 99.99TB/s
+  }
 
   return dlrate;
 }
