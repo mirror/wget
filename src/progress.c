@@ -303,6 +303,9 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
     /* For last row also count bytes accumulated after last dot */
     bytes_displayed += dp->accumulated;
 
+  if (bytes_displayed < 0)
+    bytes_displayed = 0;
+
   if (dp->total_length)
     {
       /* Round to floor value to provide gauge how much data *has*
@@ -338,9 +341,9 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
          Belperchinov-Shabanski's "wget-new-percentage" patch.  */
       if (dp->total_length)
         {
-          wgint bytes_remaining = dp->total_length - bytes_displayed;
+          wgint bytes_remaining = dp->total_length > bytes_displayed ? dp->total_length - bytes_displayed : 0;
           /* The quantity downloaded in this download run. */
-          wgint bytes_sofar = bytes_displayed - dp->initial_length;
+          wgint bytes_sofar = bytes_displayed > dp->initial_length ? bytes_displayed - dp->initial_length : 1;
           double eta = dltime * bytes_remaining / bytes_sofar;
           if (eta < 0)
             eta = 0;
