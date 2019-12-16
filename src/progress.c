@@ -861,10 +861,12 @@ cols_to_bytes (const char *mbs, const int cols, int *ncols)
 #else
 static int count_cols (const char *mbs) { return (int) strlen(mbs); }
 static int
-cols_to_bytes (const char *mbs _GL_UNUSED, const int cols, int *ncols)
+cols_to_bytes (const char *mbs, const int cols, int *ncols)
 {
-  *ncols = cols;
-  return cols;
+  int len = strlen(mbs);
+  int ret = len < cols ? len : cols;
+  *ncols = ret;
+  return ret;
 }
 #endif
 
