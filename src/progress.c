@@ -1099,8 +1099,11 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   /* " 234.56M" */
   down_size = human_readable (size, 1000, 2);
   cols_diff = PROGRESS_FILESIZE_LEN - count_cols (down_size);
-  memset (p, ' ', cols_diff);
-  p += cols_diff;
+  if (cols_diff > 0)
+    {
+      memset (p, ' ', cols_diff);
+      p += cols_diff;
+    }
   p += sprintf (p, "%s", down_size);
 
   /* " 12.52Kb/s or 12.52KB/s" */
@@ -1182,8 +1185,11 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       else
         ncols += sprintf (p + nbytes, "%ss", print_decimal (dl_total_time));
       p += ncols + bytes_cols_diff;
-      memset (p, ' ', PROGRESS_ETA_LEN - ncols);
-      p += PROGRESS_ETA_LEN - ncols;
+      if (ncols < PROGRESS_ETA_LEN)
+        {
+          memset (p, ' ', PROGRESS_ETA_LEN - ncols);
+          p += PROGRESS_ETA_LEN - ncols;
+        }
     }
 
   padding = bp->width - count_cols (bp->buffer);
