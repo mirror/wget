@@ -681,7 +681,7 @@ bar_draw (void *progress)
       if (screen_width != old_width)
         {
           bp->width = screen_width - 1;
-          bp->buffer = xrealloc (bp->buffer, bp->width + 100);
+          bp->buffer = xrealloc (bp->buffer, BUF_LEN);
           force_screen_update = true;
         }
       received_sigwinch = 0;
@@ -829,27 +829,17 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 static int
 count_cols (const char *mbs)
 {
-  wchar_t wc;
-  int     bytes;
-  int     remaining = strlen(mbs);
-  int     cols = 0;
-  int     wccols;
-
-  while (*mbs != '\0')
+  mbchar_t mbc;
+  mbi_iterator_t iter;
+  int cols = 0;
+  mbi_init (iter, mbs, strlen(mbs));
+  while (mbi_avail (iter))
     {
-      bytes = mbtowc (&wc, mbs, remaining);
-      assert (bytes != 0);  /* Only happens when *mbs == '\0' */
-      if (bytes == -1)
-        {
-          /* Invalid sequence. We'll just have to fudge it. */
-          return cols + remaining;
-        }
-      mbs += bytes;
-      remaining -= bytes;
-      wccols = wcwidth(wc);
-      cols += (wccols == -1? 1 : wccols);
+      mbc = mbi_cur (iter);
+      cols += mb_width (mbc);
+      mbi_advance (iter);
     }
-  return cols;
+ return cols;
 }
 
 static int
