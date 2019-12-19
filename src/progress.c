@@ -543,7 +543,7 @@ static volatile sig_atomic_t received_sigwinch;
 #define ETA_REFRESH_INTERVAL 0.99
 
 struct bar_progress {
-  const char *f_download;       /* Filename of the downloaded file */
+  char *f_download;             /* Filename of the downloaded file */
   wgint initial_length;         /* how many bytes have been downloaded
                                    previously. */
   wgint total_length;           /* expected total byte count when the
@@ -600,6 +600,71 @@ struct bar_progress {
 static void create_image (struct bar_progress *, double, bool);
 static void display_image (char *);
 
+#if USE_NLS_PROGRESS_BAR
+static size_t
+prepare_filename(char *dest, const char *src)
+{
+  size_t ret = 1;
+  if (src)
+    {
+      mbi_iterator_t iter;
+      mbchar_t mbc;
+      mbi_init (iter, src, strlen(src));
+      while (mbi_avail (iter))
+        {
+          size_t i;
+          mbc = mbi_cur(iter);
+          if (mb_isprint(mbc))
+            {
+              if (dest)
+                for (i=0; i<mb_len(mbc); i++)
+                  *dest++ = *(mb_ptr(mbc) + i);
+              ret += mb_len(mbc);
+            }
+          else
+            for (i=0; i<mb_len(mbc); i++)
+              {
+                if (dest)
+                  dest += sprintf(dest,"%%%02x", (unsigned char) *(mb_ptr(mbc) + i));
+                ret  += 3;
+              }
+          mbi_advance (iter);
+        }
+    }
+  if (dest)
+    *dest = 0;
+  return ret;
+}
+#else
+#include <ctype.h>
+static size_t
+prepare_filename(char *dest, const char *src)
+{
+  size_t ret = 1;
+  if (src)
+    while (*src)
+      {
+        /* isprint with some lang return false for some chars */
+        if(!iscntrl(*src))
+          {
+            if (dest)
+              *dest++ = *src;
+            ret++;
+          }
+        else
+          {
+            if (dest)
+              dest += sprintf(dest,"%%%02x", (unsigned char) *src );
+            ret += 3;
+          }
+        src++;
+      }
+  if (dest)
+    *dest = 0;
+  return ret;
+}
+#endif /* USE_NLS_PROGRESS_BAR */
+
 static void *
 bar_create (const char *f_download, wgint initial, wgint total)
 {
@@ -612,7 +677,9 @@ bar_create (const char *f_download, wgint initial, wgint total)
 
   bp->initial_length = initial;
   bp->total_length   = total;
-  bp->f_download     = f_download;
+  /* replace unprintable chars and invalid sequences */
+  bp->f_download  = xmalloc (prepare_filename (NULL, f_download));
+  prepare_filename (bp->f_download, f_download);
 
   /* Initialize screen_width if this hasn't been done or if it might
      have changed, as indicated by receiving SIGWINCH.  */
@@ -712,6 +779,7 @@ bar_finish (void *progress, double dltime)
   logputs (LOG_VERBOSE, "\n");
   logputs (LOG_PROGRESS, "\n");
 
+  xfree (bp->f_download);
   xfree (bp->buffer);
   xfree (bp);
 }
@@ -868,6 +936,7 @@ cols_to_bytes (const char *mbs, const int cols, int *ncols)
 }
 #else
 static int count_cols (const char *mbs) { return (int) strlen(mbs); }
+
 static int
 cols_to_bytes (const char *mbs, const int cols, int *ncols)
 {
@@ -991,11 +1060,12 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
     }
   else
     {
+/*
       memcpy(p, bp->f_download, MAX_FILENAME_COLS);
       p += MAX_FILENAME_COLS;
       *p++ = ' ';
     }
-/*
+*/
       int offset_cols;
       int bytes_in_filename, offset_bytes, col;
       int *cols_ret = &col;
@@ -1032,7 +1102,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       memset (p, ' ', padding + 1);
       p += padding + 1;
     }
-*/
+
 
   /* "xx% " */
   if (bp->total_length > 0)
