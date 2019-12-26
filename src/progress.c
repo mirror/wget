@@ -1143,8 +1143,10 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       int nbytes;
       int ncols;
 
-      /* Note to translators: this should not take up more room than
-         available here (6 columns).  Abbreviate if necessary.  */
+      /* TRANSLATORS: The meaning is "elapsed time", and it is shown
+       * next to the progress bar once the download is done.
+       * This should not take up more room than
+       * available here (6 columns).  Abbreviate if necessary.  */
       strcpy (p, _("    in "));
       nbytes = strlen (p);
       ncols  = count_cols (p);
