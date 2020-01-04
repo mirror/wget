@@ -602,32 +602,33 @@ static void display_image (char *);
 
 #if USE_NLS_PROGRESS_BAR
 static size_t
-prepare_filename(char *dest, const char *src)
+prepare_filename (char *dest, const char *src)
 {
   size_t ret = 1;
   if (src)
     {
       mbi_iterator_t iter;
       mbchar_t mbc;
-      mbi_init (iter, src, strlen(src));
+      mbi_init (iter, src, strlen (src));
       while (mbi_avail (iter))
         {
           size_t i;
           mbc = mbi_cur(iter);
-          if (mb_isprint(mbc))
-            {
-              if (dest)
-                for (i=0; i<mb_len(mbc); i++)
-                  *dest++ = *(mb_ptr(mbc) + i);
-              ret += mb_len(mbc);
-            }
-          else
-            for (i=0; i<mb_len(mbc); i++)
+          /* replace invalid || unprintable || zero-width mbc ws hexdgt code */
+          if (!mb_isprint (mbc) || !mb_width (mbc))
+            for (i=0; i < mb_len (mbc); i++)
               {
                 if (dest)
-                  dest += sprintf(dest,"%%%02x", (unsigned char) *(mb_ptr(mbc) + i));
+                  dest += sprintf (dest, "%%%02x", (unsigned char) *(mb_ptr(mbc) + i));
                 ret  += 3;
               }
+          else
+            {
+              if (dest)
+                for (i=0; i < mb_len (mbc); i++)
+                  *dest++ = *(mb_ptr (mbc) + i);
+              ret += mb_len (mbc);
+            }
           mbi_advance (iter);
         }
     }
@@ -638,14 +639,14 @@ prepare_filename(char *dest, const char *src)
 #else
 #include <ctype.h>
 static size_t
-prepare_filename(char *dest, const char *src)
+prepare_filename (char *dest, const char *src)
 {
   size_t ret = 1;
   if (src)
     while (*src)
       {
         /* isprint with some lang return false for some chars */
-        if(!iscntrl(*src))
+        if(!iscntrl (*src))
           {
             if (dest)
               *dest++ = *src;
@@ -654,7 +655,7 @@ prepare_filename(char *dest, const char *src)
         else
           {
             if (dest)
-              dest += sprintf(dest,"%%%02x", (unsigned char) *src );
+              dest += sprintf (dest, "%%%02x", (unsigned char) *src );
             ret += 3;
           }
         src++;
@@ -677,7 +678,9 @@ bar_create (const char *f_download, wgint initial, wgint total)
 
   bp->initial_length = initial;
   bp->total_length   = total;
-  /* replace unprintable chars and invalid sequences */
+  /* Zero-width mbc must be replaced to avoid buffer overflow.
+     Another way is to allocate a buffer that allows contain
+     full f_download, but in this case some escape sequences may break "bar" */
   bp->f_download  = xmalloc (prepare_filename (NULL, f_download));
   prepare_filename (bp->f_download, f_download);
 
