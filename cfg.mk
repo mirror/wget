@@ -35,3 +35,5 @@ show-vc-list-except:
 	@$(VC_LIST_EXCEPT)
 
 VC_LIST_ALWAYS_EXCLUDE_REGEX = ^ABOUT-NLS|((msdos|vms)/.*)|ChangeLog-2014-12-10|/.*\.der|^tests/certs/.*|^fuzz/.*\.(in|repro)/.*$$
+
+update-copyright-env = UPDATE_COPYRIGHT_USE_INTERVALS=1
