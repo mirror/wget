@@ -509,8 +509,10 @@ dot_set_params (const char *params)
 #define DEFAULT_SCREEN_WIDTH 80
 
 /* Minimum screen width we'll try to work with.  If this is too small,
-   create_image will overflow the buffer.  */
-#define MINIMUM_SCREEN_WIDTH 45
+   create_image will overflow the buffer.
+   width = width/4 + 1 + PROGRESS_PERCENT_LEN + PROGRESS_FILESIZE_LEN
+           + PROGRESS_DWNLOAD_RATE + PROGRESS_ETA_LEN => widh = 38*4/3 (+1) */
+#define MINIMUM_SCREEN_WIDTH 51
 
 /* The last known screen width.  This can be updated by the code that
    detects that SIGWINCH was received (but it's never updated from the
