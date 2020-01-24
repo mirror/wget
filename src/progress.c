@@ -220,11 +220,11 @@ struct dot_progress {
   wgint total_length;           /* expected total byte count when the
                                    download finishes */
 
-  int accumulated;              /* number of bytes accumulated after
+  wgint accumulated;            /* number of bytes accumulated after
                                    the last printed dot */
 
   double dltime;                /* download time so far */
-  int rows;                     /* number of rows printed so far */
+  wgint rows;                   /* number of rows printed so far */
   int dots;                     /* number of dots printed in this row */
 
   double last_timer_value;
@@ -282,6 +282,21 @@ dot_create (const char *f_download _GL_UNUSED, wgint initial, wgint total)
 
 static const char *eta_to_human_short (int, bool);
 
+/* ADD_DOT_ROWS_THRS - minimal (1 << ADD_DOT_ROWS_THRS) ROWS to be added
+   to the current row if dp->accumulated too much.
+   Allows to reduce dot_draw io, times.
+   According to the way progress_update is currently has being called, this
+   should happens only when fuzzing, or (paranoia) if somehow buffer will
+   be too large.
+   Can be disabled by default if this is not fuzzing build. */
+#ifndef ADD_DOT_ROWS_THRS
+#if FUZZING
+#define ADD_DOT_ROWS_THRS 2
+#else
+#define ADD_DOT_ROWS_THRS 2
+#endif
+#endif /* ADD_DOT_ROWS_THRS */
+
 /* Prints the stats (percentage of completion, speed, ETA) for current
    row.  DLTIME is the time spent downloading the data in current
    row.
@@ -291,7 +306,11 @@ static const char *eta_to_human_short (int, bool);
    might be worthwhile to split it to two different functions.  */
 
 static void
+#if ADD_DOT_ROWS_THRS
+print_row_stats (struct dot_progress *dp, double dltime, bool last, wgint added_rows)
+#else
 print_row_stats (struct dot_progress *dp, double dltime, bool last)
+#endif
 {
   const wgint ROW_BYTES = opt.dot_bytes * opt.dots_in_line;
 
@@ -316,12 +335,16 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
     }
 
   {
-    static char names[] = {' ', 'K', 'M', 'G'};
+    static char names[] = {' ', 'K', 'M', 'G', 'T'};
     int units;
     double rate;
     wgint bytes_this_row;
     if (!last)
+#if ADD_DOT_ROWS_THRS
+      bytes_this_row = ROW_BYTES * added_rows;
+#else
       bytes_this_row = ROW_BYTES;
+#endif
     else
       /* For last row also include bytes accumulated after last dot.  */
       bytes_this_row = dp->dots * opt.dot_bytes + dp->accumulated;
@@ -391,8 +414,9 @@ dot_draw (void *progress)
 
   log_set_flush (false);
 
-  for (; dp->accumulated >= dot_bytes; dp->accumulated -= dot_bytes)
+  while (dp->accumulated >= dot_bytes)
     {
+      dp->accumulated -= dot_bytes;
       if (dp->dots == 0)
         logprintf (LOG_PROGRESS, "\n%6sK",
                    number_to_static_string (dp->rows * ROW_BYTES / 1024));
@@ -404,11 +428,26 @@ dot_draw (void *progress)
       ++dp->dots;
       if (dp->dots >= opt.dots_in_line)
         {
-          if (dp->rows < INT_MAX)
-            ++dp->rows;
           dp->dots = 0;
-
+#if ADD_DOT_ROWS_THRS
+          {
+            wgint added_rows = 1;
+            if (dp->accumulated >= (ROW_BYTES << ADD_DOT_ROWS_THRS))
+              {
+                added_rows += dp->accumulated / ROW_BYTES;
+                dp->accumulated %= ROW_BYTES;
+              }
+            if (WGINT_MAX - dp->rows >= added_rows)
+              dp->rows += added_rows;
+            else
+              dp->rows = WGINT_MAX;
+            print_row_stats (dp, dp->dltime, false, added_rows);
+          }
+#else
+          if (dp->rows < WGINT_MAX)
+            ++dp->rows;
           print_row_stats (dp, dp->dltime, false);
+#endif /* ADD_DOT_ROWS_THRS */
         }
     }
 
@@ -441,8 +480,11 @@ dot_finish (void *progress, double dltime)
     dltime = INT_MAX - 1;
   else if (dltime < 0)
     dltime = 0;
-
+#if ADD_DOT_ROWS_THRS
+  print_row_stats (dp, dltime, true, 1);
+#else
   print_row_stats (dp, dltime, true);
+#endif
   logputs (LOG_VERBOSE, "\n\n");
   log_set_flush (false);
 
@@ -721,7 +763,10 @@ bar_update (void *progress, wgint howmuch, double dltime)
   struct bar_progress *bp = progress;
 
   bp->dltime = dltime;
-  bp->count += howmuch;
+  if (WGINT_MAX - (bp->count + bp->initial_length) >= howmuch)
+    bp->count += howmuch;
+  else
+    bp->count = WGINT_MAX - bp->initial_length;
   if (bp->total_length > 0
       && bp->count + bp->initial_length > bp->total_length)
     /* We could be downloading more than total_length, e.g. when the
