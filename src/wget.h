@@ -241,7 +241,7 @@ typedef double SUM_SIZE_INT;
 /* Convert an ASCII hex digit to the corresponding number between 0
    and 15.  c should be a hexadecimal digit that satisfies c_isxdigit;
    otherwise, the result is undefined.  */
-static unsigned char _unhex(unsigned char c)
+static inline unsigned char _unhex(unsigned char c)
 {
 	return c <= '9' ? c - '0' : (c <= 'F' ? c - 'A' + 10 : c - 'a' + 10);
 }
