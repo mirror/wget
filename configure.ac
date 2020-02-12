@@ -410,6 +410,8 @@ if test -n "$WARN_CFLAGS"; then
     # remove unwanted warn flags
     wget_WORD_REMOVE([WARN_CFLAGS], [$WARN_CFLAGS], [$nw])
 
+    WARN_CFLAGS="$WARN_CFLAGS -Wno-undef -Wno-float-equal"
+
     # add more flags as you like
     if test $GCC_VERSION -ge 5; then
       WARN_CFLAGS="$WARN_CFLAGS -fdiagnostics-color=always"
