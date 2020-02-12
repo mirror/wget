@@ -240,6 +240,7 @@ convert_links (const char *file, struct urlpos *links)
         logputs (LOG_VERBOSE, _("nothing to do.\n"));
         return;
       }
+    logputs (LOG_VERBOSE, _("%d.\n"), dry_count);
   }
 
   fm = wget_read_file (file);
