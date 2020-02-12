@@ -581,9 +581,9 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
         }
       xfree (gzbuf);
 
-      if (gzstream.total_in != sum_read)
+      if (gzstream.total_in != (uLong) sum_read)
         {
-          DEBUGP(("zlib read size differs from raw read size (%lu/%lu)\n",
+          DEBUGP(("zlib read size differs from raw read size (%lu/%ld)\n",
                   gzstream.total_in, sum_read));
         }
     }
