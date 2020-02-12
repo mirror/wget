@@ -118,17 +118,17 @@ ntlm_input (struct ntlmdata *ntlm, const char *header)
          32 (48) start of data block
       */
       ssize_t size;
-      char *buffer = (char *) alloca (strlen (header));
+      char buffer[48]; // decode 48 bytes needs ((48 + 2) / 3) * 4 + 1 bytes
 
       DEBUGP (("Received a type-2 NTLM message.\n"));
 
-      size = wget_base64_decode (header, buffer, strlen (header));
+      size = wget_base64_decode (header, buffer, sizeof (buffer));
       if (size < 0)
         return false;           /* malformed base64 from server */
 
       ntlm->state = NTLMSTATE_TYPE2; /* we got a type-2 */
 
-      if (size >= 48)
+      if ((size_t) size >= sizeof (buffer))
         /* the nonce of interest is index [24 .. 31], 8 bytes */
         memcpy (ntlm->nonce, &buffer[24], 8);
 
