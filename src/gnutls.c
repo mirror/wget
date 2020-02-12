@@ -124,7 +124,6 @@ ssl_init (void)
         {
           struct hash_table *inode_map = hash_table_new (196, NULL, NULL);
           struct dirent *dent;
-          size_t dirlen = strlen(ca_directory);
           int rc;
 
           ncerts = 0;
@@ -132,10 +131,11 @@ ssl_init (void)
           while ((dent = readdir (dir)) != NULL)
             {
               struct stat st;
-              size_t ca_file_length = dirlen + strlen(dent->d_name) + 2;
-              char *ca_file = alloca(ca_file_length);
+              char ca_file[1024];
 
-              snprintf (ca_file, ca_file_length, "%s/%s", ca_directory, dent->d_name);
+              if (((unsigned) snprintf (ca_file, sizeof (ca_file), "%s/%s", ca_directory, dent->d_name)) >= sizeof (ca_file))
+                continue; // overflow
+
               if (stat (ca_file, &st) != 0)
                 continue;
 
