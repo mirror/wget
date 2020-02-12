@@ -1409,10 +1409,10 @@ rotate_backups(const char *fname)
 # define AVSL 0
 #endif
 
-  int maxlen = strlen (fname) + sizeof (SEP) + numdigit (opt.backups) + AVSL;
-  char *from = alloca (maxlen);
-  char *to = alloca (maxlen);
+  /* avoid alloca() here */
+  char from[1024], to[1024];
   struct stat sb;
+  bool overflow;
   int i;
 
   if (stat (fname, &sb) == 0)
@@ -1429,19 +1429,24 @@ rotate_backups(const char *fname)
        */
       if (i == opt.backups)
         {
-          snprintf (to, sizeof(to), "%s%s%d%s", fname, SEP, i, AVS);
-          delete (to);
+          if (((unsigned) snprintf (to, sizeof (to), "%s%s%d%s", fname, SEP, i, AVS)) >= sizeof (to))
+            logprintf (LOG_NOTQUIET, "Failed to delete %s: File name truncation\n", to);
+          else
+            delete (to);
         }
 #endif
-      snprintf (to, maxlen, "%s%s%d", fname, SEP, i);
-      snprintf (from, maxlen, "%s%s%d", fname, SEP, i - 1);
-      if (rename (from, to))
+      if ((overflow = ((unsigned) snprintf (to, sizeof (to), "%s%s%d", fname, SEP, i)) >= sizeof (to)))
+	     errno = ENAMETOOLONG;
+      else if ((overflow = ((unsigned) snprintf (from, sizeof (from), "%s%s%d", fname, SEP, i - 1)) >= sizeof (from)))
+	     errno = ENAMETOOLONG;
+      if (overflow || rename (from, to))
         logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
                    from, to, errno, strerror (errno));
     }
 
-  snprintf (to, maxlen, "%s%s%d", fname, SEP, 1);
-  if (rename(fname, to))
+  if ((overflow = ((unsigned) snprintf (to, sizeof (to), "%s%s%d", fname, SEP, 1)) >= sizeof (to)))
+    errno = ENAMETOOLONG;
+  if (overflow || rename(fname, to))
     logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
                fname, to, errno, strerror (errno));
 }
