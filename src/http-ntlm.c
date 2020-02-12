@@ -348,7 +348,6 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
   size_t hostoff; /* host name offset */
   size_t domoff;  /* domain name offset */
   size_t size;
-  char *base64;
   char ntlmbuf[256]; /* enough, unless the host/domain is very long */
 
   /* point to the address of the pointer that holds the string to sent to the
@@ -420,10 +419,10 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     /* initial packet length */
     size = 32 + hostlen + domlen;
 
-    base64 = (char *) alloca (BASE64_LENGTH (size) + 1);
-    wget_base64_encode (ntlmbuf, size, base64);
+    output = xmalloc(5 + BASE64_LENGTH (size) + 1);
+    memcpy(output, "NTLM ", 5);
+    wget_base64_encode (ntlmbuf, size, output + 5);
 
-    output = concat_strings ("NTLM ", base64, (char *) 0);
     break;
 
   case NTLMSTATE_TYPE2:
@@ -593,10 +592,9 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     ntlmbuf[57] = (char) (size >> 8);
 
     /* convert the binary blob into base64 */
-    base64 = (char *) alloca (BASE64_LENGTH (size) + 1);
-    wget_base64_encode (ntlmbuf, size, base64);
-
-    output = concat_strings ("NTLM ", base64, (char *) 0);
+    output = xmalloc(5 + BASE64_LENGTH (size) + 1);
+    memcpy(output, "NTLM ", 5);
+    wget_base64_encode (ntlmbuf, size, output + 5);
 
     ntlm->state = NTLMSTATE_TYPE3; /* we sent a type-3 */
     *ready = true;
