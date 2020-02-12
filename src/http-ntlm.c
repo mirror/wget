@@ -255,22 +255,21 @@ mkhash(const char *password,
 #ifdef USE_NTRESPONSES
   unsigned char ntbuffer[21];
 #endif
-  unsigned char *pw;
+  unsigned char pw[14];
   static const unsigned char magic[] = {
     0x4B, 0x47, 0x53, 0x21, 0x40, 0x23, 0x24, 0x25
   };
   size_t i, len = strlen(password);
 
   /* make it fit at least 14 bytes */
-  pw = (unsigned char *) alloca (len < 7 ? 14 : len * 2);
 
-  if (len > 14)
-    len = 14;
+  if (len > sizeof (pw))
+    len = sizeof (pw);
 
-  for (i=0; i<len; i++)
+  for (i = 0; i < len; i++)
     pw[i] = (unsigned char) c_toupper (password[i]);
 
-  for (; i<14; i++)
+  for (; i < sizeof (pw); i++)
     pw[i] = 0;
 
   {
@@ -286,16 +285,16 @@ mkhash(const char *password,
 #else
     DES_key_schedule ks;
 
-    setup_des_key(pw, DESKEY(ks));
-    DES_ecb_encrypt((DES_cblock *)magic, (DES_cblock *)lmbuffer,
-                    DESKEY(ks), DES_ENCRYPT);
+    setup_des_key(pw, DESKEY (ks));
+    DES_ecb_encrypt((DES_cblock *) magic, (DES_cblock *) lmbuffer,
+                    DESKEY (ks), DES_ENCRYPT);
 
-    setup_des_key(pw+7, DESKEY(ks));
-    DES_ecb_encrypt((DES_cblock *)magic, (DES_cblock *)(lmbuffer+8),
-                    DESKEY(ks), DES_ENCRYPT);
+    setup_des_key(pw+7, DESKEY (ks));
+    DES_ecb_encrypt((DES_cblock *) magic, (DES_cblock *) (lmbuffer + 8),
+                    DESKEY (ks), DES_ENCRYPT);
 #endif
 
-    memset(lmbuffer+16, 0, 5);
+    memset(lmbuffer + 16, 0, 5);
   }
   /* create LM responses */
   calc_resp(lmbuffer, nonce, lmresp);
@@ -308,11 +307,11 @@ mkhash(const char *password,
     MD4_CTX MD4;
 #endif
 
-    len = strlen(password);
+    len = strlen (password);
 
-    for (i=0; i<len; i++) {
-      pw[2*i]   = (unsigned char) password[i];
-      pw[2*i+1] = 0;
+    for (i = 0; i < len; i++) {
+      pw[2 * i]     = (unsigned char) password[i];
+      pw[2 * i + 1] = 0;
     }
 
 #ifdef HAVE_NETTLE
@@ -326,7 +325,7 @@ mkhash(const char *password,
     MD4_Final(ntbuffer, &MD4);
 #endif
 
-    memset(ntbuffer+16, 0, 5);
+    memset(ntbuffer + 16, 0, 5);
   }
 
   calc_resp(ntbuffer, nonce, ntresp);
