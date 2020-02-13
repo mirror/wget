@@ -4970,16 +4970,32 @@ http_atotm (const char *time_string)
 static char *
 basic_authentication_encode (const char *user, const char *passwd)
 {
-  char *t1, *t2;
-  int len1 = strlen (user) + 1 + strlen (passwd);
+  char buf_t1[256], buf_t2[256];
+  char *t1, *t2, *ret;
+  size_t len1 = strlen (user) + 1 + strlen (passwd);
 
-  t1 = (char *)alloca (len1 + 1);
+  if (len1 < sizeof (buf_t1))
+    t1 = buf_t1;
+  else
+    t1 = xmalloc(len1 + 1);
+
+  if (BASE64_LENGTH (len1) < sizeof (buf_t2))
+    t2 = buf_t2;
+  else
+    t2 = xmalloc (BASE64_LENGTH (len1) + 1);
+
   sprintf (t1, "%s:%s", user, passwd);
-
-  t2 = (char *)alloca (BASE64_LENGTH (len1) + 1);
   wget_base64_encode (t1, len1, t2);
 
-  return concat_strings ("Basic ", t2, (char *) 0);
+  ret = concat_strings ("Basic ", t2, (char *) 0);
+
+  if (t2 != buf_t2)
+    xfree (t2);
+
+  if (t1 != buf_t1)
+    xfree (t1);
+
+  return ret;
 }
 
 #define SKIP_WS(x) do {                         \
