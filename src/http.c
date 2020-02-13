@@ -62,9 +62,9 @@ as that of the covered work.  */
 #include "warc.h"
 #include "c-strcase.h"
 #include "version.h"
+#include "xstrndup.h"
 #ifdef HAVE_METALINK
 # include "metalink.h"
-# include "xstrndup.h"
 #endif
 #ifdef ENABLE_XATTR
 #include "xattr.h"
