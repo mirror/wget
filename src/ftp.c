@@ -756,11 +756,11 @@ Error in server response, closing control connection.\n"));
       else
         {
           const char *targ = NULL;
+          char *target = u->dir;
+          char targetbuf[1024];
           int cwd_count;
           int cwd_end;
           int cwd_start;
-
-          char *target = u->dir;
 
           DEBUGP (("changing working directory\n"));
 
@@ -799,13 +799,20 @@ Error in server response, closing control connection.\n"));
               && (con->rs != ST_OS400)
               && (con->rs != ST_VMS))
             {
-              int idlen = strlen (con->id);
               char *ntarget, *p;
+              size_t idlen = strlen (con->id);
+              size_t len;
 
               /* Strip trailing slash(es) from con->id. */
               while (idlen > 0 && con->id[idlen - 1] == '/')
                 --idlen;
-              p = ntarget = (char *)alloca (idlen + 1 + strlen (u->dir) + 1);
+
+              len = idlen + 1 + strlen (target);
+              if (len < sizeof (targetbuf))
+                p = ntarget = targetbuf;
+              else
+                p = ntarget = xmalloc (len + 1);
+
               memcpy (p, con->id, idlen);
               p += idlen;
               *p++ = '/';
@@ -984,6 +991,9 @@ Error in server response, closing control connection.\n"));
             } /* for */
 
           /* 2004-09-20 SMS. */
+
+          if (target != targetbuf)
+            xfree (target);
 
         } /* else */
     }
