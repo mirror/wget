@@ -1462,6 +1462,8 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
                    struct growable *dest)
 {
   const char *p;
+  char buf[1024];
+  char *unescaped = NULL;
   int quoted, outlen;
   int mask;
 
@@ -1481,8 +1483,15 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
   /* Copy [b, e) to PATHEL and URL-unescape it. */
   if (escaped)
     {
-      char *unescaped;
-      BOUNDED_TO_ALLOCA (b, e, unescaped);
+      size_t len = e - b;
+		if (len < sizeof (buf))
+        unescaped = buf;
+      else
+        unescaped = xmalloc(len + 1);
+
+		memcpy(unescaped, b, len);
+		unescaped[len] = 0;
+
       url_unescape (unescaped);
       b = unescaped;
       e = unescaped + strlen (unescaped);
@@ -1549,6 +1558,9 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
 
   TAIL_INCR (dest, outlen);
   append_null (dest);
+
+  if (unescaped && unescaped != buf)
+	  free (unescaped);
 }
 
 #ifdef HAVE_ICONV
