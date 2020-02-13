@@ -956,11 +956,19 @@ int
 make_directory (const char *directory)
 {
   int i, ret, quit = 0;
+  char buf[1024];
   char *dir;
+  size_t len = strlen (directory);
 
   /* Make a copy of dir, to be able to write to it.  Otherwise, the
      function is unsafe if called with a read-only char *argument.  */
-  STRDUP_ALLOCA (dir, directory);
+  if (len < sizeof(buf))
+    {
+      memcpy(buf, directory, len + 1);
+      dir = buf;
+	}
+  else
+    dir = xstrdup(directory);
 
   /* If the first character of dir is '/', skip it (and thus enable
      creation of absolute-pathname directories.  */
@@ -983,6 +991,10 @@ make_directory (const char *directory)
       else
         dir[i] = '/';
     }
+
+  if (dir != buf)
+	  xfree (dir);
+
   return ret;
 }
 
