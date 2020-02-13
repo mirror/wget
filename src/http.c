@@ -2228,8 +2228,6 @@ establish_connection (const struct url *u, const struct url **conn_ref,
 static uerr_t
 set_file_timestamp (struct http_stat *hs)
 {
-  size_t filename_len = strlen (hs->local_file);
-  char *filename_plus_orig_suffix = alloca (filename_len + sizeof (ORIG_SFX));
   bool local_dot_orig_file_exists = false;
   char *local_filename = NULL;
   struct stat st;
@@ -2242,6 +2240,15 @@ set_file_timestamp (struct http_stat *hs)
         _wasn't_ specified last time, or the server contains files called
         *.orig, -N will be back to not operating correctly with -k. */
     {
+      char buf[1024];
+      size_t filename_len = strlen (hs->local_file);
+      char *filename_plus_orig_suffix;
+
+      if (filename_len + sizeof (ORIG_SFX) > sizeof (buf))
+        filename_plus_orig_suffix = xmalloc (filename_len + sizeof (ORIG_SFX));
+      else
+        filename_plus_orig_suffix = buf;
+
       /* Would a single s[n]printf() call be faster?  --dan
 
           Definitely not.  sprintf() is horribly slow.  It's a
