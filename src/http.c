@@ -3509,9 +3509,22 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
                                         &scbeg, &scend)) != -1;
            ++scpos)
         {
-          char *set_cookie; BOUNDED_TO_ALLOCA (scbeg, scend, set_cookie);
+          char buf[1024], *set_cookie;
+          size_t len = scend - scbeg;
+
+          if (len < sizeof (buf))
+            set_cookie = buf;
+          else
+            set_cookie = xmalloc (len + 1);
+
+          memcpy (set_cookie, scbeg, len);
+          set_cookie[len] = 0;
+
           cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port,
                                     u->path, set_cookie);
+
+          if (set_cookie != buf)
+            xfree (set_cookie);
         }
     }
 
