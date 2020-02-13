@@ -3039,14 +3039,22 @@ skip_content_type:
           /* The hash here is assumed to be base64. We need the hash in hex.
              Therefore we convert: base64 -> binary -> hex.  */
           const size_t dig_hash_str_len = strlen (dig_hash);
-          char *bin_hash = alloca (dig_hash_str_len * 3 / 4 + 1);
+          char bin_hash[256];
           ssize_t hash_bin_len;
+
+          // there is no hash with that size
+          if (dig_hash_str_len >= sizeof (bin_hash))
+            {
+              DEBUGP (("Hash too long, ignored.\n"));
+              continue;
+            }
 
           hash_bin_len = wget_base64_decode (dig_hash, bin_hash, dig_hash_str_len * 3 / 4 + 1);
 
           /* Detect malformed base64 input.  */
           if (hash_bin_len < 0)
             {
+              DEBUGP (("Malformed base64 input, ignored.\n"));
               xfree (dig_type);
               xfree (dig_hash);
               continue;
