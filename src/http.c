@@ -280,15 +280,18 @@ request_set_header (struct request *req, const char *name, const char *value,
 static void
 request_set_user_header (struct request *req, const char *header)
 {
-  char *name;
-  const char *p = strchr (header, ':');
-  if (!p)
+  const char *name, *p;
+
+  if (!(p = strchr (header, ':')))
     return;
-  BOUNDED_TO_ALLOCA (header, p, name);
+
+  name = xstrndup(header, p - header);
+
   ++p;
   while (c_isspace (*p))
     ++p;
-  request_set_header (req, xstrdup (name), (char *) p, rel_name);
+
+  request_set_header (req, name, (char *) p, rel_name);
 }
 
 /* Remove the header with specified name from REQ.  Returns true if
