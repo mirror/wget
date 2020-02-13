@@ -1840,7 +1840,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
   /* Declare WARC variables. */
   bool warc_enabled = (opt.warc_filename != NULL);
   FILE *warc_tmp = NULL;
-  ip_address *warc_ip = NULL;
+  ip_address warc_ip_buf, *warc_ip = NULL;
   wgint last_expected_bytes = 0;
 
   /* Get the target, and set the name for the message accordingly. */
@@ -1922,7 +1922,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
 
           if (!con->proxy && con->csock != -1)
             {
-              warc_ip = (ip_address *) alloca (sizeof (ip_address));
+              warc_ip = &warc_ip_buf;
               socket_ip_address (con->csock, warc_ip, ENDPOINT_PEER);
             }
         }
