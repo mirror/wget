@@ -659,7 +659,7 @@ unique_name_1 (const char *prefix)
 {
   int count = 1;
   int plen = strlen (prefix);
-  char *template = (char *)alloca (plen + 1 + 24);
+  char *template = xmalloc (plen + 1 + 24);
   char *template_tail = template + plen;
 
   memcpy (template, prefix, plen);
@@ -667,9 +667,9 @@ unique_name_1 (const char *prefix)
 
   do
     number_to_string (template_tail, count++);
-  while (file_exists_p (template, NULL));
+  while (file_exists_p (template, NULL) && count < 999999);
 
-  return xstrdup (template);
+  return template;
 }
 
 /* Return a unique file name, based on FILE.
