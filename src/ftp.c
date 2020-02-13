@@ -2335,10 +2335,22 @@ The sizes do not match (local %s) -- retrieving.\n\n"),
                       size_t len = strlen (f->linkto) + 1;
                       if (S_ISLNK (st.st_mode))
                         {
-                          char *link_target = (char *)alloca (len);
-                          size_t n = readlink (con->target, link_target, len);
-                          if ((n == len - 1)
-                              && (memcmp (link_target, f->linkto, n) == 0))
+                          char buf[1024], *link_target;
+                          size_t n;
+                          bool res;
+
+                          if (len < sizeof (buf))
+                            link_target = buf;
+                          else
+                            link_target = xmalloc (len);
+
+                          n = readlink (con->target, link_target, len);
+                          res = (n == len - 1) && (memcmp (link_target, f->linkto, n) == 0);
+
+                          if (link_target != buf)
+                            xfree (link_target);
+
+                          if (res)
                             {
                               logprintf (LOG_VERBOSE, _("\
 Already have correct symlink %s -> %s\n\n"),
