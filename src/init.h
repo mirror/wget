@@ -42,4 +42,6 @@ void cleanup (void);
 void defaults (void);
 bool run_wgetrc (const char *file, file_stats_t *);
 
+#define MAX_LONGOPTION 26
+
 #endif /* INIT_H */

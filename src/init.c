@@ -946,9 +946,8 @@ void
 setoptval (const char *com, const char *val, const char *optname)
 {
   /* Prepend "--" to OPTNAME. */
-  char *dd_optname = (char *) alloca (2 + strlen (optname) + 1);
-  dd_optname[0] = '-';
-  dd_optname[1] = '-';
+  char dd_optname[2 + MAX_LONGOPTION + 1] = "--";
+
   strcpy (dd_optname + 2, optname);
 
   assert (val != NULL);

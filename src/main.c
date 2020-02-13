@@ -242,7 +242,7 @@ _Noreturn static void print_version (void);
 #endif
 
 struct cmdline_option {
-  const char *long_name;
+  char long_name[MAX_LONGOPTION];
   char short_name;
   enum {
     OPT_VALUE,
