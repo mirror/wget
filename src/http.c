@@ -3365,7 +3365,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 
       /* Generate a timestamp and uuid for this request. */
       warc_timestamp (warc_timestamp_str, sizeof (warc_timestamp_str));
-      warc_uuid_str (warc_request_uuid);
+      warc_uuid_str (warc_request_uuid, sizeof (warc_request_uuid));
 
       /* Create a request record and store it in the WARC file. */
       warc_result = warc_write_request_record (u->url, warc_timestamp_str,
