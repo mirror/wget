@@ -3191,7 +3191,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   FILE *warc_tmp = NULL;
   char warc_timestamp_str [21];
   char warc_request_uuid [48];
-  ip_address *warc_ip = NULL;
+  ip_address warc_ip_buf, *warc_ip = NULL;
   off_t warc_payload_offset = -1;
 
   /* Whether this connection will be kept alive after the HTTP request
@@ -3309,7 +3309,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 
       if (! proxy)
         {
-          warc_ip = (ip_address *) alloca (sizeof (ip_address));
+          warc_ip = &warc_ip_buf;
           socket_ip_address (sock, warc_ip, ENDPOINT_PEER);
         }
     }
