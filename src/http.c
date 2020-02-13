@@ -868,10 +868,22 @@ resp_free (struct response **resp_ref)
 static void
 print_response_line (const char *prefix, const char *b, const char *e)
 {
-  char *copy;
-  BOUNDED_TO_ALLOCA(b, e, copy);
+  char buf[1024], *copy;
+  size_t len = e - b;
+
+  if (len < buf)
+    copy = buf;
+  else
+    copy = xmalloc(len + 1);
+
+  memcpy(copy, b, len);
+  copy[len] = 0;
+
   logprintf (LOG_ALWAYS, "%s%s\n", prefix,
              quotearg_style (escape_quoting_style, copy));
+
+  if (copy != buf)
+    xfree (copy);
 }
 
 /* Print the server response, line by line, omitting the trailing CRLF
