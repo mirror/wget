@@ -2387,26 +2387,40 @@ check_auth (const struct url *u, char *user, char *passwd, struct response *resp
   bool basic_auth_finished = *basic_auth_finished_ref;
   bool auth_finished = *auth_finished_ref;
   bool ntlm_seen = *ntlm_seen_ref;
+  char buf[256], *tmp = NULL;
+
   *retry = false;
+
   if (!auth_finished && (user && passwd))
     {
       /* IIS sends multiple copies of WWW-Authenticate, one with
          the value "negotiate", and other(s) with data.  Loop over
          all the occurrences and pick the one we recognize.  */
       int wapos;
-      char *buf;
       const char *www_authenticate = NULL;
       const char *wabeg, *waend;
       const char *digest = NULL, *basic = NULL, *ntlm = NULL;
+
       for (wapos = 0; !ntlm
              && (wapos = resp_header_locate (resp, "WWW-Authenticate", wapos,
                                              &wabeg, &waend)) != -1;
            ++wapos)
         {
           param_token name, value;
+          size_t len = waend - wabeg;
 
-          BOUNDED_TO_ALLOCA (wabeg, waend, buf);
-          www_authenticate = buf;
+          if (tmp != buf)
+            xfree (tmp);
+
+          if (len < sizeof (buf))
+            tmp = buf;
+          else
+            tmp = xmalloc (len + 1);
+
+          memcpy (tmp, wabeg, len);
+          tmp[len] = 0;
+
+          www_authenticate = tmp;
 
           for (;!ntlm;)
             {
@@ -2507,6 +2521,8 @@ check_auth (const struct url *u, char *user, char *passwd, struct response *resp
     }
 
  cleanup:
+   if (tmp != buf)
+     xfree (tmp);
   *ntlm_seen_ref = ntlm_seen;
   *basic_auth_finished_ref = basic_auth_finished;
   *auth_finished_ref = auth_finished;
