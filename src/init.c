@@ -827,6 +827,8 @@ parse_line (const char *line, char **com, char **val, int *comind)
   const char *end = line + strlen (line);
   const char *cmdstart, *cmdend;
   const char *valstart, *valend;
+  char buf[1024];
+  size_t len;
 
   char *cmdcopy;
   int ind;
@@ -867,9 +869,18 @@ parse_line (const char *line, char **com, char **val, int *comind)
 
   /* The line now known to be syntactically correct.  Check whether
      the command is valid.  */
-  BOUNDED_TO_ALLOCA (cmdstart, cmdend, cmdcopy);
+  len = cmdend - cmdstart;
+  if (len < sizeof (buf))
+    cmdcopy = buf;
+  else
+    cmdcopy = xmalloc (len + 1);
+  memcpy (cmdcopy, cmdstart, len);
+  cmdcopy[len] = 0;
+
   dehyphen (cmdcopy);
   ind = command_by_name (cmdcopy);
+  if (cmdcopy != buf)
+    xfree (cmdcopy);
   if (ind == -1)
     return line_unknown_command;
 
