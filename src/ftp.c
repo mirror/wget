@@ -2482,8 +2482,9 @@ static uerr_t
 ftp_retrieve_dirs (struct url *u, struct url *original_url,
                    struct fileinfo *f, ccon *con)
 {
-  char *container = NULL;
-  int container_size = 0;
+  char buf[1024];
+  char *container = buf;
+  int container_size = sizeof (buf);
 
   for (; f; f = f->next)
     {
@@ -2500,7 +2501,14 @@ ftp_retrieve_dirs (struct url *u, struct url *original_url,
          item on the bottom of the stack.  */
       size = strlen (u->dir) + 1 + strlen (f->name) + 1;
       if (size > container_size)
-        container = (char *)alloca (size);
+        {
+          if (container == buf)
+            container = xmalloc (size);
+          else
+            container = xrealloc (container, size);
+
+          container_size = size;
+        }
       newdir = container;
 
       odir = u->dir;
@@ -2536,6 +2544,9 @@ Not descending to %s as it is excluded/not-included.\n"),
 
       /* Set the time-stamp?  */
     }
+
+  if (container != buf)
+    xfree (container);
 
   if (opt.quota && total_downloaded_bytes > opt.quota)
     return QUOTEXC;
