@@ -111,11 +111,10 @@ search_netrc (const char *host, const char **acc, const char **passwd,
       else if (opt.homedir)
         {
           struct stat buf;
-          char *path = (char *)alloca (strlen (opt.homedir) + 1
-                                       + strlen (NETRC_FILE_NAME) + 1);
-          sprintf (path, "%s/%s", opt.homedir, NETRC_FILE_NAME);
+          char *path = aprintf ("%s/%s", opt.homedir, NETRC_FILE_NAME);
           if (stat (path, &buf) == 0)
             netrc_list = parse_netrc (path);
+          xfree (path);
         }
 
 #endif /* def __VMS [else] */
