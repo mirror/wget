@@ -209,7 +209,6 @@ typedef double SUM_SIZE_INT;
 #include "options.h"
 
 /* Everything uses this, so include them here directly.  */
-#include <alloca.h>
 #ifdef __cplusplus
 #  undef _Noreturn
 #endif
@@ -253,18 +252,6 @@ static inline unsigned char _unhex(unsigned char c)
 #define XNUM_TO_DIGIT(x) ("0123456789ABCDEF"[x] + 0)
 #define XNUM_TO_digit(x) ("0123456789abcdef"[x] + 0)
 
-/* Copy the data delimited with BEG and END to alloca-allocated
-   storage, and zero-terminate it.  Arguments are evaluated only once,
-   in the order BEG, END, PLACE.  */
-#define BOUNDED_TO_ALLOCA(beg, end, place) do { \
-  const char *BTA_beg = (beg);                  \
-  int BTA_len = (end) - BTA_beg;                \
-  char **BTA_dest = &(place);                   \
-  *BTA_dest = alloca (BTA_len + 1);             \
-  memcpy (*BTA_dest, BTA_beg, BTA_len);         \
-  (*BTA_dest)[BTA_len] = '\0';                  \
-} while (0)
-
 /* Return non-zero if string bounded between BEG and END is equal to
    STRING_LITERAL.  The comparison is case-sensitive.  */
 #define BOUNDED_EQUAL(beg, end, string_literal)             \
@@ -275,19 +262,6 @@ static inline unsigned char _unhex(unsigned char c)
 #define BOUNDED_EQUAL_NO_CASE(beg, end, string_literal)         \
   ((end) - (beg) == sizeof (string_literal) - 1                 \
    && !c_strncasecmp (beg, string_literal, sizeof (string_literal) - 1))
-
-/* Like ptr=strdup(str), but allocates the space for PTR on the stack.
-   This cannot be an expression because this is not portable:
-     #define STRDUP_ALLOCA(str) (strcpy (alloca (strlen (str) + 1), str))
-   The problem is that some compilers can't handle alloca() being an
-   argument to a function.  */
-
-#define STRDUP_ALLOCA(ptr, str) do {                \
-  char **SA_dest = &(ptr);                          \
-  const char *SA_src = (str);                       \
-  *SA_dest = (char *)alloca (strlen (SA_src) + 1);  \
-  strcpy (*SA_dest, SA_src);                        \
-} while (0)
 
 /* Generally useful if you want to avoid arbitrary size limits but
    don't need a full dynamic array.  Assumes that BASEVAR points to a

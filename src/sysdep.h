@@ -36,7 +36,6 @@ as that of the covered work.  */
 
 /* Provided by gnulib on systems that don't have it: */
 
-#include <alloca.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdint.h>
