@@ -734,7 +734,9 @@ static char *
 local_quote_string (const char *file, bool no_html_quote)
 {
   const char *from;
-  char *newname, *to;
+  char *newname, *to, *res;
+  char buf[1024];
+  size_t tolen;
 
   char *any = strpbrk (file, "?#%;");
   if (!any)
@@ -742,8 +744,12 @@ local_quote_string (const char *file, bool no_html_quote)
 
   /* Allocate space assuming the worst-case scenario, each character
      having to be quoted.  */
-  to = newname = (char *)alloca (3 * strlen (file) + 1);
-  newname[0] = '\0';
+  tolen = 3 * strlen (file);
+  if (tolen < sizeof (buf))
+    to = newname = buf;
+  else
+    to = newname = xmalloc (tolen + 1);
+
   for (from = file; *from; from++)
     switch (*from)
       {
@@ -776,7 +782,15 @@ local_quote_string (const char *file, bool no_html_quote)
       }
   *to = '\0';
 
-  return no_html_quote ? strdup (newname) : html_quote_string (newname);
+  if (newname == buf)
+    return no_html_quote ? strdup (newname) : html_quote_string (newname);
+
+  if (no_html_quote)
+    return newname;
+
+  res = html_quote_string (newname);
+  xfree (newname);
+  return res;
 }
 
 /* Book-keeping code for dl_file_url_map, dl_url_file_map,
