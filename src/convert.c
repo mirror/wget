@@ -666,11 +666,18 @@ replace_attr_refresh_hack (const char *p, int size, FILE *fp,
                            const char *new_text, int timeout)
 {
   /* "0; URL=..." */
-  char *new_with_timeout = (char *)alloca (numdigit (timeout)
-                                           + 6 /* "; URL=" */
-                                           + strlen (new_text)
-                                           + 1);
-  sprintf (new_with_timeout, "%d; URL=%s", timeout, new_text);
+  char new_with_timeout[1024];
+
+  if (((unsigned) snprintf (
+       new_with_timeout, sizeof (new_with_timeout),
+       "%d; URL=%s", timeout, new_text)) >= sizeof (new_with_timeout))
+    {
+      // very unlikely fallback using heap memory
+      char *tmp = aprintf("%d; URL=%s", timeout, new_text);
+      const char *res = replace_attr (p, size, fp, tmp);
+      xfree (tmp);
+      return res;
+    }
 
   return replace_attr (p, size, fp, new_with_timeout);
 }
