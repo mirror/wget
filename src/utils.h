@@ -51,8 +51,6 @@ as that of the covered work.  */
 #define xnew_array(type, len) (xmalloc ((len) * sizeof (type)))
 #define xnew0_array(type, len) (xcalloc ((len), sizeof (type)))
 
-#define alloca_array(type, size) ((type *) alloca ((size) * sizeof (type)))
-
 #define xfree(p) do { free ((void *) (p)); p = NULL; } while (0)
 
 struct hash_table;
