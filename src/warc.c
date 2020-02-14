@@ -729,7 +729,7 @@ warc_uuid_str (char *urn_str, size_t urn_size)
 #ifdef WINDOWS
   /* If the native method fails (expected on older Windows versions),
      use the fallback below.  */
-  if (windows_uuid_str (urn_str))
+  if (windows_uuid_str (urn_str, urn_size))
     return;
 #endif
 
