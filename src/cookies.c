@@ -437,7 +437,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
             /* something went wrong. */
             goto error;
           cookie->permanent = 1;
-          cookie->expiry_time = cookies_now + maxage;
+          cookie->expiry_time = cookies_now + (time_t) maxage;
 
           /* According to rfc2109, a cookie with max-age of 0 means that
              discarding of a matching cookie is requested.  */
@@ -1318,7 +1318,7 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
         {
           if (expiry < cookies_now)
             goto abort_cookie;  /* ignore stale cookie. */
-          cookie->expiry_time = expiry;
+          cookie->expiry_time = (time_t) expiry;
           cookie->permanent = 1;
         }
 
