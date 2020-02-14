@@ -1029,23 +1029,10 @@ file_merge (const char *base, const char *file)
 int
 fnmatch_nocase (const char *pattern, const char *string, int flags)
 {
-#ifdef FNM_CASEFOLD
   /* The FNM_CASEFOLD flag started as a GNU extension, but it is now
-     also present on *BSD platforms, and possibly elsewhere.  */
+     also present on *BSD platforms, and possibly elsewhere.
+     Gnulib provides this flag in case it doesn't exist.  */
   return fnmatch (pattern, string, flags | FNM_CASEFOLD);
-#else
-  /* Turn PATTERN and STRING to lower case and call fnmatch on them. */
-  char *patcopy = (char *) alloca (strlen (pattern) + 1);
-  char *strcopy = (char *) alloca (strlen (string) + 1);
-  char *p;
-  for (p = patcopy; *pattern; pattern++, p++)
-    *p = c_tolower (*pattern);
-  *p = '\0';
-  for (p = strcopy; *string; string++, p++)
-    *p = c_tolower (*string);
-  *p = '\0';
-  return fnmatch (patcopy, strcopy, flags);
-#endif
 }
 
 static bool in_acclist (const char *const *, const char *, bool);
