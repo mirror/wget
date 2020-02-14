@@ -728,17 +728,6 @@ check_path_match (const char *cookie_path, const char *path)
   return path_matches (path, cookie_path) != 0;
 }
 
-/* Prepend '/' to string S.  S is copied to fresh stack-allocated
-   space and its value is modified to point to the new location.  */
-
-#define PREPEND_SLASH(s) do {                                   \
-  char *PS_newstr = (char *) alloca (1 + strlen (s) + 1);       \
-  *PS_newstr = '/';                                             \
-  strcpy (PS_newstr + 1, s);                                    \
-  s = PS_newstr;                                                \
-} while (0)
-
-
 /* Process the HTTP `Set-Cookie' header.  This results in storing the
    cookie or discarding a matching one, or ignoring it completely, all
    depending on the contents.  */
@@ -1065,7 +1054,7 @@ char *
 cookie_header (struct cookie_jar *jar, const char *host,
                int port, const char *path, bool secflag)
 {
-  struct cookie **chains;
+  struct cookie *chains[32];
   int chain_count;
 
   struct cookie *cookie;
@@ -1079,8 +1068,10 @@ cookie_header (struct cookie_jar *jar, const char *host,
 
   /* Allocate room for find_chains_of_host to write to.  The number of
      chains can at most equal the number of subdomains, hence
-     1+<number of dots>.  */
-  chains = alloca_array (struct cookie *, 1 + count_char (host, '.'));
+     1+<number of dots>.  We ignore cookies with more than 32 labels. */
+  chain_count = 1 + count_char (host, '.');
+  if (chain_count > (int) countof (chains))
+    return NULL;
   chain_count = find_chains_of_host (jar, host, chains);
 
   /* No cookies for this host. */
