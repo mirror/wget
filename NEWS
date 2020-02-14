@@ -5,6 +5,28 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.21 (unreleased)
+
+** Remove all uses of alloca
+   In some places the length of untrusted strings has been used, e.g.
+   strings from the command line or from remote.
+
+** Fix buffer overflows in progress bar code in some locales
+
+** Fix two null pointer accesses
+
+** Amend cookie file header to be recognized by the 'file' command
+
+** Post Handshake Authentication for OpenSSL
+
+** Require gettext version 0.19.3+
+
+** Add configure flags --enable-fsanitize-ubsan, --enable-fsanitize-asan
+   and --enable-fsanitize-msan for gcc and clang
+
+** Make several smaller fixes, enhance fuzzing, enhance building
+
+
 * Changes in Wget 1.20.3
 
 ** Fixed a buffer overflow vulnerability
