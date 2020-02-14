@@ -538,32 +538,6 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
      clobber .orig files sitting around from previous invocations.
      On VMS, use "_orig" instead of ".orig".  See "wget.h". */
 
-  /* Construct the backup filename as the original name plus ".orig". */
-  size_t         filename_len = strlen (file);
-  char*          filename_plus_orig_suffix;
-
-  /* TODO: hack this to work with css files */
-  if (downloaded_file_return == FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED)
-    {
-      /* Just write "orig" over "html".  We need to do it this way
-         because when we're checking to see if we've downloaded the
-         file before (to see if we can skip downloading it), we don't
-         know if it's a text/html file.  Therefore we don't know yet
-         at that stage that -E is going to cause us to tack on
-         ".html", so we need to compare vs. the original URL plus
-         ".orig", not the original URL plus ".html.orig". */
-      filename_plus_orig_suffix = alloca (filename_len + 1);
-      strcpy (filename_plus_orig_suffix, file);
-      strcpy ((filename_plus_orig_suffix + filename_len) - 4, "orig");
-    }
-  else /* downloaded_file_return == FILE_DOWNLOADED_NORMALLY */
-    {
-      /* Append ".orig" to the name. */
-      filename_plus_orig_suffix = alloca (filename_len + sizeof (ORIG_SFX));
-      strcpy (filename_plus_orig_suffix, file);
-      strcpy (filename_plus_orig_suffix + filename_len, ORIG_SFX);
-    }
-
   if (!converted_files)
     converted_files = make_string_hash_table (0);
 
@@ -574,10 +548,43 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
      called on this file. */
   if (!string_set_contains (converted_files, file))
     {
+      /* Construct the backup filename as the original name plus ".orig". */
+      char buf[1024];
+      size_t filename_len = strlen (file);
+      char *filename_plus_orig_suffix;
+
+      if (filename_len < sizeof (buf) - 5)
+        filename_plus_orig_suffix = buf;
+      else
+        filename_plus_orig_suffix = xmalloc (filename_len + 5 + 1);
+
+      /* TODO: hack this to work with css files */
+      if (downloaded_file_return == FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED)
+        {
+          /* Just write "orig" over "html".  We need to do it this way
+             because when we're checking to see if we've downloaded the
+             file before (to see if we can skip downloading it), we don't
+             know if it's a text/html file.  Therefore we don't know yet
+             at that stage that -E is going to cause us to tack on
+             ".html", so we need to compare vs. the original URL plus
+             ".orig", not the original URL plus ".html.orig". */
+          memcpy (filename_plus_orig_suffix, file, filename_len - 4);
+          memcpy (filename_plus_orig_suffix + filename_len - 4, "orig", 5);
+        }
+      else /* downloaded_file_return == FILE_DOWNLOADED_NORMALLY */
+        {
+          /* Append ".orig" to the name. */
+          memcpy (filename_plus_orig_suffix, file, filename_len);
+          strcpy (filename_plus_orig_suffix + filename_len, ORIG_SFX);
+        }
+
       /* Rename <file> to <file>.orig before former gets written over. */
       if (rename (file, filename_plus_orig_suffix) != 0)
         logprintf (LOG_NOTQUIET, _("Cannot back up %s as %s: %s\n"),
                    file, filename_plus_orig_suffix, strerror (errno));
+
+      if (filename_plus_orig_suffix != buf)
+        xfree (filename_plus_orig_suffix);
 
       /* Remember that we've already written a .orig backup for this file.
          Note that we never free this memory since we need it till the
