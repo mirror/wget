@@ -46,7 +46,6 @@ VPATH/Debian:
   stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-    - cp -a /usr/local/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po && touch .manywarnings
     - mkdir vpath && cd vpath
@@ -129,7 +128,6 @@ Minimal/Debian:
   stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-    - cp -a /usr/local/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po
     - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
@@ -159,7 +157,6 @@ Sanitizers/Debian:
   stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
   script:
-    - cp -a /usr/local/gnulib .
 #    - export CFLAGS="$CFLAGS_DEFAULT -Werror"
     - export CFLAGS="$CFLAGS_DEFAULT"
     - ./bootstrap --skip-po && touch .manywarnings
@@ -184,7 +181,6 @@ Scan-Build/Debian:
   stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-    - cp -a /usr/local/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po
     - scan-build ./configure $CONFIGURE_BASE_FLAGS
@@ -205,7 +201,6 @@ Valgrind/Debian:
   stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
   script:
-    - cp -a /usr/local/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po
     - ./configure $CONFIGURE_BASE_FLAGS --enable-valgrind-tests
@@ -229,7 +224,6 @@ Simple/Fedora:
   stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
-    - cp -a /usr/local/gnulib .
 #    - export CFLAGS="$CFLAGS_DEFAULT -Werror"
     - export CFLAGS="$CFLAGS_DEFAULT"
     - ./bootstrap --skip-po && touch .manywarnings
@@ -252,7 +246,6 @@ Simple/Fedora:
 #  stage: stage1-testing
 #  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$ALPINE_BUILD
 #  script:
-#    - cp -a /usr/local/gnulib .
 #    - export CFLAGS="$CFLAGS_DEFAULT"
 #    - ./bootstrap --skip-po
 #    - ./configure $CONFIGURE_BASE_FLAGS
