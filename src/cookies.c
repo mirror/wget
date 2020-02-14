@@ -423,11 +423,14 @@ parse_set_cookie (const char *set_cookie, bool silent)
       else if (TOKEN_IS (name, "max-age"))
         {
           double maxage = -1;
-          char *value_copy;
+          char value_copy[32];
+          size_t value_len = value.e - value.b;
 
-          if (!TOKEN_NON_EMPTY (value))
+          if (!TOKEN_NON_EMPTY (value) || value_len >= sizeof (value_copy))
             goto error;
-          BOUNDED_TO_ALLOCA (value.b, value.e, value_copy);
+
+          memcpy (value_copy, value.b, value_len);
+          value_copy[value_len] = 0;
 
           sscanf (value_copy, "%lf", &maxage);
           if (maxage == -1)
