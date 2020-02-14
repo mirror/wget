@@ -70,7 +70,7 @@ AC_ARG_WITH([libpsl],
 
 dnl SSL: Configure SSL backend to use
 AC_ARG_WITH([ssl],
-  [AS_HELP_STRING([--with-ssl={gnutls,openssl}], [specify SSL backend. GNU TLS is the default.])])
+  [AS_HELP_STRING([--with-ssl={gnutls,openssl,no}], [specify SSL backend. GNU TLS is the default.])])
 
 dnl Zlib: Configure use of zlib for compression
 AC_ARG_WITH([zlib],
