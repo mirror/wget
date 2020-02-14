@@ -236,9 +236,9 @@ _Noreturn static void print_help (void);
 _Noreturn static void print_version (void);
 
 #ifdef HAVE_SSL
-# define IF_SSL(x) x
+# define IF_SSL(a,b,c,d,e) { a, b, c, d , e },
 #else
-# define IF_SSL(x) NULL
+# define IF_SSL(a,b,c,d,e)
 #endif
 
 struct cmdline_option {
@@ -279,12 +279,12 @@ static struct cmdline_option option_data[] =
 #endif
     { "body-data", 0, OPT_VALUE, "bodydata", -1 },
     { "body-file", 0, OPT_VALUE, "bodyfile", -1 },
-    { IF_SSL ("ca-certificate"), 0, OPT_VALUE, "cacertificate", -1 },
-    { IF_SSL ("ca-directory"), 0, OPT_VALUE, "cadirectory", -1 },
+    IF_SSL ( "ca-certificate", 0, OPT_VALUE, "cacertificate", -1 )
+    IF_SSL ( "ca-directory", 0, OPT_VALUE, "cadirectory", -1 )
     { "cache", 0, OPT_BOOLEAN, "cache", -1 },
-    { IF_SSL ("certificate"), 0, OPT_VALUE, "certificate", -1 },
-    { IF_SSL ("certificate-type"), 0, OPT_VALUE, "certificatetype", -1 },
-    { IF_SSL ("check-certificate"), 0, OPT_BOOLEAN, "checkcertificate", -1 },
+    IF_SSL ( "certificate", 0, OPT_VALUE, "certificate", -1 )
+    IF_SSL ( "certificate-type", 0, OPT_VALUE, "certificatetype", -1 )
+    IF_SSL ( "check-certificate", 0, OPT_BOOLEAN, "checkcertificate", -1 )
     { "clobber", 0, OPT__CLOBBER, NULL, optional_argument },
 #ifdef HAVE_LIBZ
     { "compression", 0, OPT_VALUE, "compression", -1 },
@@ -297,7 +297,7 @@ static struct cmdline_option option_data[] =
     { "content-disposition", 0, OPT_BOOLEAN, "contentdisposition", -1 },
     { "content-on-error", 0, OPT_BOOLEAN, "contentonerror", -1 },
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
-    { IF_SSL ("crl-file"), 0, OPT_VALUE, "crlfile", -1 },
+    IF_SSL ( "crl-file", 0, OPT_VALUE, "crlfile", -1 )
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
     { "debug", 'd', OPT_BOOLEAN, "debug", -1 },
     { "default-page", 0, OPT_VALUE, "defaultpage", -1 },
@@ -325,12 +325,10 @@ static struct cmdline_option option_data[] =
     { "ftp-stmlf", 0, OPT_BOOLEAN, "ftpstmlf", -1 },
 #endif /* def __VMS */
     { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
-#ifdef HAVE_SSL
-    { "ftps-clear-data-connection", 0, OPT_BOOLEAN, "ftpscleardataconnection", -1 },
-    { "ftps-fallback-to-ftp", 0, OPT_BOOLEAN, "ftpsfallbacktoftp", -1 },
-    { "ftps-implicit", 0, OPT_BOOLEAN, "ftpsimplicit", -1 },
-    { "ftps-resume-ssl", 0, OPT_BOOLEAN, "ftpsresumessl", -1 },
-#endif
+    IF_SSL ( "ftps-clear-data-connection", 0, OPT_BOOLEAN, "ftpscleardataconnection", -1 )
+    IF_SSL ( "ftps-fallback-to-ftp", 0, OPT_BOOLEAN, "ftpsfallbacktoftp", -1 )
+    IF_SSL ( "ftps-implicit", 0, OPT_BOOLEAN, "ftpsimplicit", -1 )
+    IF_SSL ( "ftps-resume-ssl", 0, OPT_BOOLEAN, "ftpsresumessl", -1 )
     { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },
@@ -345,7 +343,7 @@ static struct cmdline_option option_data[] =
     { "http-passwd", 0, OPT_VALUE, "httppassword", -1 }, /* deprecated */
     { "http-password", 0, OPT_VALUE, "httppassword", -1 },
     { "http-user", 0, OPT_VALUE, "httpuser", -1 },
-    { IF_SSL ("https-only"), 0, OPT_BOOLEAN, "httpsonly", -1 },
+    IF_SSL ( "https-only", 0, OPT_BOOLEAN, "httpsonly", -1 )
     { "ignore-case", 0, OPT_BOOLEAN, "ignorecase", -1 },
     { "ignore-length", 0, OPT_BOOLEAN, "ignorelength", -1 },
     { "ignore-tags", 0, OPT_VALUE, "ignoretags", -1 },
@@ -384,7 +382,7 @@ static struct cmdline_option option_data[] =
     { "parent", 0, OPT__PARENT, NULL, optional_argument },
     { "passive-ftp", 0, OPT_BOOLEAN, "passiveftp", -1 },
     { "password", 0, OPT_VALUE, "password", -1 },
-    { IF_SSL ("pinnedpubkey"), 0, OPT_VALUE, "pinnedpubkey", -1 },
+    IF_SSL ( "pinnedpubkey", 0, OPT_VALUE, "pinnedpubkey", -1 )
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
@@ -392,9 +390,9 @@ static struct cmdline_option option_data[] =
     { "preferred-location", 0, OPT_VALUE, "preferredlocation", -1 },
 #endif
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
-    { IF_SSL ("ciphers"), 0, OPT_VALUE, "ciphers", -1 },
-    { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
-    { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
+    IF_SSL ( "ciphers", 0, OPT_VALUE, "ciphers", -1 )
+    IF_SSL ( "private-key", 0, OPT_VALUE, "privatekey", -1 )
+    IF_SSL ( "private-key-type", 0, OPT_VALUE, "privatekeytype", -1 )
     { "progress", 0, OPT_VALUE, "progress", -1 },
     { "show-progress", 0, OPT_BOOLEAN, "showprogress", -1 },
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
@@ -424,7 +422,7 @@ static struct cmdline_option option_data[] =
     { "retry-on-http-error", 0, OPT_VALUE, "retryonhttperror", -1 },
     { "save-cookies", 0, OPT_VALUE, "savecookies", -1 },
     { "save-headers", 0, OPT_BOOLEAN, "saveheaders", -1 },
-    { IF_SSL ("secure-protocol"), 0, OPT_VALUE, "secureprotocol", -1 },
+    IF_SSL ( "secure-protocol", 0, OPT_VALUE, "secureprotocol", -1 )
     { "server-response", 'S', OPT_BOOLEAN, "serverresponse", -1 },
     { "span-hosts", 'H', OPT_BOOLEAN, "spanhosts", -1 },
     { "spider", 0, OPT_BOOLEAN, "spider", -1 },
