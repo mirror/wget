@@ -1071,9 +1071,9 @@ cookie_header (struct cookie_jar *jar, const char *host,
   struct cookie *cookie;
   struct weighed_cookie *outgoing;
   size_t count, i, ocnt;
-  char *result;
+  char *result = NULL;
   int result_size, pos;
-  PREPEND_SLASH (path);         /* see cookie_handle_set_cookie */
+  char pathbuf[1024];
 
   /* First, find the cookie chains whose domains match HOST. */
 
@@ -1086,6 +1086,23 @@ cookie_header (struct cookie_jar *jar, const char *host,
   /* No cookies for this host. */
   if (chain_count <= 0)
     return NULL;
+
+  /* Wget's paths don't begin with '/' (blame rfc1808), but cookie
+     usage assumes /-prefixed paths.  Until the rest of Wget is fixed,
+     simply prepend slash to PATH.  */
+  {
+    char *tmp;
+    size_t pathlen = strlen(path);
+
+    if (pathlen < sizeof (pathbuf) - 1)
+      tmp = pathbuf;
+    else
+      tmp = xmalloc (pathlen + 2);
+
+    *tmp = '/';
+    memcpy (tmp + 1, path, pathlen + 1);
+    path = tmp;
+  }
 
   cookies_now = time (NULL);
 
@@ -1100,11 +1117,11 @@ cookie_header (struct cookie_jar *jar, const char *host,
       if (cookie_matches_url (cookie, host, port, path, secflag, NULL))
         ++count;
   if (!count)
-    return NULL;                /* no cookies matched */
+    goto out;                /* no cookies matched */
 
   /* Allocate the array. */
   if (count > SIZE_MAX / sizeof (struct weighed_cookie))
-    return NULL;                /* unable to process so many cookies */
+    goto out;                /* unable to process so many cookies */
   outgoing = xmalloc (count * sizeof (struct weighed_cookie));
 
   /* Fill the array with all the matching cookies from the chains that
@@ -1167,7 +1184,12 @@ cookie_header (struct cookie_jar *jar, const char *host,
   result[pos++] = '\0';
   xfree (outgoing);
   assert (pos == result_size);
-  return result;
+
+out:
+  if (path != pathbuf)
+    xfree (path);
+
+return result;
 }
 
 /* Support for loading and saving cookies.  The format used for
