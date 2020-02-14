@@ -64,17 +64,17 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
                             int is_css,
                             int *file_count)
 {
-  int i;
+  int i, cnt = 0;
+  char *arr[1024], **file_array;
 
-  int cnt;
-  char **file_array;
-
-  cnt = 0;
-  if (downloaded_set)
-    cnt = hash_table_count (downloaded_set);
-  if (cnt == 0)
+  if (!downloaded_set || (cnt = hash_table_count (downloaded_set)) == 0)
     return;
-  file_array = alloca_array (char *, cnt);
+
+  if (cnt <= (int) countof (arr))
+    file_array = arr;
+  else
+    file_array = xmalloc (cnt * sizeof (arr[0]));
+
   string_set_to_array (downloaded_set, file_array);
 
   for (i = 0; i < cnt; i++)
@@ -166,6 +166,9 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
       /* Free the data.  */
       free_urlpos (urls);
     }
+
+  if (file_array != arr)
+    xfree (file_array);
 }
 
 /* This function is called when the retrieval is done to convert the
