@@ -1348,9 +1348,9 @@ int cleaned_up;
 int
 main (int argc, char **argv)
 {
-  char **url, **t, *p;
+  char *p;
   int i, ret, longindex;
-  int nurl;
+  int nurls;
   int retconf;
   int argstring_length;
   bool use_userconfig = false;
@@ -1567,7 +1567,7 @@ main (int argc, char **argv)
       longindex = -1;
     }
 
-  nurl = argc - optind;
+  nurls = argc - optind;
 
   /* Initialize logging ASAP.  */
   log_init (opt.lfilename, append_to_log);
@@ -1651,7 +1651,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
   if (opt.output_document)
     {
       if ((opt.convert_links || opt.convert_file_only)
-          && (nurl > 1 || opt.page_requisites || opt.recursive))
+          && (nurls > 1 || opt.page_requisites || opt.recursive))
         {
           fputs (_("\
 Cannot specify both -k or --convert-file-only and -O if multiple URLs are given, or in combination\n\
@@ -1761,7 +1761,7 @@ for details.\n\n"));
       opt.always_rest = false;
     }
 
-  if (!nurl && !opt.input_filename
+  if (!nurls && !opt.input_filename
 #ifdef HAVE_METALINK
       && !opt.input_metalink
 #endif
@@ -1931,23 +1931,6 @@ for details.\n\n"));
   if (opt.show_progress)
     set_progress_implementation (opt.progress_type);
 
-  /* Fill in the arguments.  */
-  url = xmalloc (sizeof (char *) * (nurl + 1));
-  if (url == NULL)
-    {
-      fprintf (stderr, _("Memory allocation problem\n"));
-      exit (WGET_EXIT_PARSE_ERROR);
-    }
-  for (i = 0; i < nurl; i++, optind++)
-    {
-      char *rewritten = rewrite_shorthand_url (argv[optind]);
-      if (rewritten)
-        url[i] = rewritten;
-      else
-        url[i] = argv[optind];
-    }
-  url[i] = NULL;
-
   /* Open WARC file. */
   if (opt.warc_filename != 0)
     warc_init ();
@@ -2110,8 +2093,9 @@ only if outputting to a regular file.\n"));
 #endif
 
   /* Retrieve the URLs from argument list.  */
-  for (t = url; *t; t++)
+  for (i = 0; i < nurls; i++, optind++)
     {
+      char *t;
       char *filename = NULL, *redirected_URL = NULL;
       int dt, url_err;
       /* Need to do a new struct iri every time, because
@@ -2120,13 +2104,17 @@ only if outputting to a regular file.\n"));
       struct iri *iri = iri_new ();
       struct url *url_parsed;
 
+      t = rewrite_shorthand_url (argv[optind]);
+      if (!t)
+        t = argv[optind];
+
       set_uri_encoding (iri, opt.locale, true);
-      url_parsed = url_parse (*t, &url_err, iri, true);
+      url_parsed = url_parse (t, &url_err, iri, true);
 
       if (!url_parsed)
         {
-          char *error = url_error (*t, url_err);
-          logprintf (LOG_NOTQUIET, "%s: %s.\n",*t, error);
+          char *error = url_error (t, url_err);
+          logprintf (LOG_NOTQUIET, "%s: %s.\n",t, error);
           xfree (error);
           inform_exit_status (URLERROR);
         }
@@ -2137,9 +2125,9 @@ only if outputting to a regular file.\n"));
             use_askpass (url_parsed);
 
           if ((opt.recursive || opt.page_requisites)
-              && ((url_scheme (*t) != SCHEME_FTP
+              && ((url_scheme (t) != SCHEME_FTP
 #ifdef HAVE_SSL
-              && url_scheme (*t) != SCHEME_FTPS
+              && url_scheme (t) != SCHEME_FTPS
 #endif
               )
                   || url_uses_proxy (url_parsed)))
@@ -2147,9 +2135,9 @@ only if outputting to a regular file.\n"));
               int old_follow_ftp = opt.follow_ftp;
 
               /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-              if (url_scheme (*t) == SCHEME_FTP
+              if (url_scheme (t) == SCHEME_FTP
 #ifdef HAVE_SSL
-                  || url_scheme (*t) == SCHEME_FTPS
+                  || url_scheme (t) == SCHEME_FTPS
 #endif
                   )
                 opt.follow_ftp = 1;
@@ -2160,7 +2148,7 @@ only if outputting to a regular file.\n"));
             }
           else
             {
-              retrieve_url (url_parsed, *t, &filename, &redirected_URL, NULL,
+              retrieve_url (url_parsed, t, &filename, &redirected_URL, NULL,
                             &dt, opt.recursive, iri, true);
             }
 
@@ -2175,10 +2163,12 @@ only if outputting to a regular file.\n"));
           xfree (filename);
           url_free (url_parsed);
         }
-      iri_free (iri);
-    }
 
-  xfree(url);
+      iri_free (iri);
+
+      if (t != argv[optind])
+        xfree (t);
+    }
 
   /* And then from the input file, if any.  */
   if (opt.input_filename)
@@ -2249,7 +2239,7 @@ only if outputting to a regular file.\n"));
 
   /* Print the downloaded sum.  */
   if ((opt.recursive || opt.page_requisites
-       || nurl > 1
+       || nurls > 1
        || (opt.input_filename && total_downloaded_bytes != 0))
       &&
       total_downloaded_bytes != 0)
