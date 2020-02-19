@@ -934,6 +934,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           iri_free (pi);
           RESTORE_METHOD;
           result = PROXERR;
+          if (orig_parsed != u)
+            url_free (u);
           goto bail;
         }
       if (proxy_url->scheme != SCHEME_HTTP && proxy_url->scheme != u->scheme)
@@ -945,6 +947,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           iri_free (pi);
           RESTORE_METHOD;
           result = PROXERR;
+          if (orig_parsed != u)
+            url_free (u);
           goto bail;
         }
       iri_free(pi);
@@ -1155,9 +1159,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
     xfree (local_file);
 
   if (orig_parsed != u)
-    {
-      url_free (u);
-    }
+    url_free (u);
 
   if (redirection_count || iri_fallbacked)
     {
