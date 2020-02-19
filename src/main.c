@@ -2097,7 +2097,7 @@ only if outputting to a regular file.\n"));
     {
       char *t;
       char *filename = NULL, *redirected_URL = NULL;
-      int dt, url_err;
+      int dt = 0, url_err;
       /* Need to do a new struct iri every time, because
        * retrieve_url may modify it in some circumstances,
        * currently. */
