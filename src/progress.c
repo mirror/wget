@@ -1427,7 +1427,7 @@ progress_handle_sigwinch (int sig _GL_UNUSED)
 static const char *
 eta_to_human_short (int secs, bool condensed)
 {
-  static char buf[10];          /* 8 should be enough, but just in case */
+  static char buf[16]; /* enough space to be on the safe side */
   static int last = -1;
   const char *space = condensed ? "" : " ";
 
