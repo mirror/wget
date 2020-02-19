@@ -2246,6 +2246,7 @@ set_file_timestamp (struct http_stat *hs)
   bool local_dot_orig_file_exists = false;
   char *local_filename = NULL;
   struct stat st;
+  char buf[1024];
 
   if (opt.backup_converted)
     /* If -K is specified, we'll act on the assumption that it was specified
@@ -2255,7 +2256,6 @@ set_file_timestamp (struct http_stat *hs)
         _wasn't_ specified last time, or the server contains files called
         *.orig, -N will be back to not operating correctly with -k. */
     {
-      char buf[1024];
       size_t filename_len = strlen (hs->local_file);
       char *filename_plus_orig_suffix;
 
@@ -2289,14 +2289,21 @@ set_file_timestamp (struct http_stat *hs)
   if (!local_dot_orig_file_exists)
     /* Couldn't stat() <file>.orig, so try to stat() <file>. */
     if (stat (hs->local_file, &st) == 0)
-      local_filename = hs->local_file;
+      {
+        if (local_filename != buf)
+          xfree (local_filename);
+        local_filename = hs->local_file;
+      }
 
   if (local_filename != NULL)
     /* There was a local file, so we'll check later to see if the version
         the server has is the same version we already have, allowing us to
         skip a download. */
     {
-      hs->orig_file_name = xstrdup (local_filename);
+      if (local_filename == buf || local_filename == hs->local_file)
+        hs->orig_file_name = xstrdup (local_filename); // on stack or a copy, make a heap copy
+      else
+        hs->orig_file_name = local_filename; // was previously malloc'ed
       hs->orig_file_size = st.st_size;
       hs->orig_file_tstamp = st.st_mtime;
 #ifdef WINDOWS
