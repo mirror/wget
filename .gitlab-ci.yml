@@ -403,8 +403,7 @@ coverity:
   stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
-    - wget https://scan.coverity.com/download/linux64 --post-data "token=$COVERITY_SCAN_TOKEN&project=$COVERITY_SCAN_PROJECT_NAME" -O /tmp/coverity_tool.t
-gz
+    - wget https://scan.coverity.com/download/linux64 --post-data "token=$COVERITY_SCAN_TOKEN&project=$COVERITY_SCAN_PROJECT_NAME" -O /tmp/coverity_tool.tgz
     - tar xfz /tmp/coverity_tool.tgz
     - ./bootstrap --skip-po
     - CFLAGS="-g -Og" ./configure --cache-file cache/config.cache --disable-doc
