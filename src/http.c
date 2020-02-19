@@ -3077,6 +3077,8 @@ skip_content_type:
           if (dig_hash_str_len >= sizeof (bin_hash))
             {
               DEBUGP (("Hash too long, ignored.\n"));
+              xfree (dig_type);
+              xfree (dig_hash);
               continue;
             }
 
