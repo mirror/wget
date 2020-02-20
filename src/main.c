@@ -512,10 +512,6 @@ init_switches (void)
       struct cmdline_option *cmdopt = &option_data[i];
       struct option *longopt;
 
-      if (!cmdopt->long_name)
-        /* The option is disabled. */
-        continue;
-
       longopt = &long_options[o++];
       longopt->name = cmdopt->long_name;
       longopt->val = i;
