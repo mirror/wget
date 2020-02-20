@@ -64,7 +64,7 @@ symperms (const char *s)
 
 
 /* Cleans a line of text so that it can be consistently parsed. Destroys
-   <CR> and <LF> in case that thay occur at the end of the line and
+   <CR> and <LF> in case that they occur at the end of the line and
    replaces all <TAB> character with <SPACE>. Returns the length of the
    modified line. */
 static int

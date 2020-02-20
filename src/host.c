@@ -75,7 +75,7 @@ extern int h_errno;
    lookup_host for details.  */
 
 struct address_list {
-  int count;                    /* number of adrresses */
+  int count;                    /* number of addresses */
   ip_address *addresses;        /* pointer to the string of addresses */
 
   int faulty;                   /* number of addresses known not to work. */

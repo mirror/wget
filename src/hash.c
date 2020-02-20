@@ -692,7 +692,7 @@ hash_string_nocase (const void *key)
   return h;
 }
 
-/* Like string_cmp, but doing case-insensitive compareison. */
+/* Like string_cmp, but doing case-insensitive comparison. */
 
 static int
 string_cmp_nocase (const void *s1, const void *s2)
