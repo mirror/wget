@@ -961,16 +961,16 @@ ftp_parse_vms_ls (FILE *fp)
       if (!dir)
         {
           l = dir = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+          cur.prev = cur.next = NULL;
           memcpy (l, &cur, sizeof (cur));
-          l->prev = l->next = NULL;
         }
       else
         {
           cur.prev = l;
+			 cur.next = NULL;
           l->next = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
           l = l->next;
           memcpy (l, &cur, sizeof (cur));
-          l->next = NULL;
         }
       cur.name = NULL;
 
