@@ -959,7 +959,7 @@ setoptval (const char *com, const char *val, const char *optname)
   /* Prepend "--" to OPTNAME. */
   char dd_optname[2 + MAX_LONGOPTION + 1];
 
-  if ((unsigned) snprintf(dd_optname sizeof (dd_optname), "--%s", optname) > sizeof (dd_optname))
+  if ((unsigned) snprintf(dd_optname, sizeof (dd_optname), "--%s", optname) > sizeof (dd_optname))
     exit (WGET_EXIT_PARSE_ERROR);
 
   assert (val != NULL);
