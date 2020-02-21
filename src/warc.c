@@ -212,8 +212,19 @@ warc_write_start_record (void)
          In warc_write_end_record we will fill this space
          with information about the uncompressed and
          compressed size of the record. */
-      fseek (warc_current_file, EXTRA_GZIP_HEADER_SIZE, SEEK_CUR);
-      fflush (warc_current_file);
+      if (fseek (warc_current_file, EXTRA_GZIP_HEADER_SIZE, SEEK_CUR) < 0)
+        {
+          logprintf (LOG_NOTQUIET, _("Error setting WARC file position.\n"));
+          warc_write_ok = false;
+          return false;
+        }
+
+      if (fflush (warc_current_file) != 0)
+        {
+          logprintf (LOG_NOTQUIET, _("Error flushing WARC file to disk.\n"));
+          warc_write_ok = false;
+          return false;
+        }
 
       /* Start a new GZIP stream. */
       dup_fd = dup (fileno (warc_current_file));
