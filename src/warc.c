@@ -316,7 +316,11 @@ warc_write_block_from_file (FILE *data_in)
 static bool
 warc_write_end_record (void)
 {
-  warc_write_buffer ("\r\n\r\n", 4);
+  if (warc_write_buffer ("\r\n\r\n", 4) != 4)
+    {
+      warc_write_ok = false;
+      return false;
+    }
 
 #ifdef HAVE_LIBZ
   /* We start a new gzip stream for each record.  */
