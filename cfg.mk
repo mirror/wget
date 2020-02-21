@@ -28,7 +28,8 @@ local-checks-to-skip = \
     sc_program_name \
     sc_makefile_at_at_check \
     sc_cast_of_argument_to_free \
-    sc_prohibit_undesirable_word_seq
+    sc_prohibit_undesirable_word_seq \
+    sc_prohibit_gnu_make_extensions
 
 #SHELL=bash -x
 show-vc-list-except:
