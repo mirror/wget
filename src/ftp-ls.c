@@ -611,27 +611,27 @@ static void eat_carets( char *str)
       if (uchr == '^')
       {
         /* Found a caret.  Skip it, and check the next character. */
-        if ((char_prop[(unsigned char) str[0]] & 64) && (char_prop[(unsigned char) str[1]] & 64))
+        if ((char_prop[(unsigned char) str[1]] & 64) && (char_prop[(unsigned char) str[2]] & 64))
         {
           /* Hex digit.  Get char code from this and next hex digit. */
           uchr = *(++str);
           if (uchr <= '9')
           {
-            hdgt = uchr- '0';           /* '0' - '9' -> 0 - 9. */
+            hdgt = uchr - '0';           /* '0' - '9' -> 0 - 9. */
           }
           else
           {
-            hdgt = ((uchr- 'A')& 7)+ 10;    /* [Aa] - [Ff] -> 10 - 15. */
+            hdgt = ((uchr - 'A') & 7) + 10;    /* [Aa] - [Ff] -> 10 - 15. */
           }
           hdgt <<= 4;                   /* X16. */
           uchr = *(++str);              /* Next char must be hex digit. */
           if (uchr <= '9')
           {
-            uchr = hdgt+ uchr- '0';
+            uchr = hdgt + uchr - '0';
           }
           else
           {
-            uchr = hdgt+ ((uchr- 'A')& 15)+ 10;
+            uchr = hdgt + ((uchr - 'A') & 15) + 10;
           }
         }
         else if (uchr == '_')
