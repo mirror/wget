@@ -559,10 +559,12 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
   if (progress)
     progress_finish (progress, ptimer_read (timer));
 
-  if (elapsed)
-    *elapsed = ptimer_read (timer);
   if (timer)
-    ptimer_destroy (timer);
+    {
+      if (elapsed)
+        *elapsed = ptimer_read (timer);
+      ptimer_destroy (timer);
+    }
 
 #ifdef HAVE_LIBZ
   if (gzbuf != NULL)
