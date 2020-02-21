@@ -131,6 +131,7 @@ class BaseTest:
             cmd_line = 'valgrind --error-exitcode=301 ' \
                                 '--leak-check=yes ' \
                                 '--track-origins=yes ' \
+                                '--gen-suppressions=all ' \
                                 '--suppressions=../valgrind-suppression-ssl ' \
                                 '%s %s ' % (wget_path, wget_options)
         elif valgrind not in ("", "0"):

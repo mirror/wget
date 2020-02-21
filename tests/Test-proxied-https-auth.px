@@ -166,7 +166,7 @@ if (!defined $valgrind || $valgrind eq "" || $valgrind == 0) {
 } elsif ($valgrind == 1) {
     $cmdline =
       'valgrind --suppressions=' . $VALGRIND_SUPP_FILE
-      . ' --error-exitcode=301 --leak-check=yes --track-origins=yes '
+      . ' --error-exitcode=301 --leak-check=yes --track-origins=yes --gen-suppressions=all '
       . $cmdline;
 } else {
     $cmdline = $valgrind . " " . $cmdline;
