@@ -357,8 +357,13 @@ warc_write_end_record (void)
       compressed_size = warc_current_gzfile_uncompressed_size;
 
       /* Go back to the static GZIP header. */
-      fseeko (warc_current_file, warc_current_gzfile_offset
+      result = fseeko (warc_current_file, warc_current_gzfile_offset
               + EXTRA_GZIP_HEADER_SIZE, SEEK_SET);
+      if (result != 0)
+        {
+          warc_write_ok = false;
+          return false;
+        }
 
       /* Read the header. */
       result = fread (static_header, 1, GZIP_STATIC_HEADER_SIZE,
