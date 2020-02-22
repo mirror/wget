@@ -871,7 +871,7 @@ print_response_line (const char *prefix, const char *b, const char *e)
   char buf[1024], *copy;
   size_t len = e - b;
 
-  if (len < buf)
+  if (len < sizeof (buf))
     copy = buf;
   else
     copy = xmalloc(len + 1);
