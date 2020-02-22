@@ -56,7 +56,7 @@ VPATH/Debian:
     - mv wget-*.gz ..
   tags:
     - shared
-    - docker
+    - linux
   except:
     - coverity-scan@gnuwget/wget
   artifacts:
@@ -94,6 +94,7 @@ OpenSSL/Debian:
     - make check-valgrind
   tags:
     - shared
+    - linux
   except:
     - coverity-scan@gnuwget/wget
   artifacts:
@@ -120,6 +121,7 @@ GnuTLS/Debian:
     - make check-valgrind
   tags:
     - shared
+    - linux
   except:
     - coverity-scan@gnuwget/wget
   artifacts:
@@ -146,7 +148,7 @@ Minimal/Debian:
     - make check-valgrind
   tags:
     - shared
-    - docker
+    - linux
   except:
     - coverity-scan@gnuwget/wget
   artifacts:
@@ -177,6 +179,7 @@ Sanitizers/Debian:
     - make -j$(nproc) check
   tags:
     - shared
+    - linux
   except:
     - coverity-scan@gnuwget/wget
   artifacts:
@@ -199,6 +202,7 @@ Scan-Build/Debian:
     - scan-build -v -enable-checker nullability --status-bugs -o scan-build make -j$(nproc)
   tags:
     - shared
+    - linux
   except:
     - tags
     - coverity-scan@gnuwget/wget
@@ -220,6 +224,7 @@ Valgrind/Debian:
     - make check -j$(nproc)
   tags:
     - shared
+    - linux
   except:
     - tags
     - coverity-scan@gnuwget/wget
@@ -244,6 +249,7 @@ Simple/Fedora:
     - make -j$(nproc) check
   tags:
     - shared
+    - linux
   except:
     - tags
     - coverity-scan@gnuwget/wget
@@ -268,6 +274,7 @@ Simple/Fedora:
 #    - shared
 #  except:
 #    - tags
+#    - linux
 #  artifacts:
 #    expire_in: 2 weeks
 #    when: on_failure
@@ -294,6 +301,7 @@ Simple/Fedora:
 #  - mv doc/manual public/manual
 #  tags:
 #  - shared
+#  - linux
 #  artifacts:
 #    when: on_success
 #    paths:
@@ -323,7 +331,7 @@ MinGW64:
     - make check -j$(nproc) LOG_COMPILER=wine
   tags:
     - shared
-    - docker
+    - linux
   except:
     - tags
     - coverity-scan@gnuwget/wget
@@ -349,7 +357,7 @@ Build/Arch:
     - make check -j$(nproc)
   tags:
     - shared
-    - docker
+    - linux
   except:
     - coverity-scan@gnuwget/wget
   artifacts:
@@ -387,6 +395,7 @@ Tarball:
     - make -j$(nproc)
   tags:
     - shared
+    - linux
   dependencies:
     - VPATH/Debian
   except:
