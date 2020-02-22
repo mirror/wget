@@ -1863,7 +1863,7 @@ url_file_name (const struct url *u, char *replaced_filename)
     }
   else
     {
-      unique = unique_name (fname, true);
+      unique = unique_name_passthrough (fname);
       if (unique != fname)
         xfree (fname);
     }

@@ -2367,7 +2367,7 @@ check_file_output (const struct url *u, struct http_stat *hs,
         }
       else if (!ALLOW_CLOBBER)
         {
-          char *unique = unique_name (hs->local_file, true);
+          char *unique = unique_name_passthrough (hs->local_file);
           if (unique != hs->local_file)
             xfree (hs->local_file);
           hs->local_file = unique;
