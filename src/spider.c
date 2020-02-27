@@ -45,12 +45,14 @@ static struct hash_table *nonexisting_urls_set;
 
 /* Cleanup the data structures associated with this file.  */
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 spider_cleanup (void)
 {
   if (nonexisting_urls_set)
     string_set_free (nonexisting_urls_set);
 }
+#endif
 
 /* Remembers broken links.  */
 void
