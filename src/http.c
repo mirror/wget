@@ -5341,7 +5341,9 @@ save_cookies (void)
 void
 http_cleanup (void)
 {
-  xfree (pconn.host);
+  if (pconn_active)
+    invalidate_persistent ();
+
   if (wget_cookie_jar)
     cookie_jar_delete (wget_cookie_jar);
 }
