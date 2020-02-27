@@ -527,14 +527,15 @@ numeric_address_p (const char *addr)
    upper case strings.
    */
 
+#ifdef HAVE_LIBPSL
+static psl_ctx_t *psl;
+#endif
+
 static bool
 check_domain_match (const char *cookie_domain, const char *host)
 {
-
 #ifdef HAVE_LIBPSL
   static int init_psl;
-  static const psl_ctx_t *psl;
-
   char *cookie_domain_lower = NULL;
   char *host_lower = NULL;
   int is_acceptable;
@@ -1443,6 +1444,10 @@ cookie_jar_delete (struct cookie_jar *jar)
     }
   hash_table_destroy (jar->chains);
   xfree (jar);
+
+#ifdef HAVE_LIBPSL
+  psl_free (psl);
+#endif
 }
 
 /* Test cases.  Currently this is only tests parse_set_cookies.  To
