@@ -1029,6 +1029,7 @@ static void downloaded_files_free (void);
 
 /* Cleanup the data structures associated with this file.  */
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 convert_cleanup (void)
 {
@@ -1050,6 +1051,7 @@ convert_cleanup (void)
   if (converted_files)
     string_set_free (converted_files);
 }
+#endif
 
 /* Book-keeping code for downloaded files that enables extension
    hacks.  */
