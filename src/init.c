@@ -58,6 +58,8 @@ as that of the covered work.  */
 #include "host.h"
 #include "netrc.h"
 #include "progress.h"
+#include "connect.h"            /* for connect_cleanup */
+#include "ssl.h"                /* for ssl_cleanup */
 #include "recur.h"              /* for INFINITE_RECURSION */
 #include "convert.h"            /* for convert_cleanup */
 #include "res.h"                /* for res_cleanup */
@@ -1941,6 +1943,10 @@ cleanup (void)
   host_cleanup ();
   log_cleanup ();
   netrc_cleanup ();
+#ifdef HAVE_SSL
+  ssl_cleanup ();
+#endif
+  connect_cleanup ();
 
   xfree (opt.choose_config);
   xfree (opt.lfilename);
