@@ -462,7 +462,6 @@ register_basic_auth_host (const char *hostname)
     }
 }
 
-
 /* Send the contents of FILE_NAME to SOCK.  Make sure that exactly
    PROMISED_SIZE bytes are sent over the wire -- if the file is
    longer, read only that much; if the file is shorter, report an error.
@@ -5338,6 +5337,7 @@ save_cookies (void)
     cookie_jar_save (wget_cookie_jar, opt.cookies_output);
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 http_cleanup (void)
 {
@@ -5346,7 +5346,19 @@ http_cleanup (void)
 
   if (wget_cookie_jar)
     cookie_jar_delete (wget_cookie_jar);
+
+  if (basic_authed_hosts)
+    {
+      hash_table_iterator iter;
+      for (hash_table_iterate (basic_authed_hosts, &iter); hash_table_iter_next (&iter); )
+        {
+          xfree (iter.key);
+        }
+      hash_table_destroy (basic_authed_hosts);
+      basic_authed_hosts = NULL;
+    }
 }
+#endif
 
 void
 ensure_extension (struct http_stat *hs, const char *ext, int *dt)
