@@ -4868,7 +4868,10 @@ exit:
       /* Bugfix: Prevent SIGSEGV when hstat.local_file was left NULL
          (i.e. due to opt.content_disposition).  */
       if (hstat.local_file)
-        *local_file = xstrdup (hstat.local_file);
+        {
+          *local_file = hstat.local_file;
+          hstat.local_file = NULL;
+        }
     }
   free_hstat (&hstat);
 
