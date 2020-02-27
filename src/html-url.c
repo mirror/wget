@@ -963,6 +963,7 @@ get_urls_file (const char *file)
   return head;
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 cleanup_html_url (void)
 {
@@ -973,3 +974,4 @@ cleanup_html_url (void)
   if (interesting_attributes)
     hash_table_destroy (interesting_attributes);
 }
+#endif
