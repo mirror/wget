@@ -599,6 +599,7 @@ is_robots_txt_url (const char *url)
   return ret;
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 res_cleanup (void)
 {
@@ -616,6 +617,7 @@ res_cleanup (void)
       registered_specs = NULL;
     }
 }
+#endif
 
 #ifdef TESTING
 
