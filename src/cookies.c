@@ -1447,6 +1447,7 @@ cookie_jar_delete (struct cookie_jar *jar)
 
 #ifdef HAVE_LIBPSL
   psl_free (psl);
+  psl = NULL;
 #endif
 }
 
