@@ -64,12 +64,14 @@ static void free_netrc(acc_t *);
 static acc_t *netrc_list;
 static int processed_netrc;
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 netrc_cleanup(void)
 {
   free_netrc (netrc_list);
   processed_netrc = 0;
 }
+#endif
 
 /* Return the correct user and password, given the host, user (as
    given in the URL), and password (as given in the URL).  May return
