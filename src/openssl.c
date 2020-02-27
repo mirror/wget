@@ -415,6 +415,11 @@ ssl_init (void)
   return false;
 }
 
+void
+ssl_cleanup (void)
+{
+}
+
 struct openssl_transport_context
 {
   SSL *conn;                    /* SSL connection handle */

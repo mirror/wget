@@ -226,6 +226,15 @@ cert to be of the same type.\n"));
   return true;
 }
 
+void
+ssl_cleanup (void)
+{
+  if (credentials)
+    gnutls_certificate_free_credentials(credentials);
+
+  gnutls_global_deinit();
+}
+
 struct wgnutls_transport_context
 {
   gnutls_session_t session;       /* GnuTLS session handle */
