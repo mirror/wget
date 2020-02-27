@@ -1043,6 +1043,7 @@ sufmatch (const char **list, const char *what)
   return false;
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 host_cleanup (void)
 {
@@ -1063,6 +1064,7 @@ host_cleanup (void)
       host_name_addresses_map = NULL;
     }
 }
+#endif
 
 bool
 is_valid_ip_address (const char *name)
