@@ -1046,6 +1046,7 @@ fd_close (int fd)
     }
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 connect_cleanup(void)
 {
@@ -1060,3 +1061,4 @@ connect_cleanup(void)
       transport_map = NULL;
     }
 }
+#endif
