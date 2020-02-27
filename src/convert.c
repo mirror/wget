@@ -1047,6 +1047,8 @@ convert_cleanup (void)
     }
   if (downloaded_html_set)
     string_set_free (downloaded_html_set);
+  if (downloaded_css_set)
+    string_set_free (downloaded_css_set);
   downloaded_files_free ();
   if (converted_files)
     string_set_free (converted_files);
