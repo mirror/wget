@@ -3688,6 +3688,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
                    (unsigned long) max_age,
                    (include_subdomains ? "true" : "false")));
         }
+      xfree (hsts_params);
     }
 #endif
 
