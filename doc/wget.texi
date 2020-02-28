@@ -3998,7 +3998,7 @@ This chapter contains all the stuff that could not fit anywhere else.
 
 @dfn{Proxies} are special-purpose @sc{http} servers designed to transfer
 data from remote servers to local clients.  One typical use of proxies
-is lightning network load for users behind a slow connection.  This is
+is lightening network load for users behind a slow connection.  This is
 achieved by channeling all @sc{http} and @sc{ftp} requests through the
 proxy which caches the transferred data.  When a cached resource is
 requested again, proxy will return the data from cache.  Another use for
