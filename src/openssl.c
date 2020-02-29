@@ -415,12 +415,10 @@ ssl_init (void)
   return false;
 }
 
-#if defined DEBUG_MALLOC || defined TESTING
 void
 ssl_cleanup (void)
 {
 }
-#endif
 
 struct openssl_transport_context
 {

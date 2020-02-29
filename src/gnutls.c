@@ -226,7 +226,6 @@ cert to be of the same type.\n"));
   return true;
 }
 
-#if defined DEBUG_MALLOC || defined TESTING
 void
 ssl_cleanup (void)
 {
@@ -235,7 +234,6 @@ ssl_cleanup (void)
 
   gnutls_global_deinit();
 }
-#endif
 
 struct wgnutls_transport_context
 {
