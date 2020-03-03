@@ -3633,7 +3633,6 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
                                &auth_finished);
         if (auth_err == RETROK && retry)
           {
-            xfree (hs->message);
             resp_free (&resp);
             xfree (message);
             xfree (head);
@@ -4438,8 +4437,6 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
              bring them to "while" statement at the end, to judge
              whether the number of tries was exceeded.  */
           printwhat (count, opt.ntry);
-          xfree (hstat.message);
-          xfree (hstat.error);
           continue;
         case FWRITEERR: case FOPENERR:
           /* Another fatal error.  */
@@ -4453,8 +4450,6 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
           if ( opt.retry_on_host_error )
             {
               printwhat (count, opt.ntry);
-              xfree (hstat.message);
-              xfree (hstat.error);
               continue;
             }
           ret = err;
@@ -4719,8 +4714,6 @@ Remote file exists.\n\n"));
               got_name = true;
               *dt &= ~HEAD_ONLY;
               count = 0;          /* the retrieve count for HEAD is reset */
-              xfree (hstat.message);
-              xfree (hstat.error);
               continue;
             } /* send_head_first */
         } /* !got_head */
