@@ -1772,6 +1772,7 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
   else
     {
       /* A read error! */
+      xfree (hs->rderrmsg);
       hs->rderrmsg = xstrdup (fd_errstr (sock));
       return RETRFINISHED;
     }
