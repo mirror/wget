@@ -64,6 +64,8 @@ Texts.  A copy of the license is included in the section entitled
 @ignore
 @c man begin AUTHOR
 Originally written by Hrvoje Nikšić <hniksic@xemacs.org>.
+Currently maintained by Darshit Shah <darnir@gnu.org> and
+Tim Rühsen <tim.ruehsen@gmx.de>.
 @c man end
 @c man begin SEEALSO
 This is @strong{not} the complete manual for GNU Wget.
@@ -71,6 +73,9 @@ For more complete information, including more detailed explanations of
 some of the options, and a number of commands available
 for use with @file{.wgetrc} files and the @samp{-e} option, see the GNU
 Info entry for @file{wget}.
+
+Also see wget2(1), the updated version of GNU Wget with even better
+support for recursive downloading and modern protocols like HTTP/2.
 @c man end
 @end ignore
 
@@ -4497,6 +4502,14 @@ Ted Mielczarek---donated support for CSS.
 
 @item
 Saint Xavier---Support for IRIs (RFC 3987).
+
+@item
+Tim Rühsen---Loads of helpful patches, especially fuzzing support and
+Continuous Integration. Maintainer since 2014.
+
+@item
+Darshit Shah---Many helpful patches. Community support on various platforms.
+Maintainer since 2014.
 
 @item
 People who provided donations for development---including Brian Gough.
