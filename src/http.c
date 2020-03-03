@@ -3260,15 +3260,17 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
     }
 #endif /* HAVE_SSL */
 
-  /* Initialize certain elements of struct http_stat.  */
+  /* Initialize certain elements of struct http_stat.
+   * Since this function is called in a loop, we have to xfree certain
+   * members. */
   hs->len = 0;
   hs->contlen = -1;
   hs->res = -1;
-  hs->rderrmsg = NULL;
-  hs->newloc = NULL;
+  xfree (hs->rderrmsg);
+  xfree (hs->newloc);
   xfree (hs->remote_time);
-  hs->error = NULL;
-  hs->message = NULL;
+  xfree (hs->error);
+  xfree (hs->message);
   hs->local_encoding = ENC_NONE;
   hs->remote_encoding = ENC_NONE;
 
@@ -3661,6 +3663,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   }
 
   hs->statcode = statcode;
+  xfree (hs->error);
   if (statcode == -1)
     hs->error = xstrdup (_("Malformed status line"));
   else if (!*message)
@@ -3719,7 +3722,9 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 #endif
         }
     }
+  xfree (hs->newloc);
   hs->newloc = resp_header_strdup (resp, "Location");
+  xfree (hs->remote_time);
   hs->remote_time = resp_header_strdup (resp, "Last-Modified");
   if (!hs->remote_time) // now look for the Wayback Machine's timestamp
     hs->remote_time = resp_header_strdup (resp, "X-Archive-Orig-last-modified");
