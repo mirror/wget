@@ -2198,8 +2198,21 @@ details.  The default maximum depth is 5.
 
 @item -l @var{depth}
 @itemx --level=@var{depth}
-Specify recursion maximum depth level @var{depth} (@pxref{Recursive
-Download}).
+Set the maximum number of subdirectories that Wget will recurse into to @var{depth}.
+In order to prevent one from accidentally downloading very large websites when using recursion
+this is limited to a depth of 5 by default, i.e., it will traverse at most 5 directories deep
+starting from the provided URL.
+Set @samp{-l 0} or @samp{-l inf} for infinite recursion depth.
+
+@example
+wget -r -l 0 http://@var{site}/1.html
+@end example
+
+Ideally, one would expect this to download just @file{1.html}.
+but unfortunately this is not the case, because @samp{-l 0} is equivalent to
+@samp{-l inf}---that is, infinite recursion.  To download a single @sc{html}
+page (or a handful of them), specify them all on the command line and leave away @samp{-r}
+and @samp{-l}. To download the essential items to view a single @sc{html} page, see @samp{page requisites}.
 
 @cindex proxy filling
 @cindex delete after retrieval
