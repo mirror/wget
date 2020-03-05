@@ -284,30 +284,43 @@ Simple/Fedora:
 #      - tests/*.log
 #      - testenv/*.log
 
-#pages:
-#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
-#  script:
-#  - ./bootstrap
-#  - CFLAGS="-g -O0" ./configure --enable-gtk-doc --enable-code-coverage --disable-gcc-warnings
-#  - make -j$(nproc) check
-#  - make local-code-coverage-output
-#  - mkdir -p public
-#  - rm -rf public/coverage
-#  - mv libidn2-*-coverage public/coverage
-#  - rm -rf public/reference
-#  - mv doc/reference/html public/reference
-#  - make -C doc manual
-#  - rm -rf public/manual
-#  - mv doc/manual public/manual
-#  tags:
-#  - shared
-#  - linux
-#  artifacts:
-#    when: on_success
-#    paths:
-#      - public
-#  only:
-#    - master
+pages:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
+  script:
+    - mkdir -p public
+    - ./bootstrap --skip-po
+    - export CFLAGS="$CFLAGS_DEFAULT"
+    - ./configure $CONFIGURE_BASE_FLAGS
+    - make -j$(nproc) check-coverage
+
+# Tarball
+    - make dist
+    - mv wget-*.gz public/wget-latest.tar.gz
+
+# Test suite coverage report
+    - rm -rf public/coverage
+    - mv lcov public/coverage
+
+# Online Documentation
+    - make -C doc html
+    - rm -rf public/reference
+    - mv doc/wget.html public/reference
+
+# Coverage report for all our fuzz corpora
+    - make -j$(nproc) fuzz-coverage
+    - rm -rf public/fuzz-coverage
+    - mv lcov public/fuzz-coverage
+  tags:
+    - shared
+    - linux
+  artifacts:
+    when: on_success
+    paths:
+      - public
+  only:
+    - master
+
 
 MinGW64:
   stage: stage1-testing
