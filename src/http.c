@@ -291,7 +291,7 @@ request_set_user_header (struct request *req, const char *header)
   while (c_isspace (*p))
     ++p;
 
-  request_set_header (req, name, (char *) p, rel_name);
+  request_set_header (req, name, p, rel_name);
 }
 
 /* Remove the header with specified name from REQ.  Returns true if
@@ -1878,7 +1878,7 @@ initialize_request (const struct url *u, struct http_stat *hs, int *dt, struct u
     req = request_new (meth, meth_arg);
   }
 
-  request_set_header (req, "Referer", (char *) hs->referer, rel_none);
+  request_set_header (req, "Referer", hs->referer, rel_none);
   if (*dt & SEND_NOCACHE)
     {
       /* Cache-Control MUST be obeyed by all HTTP/1.1 caching mechanisms...  */
