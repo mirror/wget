@@ -344,6 +344,8 @@ AC_CHECK_TYPES(sig_atomic_t, [], [], [
 AM_ICONV
 gl_INIT
 
+AX_CODE_COVERAGE
+
 dnl
 dnl Checks for library functions.
 dnl
