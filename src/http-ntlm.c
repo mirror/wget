@@ -307,21 +307,26 @@ mkhash(const char *password,
     MD4_CTX MD4;
 #endif
 
+    unsigned char pw4[64];
+
     len = strlen (password);
 
+    if (len > sizeof (pw4) / 2)
+      len = sizeof (pw4) / 2;
+
     for (i = 0; i < len; i++) {
-      pw[2 * i]     = (unsigned char) password[i];
-      pw[2 * i + 1] = 0;
+      pw4[2 * i]     = (unsigned char) password[i];
+      pw4[2 * i + 1] = 0;
     }
 
 #ifdef HAVE_NETTLE
     nettle_md4_init(&MD4);
-    nettle_md4_update(&MD4, (unsigned) (2 * len), pw);
+    nettle_md4_update(&MD4, (unsigned) (2 * len), pw4);
     nettle_md4_digest(&MD4, MD4_DIGEST_SIZE, ntbuffer);
 #else
     /* create NT hashed password */
     MD4_Init(&MD4);
-    MD4_Update(&MD4, pw, 2*len);
+    MD4_Update(&MD4, pw4, 2 * len);
     MD4_Final(ntbuffer, &MD4);
 #endif
 
