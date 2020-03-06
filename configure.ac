@@ -990,6 +990,7 @@ AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
 AM_CONDITIONAL([WITH_SSL], [test "X$with_ssl" != "Xno"])
 AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$with_metalink" != "Xno"])
 AM_CONDITIONAL([WITH_XATTR], [test "X$ENABLE_XATTR" != "Xno"])
+AM_CONDITIONAL([WITH_NTLM], [test "X$ENABLE_NTLM" == "Xyes"])
 
 dnl
 dnl Create output

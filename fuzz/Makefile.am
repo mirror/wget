@@ -21,6 +21,10 @@ WGET_TESTS = \
  wget_robots_fuzzer$(EXEEXT) \
  wget_url_fuzzer$(EXEEXT)
 
+if WITH_NTLM
+  WGET_TESTS += wget_ntlm_fuzzer$(EXEEXT)
+endif
+
 if FUZZING
   bin_PROGRAMS = $(WGET_TESTS)
   LDADD += $(LIB_FUZZING_ENGINE)
@@ -53,6 +57,9 @@ wget_html_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_netrc_fuzzer_SOURCES = wget_netrc_fuzzer.c $(MAIN)
 wget_netrc_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
+wget_ntlm_fuzzer_SOURCES = wget_ntlm_fuzzer.c $(MAIN)
+wget_ntlm_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_options_fuzzer_SOURCES = wget_options_fuzzer.c $(MAIN)
 wget_options_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
