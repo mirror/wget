@@ -2506,6 +2506,7 @@ check_auth (const struct url *u, char *user, char *passwd, struct response *resp
           else
             {
               /* Creating the Authorization header went wrong */
+              xfree (value);
             }
         }
       else
