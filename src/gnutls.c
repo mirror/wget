@@ -59,11 +59,11 @@ as that of the covered work.  */
 #include "host.h"
 
 static int
-_do_handshake (gnutls_session_t session, int fd, double timeout);
+_do_handshake (gnutls_session_t session, int fd, double timeout, int is_nonblock);
 
 #if GNUTLS_VERSION_NUMBER >= 0x030604
 static int
-_do_reauth (gnutls_session_t session, int fd, double timeout);
+_do_reauth (gnutls_session_t session, int fd, double timeout, int is_nonblock);
 #endif
 
 static int
@@ -259,7 +259,12 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
   struct ptimer *timer = NULL;
   struct wgnutls_transport_context *ctx = arg;
   int timed_out = 0;
+  double next_timeout;
 
+  errno = 0;
+  if (timeout == -1)
+    timeout = opt.read_timeout;
+  next_timeout = timeout;
   if (timeout)
     {
 #ifdef F_GETFL
@@ -277,36 +282,41 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 
       timer = ptimer_new ();
       if (timer == NULL)
-        return -1;
+        {
+          ret = -1;
+          goto timer_err;
+        }
     }
 
   do
     {
-      double next_timeout = 0;
+      ret = GNUTLS_E_AGAIN;
       if (timeout)
         {
           next_timeout = timeout - ptimer_measure (timer);
-          if (next_timeout < 0)
-            break;
+          if (next_timeout <= 0)
+            {
+              timed_out = 1;
+              break;
+            }
         }
-
-      ret = GNUTLS_E_AGAIN;
+      /* (rehandshake, reauth) needs some workaround for interactive timeout */
       if (timeout == 0 || gnutls_record_check_pending (ctx->session)
-          || select_fd (fd, next_timeout, WAIT_FOR_READ))
+          || select_fd_nb (fd, next_timeout, WAIT_FOR_READ))
         {
           ret = gnutls_record_recv (ctx->session, buf, bufsize);
           timed_out = timeout && ptimer_measure (timer) >= timeout;
           if (!timed_out && ret == GNUTLS_E_REHANDSHAKE)
             {
               DEBUGP (("GnuTLS: *** REHANDSHAKE while reading\n"));
-              if ((ret = _do_handshake (ctx->session, fd, timeout)) == 0)
+              if ((ret = _do_handshake (ctx->session, fd, opt.read_timeout, 1)) == 0)
                 ret = GNUTLS_E_AGAIN; /* restart reading */
             }
 #if GNUTLS_VERSION_NUMBER >= 0x030604
           if (!timed_out && ret == GNUTLS_E_REAUTH_REQUEST)
             {
               DEBUGP (("GnuTLS: *** re-authentication while reading\n"));
-              if ((ret = _do_reauth (ctx->session, fd, timeout)) == 0)
+              if ((ret = _do_reauth (ctx->session, fd, opt.read_timeout, 1)) == 0)
                 ret = GNUTLS_E_AGAIN; /* restart reading */
             }
 #endif
@@ -317,7 +327,7 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
   if (timeout)
     {
       ptimer_destroy (timer);
-
+timer_err: ;
 #ifdef F_GETFL
       if (fcntl (fd, F_SETFL, flags) < 0)
         return -1;
@@ -326,7 +336,6 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
       if (ioctl (fd, FIONBIO, &zero) < 0)
         return -1;
 #endif
-
       if (timed_out && ret == GNUTLS_E_AGAIN)
         errno = ETIMEDOUT;
     }
@@ -335,7 +344,7 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 }
 
 static int
-wgnutls_read (int fd, char *buf, int bufsize, void *arg)
+wgnutls_read (int fd, char *buf, int bufsize, void *arg, double timeout)
 {
   int ret = 0;
   struct wgnutls_transport_context *ctx = arg;
@@ -352,7 +361,7 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
       return copysize;
     }
 
-  ret = wgnutls_read_timeout (fd, buf, bufsize, arg, opt.read_timeout);
+  ret = wgnutls_read_timeout (fd, buf, bufsize, arg, timeout);
   if (ret < 0)
     ctx->last_error = ret;
 
@@ -385,7 +394,7 @@ wgnutls_poll (int fd, double timeout, int wait_for, void *arg)
 }
 
 static int
-wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
+wgnutls_peek (int fd, char *buf, int bufsize, void *arg, double timeout)
 {
   int read = 0;
   struct wgnutls_transport_context *ctx = arg;
@@ -402,12 +411,12 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 
   if (bufsize > offset)
     {
-      if (opt.read_timeout && gnutls_record_check_pending (ctx->session) == 0
+      if (timeout && gnutls_record_check_pending (ctx->session) == 0
           && select_fd (fd, 0.0, WAIT_FOR_READ) <= 0)
         read = 0;
       else
         read = wgnutls_read_timeout (fd, buf + offset, bufsize - offset,
-                                     ctx, opt.read_timeout);
+                                     ctx, timeout);
       if (read < 0)
         {
           if (offset)
@@ -431,7 +440,8 @@ static const char *
 wgnutls_errstr (int fd _GL_UNUSED, void *arg)
 {
   struct wgnutls_transport_context *ctx = arg;
-  return gnutls_strerror (ctx->last_error);
+  return (ctx->last_error == GNUTLS_E_AGAIN && errno == ETIMEDOUT ?
+          strerror (ETIMEDOUT) : gnutls_strerror (ctx->last_error));
 }
 
 static void
@@ -459,14 +469,14 @@ static struct transport_implementation wgnutls_transport =
 };
 
 static int
-_do_handshake (gnutls_session_t session, int fd, double timeout)
+_do_handshake (gnutls_session_t session, int fd, double timeout, int is_nonblock)
 {
 #ifdef F_GETFL
   int flags = 0;
 #endif
   int err;
 
-  if (timeout)
+  if (!is_nonblock && timeout)
     {
 #ifdef F_GETFL
       flags = fcntl (fd, F_GETFL, 0);
@@ -492,12 +502,12 @@ _do_handshake (gnutls_session_t session, int fd, double timeout)
           if (gnutls_record_get_direction (session))
             {
               /* wait for writeability */
-              err = select_fd (fd, timeout, WAIT_FOR_WRITE);
+              err = select_fd_nb (fd, timeout, WAIT_FOR_WRITE);
             }
           else
             {
               /* wait for readability */
-              err = select_fd (fd, timeout, WAIT_FOR_READ);
+              err = select_fd_nb (fd, timeout, WAIT_FOR_READ);
             }
 
           if (err <= 0)
@@ -527,7 +537,7 @@ _do_handshake (gnutls_session_t session, int fd, double timeout)
     }
   while (err && gnutls_error_is_fatal (err) == 0);
 
-  if (timeout)
+  if (!is_nonblock && timeout)
     {
 #ifdef F_GETFL
       if (fcntl (fd, F_SETFL, flags) < 0)
@@ -544,14 +554,14 @@ _do_handshake (gnutls_session_t session, int fd, double timeout)
 
 #if GNUTLS_VERSION_NUMBER >= 0x030604
 static int
-_do_reauth (gnutls_session_t session, int fd, double timeout)
+_do_reauth (gnutls_session_t session, int fd, double timeout, int is_nonblock)
 {
 #ifdef F_GETFL
   int flags = 0;
 #endif
   int err;
 
-  if (timeout)
+  if (!is_nonblock && timeout)
     {
 #ifdef F_GETFL
       flags = fcntl (fd, F_GETFL, 0);
@@ -577,12 +587,12 @@ _do_reauth (gnutls_session_t session, int fd, double timeout)
           if (gnutls_record_get_direction (session))
             {
               /* wait for writeability */
-              err = select_fd (fd, timeout, WAIT_FOR_WRITE);
+              err = select_fd_nb (fd, timeout, WAIT_FOR_WRITE);
             }
           else
             {
               /* wait for readability */
-              err = select_fd (fd, timeout, WAIT_FOR_READ);
+              err = select_fd_nb (fd, timeout, WAIT_FOR_READ);
             }
 
           if (err <= 0)
@@ -604,7 +614,7 @@ _do_reauth (gnutls_session_t session, int fd, double timeout)
     }
   while (err && gnutls_error_is_fatal (err) == 0);
 
-  if (timeout)
+  if (!is_nonblock && timeout)
     {
 #ifdef F_GETFL
       if (fcntl (fd, F_SETFL, flags) < 0)
@@ -830,7 +840,7 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
         }
     }
 
-  err = _do_handshake (session, fd, opt.connect_timeout);
+  err = _do_handshake (session, fd, opt.read_timeout, 0);
 
   if (err < 0)
     {

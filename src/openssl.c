@@ -49,10 +49,15 @@ as that of the covered work.  */
 #endif
 #endif
 
+#include <sys/ioctl.h>
+
 #include "utils.h"
 #include "connect.h"
+#include "ptimer.h"
 #include "url.h"
 #include "ssl.h"
+
+#include <fcntl.h>
 
 #ifdef WINDOWS
 # include <w32sock.h>
@@ -80,12 +85,20 @@ init_prng (void)
       /* Get the random file name using RAND_file_name. */
       namebuf[0] = '\0';
       random_file = RAND_file_name (namebuf, sizeof (namebuf));
+      if (!file_exists_p (random_file, NULL))
+        random_file = NULL;
     }
 
   if (random_file && *random_file)
     /* Seed at most 16k (apparently arbitrary value borrowed from
        curl) from random file. */
-    RAND_load_file (random_file, 16384);
+    {
+        int _err = RAND_load_file (random_file, 16384);
+        if(_err == -1)
+          /* later the thread error queue will be cleared */
+          if ( (_err = ERR_peek_last_error ()) )
+              logprintf (LOG_VERBOSE, "WARNING: Could not load random file: %s, %s\n", opt.random_file, ERR_reason_error_string(_err));
+    }
 
 #ifdef HAVE_RAND_EGD
   /* Get random data from EGD if opt.egd_file was used.  */
@@ -427,44 +440,236 @@ struct openssl_transport_context
   char *last_error;             /* last error printed with openssl_errstr */
 };
 
+typedef int (*ssl_fn_t)(SSL *, void *, int);
+
+#ifdef OPENSSL_RUN_WITHTIMEOUT
+
+struct scwt_context
+{
+  SSL *ssl;
+  int result;
+};
+
+static void
+ssl_connect_with_timeout_callback(void *arg)
+{
+  struct scwt_context *ctx = (struct scwt_context *)arg;
+  ctx->result = SSL_connect(ctx->ssl);
+}
+
+static int
+ssl_connect_with_timeout(int fd _GL_UNUSED, SSL *conn, double timeout)
+{
+  struct scwt_context scwt_ctx;
+  scwt_ctx.ssl = conn;
+  errno = 0;
+  if (run_with_timeout(timeout, ssl_connect_with_timeout_callback,
+                       &scwt_ctx))
+    {
+      errno = ETIMEDOUT;
+      return -1;
+    }
+  return scwt_ctx.result;
+}
+
 struct openssl_read_args
 {
   int fd;
   struct openssl_transport_context *ctx;
+  ssl_fn_t fn;
   char *buf;
   int bufsize;
   int retval;
 };
 
-static void openssl_read_callback(void *arg)
+static void openssl_read_peek_callback(void *arg)
 {
   struct openssl_read_args *args = (struct openssl_read_args *) arg;
   struct openssl_transport_context *ctx = args->ctx;
+  ssl_fn_t fn = args->fn;
   SSL *conn = ctx->conn;
   char *buf = args->buf;
   int bufsize = args->bufsize;
   int ret;
 
   do
-    ret = SSL_read (conn, buf, bufsize);
-  while (ret == -1 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
-         && errno == EINTR);
+    {
+      ret = fn (conn, buf, bufsize);
+    }
+  while (ret == -1 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL && errno == EINTR);
   args->retval = ret;
 }
 
 static int
-openssl_read (int fd, char *buf, int bufsize, void *arg)
+openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ssl_fn_t fn)
 {
-  struct openssl_read_args args;
-  args.fd = fd;
-  args.buf = buf;
-  args.bufsize = bufsize;
-  args.ctx = (struct openssl_transport_context*) arg;
+  struct openssl_transport_context *ctx = arg;
+  int ret = SSL_pending (ctx->conn);
 
-  if (run_with_timeout(opt.read_timeout, openssl_read_callback, &args)) {
-    return -1;
+  if (bufsize == 0)
+    return 0;
+
+  if (ret)
+    ret = fn (ctx->conn, buf, MIN (bufsize, ret));
+  else
+    {
+      struct openssl_read_args args;
+      args.fd = fd;
+      args.buf = buf;
+      args.bufsize = bufsize;
+      args.fn = fn;
+      args.ctx = ctx;
+
+      errno = 0;
+      if (timeout == -1)
+        timeout = opt.read_timeout;
+
+      if (run_with_timeout(timeout, openssl_read_peek_callback, &args))
+        {
+          errno = ETIMEDOUT;
+          ret = -1;
+        }
+      else
+        ret = args.retval;
+    }
+  return ret;
+}
+
+#else /* OPENSSL_RUN_WITHTIMEOUT */
+
+#ifdef F_GETFL
+#define NONBLOCK_DECL int flags = 0;
+#define FD_SET_NONBLOCKED(_fd) \
+  flags = fcntl (_fd, F_GETFL, 0);\
+  if (flags < 0)\
+        return flags;\
+      if (fcntl (_fd, F_SETFL, flags | O_NONBLOCK))\
+        return -1;
+#define FD_SET_BLOCKED(_fd)  \
+  if (fcntl (_fd, F_SETFL, flags) < 0)\
+        return -1;
+#else
+#define NONBLOCK_DECL
+#define FD_SET_NONBLOCKED(_fd) \
+  {\
+    const int one = 1;\
+    if (ioctl (_fd, FIONBIO, &one) < 0)\
+      return -1;\
   }
-  return args.retval;
+#define FD_SET_BLOCKED(_fd)  \
+  {\
+    const int zero = 0;\
+    if (ioctl (_fd, FIONBIO, &zero) < 0)\
+      return -1;\
+  }
+#endif /* F_GETFL */
+
+#define TIMER_INIT(_fd, _ret, _timeout) \
+  { \
+    NONBLOCK_DECL \
+    int timed_out = 0; \
+    FD_SET_NONBLOCKED(_fd) \
+    struct ptimer *timer = ptimer_new (); \
+    if (timer == NULL) \
+      _ret = -1; \
+    else \
+      { \
+        if (_timeout == -1) \
+            _timeout = opt.read_timeout;
+
+#define TIMER_FREE(_fd) \
+        ptimer_destroy (timer); \
+      } \
+    FD_SET_BLOCKED(_fd) \
+    if (timed_out) \
+      { \
+        errno = ETIMEDOUT; \
+      } \
+  }
+
+#define TIMER_WAIT(_fd, _conn, _ret, _timeout) \
+        { \
+          int wait_for; \
+          double next_timeout; \
+          int err = SSL_get_error(_conn, _ret); \
+          if (err == SSL_ERROR_WANT_READ) \
+            wait_for = WAIT_FOR_READ; \
+          else if (err == SSL_ERROR_WANT_WRITE) \
+            wait_for = WAIT_FOR_WRITE; \
+          else \
+            break; \
+          next_timeout = _timeout - ptimer_measure (timer); \
+          if (next_timeout < 0) \
+            { \
+              timed_out = 1; \
+              break; \
+            } \
+          err = select_fd_nb (_fd, next_timeout, wait_for); \
+          if (err <= 0) \
+            { \
+              if (err == 0) \
+                timed_out = 1; \
+              _ret = -1; \
+              break; \
+            } \
+        }
+
+static int
+ssl_connect_with_timeout(int fd, SSL *conn, double timeout)
+{
+  int ret;
+
+  errno = 0;
+  if (timeout == 0)
+    ret = SSL_connect(conn);
+  else
+    {
+      TIMER_INIT(fd, ret, timeout)
+      ERR_clear_error();
+      while( (ret = SSL_connect(conn)) < 0 )
+        TIMER_WAIT(fd, conn, ret, timeout)
+      TIMER_FREE(fd)
+    }
+
+  return ret;
+}
+
+static int
+openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ssl_fn_t fn)
+{
+  struct openssl_transport_context *ctx = arg;
+  int ret;
+
+  if (bufsize == 0)
+    return 0;
+  /* avoid wrong 'interactive timeout' when errno == ETIMEDOUT */
+  errno = 0;
+  ret = SSL_pending (ctx->conn);
+  /* If we have data available for immediate read, simply return that,
+     or do blocked read when timeout == 0 */
+  if (ret || timeout == 0)
+    do
+      {
+        ret = fn (ctx->conn, buf, (ret ? MIN (bufsize, ret) : bufsize));
+      }
+    while (ret == -1 && SSL_get_error (ctx->conn, ret) == SSL_ERROR_SYSCALL && errno == EINTR);
+  else
+    {
+      TIMER_INIT(fd, ret, timeout)
+      while( (ret = fn (ctx->conn, buf, bufsize)) <= 0 )
+        TIMER_WAIT(fd, ctx->conn, ret, timeout)
+      TIMER_FREE(fd)
+    }
+
+  return ret;
+}
+
+#endif /* OPENSSL_RUN_WITHTIMEOUT */
+
+static int
+openssl_read (int fd, char *buf, int bufsize, void *arg, double timeout)
+{
+  return openssl_read_peek (fd, buf, bufsize, arg, timeout, SSL_read);
 }
 
 static int
@@ -475,9 +680,7 @@ openssl_write (int fd _GL_UNUSED, char *buf, int bufsize, void *arg)
   SSL *conn = ctx->conn;
   do
     ret = SSL_write (conn, buf, bufsize);
-  while (ret == -1
-         && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
-         && errno == EINTR);
+  while (ret == -1 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL && errno == EINTR);
   return ret;
 }
 
@@ -488,25 +691,17 @@ openssl_poll (int fd, double timeout, int wait_for, void *arg)
   SSL *conn = ctx->conn;
   if (SSL_pending (conn))
     return 1;
-  if (timeout == 0)
-    return 1;
+  /* if (timeout == 0)
+    return 1; */
+  if (timeout == -1)
+    timeout = opt.read_timeout;
   return select_fd (fd, timeout, wait_for);
 }
 
 static int
-openssl_peek (int fd, char *buf, int bufsize, void *arg)
+openssl_peek (int fd, char *buf, int bufsize, void *arg, double timeout)
 {
-  int ret;
-  struct openssl_transport_context *ctx = arg;
-  SSL *conn = ctx->conn;
-  if (! openssl_poll (fd, 0.0, WAIT_FOR_READ, arg))
-    return 0;
-  do
-    ret = SSL_peek (conn, buf, bufsize);
-  while (ret == -1
-         && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
-         && errno == EINTR);
-  return ret;
+  return openssl_read_peek (fd, buf, bufsize, arg, timeout, SSL_peek);
 }
 
 static const char *
@@ -582,19 +777,6 @@ static struct transport_implementation openssl_transport = {
   openssl_peek, openssl_errstr, openssl_close
 };
 
-struct scwt_context
-{
-  SSL *ssl;
-  int result;
-};
-
-static void
-ssl_connect_with_timeout_callback(void *arg)
-{
-  struct scwt_context *ctx = (struct scwt_context *)arg;
-  ctx->result = SSL_connect(ctx->ssl);
-}
-
 static const char *
 _sni_hostname(const char *hostname)
 {
@@ -623,7 +805,6 @@ bool
 ssl_connect_wget (int fd, const char *hostname, int *continue_session)
 {
   SSL *conn;
-  struct scwt_context scwt_ctx;
   struct openssl_transport_context *ctx;
 
   DEBUGP (("Initiating SSL handshake.\n"));
@@ -674,14 +855,9 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
       goto error;
     }
 
-  scwt_ctx.ssl = conn;
-  if (run_with_timeout(opt.read_timeout, ssl_connect_with_timeout_callback,
-                       &scwt_ctx)) {
-    DEBUGP (("SSL handshake timed out.\n"));
-    goto timeout;
-  }
-  if (scwt_ctx.result <= 0 || !SSL_is_init_finished(conn))
-    goto error;
+  if (ssl_connect_with_timeout(fd, conn, opt.read_timeout) <= 0
+      || !SSL_is_init_finished(conn))
+    goto timedout;
 
   ctx = xnew0 (struct openssl_transport_context);
   ctx->conn = conn;
@@ -694,12 +870,17 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
   fd_register_transport (fd, &openssl_transport, ctx);
   DEBUGP (("Handshake successful; connected socket %d to SSL handle 0x%0*lx\n",
            fd, PTR_FORMAT (conn)));
+
+  ERR_clear_error ();
   return true;
 
+ timedout:
+  if (errno == ETIMEDOUT)
+    DEBUGP (("SSL handshake timed out.\n"));
+  else
  error:
-  DEBUGP (("SSL handshake failed.\n"));
+    DEBUGP (("SSL handshake failed.\n"));
   print_errors ();
- timeout:
   if (conn)
     SSL_free (conn);
   return false;

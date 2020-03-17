@@ -1423,6 +1423,13 @@ cmd_time (const char *com, const char *val, void *place)
   if (!simple_atof (val, end, &number))
     goto err;
 
+  if (number < 0)
+    {
+      fprintf (stderr, _("%s: %s: Negative time period %s\n"),
+               exec_name, com, quote (val));
+      return false;
+    }
+
   *(double *)place = number * mult;
   return true;
 }
