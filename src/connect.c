@@ -941,12 +941,14 @@ fd_read (int fd, char *buf, int bufsize, double timeout)
   struct transport_info *info;
   LAZY_RETRIEVE_INFO (info);
 
-  if (!poll_internal (fd, info, WAIT_FOR_READ, timeout))
-    return -1;
+  /* let imp->reader take care about timeout.
+     (or in worst case timeout can be 2*timeout) */
   if (info && info->imp->reader)
     return info->imp->reader (fd, buf, bufsize, info->ctx, timeout);
-  else
-    return sock_read (fd, buf, bufsize);
+
+  if (!poll_internal (fd, info, WAIT_FOR_READ, timeout))
+    return -1;
+  return sock_read (fd, buf, bufsize);
 }
 
 /* Like fd_read, except it provides a "preview" of the data that will
@@ -966,12 +968,13 @@ fd_peek (int fd, char *buf, int bufsize, double timeout)
 {
   struct transport_info *info;
   LAZY_RETRIEVE_INFO (info);
-  if (!poll_internal (fd, info, WAIT_FOR_READ, timeout))
-    return -1;
+
   if (info && info->imp->peeker)
     return info->imp->peeker (fd, buf, bufsize, info->ctx, timeout);
-  else
-    return sock_peek (fd, buf, bufsize);
+
+  if (!poll_internal (fd, info, WAIT_FOR_READ, timeout))
+    return -1;
+  return sock_peek (fd, buf, bufsize);
 }
 
 /* Write the entire contents of BUF to FD.  If TIMEOUT is non-zero,

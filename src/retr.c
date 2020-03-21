@@ -417,6 +417,8 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
              timeout, so that the gauge can be updated regularly even
              when the data arrives very slowly or stalls.  */
           tmout = 0.95;
+          /* avoid wrong 'interactive timeout' */
+          errno = 0;
           if (opt.read_timeout)
             {
               double waittm;

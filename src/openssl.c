@@ -482,7 +482,8 @@ struct openssl_read_args
   int retval;
 };
 
-static void openssl_read_peek_callback(void *arg)
+static void
+openssl_read_peek_callback(void *arg)
 {
   struct openssl_read_args *args = (struct openssl_read_args *) arg;
   struct openssl_transport_context *ctx = args->ctx;
@@ -506,9 +507,6 @@ openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ss
   struct openssl_transport_context *ctx = arg;
   int ret = SSL_pending (ctx->conn);
 
-  if (bufsize == 0)
-    return 0;
-
   if (ret)
     ret = fn (ctx->conn, buf, MIN (bufsize, ret));
   else
@@ -520,7 +518,6 @@ openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ss
       args.fn = fn;
       args.ctx = ctx;
 
-      errno = 0;
       if (timeout == -1)
         timeout = opt.read_timeout;
 
@@ -540,14 +537,14 @@ openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ss
 #ifdef F_GETFL
 #define NONBLOCK_DECL int flags = 0;
 #define FD_SET_NONBLOCKED(_fd) \
-  flags = fcntl (_fd, F_GETFL, 0);\
-  if (flags < 0)\
-        return flags;\
-      if (fcntl (_fd, F_SETFL, flags | O_NONBLOCK))\
-        return -1;
+  flags = fcntl (_fd, F_GETFL, 0); \
+  if (flags < 0) \
+    return flags; \
+  if (fcntl (_fd, F_SETFL, flags | O_NONBLOCK)) \
+    return -1;
 #define FD_SET_BLOCKED(_fd)  \
-  if (fcntl (_fd, F_SETFL, flags) < 0)\
-        return -1;
+  if (fcntl (_fd, F_SETFL, flags) < 0) \
+    return -1;
 #else
 #define NONBLOCK_DECL
 #define FD_SET_NONBLOCKED(_fd) \
@@ -574,8 +571,7 @@ openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ss
       _ret = -1; \
     else \
       { \
-        if (_timeout == -1) \
-            _timeout = opt.read_timeout;
+        double next_timeout = _timeout;
 
 #define TIMER_FREE(_fd) \
         ptimer_destroy (timer); \
@@ -590,7 +586,6 @@ openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ss
 #define TIMER_WAIT(_fd, _conn, _ret, _timeout) \
         { \
           int wait_for; \
-          double next_timeout; \
           int err = SSL_get_error(_conn, _ret); \
           if (err == SSL_ERROR_WANT_READ) \
             wait_for = WAIT_FOR_READ; \
@@ -598,20 +593,18 @@ openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ss
             wait_for = WAIT_FOR_WRITE; \
           else \
             break; \
-          next_timeout = _timeout - ptimer_measure (timer); \
-          if (next_timeout < 0) \
-            { \
-              timed_out = 1; \
-              break; \
-            } \
           err = select_fd_nb (_fd, next_timeout, wait_for); \
           if (err <= 0) \
             { \
               if (err == 0) \
+timedout: \
                 timed_out = 1; \
               _ret = -1; \
               break; \
             } \
+          next_timeout = _timeout - ptimer_measure (timer); \
+          if (next_timeout <= 0) \
+            goto timedout; \
         }
 
 static int
@@ -638,13 +631,10 @@ static int
 openssl_read_peek (int fd, char *buf, int bufsize, void *arg, double timeout, ssl_fn_t fn)
 {
   struct openssl_transport_context *ctx = arg;
-  int ret;
+  int ret = SSL_pending (ctx->conn);
 
-  if (bufsize == 0)
-    return 0;
-  /* avoid wrong 'interactive timeout' when errno == ETIMEDOUT */
-  errno = 0;
-  ret = SSL_pending (ctx->conn);
+  if (timeout == -1)
+    timeout = opt.read_timeout;
   /* If we have data available for immediate read, simply return that,
      or do blocked read when timeout == 0 */
   if (ret || timeout == 0)
@@ -689,7 +679,7 @@ openssl_poll (int fd, double timeout, int wait_for, void *arg)
 {
   struct openssl_transport_context *ctx = arg;
   SSL *conn = ctx->conn;
-  if (SSL_pending (conn))
+  if ((wait_for & WAIT_FOR_READ) && SSL_pending (conn))
     return 1;
   /* if (timeout == 0)
     return 1; */
