@@ -172,7 +172,7 @@ ssl_init (void)
       else
         {
           ncerts += rc;
-          logprintf (LOG_NOTQUIET, _ ("Loaded CA certificate '%s'\n"), opt.ca_cert);
+          logprintf (LOG_VERBOSE, _ ("Loaded CA certificate '%s'\n"), opt.ca_cert);
         }
     }
 
@@ -186,7 +186,7 @@ ssl_init (void)
           return false;
         }
 
-      logprintf (LOG_NOTQUIET, _ ("Loaded CRL file '%s'\n"), opt.crl_file);
+      logprintf (LOG_VERBOSE, _ ("Loaded CRL file '%s'\n"), opt.crl_file);
     }
 
   DEBUGP (("Certificates loaded: %d\n", ncerts));
