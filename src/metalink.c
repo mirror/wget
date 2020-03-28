@@ -40,7 +40,7 @@ as that of the covered work.  */
 #include "sha1.h"
 #include "sha256.h"
 #include "sha512.h"
-#include "dosname.h"
+#include "filename.h"
 #include "xmemdup0.h"
 #include "xstrndup.h"
 #include "c-strcase.h"
