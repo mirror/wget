@@ -391,7 +391,7 @@ res_parse_from_file (const char *filename)
   struct file_memory *fm = wget_read_file (filename);
   if (!fm)
     {
-      logprintf (LOG_NOTQUIET, _("Cannot open %s: %s"),
+      logprintf (LOG_NOTQUIET, _("Cannot open %s: %s\n"),
                  filename, strerror (errno));
       return NULL;
     }

@@ -400,7 +400,7 @@ getftp (struct url *u, struct url *original_url,
       if (!ssl_init ())
         {
           scheme_disable (SCHEME_FTPS);
-          logprintf (LOG_NOTQUIET, _("Could not initialize SSL. It will be disabled."));
+          logprintf (LOG_NOTQUIET, _("Could not initialize SSL. It will be disabled.\n"));
           err = SSLINITFAILED;
           return err;
         }

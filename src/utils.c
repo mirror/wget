@@ -899,7 +899,7 @@ fopen_stat(const char *fname, const char *mode, file_stats_t *fstats)
        fdstats.st_ino != fstats->st_ino))
   {
     /* File changed since file_exists_p() : NOT SAFE */
-    logprintf (LOG_NOTQUIET, _("File %s changed since the last check. Security check failed."), fname);
+    logprintf (LOG_NOTQUIET, _("File %s changed since the last check. Security check failed.\n"), fname);
     fclose (fp);
     return NULL;
   }
@@ -950,7 +950,7 @@ open_stat(const char *fname, int flags, mode_t mode, file_stats_t *fstats)
        fdstats.st_ino != fstats->st_ino))
   {
     /* File changed since file_exists_p() : NOT SAFE */
-    logprintf (LOG_NOTQUIET, _("Trying to open file %s but it changed since last check. Security check failed."), fname);
+    logprintf (LOG_NOTQUIET, _("Trying to open file %s but it changed since last check. Security check failed.\n"), fname);
     close (fd);
     return -1;
   }
