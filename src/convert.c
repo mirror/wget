@@ -1025,11 +1025,11 @@ register_css (const char *file)
   string_set_add (downloaded_css_set, file);
 }
 
-static void downloaded_files_free (void);
-
 /* Cleanup the data structures associated with this file.  */
 
 #if defined DEBUG_MALLOC || defined TESTING
+static void downloaded_files_free (void);
+
 void
 convert_cleanup (void)
 {
@@ -1136,6 +1136,7 @@ downloaded_file (downloaded_file_t mode, const char *file)
   return FILE_NOT_ALREADY_DOWNLOADED;
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 static void
 downloaded_files_free (void)
 {
@@ -1150,6 +1151,7 @@ downloaded_files_free (void)
       downloaded_files_hash = NULL;
     }
 }
+#endif
 
 /* The function returns the pointer to the malloc-ed quoted version of
    string s.  It will recognize and quote numeric and special graphic
