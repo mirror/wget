@@ -59,14 +59,15 @@ typedef struct _acc_t
 
 static acc_t *parse_netrc (const char *);
 static acc_t *parse_netrc_fp (const char *, FILE *);
-static void free_netrc(acc_t *);
 
 static acc_t *netrc_list;
 static int processed_netrc;
 
 #if defined DEBUG_MALLOC || defined TESTING
+static void free_netrc(acc_t *);
+
 void
-netrc_cleanup(void)
+netrc_cleanup (void)
 {
   free_netrc (netrc_list);
   processed_netrc = 0;
@@ -461,6 +462,7 @@ parse_netrc (const char *path)
   return acc;
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 /* Free a netrc list.  */
 static void
 free_netrc(acc_t *l)
@@ -477,6 +479,7 @@ free_netrc(acc_t *l)
       l = t;
     }
 }
+#endif
 
 #ifdef STANDALONE
 #include <sys/types.h>
