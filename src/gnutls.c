@@ -102,6 +102,7 @@ ssl_init (void)
   const char *ca_directory;
   DIR *dir;
   int ncerts = -1;
+  int rc;
 
   /* GnuTLS should be initialized only once. */
   if (ssl_initialized)
@@ -121,7 +122,10 @@ ssl_init (void)
    * Also use old behaviour if the CA directory is user-provided.  */
   if (ncerts <= 0)
     {
+      ncerts = 0;
+
       ca_directory = opt.ca_directory ? opt.ca_directory : "/etc/ssl/certs";
+
       if ((dir = opendir (ca_directory)) == NULL)
         {
           if (opt.ca_directory && *opt.ca_directory)
@@ -132,9 +136,6 @@ ssl_init (void)
         {
           struct hash_table *inode_map = hash_table_new (196, NULL, NULL);
           struct dirent *dent;
-          int rc;
-
-          ncerts = 0;
 
           while ((dent = readdir (dir)) != NULL)
             {
@@ -169,32 +170,29 @@ ssl_init (void)
 
   if (opt.ca_cert)
     {
-      int rc;
-
-      ncerts = 0;
+      if (ncerts < 0)
+        ncerts = 0;
 
       if ((rc = gnutls_certificate_set_x509_trust_file (credentials, opt.ca_cert,
                                                         GNUTLS_X509_FMT_PEM)) <= 0)
-        logprintf (LOG_NOTQUIET, _ ("ERROR: Failed to open cert %s: (%d).\n"),
+        logprintf (LOG_NOTQUIET, _("ERROR: Failed to open cert %s: (%d).\n"),
                    opt.ca_cert, rc);
       else
         {
           ncerts += rc;
-          logprintf (LOG_VERBOSE, _ ("Loaded CA certificate '%s'\n"), opt.ca_cert);
+          logprintf (LOG_VERBOSE, _("Loaded CA certificate '%s'\n"), opt.ca_cert);
         }
     }
 
   if (opt.crl_file)
     {
-      int rc;
-
       if ((rc = gnutls_certificate_set_x509_crl_file (credentials, opt.crl_file, GNUTLS_X509_FMT_PEM)) <= 0)
         {
           logprintf (LOG_NOTQUIET, _("ERROR: Failed to load CRL file '%s': (%d)\n"), opt.crl_file, rc);
           return false;
         }
 
-      logprintf (LOG_VERBOSE, _ ("Loaded CRL file '%s'\n"), opt.crl_file);
+      logprintf (LOG_VERBOSE, _("Loaded CRL file '%s'\n"), opt.crl_file);
     }
 
   DEBUGP (("Certificates loaded: %d\n", ncerts));
