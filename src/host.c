@@ -857,8 +857,8 @@ lookup_host (const char *host, int flags)
 #ifdef HAVE_LIBCARES
   if (ares)
     {
-      struct address_list *al4;
-      struct address_list *al6;
+      struct address_list *al4 = NULL;
+      struct address_list *al6 = NULL;
 
       if (opt.ipv4_only || !opt.ipv6_only)
         ares_gethostbyname (ares, host, AF_INET, callback, &al4);
