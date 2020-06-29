@@ -1984,6 +1984,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
         case HOSTERR: case CONIMPOSSIBLE: case FWRITEERR: case FOPENERR:
         case FTPNSFOD: case FTPLOGINC: case FTPNOPASV: case FTPNOAUTH: case FTPNOPBSZ: case FTPNOPROT:
         case UNLINKERR: case WARC_TMP_FWRITEERR: case CONSSLERR: case CONTNOTSUPPORTED:
+        case VERIFCERTERR:
 #ifdef HAVE_SSL
           if (err == FTPNOAUTH)
             logputs (LOG_NOTQUIET, "Server does not support AUTH TLS.\n");
