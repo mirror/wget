@@ -1043,10 +1043,11 @@ megabytes (with @samp{m} suffix).
 Note that quota will never affect downloading a single file.  So if you
 specify @samp{wget -Q10k https://example.com/ls-lR.gz}, all of the
 @file{ls-lR.gz} will be downloaded.  The same goes even when several
-@sc{url}s are specified on the command-line.  However, quota is
-respected when retrieving either recursively, or from an input file.
-Thus you may safely type @samp{wget -Q2m -i sites}---download will be
-aborted when the quota is exceeded.
+@sc{url}s are specified on the command-line.  The quota is checked only
+at the end of each downloaded file, so it will never result in a partially
+downloaded file. Thus you may safely type @samp{wget -Q2m -i sites}---download
+will be aborted after the file that exhausts the quota is completely
+downloaded.
 
 Setting quota to 0 or to @samp{inf} unlimits the download quota.
 
