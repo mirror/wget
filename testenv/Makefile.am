@@ -116,6 +116,7 @@ if HAVE_PYTHON3
     Test--rejected-log.py                           \
     Test-reserved-chars.py                          \
     Test--spider-r.py                               \
+    Test-no_proxy-env.py                            \
     $(METALINK_TESTS)
 
 endif
