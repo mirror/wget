@@ -690,11 +690,14 @@ Download:\n"),
     N_("\
        --read-timeout=SECS         set the read timeout to SECS\n"),
     N_("\
-  -w,  --wait=SECONDS              wait SECONDS between retrievals\n"),
+  -w,  --wait=SECONDS              wait SECONDS between retrievals\n\
+                                     (applies if more then 1 URL is to be retrieved)\n"),
     N_("\
-       --waitretry=SECONDS         wait 1..SECONDS between retries of a retrieval\n"),
+       --waitretry=SECONDS         wait 1..SECONDS between retries of a retrieval\n\
+                                     (applies if more then 1 URL is to be retrieved)\n"),
     N_("\
-       --random-wait               wait from 0.5*WAIT...1.5*WAIT secs between retrievals\n"),
+       --random-wait               wait from 0.5*WAIT...1.5*WAIT secs between retrievals\n\
+                                     (applies if more then 1 URL is to be retrieved)\n"),
     N_("\
        --no-proxy                  explicitly turn off proxy\n"),
     N_("\
