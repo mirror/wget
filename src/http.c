@@ -5345,7 +5345,10 @@ http_cleanup (void)
     invalidate_persistent ();
 
   if (wget_cookie_jar)
-    cookie_jar_delete (wget_cookie_jar);
+    {
+      cookie_jar_delete (wget_cookie_jar);
+      wget_cookie_jar = NULL;
+    }
 
   if (basic_authed_hosts)
     {
