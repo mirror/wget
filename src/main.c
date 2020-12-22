@@ -1752,6 +1752,12 @@ for details.\n\n"));
       exit (WGET_EXIT_GENERIC_ERROR);
     }
 
+  if (opt.ask_passwd && !(opt.user || opt.http_user || opt.ftp_user))
+    {
+      fprintf(stderr,
+              _("WARNING: No username set with --ask-password. This is usually not what you want.\n"));
+    }
+
   if (opt.start_pos >= 0 && opt.always_rest)
     {
       fprintf (stderr,
