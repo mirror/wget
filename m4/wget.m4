@@ -97,7 +97,7 @@ AC_DEFUN([MEMBER_SIN6_SCOPE_ID],[
 
 AC_DEFUN([PROTO_INET6],[
   AC_CACHE_CHECK([for INET6 protocol support], [wget_cv_proto_inet6],[
-    AC_TRY_CPP([
+    AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
 #include <sys/types.h>
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
@@ -117,7 +117,7 @@ AC_DEFUN([PROTO_INET6],[
 #ifndef AF_INET6
 #error Missing AF_INET6
 #endif
-    ],[
+    ]])],[
       wget_cv_proto_inet6=yes
     ],[
       wget_cv_proto_inet6=no

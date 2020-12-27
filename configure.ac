@@ -30,10 +30,8 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
 
-AC_INIT([wget],
-        m4_esyscmd([build-aux/git-version-gen .tarball-version]),
-	[bug-wget@gnu.org])
-AC_PREREQ(2.64)
+AC_INIT([wget],[m4_esyscmd(build-aux/git-version-gen .tarball-version)],[bug-wget@gnu.org])
+AC_PREREQ([2.64])
 
 dnl
 dnl What version of Wget are we building?
@@ -682,7 +680,7 @@ dnl is to autodetect IPv6 and use it where available.
 dnl
 
 AC_ARG_ENABLE(ipv6,
-  AC_HELP_STRING([--disable-ipv6],[disable IPv6 support]),
+  AS_HELP_STRING([--disable-ipv6],[disable IPv6 support]),
   [case "${enable_ipv6}" in
     no)
       AC_MSG_NOTICE([disabling IPv6 at user request])
@@ -763,7 +761,7 @@ dnl Check for IDN/IRIs
 dnl
 
 AC_ARG_ENABLE(iri,
-  AC_HELP_STRING([--disable-iri],[disable IDN/IRIs support]),
+  AS_HELP_STRING([--disable-iri],[disable IDN/IRIs support]),
   [case "${enable_iri}" in
     no)
       dnl Disable IRIs checking
@@ -800,8 +798,7 @@ AS_IF([test "X$iri" != "Xno"],[
   fi
 ])
 
-AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
-                                   [Support IDN2008/IRIs (needs GNU libidn2 + libunicode)]),
+AC_ARG_WITH(libidn, AS_HELP_STRING([--with-libidn=[DIR]],[Support IDN2008/IRIs (needs GNU libidn2 + libunicode)]),
                                    libidn=$withval, libidn="")
 if test "X$iri" != "Xno"; then
   AS_IF([test "x$with_libidn2" != xno], [
@@ -821,8 +818,7 @@ dnl
 dnl Check for UUID
 dnl
 
-AC_ARG_WITH(libuuid, AC_HELP_STRING([--without-libuuid],
-                                    [Generate UUIDs for WARC files via libuuid]))
+AC_ARG_WITH(libuuid, AS_HELP_STRING([--without-libuuid],[Generate UUIDs for WARC files via libuuid]))
 
 AS_IF([test "x$with_libuuid" = xyes], [
   # libuuid was explicitly requested
@@ -859,10 +855,8 @@ dnl
 dnl Check for PCRE2 / PCRE
 dnl
 
-AC_ARG_ENABLE(pcre2, AC_HELP_STRING([--disable-pcre2],
-                                   [Disable PCRE2 style regular expressions]))
-AC_ARG_ENABLE(pcre, AC_HELP_STRING([--disable-pcre],
-                                   [Disable PCRE style regular expressions]))
+AC_ARG_ENABLE(pcre2, AS_HELP_STRING([--disable-pcre2],[Disable PCRE2 style regular expressions]))
+AC_ARG_ENABLE(pcre, AS_HELP_STRING([--disable-pcre],[Disable PCRE style regular expressions]))
 
 AS_IF([test "X$enable_pcre2" != "Xno"],[
   enable_pcre2=no
