@@ -2,22 +2,15 @@
 # Copyright (C) 1995-2011, 2018-2020 Free Software Foundation, Inc.
 
 # Package source files
-lib/error.c
-lib/gai_strerror.c
-lib/getopt.c
-lib/quotearg.c
-lib/regcomp.c
-lib/spawn-pipe.c
-lib/w32spawn.h
-lib/wait-process.c
-lib/xalloc-die.c
 src/connect.c
 src/convert.c
 src/cookies.c
 src/ftp-ls.c
 src/ftp.c
 src/gnutls.c
+src/hash.c
 src/host.c
+src/hsts.c
 src/html-url.c
 src/http.c
 src/init.c
@@ -37,3 +30,4 @@ src/spider.c
 src/url.c
 src/utils.c
 src/warc.c
+src/wget.h
