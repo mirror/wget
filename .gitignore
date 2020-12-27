@@ -16,6 +16,7 @@
 /lib/
 !/lib/Makefile.am
 /maint.mk
+/gnulib_po/
 # Wildcard Ignores
 *~
 po/*.gmo*
