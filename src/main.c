@@ -153,6 +153,7 @@ i18n_initialize (void)
   setlocale (LC_ALL, "");
   /* Set the text message domain.  */
   bindtextdomain ("wget", LOCALEDIR);
+  bindtextdomain ("wget-gnulib", LOCALEDIR);
   textdomain ("wget");
 #elif defined WINDOWS
   char MBCP[16] = "";
