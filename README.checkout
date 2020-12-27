@@ -8,7 +8,7 @@ Compiling From Repository Sources
    libiconv, libpsl, libpcre, pkg-config, libmetalink and GnuPG are not
    absolutely required):
 
-     * [20]autoconf (currently, GNU Wget requires version 2.61). This is
+     * [20]autoconf (currently, GNU Wget requires version 2.64). This is
        needed to generate the configure script from configure.in. This is
        not required when building from a tarball distribution; only when
        building from repository sources.
