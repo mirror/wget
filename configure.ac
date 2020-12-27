@@ -50,6 +50,10 @@ dnl Automake setup
 dnl
 AM_INIT_AUTOMAKE([subdir-objects])
 
+AC_USE_SYSTEM_EXTENSIONS
+AC_PROG_CC
+AM_PROG_CC_C_O
+
 dnl
 dnl Get canonical host
 dnl
@@ -242,10 +246,6 @@ dnl
 dnl We want these before the checks, so the checks can modify their values.
 test -z "$CFLAGS"  && CFLAGS= auto_cflags=1
 test -z "$CC" && cc_specified=yes
-
-AC_PROG_CC
-AM_PROG_CC_C_O
-AC_AIX
 
 gl_EARLY
 
