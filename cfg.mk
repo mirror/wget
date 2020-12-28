@@ -3,6 +3,7 @@ exclude_file_name_regexp--sc_trailing_blank = ^doc/annou.*$$
 exclude_file_name_regexp--sc_bindtextdomain = ^fuzz/.*.c$$
 exclude_file_name_regexp--sc_require_config_h = fuzz/main.c$$
 exclude_file_name_regexp--sc_require_config_h_first = fuzz/main.c$$
+# exclude_file_name_regexp--sc_po_
 
 
 export VC_LIST_EXCEPT_DEFAULT=^(lib/.*|m4/.*|md5/.*|build-aux/.*|src/gettext\.h|.*ChangeLog|tests/certs/.*)$$
@@ -38,3 +39,4 @@ show-vc-list-except:
 VC_LIST_ALWAYS_EXCLUDE_REGEX = ^ABOUT-NLS|((msdos|vms)/.*)|ChangeLog-2014-12-10|/.*\.der|^tests/certs/.*|^fuzz/.*\.(in|repro)/.*$$
 
 update-copyright-env = UPDATE_COPYRIGHT_USE_INTERVALS=1
+generated_files =

@@ -8,9 +8,7 @@ src/cookies.c
 src/ftp-ls.c
 src/ftp.c
 src/gnutls.c
-src/hash.c
 src/host.c
-src/hsts.c
 src/html-url.c
 src/http.c
 src/init.c
@@ -30,4 +28,3 @@ src/spider.c
 src/url.c
 src/utils.c
 src/warc.c
-src/wget.h
