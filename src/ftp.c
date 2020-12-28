@@ -2660,11 +2660,30 @@ ftp_retrieve_glob (struct url *u, struct url *original_url,
           continue;
         }
 
-      if (!accept_url (f->name))
+      if (opt.acceptregex || opt.rejectregex)
         {
-          logprintf (LOG_VERBOSE, _("%s is excluded/not-included through regex.\n"), f->name);
-          f = delelement (&f, &start);
-          continue;
+          // accept_url() takes the full URL.
+          char buf[1024];
+          char *url = buf;
+
+          if ((unsigned) snprintf(buf, sizeof(buf), "%s%s%s",
+                                  u->url, f->name, f->type == FT_DIRECTORY ? "/" : "")
+                                  >= sizeof(buf))
+            {
+              url = aprintf("%s%s%s", u->url, f->name, f->type == FT_DIRECTORY ? "/" : "");
+            }
+
+          if (!accept_url (url))
+            {
+              logprintf (LOG_VERBOSE, _ ("%s is excluded/not-included through regex.\n"), url);
+              f = delelement (&f, &start);
+              if (url != buf)
+                xfree(url);
+              continue;
+            }
+
+            if (url != buf)
+              xfree(url);
         }
 
       /* Now weed out the files that do not match our globbing pattern.
