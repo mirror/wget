@@ -365,7 +365,7 @@ Build/Arch:
   script:
     - export CFLAGS="$CFLAGS_DEFAULT"
     - ./bootstrap --skip-po && touch .manywarnings
-    - autoreconf -vi
+    - autoreconf -vif
     - ./configure $CONFIGURE_BASE_FLAGS
     - make -j$(nproc)
     - make check -j$(nproc)
