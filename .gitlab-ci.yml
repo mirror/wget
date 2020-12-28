@@ -88,6 +88,7 @@ OpenSSL/Debian:
     - cat /etc/hosts
     - alias make="make -j$(nproc)"
     - ./bootstrap --skip-po
+    - autoreconf -ivf
     - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=openssl
     - make syntax-check
     - make check
@@ -115,6 +116,7 @@ GnuTLS/Debian:
     - cat /etc/hosts
     - alias make="make -j$(nproc)"
     - ./bootstrap --skip-po
+    - autoreconf -ivf
     - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=gnutls
     - make syntax-check
     - make check
@@ -140,6 +142,7 @@ Minimal/Debian:
   script:
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po
+    - autoreconf -ivf
     - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
       --disable-nls --without-ssl --enable-ipv6 --without-zlib --without-libiconv-prefix
       --disable-iri --disable-ntlm --disable-pcre --without-libpsl --without-libuuid
@@ -335,6 +338,7 @@ MinGW64:
     - mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc &&
       echo ':DOSWin:M::MZ::/usr/bin/wine:' > /proc/sys/fs/binfmt_misc/register
     - ./bootstrap --skip-po
+    - autoreconf -ivf
 #    - cp pthread_sigmask.c.mingw lib/pthread_sigmask.c
     - export CC="ccache $PREFIX-gcc"
     - export GCCLIB=$(dirname $(find /usr/lib/gcc/$PREFIX -name libgcc_s_seh-1.dll|grep posix))
@@ -435,6 +439,7 @@ coverity:
     - wget https://scan.coverity.com/download/linux64 --post-data "token=$COVERITY_SCAN_TOKEN&project=$COVERITY_SCAN_PROJECT_NAME" -O /tmp/coverity_tool.tgz
     - tar xfz /tmp/coverity_tool.tgz
     - ./bootstrap --skip-po
+    - autoreconf -ivf
     - CFLAGS="-g -Og" ./configure --cache-file cache/config.cache --disable-doc
     - cov-analysis-linux64-*/bin/cov-build --dir cov-int make -j$(nproc)
     - tar cfz cov-int.tar.gz cov-int
