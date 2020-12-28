@@ -13,6 +13,7 @@ import conf
 HTTP = "HTTP"
 HTTPS = "HTTPS"
 
+SKIP_TEST = 77
 
 class BaseTest:
 

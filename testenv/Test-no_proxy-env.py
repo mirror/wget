@@ -2,6 +2,7 @@
 import socket
 from sys import exit
 from test.http_test import HTTPTest
+from test.base_test import SKIP_TEST
 from test.base_test import HTTP
 from misc.wget_file import WgetFile
 
@@ -36,7 +37,7 @@ for hostname in hostnames_to_check:
     except socket.gaierror as _:
         # resolution of the name fails
         # return value 77 -> SKIP
-        exit(77)
+        exit(SKIP_TEST)
 
 # File Definitions
 File1 = "Would you like some Tea?"
