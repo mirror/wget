@@ -49,6 +49,7 @@ VPATH/Debian:
     - contrib/spell-checker
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po && touch .manywarnings
+    - autoreconf -ivf
     - mkdir vpath && cd vpath
     - ../configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
     - make -j$(nproc)
