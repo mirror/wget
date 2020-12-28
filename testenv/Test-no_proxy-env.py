@@ -34,7 +34,7 @@ for hostname in hostnames_to_check:
     try:
         ip = socket.gethostbyname(hostname)
     except socket.gaierror as _:
-        # resolution of the name failes
+        # resolution of the name fails
         # return value 77 -> SKIP
         exit(77)
 
