@@ -21,7 +21,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Post Handshake Authentication for OpenSSL
 
-** Require gettext version 0.20+
+** Require gettext version 0.19.3+
 
 ** Add configure flags --enable-fsanitize-ubsan, --enable-fsanitize-asan
    and --enable-fsanitize-msan for gcc and clang
