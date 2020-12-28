@@ -8,6 +8,36 @@
 }
 
 {
+   False positive in libidn.so
+   Memcheck:Addr8
+   fun:strncmp
+   fun:is_dst
+   ...
+   fun:fillin_rpath.isra.0
+   fun:decompose_rpath
+   fun:_dl_map_object
+   fun:openaux
+   fun:_dl_catch_exception
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+}
+
+{
+   False positive in libidn.so
+   Memcheck:Addr16
+   fun:strncmp
+   ...
+   fun:fillin_rpath.isra.0
+   fun:decompose_rpath
+   fun:_dl_map_object
+   fun:openaux
+   fun:_dl_catch_exception
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+}
+
+{
    Valgrind 3.4 bug suppression
    Memcheck:Cond
    fun:memrchr
