@@ -319,11 +319,7 @@ dnl Check sizes of integer types.  These are used to find n-bit
 dnl integral types on older systems that fail to provide intN_t and
 dnl uintN_t typedefs.
 dnl
-AC_CHECK_SIZEOF([short])
-AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([long])
-AC_CHECK_SIZEOF([long long])
-AC_CHECK_SIZEOF([void *])
 
 dnl
 dnl Checks for non-universal or system-specific types.

@@ -135,58 +135,26 @@ as that of the covered work.  */
    don't necessarily want to tie having a 64-bit type for internal
    calculations to having LFS support.  */
 
-#ifdef WINDOWS
-  /* nothing to do, see mswindows.h */
-#elif SIZEOF_LONG >= 8
-  /* long is large enough, so use it. */
-  typedef long wgint;
-# define SIZEOF_WGINT SIZEOF_LONG
-#elif SIZEOF_LONG_LONG >= 8
-  /* long long is large enough and available, use that */
-  typedef long long wgint;
-# define SIZEOF_WGINT SIZEOF_LONG_LONG
-#elif HAVE_INT64_T
-  typedef int64_t wgint;
-# define SIZEOF_WGINT 8
-#elif SIZEOF_OFF_T >= 8
-  /* In case off_t is typedeffed to a large non-standard type that our
-     tests don't find. */
-  typedef off_t wgint;
-# define SIZEOF_WGINT SIZEOF_OFF_T
-#else
+/* Gnulib's stdint.h module essentially guarantees the existence of int64_t.
+ * Thus we can simply assume it always exists and use it.
+ * However, just as a defensive tactic, a fallback has been implemented here
+ * with a compile time warning.
+ */
+#ifndef HAVE_INT64_T
+# warning "int64_t not defined. Our portability layer should have caught this"
   /* Fall back to using long, which is always available and in most
      cases large enough. */
   typedef long wgint;
 # define SIZEOF_WGINT SIZEOF_LONG
-#endif
-
-/* Pick a strtol-compatible function that will work with wgint.  The
-   choices are strtol, strtoll, or our own implementation of strtoll
-   in cmpt.c, activated with NEED_STRTOLL.  */
-
-#ifdef WINDOWS
-  /* nothing to do, see mswindows.h */
-#elif SIZEOF_WGINT == SIZEOF_LONG
-# define str_to_wgint strtol
-#elif SIZEOF_WGINT == SIZEOF_LONG_LONG
-# define str_to_wgint strtoll
-# ifndef HAVE_STRTOLL
-#  define NEED_STRTOLL
-#  define strtoll_type long long
-# endif
+  typedef int64_t wgint;
+# define SIZEOF_WGINT 8
 #else
-  /* wgint has a strange size; synthesize strtoll and use it. */
-# define str_to_wgint strtoll
-# define NEED_STRTOLL
-# define strtoll_type wgint
+
 #endif
+
+#define str_to_wgint strtol
 
 #define WGINT_MAX TYPE_MAXIMUM (wgint)
-
-/* Declare our strtoll replacement. */
-#ifdef NEED_STRTOLL
-strtoll_type strtoll (const char *, char **, int);
-#endif
 
 /* Now define a large numeric type useful for storing sizes of *sums*
    of downloads, such as the value of the --quota option.  This should

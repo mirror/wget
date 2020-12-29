@@ -69,22 +69,6 @@ as that of the covered work.  */
 
 #include <stdio.h>
 
-/* Define a wgint type under Windows. */
-typedef __int64 wgint;
-#define SIZEOF_WGINT 8
-
-/* str_to_wgint is a function with the semantics of strtol[l], but
-   which works on wgint.  */
-#if defined HAVE_STRTOLL
-# define str_to_wgint strtoll
-#elif defined HAVE__STRTOI64
-# define str_to_wgint _strtoi64
-#else
-# define str_to_wgint strtoll
-# define NEED_STRTOLL
-# define strtoll_type __int64
-#endif
-
 #define PATH_SEPARATOR '\\'
 
 /* ioctl needed by set_windows_fd_as_blocking_socket() */
