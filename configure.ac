@@ -357,8 +357,6 @@ dnl We expect to have these functions on Unix-like systems configure
 dnl runs on.  The defines are provided to get them in config.h.in so
 dnl Wget can still be ported to non-Unix systems (such as Windows)
 dnl that lack some of these functions.
-AC_DEFINE([HAVE_STRCASECMP], 1, [Define to 1 if you have the `strcasecmp' function.])
-AC_DEFINE([HAVE_STRNCASECMP], 1, [Define to 1 if you have the `strncasecmp' function.])
 AC_DEFINE([HAVE_STRDUP], 1, [Define to 1 if you have the `strdup' function.])
 AC_DEFINE([HAVE_ISATTY], 1, [Define to 1 if you have the `isatty' function.])
 

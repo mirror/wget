@@ -59,14 +59,6 @@ as that of the covered work.  */
 /* Declares inet_ntop() and inet_pton(). */
 #include <arpa/inet.h>
 
-/* We have strcasecmp and strncasecmp, just under different names.  */
-#ifndef HAVE_STRCASECMP
-# define strcasecmp stricmp
-#endif
-#ifndef HAVE_STRNCASECMP
-# define strncasecmp strnicmp
-#endif
-
 #include <stdio.h>
 
 #define PATH_SEPARATOR '\\'
