@@ -1680,7 +1680,7 @@ with_thousand_seps (wgint n)
    some detail.  */
 
 char *
-human_readable (HR_NUMTYPE n, const int acc, const int decimals)
+human_readable (wgint n, const int acc, const int decimals)
 {
   /* These suffixes are compatible with those of GNU `ls -lh'. */
   static char powers[] =
@@ -1798,12 +1798,6 @@ number_to_string (char *buffer, wgint number)
 
   int last_digit_char = 0;
 
-#if (SIZEOF_WGINT != 4) && (SIZEOF_WGINT != 8)
-  /* We are running in a very strange environment.  Leave the correct
-     printing to sprintf.  */
-  p += sprintf (buf, "%j", (intmax_t) (n));
-#else  /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
-
   if (n < 0)
     {
       if (n < -WGINT_MAX)
@@ -1838,14 +1832,6 @@ number_to_string (char *buffer, wgint number)
   else if (n < 10000000)                 DIGITS_7 (1000000);
   else if (n < 100000000)                DIGITS_8 (10000000);
   else if (n < 1000000000)               DIGITS_9 (100000000);
-#if SIZEOF_WGINT == 4
-  /* wgint is 32 bits wide: no number has more than 10 digits. */
-  else                                   DIGITS_10 (1000000000);
-#else
-  /* wgint is 64 bits wide: handle numbers with 9-19 decimal digits.
-     Constants are constructed by compile-time multiplication to avoid
-     dealing with different notations for 64-bit constants
-     (nL/nLL/nI64, depending on the compiler and architecture).  */
   else if (n < 10*(W)1000000000)         DIGITS_10 (1000000000);
   else if (n < 100*(W)1000000000)        DIGITS_11 (10*(W)1000000000);
   else if (n < 1000*(W)1000000000)       DIGITS_12 (100*(W)1000000000);
@@ -1856,13 +1842,11 @@ number_to_string (char *buffer, wgint number)
   else if (n < 100000000*(W)1000000000)  DIGITS_17 (10000000*(W)1000000000);
   else if (n < 1000000000*(W)1000000000) DIGITS_18 (100000000*(W)1000000000);
   else                                   DIGITS_19 (1000000000*(W)1000000000);
-#endif
 
   if (last_digit_char)
     *p++ = last_digit_char;
 
   *p = '\0';
-#endif /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
 
   return p;
 }

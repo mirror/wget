@@ -142,7 +142,6 @@ as that of the covered work.  */
 
 typedef int64_t wgint;
 #define WGINT_MAX INT64_MAX
-#define SIZEOF_WGINT 8
 typedef wgint SUM_SIZE_INT;
 
 #define str_to_wgint strtol
