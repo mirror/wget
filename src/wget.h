@@ -137,42 +137,15 @@ as that of the covered work.  */
 
 /* Gnulib's stdint.h module essentially guarantees the existence of int64_t.
  * Thus we can simply assume it always exists and use it.
- * However, just as a defensive tactic, a fallback has been implemented here
- * with a compile time warning.
  */
-#ifndef HAVE_INT64_T
-# warning "int64_t not defined. Our portability layer should have caught this"
-  /* Fall back to using long, which is always available and in most
-     cases large enough. */
-  typedef long wgint;
-# define SIZEOF_WGINT SIZEOF_LONG
-  typedef int64_t wgint;
-# define SIZEOF_WGINT 8
-#else
+#include <stdint.h>
 
-#endif
+typedef int64_t wgint;
+#define WGINT_MAX INT64_MAX
+#define SIZEOF_WGINT 8
+typedef wgint SUM_SIZE_INT;
 
 #define str_to_wgint strtol
-
-#define WGINT_MAX TYPE_MAXIMUM (wgint)
-
-/* Now define a large numeric type useful for storing sizes of *sums*
-   of downloads, such as the value of the --quota option.  This should
-   be a type able to hold 2G+ values even on systems without large
-   file support.  (It is useful to limit Wget's download quota to say
-   10G even if a single file cannot be that large.)
-
-   To make sure we get the largest size possible, we use `double' on
-   systems without a 64-bit integral type.  (Since it is used in very
-   few places in Wget, this is acceptable.)  */
-
-#if SIZEOF_WGINT >= 8
-/* just use wgint */
-typedef wgint SUM_SIZE_INT;
-#else
-/* On systems without LFS, use double, which buys us integers up to 2^53. */
-typedef double SUM_SIZE_INT;
-#endif
 
 #include "options.h"
 
