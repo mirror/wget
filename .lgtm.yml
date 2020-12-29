@@ -4,4 +4,4 @@ extraction:
       packages:
         - libgpgme11-dev
     configure:
-      command: ./bootstrap && ./configure
+      command: ./bootstrap && autoreconf -ivf && ./configure
