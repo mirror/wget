@@ -464,10 +464,10 @@ datetime_str (time_t t)
 
 #ifdef __VMS
 
-void
+bool
 fork_to_background (void)
 {
-  return;
+  return false;
 }
 
 #else /* def __VMS */

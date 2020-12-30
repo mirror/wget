@@ -31,6 +31,7 @@ as that of the covered work.  */
 #ifndef INIT_H
 #define INIT_H
 
+char *ajoin_dir_file (const char *, const char *);
 char *wgetrc_env_file_name (void);
 char *wgetrc_user_file_name (void);
 char *wgetrc_file_name (void);

@@ -332,7 +332,9 @@ static const struct {
   { "tries",            &opt.ntry,              cmd_number_inf },
   { "trustservernames", &opt.trustservernames,  cmd_boolean },
   { "unlink",           &opt.unlink_requested,  cmd_boolean },
+#ifndef __VMS
   { "useaskpass" ,      &opt.use_askpass,       cmd_use_askpass },
+#endif
   { "useproxy",         &opt.use_proxy,         cmd_boolean },
   { "user",             &opt.user,              cmd_string },
   { "useragent",        NULL,                   cmd_spec_useragent },
@@ -587,20 +589,33 @@ wgetrc_env_file_name (void)
   return NULL;
 }
 
+/* Append file name to (locally appropriate) directory spec.
+   Return pointer to allocated storage. */
+char *
+ajoin_dir_file (const char *dir, const char *file)
+{
+  char *dir_file;
+#ifdef __VMS
+   /* No separator: "dev:[dir]" + "name.type" */
+  dir_file = aprintf ("%s%s", dir, file);
+#else /* def __VMS */
+  /* Slash separator: "/a/b" + "/" + "name.type" */
+  dir_file = aprintf ("%s/%s", dir, file);
+#endif /* def __VMS [else] */
+  return dir_file;
+}
+
 /* Check for the existence of '$HOME/.wgetrc' and return its path
    if it exists and is set.  */
 char *
 wgetrc_user_file_name (void)
 {
   char *file = NULL;
-  /* If that failed, try $HOME/.wgetrc (or equivalent).  */
 
-#ifdef __VMS
-  file = "SYS$LOGIN:.wgetrc";
-#else /* def __VMS */
-  if (opt.homedir)
-    file = aprintf ("%s/.wgetrc", opt.homedir);
-#endif /* def __VMS [else] */
+  /* Join opt.homedir ($HOME) and ".wgetrc" */
+  if (opt.homedir) {
+    file = ajoin_dir_file(opt.homedir, ".wgetrc");
+  }
 
   if (!file)
     return NULL;

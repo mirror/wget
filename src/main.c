@@ -178,7 +178,7 @@ get_hsts_database (void)
 
   if (opt.homedir)
     {
-      char *dir = aprintf ("%s/.wget-hsts", opt.homedir);
+      char *dir = ajoin_dir_file(opt.homedir, ".wget-hsts");
       return dir;
     }
 
@@ -435,7 +435,9 @@ static struct cmdline_option option_data[] =
     { "tries", 't', OPT_VALUE, "tries", -1 },
     { "unlink", 0, OPT_BOOLEAN, "unlink", -1 },
     { "trust-server-names", 0, OPT_BOOLEAN, "trustservernames", -1 },
+#ifndef __VMS
     { "use-askpass", 0, OPT_VALUE, "useaskpass", -1},
+#endif
     { "use-server-timestamps", 0, OPT_BOOLEAN, "useservertimestamps", -1 },
     { "user", 0, OPT_VALUE, "user", -1 },
     { "user-agent", 'U', OPT_VALUE, "useragent", -1 },
@@ -1270,6 +1272,12 @@ print_version (void)
     }
   if (printf ("\n") < 0)
     exit (WGET_EXIT_IO_FAIL);
+
+  /* Print VMS-specific version info. */
+#ifdef __VMS
+  if (vms_version_supplement() < 0)
+    exit (WGET_EXIT_IO_FAIL);
+#endif /* def __VMS */
 
   /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is
      absent. */
