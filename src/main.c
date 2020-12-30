@@ -730,11 +730,13 @@ Download:\n"),
        --password=PASS             set both ftp and http password to PASS\n"),
     N_("\
        --ask-password              prompt for passwords\n"),
+#ifndef __VMS
     N_("\
        --use-askpass=COMMAND       specify credential handler for requesting \n\
                                      username and password.  If no COMMAND is \n\
                                      specified the WGET_ASKPASS or the SSH_ASKPASS \n\
                                      environment variable is used.\n"),
+#endif
     N_("\
        --no-iri                    turn off IRI support\n"),
     N_("\
