@@ -5,7 +5,7 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget 1.21 (unreleased)
+* Changes in Wget 1.21
 
 ** Improve the number of translated strings
 
