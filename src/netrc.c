@@ -1,5 +1,5 @@
 /* Read and parse the .netrc file to get hosts, accounts, and passwords.
-   Copyright (C) 1996, 2007-2011, 2015, 2018-2020 Free Software
+   Copyright (C) 1996, 2007-2011, 2015, 2018-2021 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
