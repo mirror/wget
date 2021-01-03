@@ -1415,9 +1415,10 @@ rotate_backups(const char *fname)
 # define SEP "."
 # define AVSL 0
 #endif
+#define FILE_BUF_SIZE 1024
 
   /* avoid alloca() here */
-  char from[1024], to[1024];
+  char from[FILE_BUF_SIZE], to[FILE_BUF_SIZE];
   struct stat sb;
   bool overflow;
   int i;
@@ -1442,20 +1443,24 @@ rotate_backups(const char *fname)
             delete (to);
         }
 #endif
-      if ((overflow = ((unsigned) snprintf (to, sizeof (to), "%s%s%d", fname, SEP, i)) >= sizeof (to)))
-	     errno = ENAMETOOLONG;
-      else if ((overflow = ((unsigned) snprintf (from, sizeof (from), "%s%s%d", fname, SEP, i - 1)) >= sizeof (from)))
-	     errno = ENAMETOOLONG;
+      overflow = (unsigned) snprintf (to, FILE_BUF_SIZE, "%s%s%d", fname, SEP, i) >= FILE_BUF_SIZE;
+      overflow |= (unsigned) snprintf (from, FILE_BUF_SIZE, "%s%s%d", fname, SEP, i - 1) >= FILE_BUF_SIZE;
+
+      if (overflow)
+          errno = ENAMETOOLONG;
       if (overflow || rename (from, to))
         logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
                    from, to, errno, strerror (errno));
     }
 
-  if ((overflow = ((unsigned) snprintf (to, sizeof (to), "%s%s%d", fname, SEP, 1)) >= sizeof (to)))
+  overflow = (unsigned) snprintf (to, FILE_BUF_SIZE, "%s%s%d", fname, SEP, 1) >= FILE_BUF_SIZE;
+  if (overflow)
     errno = ENAMETOOLONG;
   if (overflow || rename(fname, to))
     logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
                fname, to, errno, strerror (errno));
+
+#undef FILE_BUF_SIZE
 }
 
 static bool no_proxy_match (const char *, const char **);
