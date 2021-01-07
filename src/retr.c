@@ -495,8 +495,8 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
                     case Z_STREAM_END:
                       if (exact && sum_read != toread)
                         {
-                          DEBUGP(("zlib stream ended unexpectedly after "
-                                  "%ld/%ld bytes\n", sum_read, toread));
+                          DEBUGP(("zlib stream ended unexpectedly after %"PRId64"/%"PRId64
+                                  " bytes\n", sum_read, toread));
                         }
                     }
 
@@ -588,7 +588,7 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
 
       if (gzstream.total_in != (uLong) sum_read)
         {
-          DEBUGP(("zlib read size differs from raw read size (%lu/%ld)\n",
+          DEBUGP(("zlib read size differs from raw read size (%lu/%"PRId64")\n",
                   gzstream.total_in, sum_read));
         }
     }
