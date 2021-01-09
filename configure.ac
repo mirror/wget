@@ -46,7 +46,7 @@ AC_CONFIG_SRCDIR([src/wget.h])
 dnl
 dnl Automake setup
 dnl
-AM_INIT_AUTOMAKE([subdir-objects])
+AM_INIT_AUTOMAKE([subdir-objects dist-lzip])
 
 AC_USE_SYSTEM_EXTENSIONS
 AC_PROG_CC
