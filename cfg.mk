@@ -42,3 +42,4 @@ update-copyright-env = UPDATE_COPYRIGHT_USE_INTERVALS=1
 generated_files =
 
 old_NEWS_hash = d41d8cd98f00b204e9800998ecf8427e
+manual_title = $(VERSION)
