@@ -1,6 +1,12 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 1.21.1 (2021-01-09)
+
+** Fix compilation on MacOS and Solaris 9
+
+** Resove bashism from configure.ac
+
+** Fix a compilation warning on 32-bit systems
 
 
 * Changes in Wget 1.21
