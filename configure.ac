@@ -291,13 +291,6 @@ AC_C_CONST
 AC_C_INLINE
 AC_C_VOLATILE
 
-dnl Check for basic headers, even though we expect them to exist and
-dnl #include them unconditionally in the code.  Their detection is
-dnl still needed because test programs used by Autoconf macros check.
-dnl Without the checks they will fail to be included in test programs,
-dnl which will subsequently fail.
-AC_HEADER_STDC
-
 dnl Check for large file support.  This check needs to come fairly
 dnl early because it could (in principle) affect whether functions and
 dnl headers are available, whether they work, etc.
