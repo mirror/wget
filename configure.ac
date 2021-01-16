@@ -357,8 +357,8 @@ dnl We expect to have these functions on Unix-like systems configure
 dnl runs on.  The defines are provided to get them in config.h.in so
 dnl Wget can still be ported to non-Unix systems (such as Windows)
 dnl that lack some of these functions.
-AC_DEFINE([HAVE_STRDUP], 1, [Define to 1 if you have the `strdup' function.])
-AC_DEFINE([HAVE_ISATTY], 1, [Define to 1 if you have the `isatty' function.])
+AC_DEFINE([HAVE_STRDUP], 1, [Define to 1 if you have the 'strdup' function.])
+AC_DEFINE([HAVE_ISATTY], 1, [Define to 1 if you have the 'isatty' function.])
 
 dnl Deal with specific hosts
 case $host_os in
@@ -550,7 +550,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
             AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
             AC_LIBOBJ([openssl])
             LIBS="${LIBS} -lssl32"
-            AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the `ssl32' library (-lssl32).])
+            AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the 'ssl32' library (-lssl32).])
           ],
           AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
 
@@ -691,7 +691,7 @@ AC_ARG_ENABLE(ipv6,
       ipv6=yes
       ;;
     *)
-      AC_MSG_ERROR([Invalid --enable-ipv6 argument \`$enable_ipv6'])
+      AC_MSG_ERROR([Invalid --enable-ipv6 argument '$enable_ipv6'])
       ;;
     esac
   ], [
@@ -709,7 +709,7 @@ fi
 
 if test "X$ipv6" = "Xyes"; then
   TYPE_STRUCT_SOCKADDR_IN6([],[
-    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support \`struct sockaddr_in6'])
+    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support 'struct sockaddr_in6'])
     ipv6=no
   ])
   if test "X$ipv6" = "Xyes"; then
@@ -727,9 +727,9 @@ fi
 
 dnl
 dnl Find makeinfo.  We used to provide support for Emacs processing
-dnl Texinfo using `emacs -batch -eval ...' where makeinfo is
+dnl Texinfo using 'emacs -batch -eval ...' where makeinfo is
 dnl unavailable, but that broke with the addition of makeinfo-specific
-dnl command-line options, such as `-I'.  Now we depend on makeinfo to
+dnl command-line options, such as '-I'.  Now we depend on makeinfo to
 dnl build the Info documentation.
 dnl
 
@@ -772,7 +772,7 @@ AC_ARG_ENABLE(iri,
       iri=yes
       ;;
     *)
-      AC_MSG_ERROR([Invalid --enable-iri argument \`$enable_iri'])
+      AC_MSG_ERROR([Invalid --enable-iri argument '$enable_iri'])
       ;;
     esac
   ], [
