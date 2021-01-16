@@ -261,7 +261,7 @@ AM_GNU_GETTEXT_VERSION([0.19.3])
 
 AC_PROG_RANLIB
 
-AC_PROG_LEX([yywrap])
+AC_PROG_LEX([noyywrap])
 
 dnl Turn on optimization by default.  Specifically:
 dnl
