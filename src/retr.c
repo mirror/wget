@@ -62,7 +62,7 @@ as that of the covered work.  */
 #include "hsts.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
-SUM_SIZE_INT total_downloaded_bytes;
+wgint total_downloaded_bytes;
 
 /* Total download time in seconds. */
 double total_download_time;

@@ -141,8 +141,8 @@ as that of the covered work.  */
 #include <stdint.h>
 
 typedef int64_t wgint;
+#define WGINT_MIN INT64_MIN
 #define WGINT_MAX INT64_MAX
-typedef wgint SUM_SIZE_INT;
 
 #define str_to_wgint strtol
 
