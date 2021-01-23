@@ -45,14 +45,7 @@ as that of the covered work.  */
 #include <stdarg.h>
 #include <locale.h>
 #include <errno.h>
-
-#if HAVE_UTIME
-# include <sys/types.h>
-# include <utime.h>
-# ifdef HAVE_SYS_UTIME_H
-#  include <sys/utime.h>
-# endif
-#endif
+#include <utime.h>
 
 #include <sys/time.h>
 
