@@ -1,5 +1,5 @@
 dnl Template file for GNU Autoconf
-dnl Copyright (C) 1995-1997, 2001, 2007-2014, 2018-2019 Free Software
+dnl Copyright (C) 1995-1997, 2001, 2007-2014, 2018-2021 Free Software
 dnl Foundation, Inc.
 
 dnl This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,13 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
 
-AC_INIT([wget],
-        m4_esyscmd([build-aux/git-version-gen .tarball-version]),
-	[bug-wget@gnu.org])
-AC_PREREQ(2.63)
+dnl Error if AX_CODE_COVERAGE if missing (like on the 1.21 release).
+m4_pattern_forbid([^_?AX_])
+m4_pattern_allow([AX_CHECK_GNU_MAKE_HEADLINE])
+m4_pattern_allow([_AX_CODE_COVERAGE_GCOV_PROG_WITH])
+
+AC_INIT([wget],[m4_esyscmd(build-aux/git-version-gen .tarball-version)],[bug-wget@gnu.org])
+AC_PREREQ([2.64])
 
 dnl
 dnl What version of Wget are we building?
@@ -48,7 +51,11 @@ AC_CONFIG_SRCDIR([src/wget.h])
 dnl
 dnl Automake setup
 dnl
-AM_INIT_AUTOMAKE([1.9])
+AM_INIT_AUTOMAKE([subdir-objects dist-lzip])
+
+AC_USE_SYSTEM_EXTENSIONS
+AC_PROG_CC
+AM_PROG_CC_C_O
 
 dnl
 dnl Get canonical host
@@ -70,7 +77,7 @@ AC_ARG_WITH([libpsl],
 
 dnl SSL: Configure SSL backend to use
 AC_ARG_WITH([ssl],
-  [AS_HELP_STRING([--with-ssl={gnutls,openssl}], [specify SSL backend. GNU TLS is the default.])])
+  [AS_HELP_STRING([--with-ssl={gnutls,openssl,no}], [specify SSL backend. GNU TLS is the default.])])
 
 dnl Zlib: Configure use of zlib for compression
 AC_ARG_WITH([zlib],
@@ -93,14 +100,6 @@ AC_ARG_ENABLE([fuzzing],
    AC_SUBST([LIB_FUZZING_ENGINE])
    AC_DEFINE([FUZZING], 1, [Define to 1 if this is a fuzzing build])
   ], [enable_fuzzing=no; LIB_FUZZING_ENGINE=""])
-#FUZZ_LIBS=$LIBS
-#if test $enable_fuzzing = "yes"; then
-#  OLD_LIBS=$LIBS
-#  AC_SEARCH_LIBS([dlsym], [dl dld])
-#  FUZZ_LIBS=$LIBS
-#  LIBS=$OLD_LIBS
-#fi
-#AC_SUBST([FUZZ_LIBS])
 AM_CONDITIONAL([FUZZING], [test "$enable_fuzzing" = "yes"])
 
 dnl needed for some fuzzers
@@ -111,6 +110,58 @@ if [[ "${ac_cv_search_dlopen#-l}" != "${ac_cv_search_dlopen}" ]]; then
   AC_SUBST([FUZZ_LIBS])
 fi
 LIBS="$OLD_LIBS"
+
+
+AC_ARG_ENABLE([fsanitize-ubsan],
+  [AS_HELP_STRING([--enable-fsanitize-ubsan], [Turn on Undefined Behavior Sanitizer (for developers)])],
+  [gl_cc_sanitize_ubsan=yes], [gl_cc_sanitize_ubsan=no])
+
+AC_ARG_ENABLE([fsanitize-asan],
+  [AS_HELP_STRING([--enable-fsanitize-asan], [Turn on Address Sanitizer (for developers) (mutually exclusive with Memory/Thread sanitizer or Valgrind tests)])],
+  [gl_cc_sanitize_asan=yes], [gl_cc_sanitize_asan=no])
+
+AC_ARG_ENABLE([fsanitize-msan],
+  [AS_HELP_STRING([--enable-fsanitize-msan], [Turn on Memory Sanitizer (for developers) (mutually exclusive with Address/Thread sanitizer or Valgrind tests)])],
+  [gl_cc_sanitize_msan=yes], [gl_cc_sanitize_msan=no])
+
+if test "$gl_cc_sanitize_asan" = yes; then
+  if test "$gl_cc_sanitize_msan" = yes; then
+    AC_MSG_ERROR([Address Sanitizer and Memory Sanitizer are mutually exclusive])
+  fi
+fi
+
+if test "$gl_cc_sanitize_ubsan" = yes; then
+  gl_WARN_ADD([-fsanitize=undefined])
+  gl_WARN_ADD([-fno-sanitize-recover=undefined])
+
+  # additional clang options
+  gl_WARN_ADD([-fsanitize=integer])
+  gl_WARN_ADD([-fsanitize=nullability])
+  gl_WARN_ADD([-fno-sanitize-recover=nullability])
+fi
+
+if test "$gl_cc_sanitize_asan" = yes; then
+  gl_WARN_ADD([-fsanitize=address])
+  gl_WARN_ADD([-fno-omit-frame-pointer])
+
+  # additional clang option
+  gl_WARN_ADD([-fsanitize-address-use-after-scope])
+fi
+
+if test "$gl_cc_sanitize_msan" = yes; then
+  # clang options
+  gl_WARN_ADD([-fsanitize=memory])
+  gl_WARN_ADD([-fsanitize-memory-track-origins])
+
+  # gcc options
+  if test "$CCNAME" = "gcc"; then
+    gl_WARN_ADD([-fsanitize=leak])
+  fi
+
+  gl_WARN_ADD([-fno-omit-frame-pointer])
+  gl_WARN_ADD([-fPIE])
+fi
+
 
 dnl Opie: Support for opie s/key FTP logins
 AC_ARG_ENABLE([opie],
@@ -164,6 +215,12 @@ AC_ARG_ENABLE(valgrind-tests,
 AS_IF([test "x$ENABLE_VALGRIND" != xno], [
   AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
   AS_IF([test "x$HAVE_VALGRIND" = xyes], [
+    if test "$gl_cc_sanitize_asan" = yes; then
+      AC_MSG_ERROR([Valgrind and Address Sanitizer are mutually exclusive])
+    elif test "$gl_cc_sanitize_msan" = yes; then
+      AC_MSG_ERROR([Valgrind and Memory Sanitizer are mutually exclusive])
+    fi
+
     VALGRIND_TESTS="1"
     AC_SUBST(VALGRIND_TESTS)
     VALGRIND_INFO="Test suite will be run under Valgrind"
@@ -193,10 +250,6 @@ dnl We want these before the checks, so the checks can modify their values.
 test -z "$CFLAGS"  && CFLAGS= auto_cflags=1
 test -z "$CC" && cc_specified=yes
 
-AC_PROG_CC
-AM_PROG_CC_C_O
-AC_AIX
-
 gl_EARLY
 
 dnl
@@ -209,11 +262,11 @@ dnl
 dnl Gettext
 dnl
 AM_GNU_GETTEXT([external],[need-ngettext])
-AM_GNU_GETTEXT_VERSION([0.17])
+AM_GNU_GETTEXT_VERSION([0.19.3])
 
 AC_PROG_RANLIB
 
-AC_PROG_LEX
+AC_PROG_LEX([noyywrap])
 
 dnl Turn on optimization by default.  Specifically:
 dnl
@@ -243,13 +296,6 @@ AC_C_CONST
 AC_C_INLINE
 AC_C_VOLATILE
 
-dnl Check for basic headers, even though we expect them to exist and
-dnl #include them unconditionally in the code.  Their detection is
-dnl still needed because test programs used by Autoconf macros check.
-dnl Without the checks they will fail to be included in test programs,
-dnl which will subsequently fail.
-AC_HEADER_STDC
-
 dnl Check for large file support.  This check needs to come fairly
 dnl early because it could (in principle) affect whether functions and
 dnl headers are available, whether they work, etc.
@@ -261,7 +307,7 @@ dnl Checks for system header files that might be missing.
 dnl
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(unistd.h sys/time.h)
-AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h utime.h sys/utime.h)
+AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h)
 AC_CHECK_HEADERS(stdint.h inttypes.h pwd.h wchar.h dlfcn.h)
 
 AC_CHECK_DECLS(h_errno,,,[#include <netdb.h>])
@@ -271,11 +317,7 @@ dnl Check sizes of integer types.  These are used to find n-bit
 dnl integral types on older systems that fail to provide intN_t and
 dnl uintN_t typedefs.
 dnl
-AC_CHECK_SIZEOF([short])
-AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([long])
-AC_CHECK_SIZEOF([long long])
-AC_CHECK_SIZEOF([void *])
 
 dnl
 dnl Checks for non-universal or system-specific types.
@@ -294,6 +336,8 @@ AC_CHECK_TYPES(sig_atomic_t, [], [], [
 AM_ICONV
 gl_INIT
 
+AX_CODE_COVERAGE
+
 dnl
 dnl Checks for library functions.
 dnl
@@ -311,10 +355,8 @@ dnl We expect to have these functions on Unix-like systems configure
 dnl runs on.  The defines are provided to get them in config.h.in so
 dnl Wget can still be ported to non-Unix systems (such as Windows)
 dnl that lack some of these functions.
-AC_DEFINE([HAVE_STRCASECMP], 1, [Define to 1 if you have the `strcasecmp' function.])
-AC_DEFINE([HAVE_STRNCASECMP], 1, [Define to 1 if you have the `strncasecmp' function.])
-AC_DEFINE([HAVE_STRDUP], 1, [Define to 1 if you have the `strdup' function.])
-AC_DEFINE([HAVE_ISATTY], 1, [Define to 1 if you have the `isatty' function.])
+AC_DEFINE([HAVE_STRDUP], 1, [Define to 1 if you have the 'strdup' function.])
+AC_DEFINE([HAVE_ISATTY], 1, [Define to 1 if you have the 'isatty' function.])
 
 dnl Deal with specific hosts
 case $host_os in
@@ -323,6 +365,116 @@ case $host_os in
     AC_LIBOBJ([mswindows])
     ;;
 esac
+
+# enable all possible compiler warnings in WARN_FLAGS
+#
+# to enable by default: create a file '.manywarnings'
+# enable explicitly : ./configure --enable-manywarnings
+# disable explicitly: ./configure --disable-manywarnings
+sanitizer_flags="$WARN_CFLAGS"
+wget_MANYWARNINGS(WARN_CFLAGS, C)
+WARN_CFLAGS="$WARN_CFLAGS $sanitizer_flags"
+
+if test -n "$WARN_CFLAGS"; then
+  if test "$CCNAME" = "gcc"; then
+    # Set up list of unwanted warnings
+    nw=
+    nw="$nw -Wsystem-headers"       # System headers may trigger lot's of useless warnings
+    nw="$nw -Wvla"                  # This project is C99
+    nw="$nw -Wstack-protector"
+    nw="$nw -Wmissing-field-initializer"
+    nw="$nw -Wtraditional"
+    nw="$nw -Wtraditional-conversion"
+    nw="$nw -Wc++-compat"
+    nw="$nw -Wcast-qual"
+    nw="$nw -Wconversion"
+    nw="$nw -Wsign-conversion"
+    nw="$nw -Wunsuffixed-float-constants"
+    nw="$nw -Wdeclaration-after-statement" # C89 only, messing up gcc < 5
+    nw="$nw -Wcast-function-type" # gcc 8, very noisy
+    nw="$nw -Wabi" # gcc 8, very noisy
+    nw="$nw -Wunused-macros" # triggers in auto-generated lex css parser, #pragma doesn't work, conflicts with -Werror
+	nw="$nw -Wchkp" # Deprecated option
+    if test "$cross_compiling" = yes; then
+      nw="$nw -Wformat"
+    fi
+
+    # remove unwanted warn flags
+    wget_WORD_REMOVE([WARN_CFLAGS], [$WARN_CFLAGS], [$nw])
+
+    WARN_CFLAGS="$WARN_CFLAGS -Wno-undef -Wno-float-equal"
+
+    # add more flags as you like
+    if test $GCC_VERSION -ge 5; then
+      WARN_CFLAGS="$WARN_CFLAGS -fdiagnostics-color=always"
+    fi
+    if test "$cross_compiling" = yes; then
+      WARN_CFLAGS="$WARN_CFLAGS -Wno-format"
+    fi
+    if test $GCC_VERSION -ge 8; then
+      WARN_CFLAGS="$WARN_CFLAGS -Wno-cast-function-type"
+    fi
+    # WARN_CFLAGS="$WARN_CFLAGS -Werror"
+
+    # We use a slightly smaller set of warning options for lib/.
+    # Remove the following and save the result in GNULIB_WARN_CFLAGS.
+    # Removing is not enough if these switches are implicitly set by other
+    #  flags like -Wall or -Wextra. We have to explicitly unset them
+    #  with -Wno-....
+    nw=
+    nw="$nw -Wpedantic"
+    nw="$nw -Wsign-compare"
+    nw="$nw -Wunused-parameter"
+    nw="$nw -Wswitch-default"
+    nw="$nw -Wformat-nonliteral"
+    nw="$nw -Wsuggest-attribute=pure"
+    nw="$nw -Wunsafe-loop-optimizations"
+    nw="$nw -Wundef"
+    nw="$nw -Wswitch-enum"
+    nw="$nw -Wbad-function-cast"
+    nw="$nw -Wredundant-decls"
+    nw="$nw -Werror"
+    wget_WORD_REMOVE([GNULIB_WARN_CFLAGS], [$WARN_CFLAGS], [$nw])
+    wget_WORD_REMOVE([CFLAGS], [$CFLAGS], [-Werror])
+
+    # disable options implicitly set by other options
+    GNULIB_WARN_CFLAGS="-Wno-error $GNULIB_WARN_CFLAGS"
+    GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-sign-compare -Wno-unused-parameter -Wno-alloca"
+    GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-float-conversion -Wno-cast-function-type"
+    if test "$cross_compiling" = yes; then
+      GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-incompatible-pointer-types"
+    fi
+
+  elif test "$CCNAME" = "clang"; then
+    # setup flags for this project
+    WARN_CFLAGS="$WARN_CFLAGS -Wno-system-headers -Wno-vla -Wno-cast-qual -Wno-padded"
+    WARN_CFLAGS="$WARN_CFLAGS -Wno-reserved-id-macro -Wno-sign-conversion  -Wno-disabled-macro-expansion"
+    WARN_CFLAGS="$WARN_CFLAGS -Wno-documentation -Wno-documentation-unknown-command"
+    WARN_CFLAGS="$WARN_CFLAGS -Wno-covered-switch-default -Wno-unused-macros"
+    WARN_CFLAGS="$WARN_CFLAGS -Wno-missing-field-initializers"
+
+    # remove all flags from WARN_FLAGS that are already in CFLAGS
+    # wget_WORD_REMOVE([WARN_CFLAGS], [$WARN_CFLAGS], [$CFLAGS])
+
+    wget_WORD_REMOVE([CFLAGS], [$CFLAGS], [-Werror])
+
+    # disable verbose options
+    GNULIB_WARN_CFLAGS="-Wno-error $GNULIB_WARN_CFLAGS"
+    GNULIB_WARN_CFLAGS="$WARN_CFLAGS -Wno-sign-compare -Wno-unused-parameter -Wno-undef -Wno-format-nonliteral"
+    GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-conversion -Wno-disabled-macro-expansion -Wno-c++98-compat"
+    GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-gnu-statement-expression -Wno-shorten-64-to-32 -Wno-switch-enum"
+    GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-unused-macros -Wno-missing-field-initializers"
+    GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-gnu-zero-variadic-macro-arguments -Wno-conditional-uninitialized"
+    GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-comma -Wno-assign-enum -Wno-unreachable-code -Wno-error"
+    GNULIB_WARN_CFLAGS="$GNULIB_WARN_CFLAGS -Wno-missing-field-initializers"
+
+    # remove all flags from GNULIB_WARN_FLAGS that are already in CFLAGS
+    # wget_WORD_REMOVE([GNULIB_WARN_CFLAGS], [$GNULIB_WARN_CFLAGS], [$CFLAGS])
+  fi
+
+  AC_SUBST([WARN_CFLAGS])
+  AC_SUBST([GNULIB_WARN_CFLAGS])
+fi
 
 
 dnl
@@ -396,7 +548,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
             AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
             AC_LIBOBJ([openssl])
             LIBS="${LIBS} -lssl32"
-            AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the `ssl32' library (-lssl32).])
+            AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the 'ssl32' library (-lssl32).])
           ],
           AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
 
@@ -520,7 +672,7 @@ dnl is to autodetect IPv6 and use it where available.
 dnl
 
 AC_ARG_ENABLE(ipv6,
-  AC_HELP_STRING([--disable-ipv6],[disable IPv6 support]),
+  AS_HELP_STRING([--disable-ipv6],[disable IPv6 support]),
   [case "${enable_ipv6}" in
     no)
       AC_MSG_NOTICE([disabling IPv6 at user request])
@@ -537,7 +689,7 @@ AC_ARG_ENABLE(ipv6,
       ipv6=yes
       ;;
     *)
-      AC_MSG_ERROR([Invalid --enable-ipv6 argument \`$enable_ipv6'])
+      AC_MSG_ERROR([Invalid --enable-ipv6 argument '$enable_ipv6'])
       ;;
     esac
   ], [
@@ -555,7 +707,7 @@ fi
 
 if test "X$ipv6" = "Xyes"; then
   TYPE_STRUCT_SOCKADDR_IN6([],[
-    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support \`struct sockaddr_in6'])
+    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support 'struct sockaddr_in6'])
     ipv6=no
   ])
   if test "X$ipv6" = "Xyes"; then
@@ -573,9 +725,9 @@ fi
 
 dnl
 dnl Find makeinfo.  We used to provide support for Emacs processing
-dnl Texinfo using `emacs -batch -eval ...' where makeinfo is
+dnl Texinfo using 'emacs -batch -eval ...' where makeinfo is
 dnl unavailable, but that broke with the addition of makeinfo-specific
-dnl command-line options, such as `-I'.  Now we depend on makeinfo to
+dnl command-line options, such as '-I'.  Now we depend on makeinfo to
 dnl build the Info documentation.
 dnl
 
@@ -601,7 +753,7 @@ dnl Check for IDN/IRIs
 dnl
 
 AC_ARG_ENABLE(iri,
-  AC_HELP_STRING([--disable-iri],[disable IDN/IRIs support]),
+  AS_HELP_STRING([--disable-iri],[disable IDN/IRIs support]),
   [case "${enable_iri}" in
     no)
       dnl Disable IRIs checking
@@ -618,7 +770,7 @@ AC_ARG_ENABLE(iri,
       iri=yes
       ;;
     *)
-      AC_MSG_ERROR([Invalid --enable-iri argument \`$enable_iri'])
+      AC_MSG_ERROR([Invalid --enable-iri argument '$enable_iri'])
       ;;
     esac
   ], [
@@ -638,8 +790,7 @@ AS_IF([test "X$iri" != "Xno"],[
   fi
 ])
 
-AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
-                                   [Support IDN2008/IRIs (needs GNU libidn2 + libunicode)]),
+AC_ARG_WITH(libidn, AS_HELP_STRING([--with-libidn=[DIR]],[Support IDN2008/IRIs (needs GNU libidn2 + libunicode)]),
                                    libidn=$withval, libidn="")
 if test "X$iri" != "Xno"; then
   AS_IF([test "x$with_libidn2" != xno], [
@@ -659,8 +810,7 @@ dnl
 dnl Check for UUID
 dnl
 
-AC_ARG_WITH(libuuid, AC_HELP_STRING([--without-libuuid],
-                                    [Generate UUIDs for WARC files via libuuid]))
+AC_ARG_WITH(libuuid, AS_HELP_STRING([--without-libuuid],[Generate UUIDs for WARC files via libuuid]))
 
 AS_IF([test "x$with_libuuid" = xyes], [
   # libuuid was explicitly requested
@@ -697,10 +847,8 @@ dnl
 dnl Check for PCRE2 / PCRE
 dnl
 
-AC_ARG_ENABLE(pcre2, AC_HELP_STRING([--disable-pcre2],
-                                   [Disable PCRE2 style regular expressions]))
-AC_ARG_ENABLE(pcre, AC_HELP_STRING([--disable-pcre],
-                                   [Disable PCRE style regular expressions]))
+AC_ARG_ENABLE(pcre2, AS_HELP_STRING([--disable-pcre2],[Disable PCRE2 style regular expressions]))
+AC_ARG_ENABLE(pcre, AS_HELP_STRING([--disable-pcre],[Disable PCRE style regular expressions]))
 
 AS_IF([test "X$enable_pcre2" != "Xno"],[
   enable_pcre2=no
@@ -828,13 +976,14 @@ AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
 AM_CONDITIONAL([WITH_SSL], [test "X$with_ssl" != "Xno"])
 AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$with_metalink" != "Xno"])
 AM_CONDITIONAL([WITH_XATTR], [test "X$ENABLE_XATTR" != "Xno"])
+AM_CONDITIONAL([WITH_NTLM], [test "X$ENABLE_NTLM" = "Xyes"])
 
 dnl
 dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
-                 po/Makefile.in tests/Makefile fuzz/Makefile
-                 lib/Makefile testenv/Makefile
+                 po/Makefile.in gnulib_po/Makefile.in tests/Makefile
+                 fuzz/Makefile lib/Makefile testenv/Makefile
                  tests/certs/interca.conf tests/certs/rootca.conf])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT
@@ -845,7 +994,7 @@ AC_MSG_NOTICE([Summary of build options:
   Host OS:           $host_os
   Install prefix:    $prefix
   Compiler:          $CC
-  CFlags:            $CFLAGS $CPPFLAGS
+  CFlags:            $CFLAGS $CPPFLAGS $WARN_CFLAGS
   LDFlags:           $LDFLAGS
   Libs:              $LIBS
   SSL:               $with_ssl

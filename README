@@ -14,7 +14,7 @@ While doing that, Wget respects the Robot Exclusion Standard
 (/robots.txt).  Wget can be instructed to convert the links in
 downloaded HTML files to the local files for offline viewing.
 
-Recursive downloading also works with FTP, where Wget can retrieves a
+Recursive downloading also works with FTP, where Wget can retrieve a
 hierarchy of directories and files.
 
 With both HTTP and FTP, Wget can check whether a remote file has
@@ -60,7 +60,7 @@ the file AUTHORS for a list of major contributors, and the ChangeLogs
 for a detailed listing of all contributions.
 
 
-Copyright (C) 1995-2019 Free Software Foundation, Inc.
+Copyright (C) 1995-2021 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

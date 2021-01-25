@@ -8,7 +8,7 @@ Compiling From Repository Sources
    libiconv, libpsl, libpcre, pkg-config, libmetalink and GnuPG are not
    absolutely required):
 
-     * [20]autoconf (currently, GNU Wget requires version 2.61). This is
+     * [20]autoconf (currently, GNU Wget requires version 2.64). This is
        needed to generate the configure script from configure.in. This is
        not required when building from a tarball distribution; only when
        building from repository sources.
@@ -104,8 +104,8 @@ Compiling From Repository Sources
        The command line options --dns-servers and --bind-dns-address are
        only available when configured with --with-cares.
 
-     * [49]Gpef is required by some gnulib modules, most notably "unicase". You
-	   need the application installed on the machine to compile Wget from git.
+     * [49]gperf is required by some gnulib modules, most notably "unicase". You
+       need the application installed on the machine to compile Wget from git.
 
 
    For those who might be confused as to what to do once they check out
@@ -161,7 +161,7 @@ Testing and development
  that bug, which might be tedious. Tests should only be run through GDB for that purpose.
 
 
- Copyright (C) 2008, 2010, 2014-2015, 2018-2019 Free Software
+ Copyright (C) 2008, 2010, 2014-2015, 2018-2021 Free Software
  Foundation, Inc.
  License GPLv3+: GNU GPL version 3 or later
  <https://www.gnu.org/licenses/gpl.html>.

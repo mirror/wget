@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Copyright (C) 2008-2011, 2015, 2018-2019 Free Software Foundation,
+# Copyright (C) 2008-2011, 2015, 2018-2021 Free Software Foundation,
 # Inc.
 
 # This program is free software; you can redistribute it and/or modify

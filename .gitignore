@@ -14,7 +14,9 @@
 /config.status
 /configure
 /lib/
+!/lib/Makefile.am
 /maint.mk
+/gnulib_po/
 # Wildcard Ignores
 *~
 po/*.gmo*
@@ -24,6 +26,11 @@ tests/*.log
 tests/*.trs
 testenv/*.log
 testenv/*.trs
+fuzz/*
+!fuzz/*.*
+fuzz/*.o
+fuzz/*.log
+fuzz/*.trs
 # build-aux/
 build-aux/.gitignore
 build-aux/ar-lib
@@ -59,6 +66,7 @@ po/Makevars
 po/POTFILES
 po/wget.pot
 po/stamp-po
+po/remove-potcdate.sed
 # src/
 src/.deps/
 src/Makefile
@@ -87,9 +95,16 @@ testenv/Makefile.in
 tests/Makefile
 tests/Makefile.in
 tests/unit-tests
+tests/unit-tests.o
+tests/.deps/
+tests/certs/interca.conf
+tests/certs/rootca.conf
 # util/
 util/Makefile
 util/Makefile.in
+# fuzz/
+fuzz/.deps/
+fuzz/Makefile.in
 # others
 /tags
 /cscope.out

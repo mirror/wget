@@ -1,5 +1,5 @@
 /* Various utility functions.
-   Copyright (C) 1996-2011, 2015, 2018-2019 Free Software Foundation,
+   Copyright (C) 1996-2011, 2015, 2018-2021 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -45,14 +45,7 @@ as that of the covered work.  */
 #include <stdarg.h>
 #include <locale.h>
 #include <errno.h>
-
-#if HAVE_UTIME
-# include <sys/types.h>
-# include <utime.h>
-# ifdef HAVE_SYS_UTIME_H
-#  include <sys/utime.h>
-# endif
-#endif
+#include <utime.h>
 
 #include <sys/time.h>
 
@@ -464,10 +457,10 @@ datetime_str (time_t t)
 
 #ifdef __VMS
 
-void
+bool
 fork_to_background (void)
 {
-  return;
+  return false;
 }
 
 #else /* def __VMS */
@@ -659,7 +652,7 @@ unique_name_1 (const char *prefix)
 {
   int count = 1;
   int plen = strlen (prefix);
-  char *template = (char *)alloca (plen + 1 + 24);
+  char *template = xmalloc (plen + 1 + 24);
   char *template_tail = template + plen;
 
   memcpy (template, prefix, plen);
@@ -667,9 +660,9 @@ unique_name_1 (const char *prefix)
 
   do
     number_to_string (template_tail, count++);
-  while (file_exists_p (template, NULL));
+  while (file_exists_p (template, NULL) && count < 999999);
 
-  return xstrdup (template);
+  return template;
 }
 
 /* Return a unique file name, based on FILE.
@@ -686,21 +679,27 @@ unique_name_1 (const char *prefix)
    by this function exists until you open it with O_EXCL or
    equivalent.
 
-   If ALLOW_PASSTHROUGH is 0, it always returns a freshly allocated
-   string.  Otherwise, it may return FILE if the file doesn't exist
+   unique_name() always returns a freshly allocated string.
+
+   unique_name_passthrough() may return FILE if the file doesn't exist
    (and therefore doesn't need changing).  */
 
 char *
-unique_name (const char *file, bool allow_passthrough)
+unique_name_passthrough (const char *file)
 {
   /* If the FILE itself doesn't exist, return it without
-     modification. */
-  if (!file_exists_p (file, NULL))
-    return allow_passthrough ? (char *)file : xstrdup (file);
+     modification. Otherwise, find a numeric suffix that results in unused
+     file name and return it.  */
+  return file_exists_p (file, NULL) ? unique_name_1 (file) : (char *) file;
+}
 
-  /* Otherwise, find a numeric suffix that results in unused file name
-     and return it.  */
-  return unique_name_1 (file);
+char *
+unique_name (const char *file)
+{
+  /* If the FILE itself doesn't exist, return it without
+     modification. Otherwise, find a numeric suffix that results in unused
+     file name and return it.  */
+  return file_exists_p (file, NULL) ? unique_name_1 (file) : xstrdup (file);
 }
 
 #else /* def UNIQ_SEP */
@@ -709,10 +708,17 @@ unique_name (const char *file, bool allow_passthrough)
    possible.
 */
 char *
-unique_name (const char *file, bool allow_passthrough)
+unique_name_passthrough (const char *file, bool allow_passthrough)
 {
   /* Return the FILE itself, without modification, irregardful. */
-  return allow_passthrough ? (char *)file : xstrdup (file);
+  return (char *) file);
+}
+char *
+
+unique_name (const char *file)
+{
+  /* Return the FILE itself, without modification, irregardful. */
+  return xstrdup (file);
 }
 
 #endif /* def UNIQ_SEP [else] */
@@ -726,12 +732,12 @@ FILE *
 unique_create (const char *name, bool binary, char **opened_name)
 {
   /* unique file name, based on NAME */
-  char *uname = unique_name (name, false);
+  char *uname = unique_name (name);
   FILE *fp;
   while ((fp = fopen_excl (uname, binary)) == NULL && errno == EEXIST)
     {
       xfree (uname);
-      uname = unique_name (name, false);
+      uname = unique_name (name);
     }
   if (opened_name)
     {
@@ -886,7 +892,7 @@ fopen_stat(const char *fname, const char *mode, file_stats_t *fstats)
        fdstats.st_ino != fstats->st_ino))
   {
     /* File changed since file_exists_p() : NOT SAFE */
-    logprintf (LOG_NOTQUIET, _("File %s changed since the last check. Security check failed."), fname);
+    logprintf (LOG_NOTQUIET, _("File %s changed since the last check. Security check failed.\n"), fname);
     fclose (fp);
     return NULL;
   }
@@ -937,7 +943,7 @@ open_stat(const char *fname, int flags, mode_t mode, file_stats_t *fstats)
        fdstats.st_ino != fstats->st_ino))
   {
     /* File changed since file_exists_p() : NOT SAFE */
-    logprintf (LOG_NOTQUIET, _("Trying to open file %s but it changed since last check. Security check failed."), fname);
+    logprintf (LOG_NOTQUIET, _("Trying to open file %s but it changed since last check. Security check failed.\n"), fname);
     close (fd);
     return -1;
   }
@@ -956,11 +962,19 @@ int
 make_directory (const char *directory)
 {
   int i, ret, quit = 0;
+  char buf[1024];
   char *dir;
+  size_t len = strlen (directory);
 
   /* Make a copy of dir, to be able to write to it.  Otherwise, the
      function is unsafe if called with a read-only char *argument.  */
-  STRDUP_ALLOCA (dir, directory);
+  if (len < sizeof(buf))
+    {
+      memcpy(buf, directory, len + 1);
+      dir = buf;
+	}
+  else
+    dir = xstrdup(directory);
 
   /* If the first character of dir is '/', skip it (and thus enable
      creation of absolute-pathname directories.  */
@@ -983,6 +997,10 @@ make_directory (const char *directory)
       else
         dir[i] = '/';
     }
+
+  if (dir != buf)
+	  xfree (dir);
+
   return ret;
 }
 
@@ -1017,23 +1035,10 @@ file_merge (const char *base, const char *file)
 int
 fnmatch_nocase (const char *pattern, const char *string, int flags)
 {
-#ifdef FNM_CASEFOLD
   /* The FNM_CASEFOLD flag started as a GNU extension, but it is now
-     also present on *BSD platforms, and possibly elsewhere.  */
+     also present on *BSD platforms, and possibly elsewhere.
+     Gnulib provides this flag in case it doesn't exist.  */
   return fnmatch (pattern, string, flags | FNM_CASEFOLD);
-#else
-  /* Turn PATTERN and STRING to lower case and call fnmatch on them. */
-  char *patcopy = (char *) alloca (strlen (pattern) + 1);
-  char *strcopy = (char *) alloca (strlen (string) + 1);
-  char *p;
-  for (p = patcopy; *pattern; pattern++, p++)
-    *p = c_tolower (*pattern);
-  *p = '\0';
-  for (p = strcopy; *string; string++, p++)
-    *p = c_tolower (*string);
-  *p = '\0';
-  return fnmatch (patcopy, strcopy, flags);
-#endif
 }
 
 static bool in_acclist (const char *const *, const char *, bool);
@@ -1668,7 +1673,7 @@ with_thousand_seps (wgint n)
    some detail.  */
 
 char *
-human_readable (HR_NUMTYPE n, const int acc, const int decimals)
+human_readable (wgint n, const int acc, const int decimals)
 {
   /* These suffixes are compatible with those of GNU `ls -lh'. */
   static char powers[] =
@@ -1786,12 +1791,6 @@ number_to_string (char *buffer, wgint number)
 
   int last_digit_char = 0;
 
-#if (SIZEOF_WGINT != 4) && (SIZEOF_WGINT != 8)
-  /* We are running in a very strange environment.  Leave the correct
-     printing to sprintf.  */
-  p += sprintf (buf, "%j", (intmax_t) (n));
-#else  /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
-
   if (n < 0)
     {
       if (n < -WGINT_MAX)
@@ -1826,14 +1825,6 @@ number_to_string (char *buffer, wgint number)
   else if (n < 10000000)                 DIGITS_7 (1000000);
   else if (n < 100000000)                DIGITS_8 (10000000);
   else if (n < 1000000000)               DIGITS_9 (100000000);
-#if SIZEOF_WGINT == 4
-  /* wgint is 32 bits wide: no number has more than 10 digits. */
-  else                                   DIGITS_10 (1000000000);
-#else
-  /* wgint is 64 bits wide: handle numbers with 9-19 decimal digits.
-     Constants are constructed by compile-time multiplication to avoid
-     dealing with different notations for 64-bit constants
-     (nL/nLL/nI64, depending on the compiler and architecture).  */
   else if (n < 10*(W)1000000000)         DIGITS_10 (1000000000);
   else if (n < 100*(W)1000000000)        DIGITS_11 (10*(W)1000000000);
   else if (n < 1000*(W)1000000000)       DIGITS_12 (100*(W)1000000000);
@@ -1844,13 +1835,11 @@ number_to_string (char *buffer, wgint number)
   else if (n < 100000000*(W)1000000000)  DIGITS_17 (10000000*(W)1000000000);
   else if (n < 1000000000*(W)1000000000) DIGITS_18 (100000000*(W)1000000000);
   else                                   DIGITS_19 (1000000000*(W)1000000000);
-#endif
 
   if (last_digit_char)
     *p++ = last_digit_char;
 
   *p = '\0';
-#endif /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
 
   return p;
 }

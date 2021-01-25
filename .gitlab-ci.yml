@@ -3,6 +3,10 @@
 # to speed up compilation. We include a version number in cache
 # name to allow expiration of old caches.
 
+stages:
+  - stage1-testing
+  - stage2-tarball
+
 cache:
   key: "$CI_JOB_NAME-ver5"
   paths:
@@ -20,12 +24,13 @@ after_script:
   # somehow after_script loses environment
   - export CCACHE_BASEDIR=${PWD}
   - export CCACHE_DIR=${PWD}/cache
-  - ccache -s
+  - if which ccache >/dev/null; then ccache -s; fi
 
 variables:
   BUILD_IMAGES_PROJECT: gnuwget/build-images
   DEBIAN_BUILD: buildenv-debian-stretch
-  FEDORA_BUILD: buildenv-f27
+  DEBIAN_TESTING_BUILD: buildenv-debian-testing
+  FEDORA_BUILD: buildenv-fedora
   CENTOS7_BUILD: buildenv-centos7
   MINGW_BUILD: buildenv-mingw
   ALPINE_BUILD: buildenv-alpine
@@ -34,22 +39,27 @@ variables:
   GET_SOURCES_ATTEMPTS: "3"
   GIT_DEPTH: "5"
   CONFIGURE_BASE_FLAGS: --enable-assert --cache-file cache/config.cache
-  CFLAGS_DEFAULT: -O0 -g -ggdb3 -Wall -Wextra
+  CFLAGS_DEFAULT: -O0 -g -ggdb3
 
 
 VPATH/Debian:
+  stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-    - cp -a /usr/local/gnulib .
+    - contrib/spell-checker
     - export CFLAGS=$CFLAGS_DEFAULT
-    - ./bootstrap --skip-po
+    - ./bootstrap --skip-po && touch .manywarnings
+    - autoreconf -ivf
     - mkdir vpath && cd vpath
     - ../configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
     - make -j$(nproc)
     - make -j$(nproc) distcheck
+    - mv wget-*.gz ..
   tags:
     - shared
-    - docker
+    - linux
+  except:
+    - coverity-scan@gnuwget/wget
   artifacts:
     expire_in: 2 weeks
     when: on_failure
@@ -58,6 +68,11 @@ VPATH/Debian:
       - fuzz/*.log
       - tests/*.log
       - testenv/*.log
+  artifacts:
+    expire_in: 2 weeks
+    when: on_success
+    paths:
+      - wget-*.gz
 
 # In this build we combine
 #  * syntax-check
@@ -66,19 +81,24 @@ VPATH/Debian:
 #  * build/asan-check
 #  * build w/Werror and ubsan-check
 OpenSSL/Debian:
+  stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-  - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
-  - cat /etc/hosts
-  - alias make="make -j$(nproc)"
-  - ./bootstrap --skip-po
-  - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=gnutls
-  - make syntax-check
-  - make check
-  - make distcheck
-  - make check-valgrind
+    - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
+    - cat /etc/hosts
+    - alias make="make -j$(nproc)"
+    - ./bootstrap --skip-po
+    - autoreconf -ivf
+    - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=openssl
+    - make syntax-check
+    - make check
+    - make distcheck
+    - make check-valgrind
   tags:
-  - shared
+    - shared
+    - linux
+  except:
+    - coverity-scan@gnuwget/wget
   artifacts:
     expire_in: 2 weeks
     when: on_failure
@@ -89,19 +109,24 @@ OpenSSL/Debian:
       - testenv/*.log
 
 GnuTLS/Debian:
+  stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-  - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
-  - cat /etc/hosts
-  - alias make="make -j$(nproc)"
-  - ./bootstrap --skip-po
-  - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=openssl
-  - make syntax-check
-  - make check
-  - make distcheck
-  - make check-valgrind
+    - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
+    - cat /etc/hosts
+    - alias make="make -j$(nproc)"
+    - ./bootstrap --skip-po
+    - autoreconf -ivf
+    - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=gnutls
+    - make syntax-check
+    - make check
+    - make distcheck
+    - make check-valgrind
   tags:
-  - shared
+    - shared
+    - linux
+  except:
+    - coverity-scan@gnuwget/wget
   artifacts:
     expire_in: 2 weeks
     when: on_failure
@@ -112,11 +137,12 @@ GnuTLS/Debian:
       - testenv/*.log
 
 Minimal/Debian:
+  stage: stage1-testing
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
   script:
-    - cp -a /usr/local/gnulib .
     - export CFLAGS=$CFLAGS_DEFAULT
     - ./bootstrap --skip-po
+    - autoreconf -ivf
     - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
       --disable-nls --without-ssl --enable-ipv6 --without-zlib --without-libiconv-prefix
       --disable-iri --disable-ntlm --disable-pcre --without-libpsl --without-libuuid
@@ -126,7 +152,237 @@ Minimal/Debian:
     - make check-valgrind
   tags:
     - shared
-    - docker
+    - linux
+  except:
+    - coverity-scan@gnuwget/wget
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+# In this build we combine
+#  * clang
+#  * ASan, UBSan
+#  * check, syntax-check
+Sanitizers/Debian:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
+  script:
+#    - export CFLAGS="$CFLAGS_DEFAULT -Werror"
+    - export CFLAGS="$CFLAGS_DEFAULT"
+    - ./bootstrap --skip-po && touch .manywarnings
+    - autoreconf -ivf
+    - export CC="ccache clang"
+    - export UBSAN_OPTIONS=print_stacktrace=1
+    - export ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-8/bin/llvm-symbolizer
+#    - export LSAN_OPTIONS=suppressions="$PWD/tests/clang-asan-suppressions"
+    - ./configure $CONFIGURE_BASE_FLAGS --enable-fsanitize-asan --enable-fsanitize-ubsan
+    - make -j$(nproc) check
+  tags:
+    - shared
+    - linux
+  except:
+    - coverity-scan@gnuwget/wget
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+Scan-Build/Debian:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
+  script:
+    - export CFLAGS=$CFLAGS_DEFAULT
+    - ./bootstrap --skip-po
+    - scan-build ./configure $CONFIGURE_BASE_FLAGS
+    - make -C lib -j$(nproc)
+    - scan-build -v -enable-checker nullability --status-bugs -o scan-build make -j$(nproc)
+  tags:
+    - shared
+    - linux
+  except:
+    - tags
+    - coverity-scan@gnuwget/wget
+  allow_failure: true
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - scan-build/*
+
+Valgrind/Debian:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
+  script:
+    - export CFLAGS=$CFLAGS_DEFAULT
+    - ./bootstrap --skip-po
+    - autoreconf -ivf
+    - ./configure $CONFIGURE_BASE_FLAGS --enable-valgrind-tests
+    - make -j$(nproc)
+    - make check -j$(nproc)
+  tags:
+    - shared
+    - linux
+  except:
+    - tags
+    - coverity-scan@gnuwget/wget
+  allow_failure: true
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+Simple/Fedora:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+#    - export CFLAGS="$CFLAGS_DEFAULT -Werror"
+    - export CFLAGS="$CFLAGS_DEFAULT"
+    - ./bootstrap --skip-po && touch .manywarnings
+    - autoreconf -ivf
+    - ./configure $CONFIGURE_BASE_FLAGS
+    - make -j$(nproc) check
+  tags:
+    - shared
+    - linux
+  except:
+    - tags
+    - coverity-scan@gnuwget/wget
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+#Alpine:
+#  stage: stage1-testing
+#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$ALPINE_BUILD
+#  script:
+#    - export CFLAGS="$CFLAGS_DEFAULT"
+#    - ./bootstrap --skip-po
+#    - ./configure $CONFIGURE_BASE_FLAGS
+#    - make -j$(nproc) check
+#  tags:
+#    - shared
+#  except:
+#    - tags
+#    - linux
+#  artifacts:
+#    expire_in: 2 weeks
+#    when: on_failure
+#    paths:
+#      - ./*.log
+#      - fuzz/*.log
+#      - tests/*.log
+#      - testenv/*.log
+
+pages:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
+  script:
+    - mkdir -p public
+    - ./bootstrap --skip-po
+    - autoreconf -ivf
+    - export CFLAGS="$CFLAGS_DEFAULT"
+    - ./configure $CONFIGURE_BASE_FLAGS
+    - make -j$(nproc) check-coverage
+
+# Tarball
+    - make dist
+    - mv wget-*.gz public/wget-latest.tar.gz
+
+# Test suite coverage report
+    - rm -rf public/coverage
+    - mv lcov public/coverage
+
+# Online Documentation
+    - make -C doc html
+    - rm -rf public/reference
+    - mv doc/wget.html public/reference
+
+# Coverage report for all our fuzz corpora
+    - make -j$(nproc) fuzz-coverage
+    - rm -rf public/fuzz-coverage
+    - mv lcov public/fuzz-coverage
+  tags:
+    - shared
+    - linux
+  artifacts:
+    when: on_success
+    paths:
+      - public
+  only:
+    - master
+
+
+MinGW64:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$MINGW_BUILD
+  script:
+#    - apt-get install libhttp-daemon-perl libio-socket-ssl-perl python3
+    - mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc &&
+      echo ':DOSWin:M::MZ::/usr/bin/wine:' > /proc/sys/fs/binfmt_misc/register
+    - ./bootstrap --skip-po
+    - autoreconf -ivf
+#    - cp pthread_sigmask.c.mingw lib/pthread_sigmask.c
+    - export CC="ccache $PREFIX-gcc"
+    - export GCCLIB=$(dirname $(find /usr/lib/gcc/$PREFIX -name libgcc_s_seh-1.dll|grep posix))
+    - export WINEPATH="$WINEPATH;/usr/$PREFIX/bin;/usr/$PREFIX/lib;$PWD/libwget/.libs;$GCCLIB"
+    - echo "WINEPATH=$WINEPATH"
+    - LIBS="-ldl -lpsapi" ./configure $CONFIGURE_BASE_FLAGS --build=x86_64-pc-linux-gnu --host=$PREFIX --enable-shared
+    - make -j$(nproc)
+    - make clean
+    - LIBS="-ldl -lpsapi" ./configure $CONFIGURE_BASE_FLAGS --build=x86_64-pc-linux-gnu --host=$PREFIX --enable-shared --disable-threads
+    - make -j$(nproc)
+    - cp -p src/wget.exe src/wget
+    - make check -j$(nproc) LOG_COMPILER=wine
+  tags:
+    - shared
+    - linux
+  except:
+    - tags
+    - coverity-scan@gnuwget/wget
+  allow_failure: true
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - ./config.h
+      - ./*.log
+      - fuzz/*.log
+      - tests/*.log
+      - testenv/*.log
+
+Build/Arch:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$ARCH_BUILD
+  script:
+    - export CFLAGS="$CFLAGS_DEFAULT"
+    - ./bootstrap --skip-po && touch .manywarnings
+    - autoreconf -vif
+    - ./configure $CONFIGURE_BASE_FLAGS
+    - make -j$(nproc)
+    - make check -j$(nproc)
+  tags:
+    - shared
+    - linux
+  except:
+    - coverity-scan@gnuwget/wget
   artifacts:
     expire_in: 2 weeks
     when: on_failure
@@ -137,79 +393,67 @@ Minimal/Debian:
       - testenv/*.log
 
 
-#Centos7 build:
-#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$CENTOS7_BUILD
-#  script:
-#  - sed -i 's/AM_GNU_GETTEXT_VERSION(0.19.3)/AM_GNU_GETTEXT_VERSION(0.18.2)/g' configure.ac
-#  - ./bootstrap && ./configure --enable-gcc-warnings --disable-doc && make -j$(nproc) check
-#  tags:
-#  - shared
-#  artifacts:
-#    expire_in: 2 weeks
-#    when: on_failure
-#    paths:
-#      - tests/*.log
-#      - compat_reports/
+# Test building from tarball in a minimal non-dev environment
+Tarball:
+  stage: stage2-tarball
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$BASIC_BUILD
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - apk add perl
+    # remove all files from git repo
+    - mv wget-*.gz /tmp
+    - rm -rf * .git* .travis*
+    - mv /tmp/wget-*.gz .
+    # unpack and build from tarball
+    - tar xvf wget-*.gz
+    - cd wget-*
+    - unset CC
+    - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=no
+    - make -j$(nproc)
+    # make check doesn't work due to incomplete perl installation
+    # - make -j$(nproc) check
+    # check if essential files are accidentally cleaned
+    - make clean
+    - make -j$(nproc)
+  tags:
+    - shared
+    - linux
+  dependencies:
+    - VPATH/Debian
+  except:
+    - coverity-scan@gnuwget/wget
+  artifacts:
+    expire_in: 2 weeks
+    when: on_failure
+    paths:
+      - wget-*/*.log
+      - wget-*/fuzz/*.log
+      - wget-*/tests/*.log
+      - wget-*/testenv/*.log
 
-#clang-analyzer/Fedora:
-#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
-#  script:
-#  - ./bootstrap
-#  - scan-build ./configure --disable-doc --enable-gcc-warnings
-#  - make -j$(nproc) -C gl
-#  - scan-build --status-bugs -o scan-build-lib make -j$(nproc) -C lib
-#  tags:
-#  - shared
-#  except:
-#  - tags
-#  artifacts:
-#    expire_in: 2 weeks
-#    when: on_failure
-#    paths:
-#      - scan-build-lib/*
-
-#pages:
-#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_BUILD
-#  script:
-#  - ./bootstrap
-#  - CFLAGS="-g -O0" ./configure --enable-gtk-doc --enable-code-coverage --disable-gcc-warnings
-#  - make -j$(nproc) check
-#  - make local-code-coverage-output
-#  - mkdir -p public
-#  - rm -rf public/coverage
-#  - mv libidn2-*-coverage public/coverage
-#  - rm -rf public/reference
-#  - mv doc/reference/html public/reference
-#  - make -C doc manual
-#  - rm -rf public/manual
-#  - mv doc/manual public/manual
-#  tags:
-#  - shared
-#  artifacts:
-#    when: on_success
-#    paths:
-#      - public
-#  only:
-#    - master
-
-#MinGW64:
-#  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
-#  before_script:
-#  - mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc &&
-#    echo ':DOSWin:M::MZ::/usr/bin/wine64:' > /proc/sys/fs/binfmt_misc/register
-#  script:
-#  - ./bootstrap
-#  - mingw64-configure --disable-valgrind-tests --disable-doc
-#  - mingw64-make -j$(nproc)
-#  - mingw64-make -j$(nproc) check
-#  tags:
-#  - shared
-#  - docker
-#  except:
-#  - tags
-#  artifacts:
-#    expire_in: 2 weeks
-#    when: on_failure
-#    paths:
-#      - ./*.log
-#      - tests/*.log
+coverity:
+  stage: stage1-testing
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+    - wget https://scan.coverity.com/download/linux64 --post-data "token=$COVERITY_SCAN_TOKEN&project=$COVERITY_SCAN_PROJECT_NAME" -O /tmp/coverity_tool.tgz
+    - tar xfz /tmp/coverity_tool.tgz
+    - ./bootstrap --skip-po
+    - autoreconf -ivf
+    - CFLAGS="-g -Og" ./configure --cache-file cache/config.cache --disable-doc
+    - cov-analysis-linux64-*/bin/cov-build --dir cov-int make -j$(nproc)
+    - tar cfz cov-int.tar.gz cov-int
+    - curl https://scan.coverity.com/builds?project=$COVERITY_SCAN_PROJECT_NAME
+      --form token=$COVERITY_SCAN_TOKEN --form email=tim.ruehsen@gmx.de
+      --form file=@cov-int.tar.gz --form version="`git describe --tags`"
+      --form description="CI build"
+  tags:
+    - shared
+    - linux
+  only:
+    - coverity-scan@gnuwget/wget
+  artifacts:
+    expire_in: 1 week
+    when: on_failure
+    paths:
+      - cov-int/*.txt

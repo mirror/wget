@@ -1,5 +1,5 @@
 # Makefile for `wget' utility
-# Copyright (C) 1995-2011, 2015, 2018-2019 Free Software Foundation,
+# Copyright (C) 1995-2011, 2015, 2018-2021 Free Software Foundation,
 # Inc.
 
 # This program is free software; you can redistribute it and/or modify
@@ -150,6 +150,7 @@ LDADD = ../src/libunittest.a ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB)\
  $(LIBTHREAD) $(LIBUNISTRING) $(SERVENT_LIB)
 AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib \
  -I$(top_srcdir)/src -DLOCALEDIR=\"$(localedir)\"
+AM_CFLAGS = $(WERROR_CFLAGS) $(WARN_CFLAGS)
 
 
 CLEANFILES = *~ *.bak core core.[0-9]*

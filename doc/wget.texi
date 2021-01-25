@@ -31,7 +31,7 @@ This file documents the GNU Wget utility for downloading network
 data.
 
 @c man begin COPYRIGHT
-Copyright @copyright{} 1996-2011, 2015, 2018-2019 Free Software
+Copyright @copyright{} 1996--2011, 2015, 2018--2021 Free Software
 Foundation, Inc.
 
 @iftex
@@ -64,6 +64,8 @@ Texts.  A copy of the license is included in the section entitled
 @ignore
 @c man begin AUTHOR
 Originally written by Hrvoje Nikšić <hniksic@xemacs.org>.
+Currently maintained by Darshit Shah <darnir@gnu.org> and
+Tim Rühsen <tim.ruehsen@gmx.de>.
 @c man end
 @c man begin SEEALSO
 This is @strong{not} the complete manual for GNU Wget.
@@ -71,6 +73,9 @@ For more complete information, including more detailed explanations of
 some of the options, and a number of commands available
 for use with @file{.wgetrc} files and the @samp{-e} option, see the GNU
 Info entry for @file{wget}.
+
+Also see wget2(1), the updated version of GNU Wget with even better
+support for recursive downloading and modern protocols like HTTP/2.
 @c man end
 @end ignore
 
@@ -1038,10 +1043,11 @@ megabytes (with @samp{m} suffix).
 Note that quota will never affect downloading a single file.  So if you
 specify @samp{wget -Q10k https://example.com/ls-lR.gz}, all of the
 @file{ls-lR.gz} will be downloaded.  The same goes even when several
-@sc{url}s are specified on the command-line.  However, quota is
-respected when retrieving either recursively, or from an input file.
-Thus you may safely type @samp{wget -Q2m -i sites}---download will be
-aborted when the quota is exceeded.
+@sc{url}s are specified on the command-line.  The quota is checked only
+at the end of each downloaded file, so it will never result in a partially
+downloaded file. Thus you may safely type @samp{wget -Q2m -i sites}---download
+will be aborted after the file that exhausts the quota is completely
+downloaded.
 
 Setting quota to 0 or to @samp{inf} unlimits the download quota.
 
@@ -2198,8 +2204,21 @@ details.  The default maximum depth is 5.
 
 @item -l @var{depth}
 @itemx --level=@var{depth}
-Specify recursion maximum depth level @var{depth} (@pxref{Recursive
-Download}).
+Set the maximum number of subdirectories that Wget will recurse into to @var{depth}.
+In order to prevent one from accidentally downloading very large websites when using recursion
+this is limited to a depth of 5 by default, i.e., it will traverse at most 5 directories deep
+starting from the provided URL.
+Set @samp{-l 0} or @samp{-l inf} for infinite recursion depth.
+
+@example
+wget -r -l 0 http://@var{site}/1.html
+@end example
+
+Ideally, one would expect this to download just @file{1.html}.
+but unfortunately this is not the case, because @samp{-l 0} is equivalent to
+@samp{-l inf}---that is, infinite recursion.  To download a single @sc{html}
+page (or a handful of them), specify them all on the command line and leave away @samp{-r}
+and @samp{-l}. To download the essential items to view a single @sc{html} page, see @samp{page requisites}.
 
 @cindex proxy filling
 @cindex delete after retrieval
@@ -4484,6 +4503,14 @@ Ted Mielczarek---donated support for CSS.
 
 @item
 Saint Xavier---Support for IRIs (RFC 3987).
+
+@item
+Tim Rühsen---Loads of helpful patches, especially fuzzing support and
+Continuous Integration. Maintainer since 2014.
+
+@item
+Darshit Shah---Many helpful patches. Community support on various platforms.
+Maintainer since 2014.
 
 @item
 People who provided donations for development---including Brian Gough.

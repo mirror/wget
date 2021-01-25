@@ -14,21 +14,22 @@ regression testing with top dir 'make check' or 'make check-valgrind'.
 
 Use the following commands on top dir:
 ```
-export CC=clang-6.0
-export CXX=clang++-6.0
+export CC=clang
+export CXX=clang++
 # address sanitizer:
-export CFLAGS="-O1 -g -fno-omit-frame-pointer -gline-tables-only -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -fsanitize=undefined,integer,nullability -fsanitize=address -fsanitize-address-use-after-scope -fsanitize-coverage=trace-pc-guard,trace-cmp"
+#export CFLAGS="-O1 -g -fno-omit-frame-pointer -gline-tables-only -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -fsanitize=undefined,integer,nullability -fsanitize=address -fsanitize-address-use-after-scope -fsanitize-coverage=trace-pc-guard,trace-cmp"
+export CFLAGS="-O1 -fno-omit-frame-pointer -gline-tables-only -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -fsanitize=undefined -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=fuzzer-no-link"
 # undefined sanitizer;
 export CFLAGS="-O1 -fno-omit-frame-pointer -gline-tables-only -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -fsanitize=bool,array-bounds,float-divide-by-zero,function,integer-divide-by-zero,return,shift,signed-integer-overflow,vla-bound,vptr -fno-sanitize-recover=bool,array-bounds,float-divide-by-zero,function,integer-divide-by-zero,return,shift,signed-integer-overflow,vla-bound,vptr -fsanitize=fuzzer-no-link"
 export CXXFLAGS="$CFLAGS -stdlib=libc++"
 export LIB_FUZZING_ENGINE="-lFuzzer -lstdc++"
-./configure --enable-fuzzing --without-metalink --without-zlib --disable-pcre --without-libuuid
+./configure --enable-fuzzing --without-metalink --without-zlib --disable-pcre --without-libuuid --enable-assert
 make clean
 make -j$(nproc)
 cd fuzz
 
 # run wget_options_fuzzer
-UBSAN_OPTIONS=print_stacktrace=1 ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-6.0/bin/llvm-symbolizer \
+UBSAN_OPTIONS=print_stacktrace=1 ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer \
   ./run-clang.sh wget_options_fuzzer
 ```
 
