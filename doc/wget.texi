@@ -384,7 +384,7 @@ and @file{/~somebody}.  You can also clear the lists in @file{.wgetrc}
 (@pxref{Wgetrc Syntax}).
 
 @example
-wget -X '' -X /~nobody,/~somebody
+wget -X "" -X /~nobody,/~somebody
 @end example
 
 Most options that do not accept arguments are @dfn{boolean} options,
