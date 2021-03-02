@@ -992,9 +992,6 @@ Error in server response, closing control connection.\n"));
 
           /* 2004-09-20 SMS. */
 
-          if (target != targetbuf)
-            xfree (target);
-
         } /* else */
     }
   else /* do not CWD */

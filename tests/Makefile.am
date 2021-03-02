@@ -58,6 +58,7 @@ PX_TESTS = \
              Test-E-k-K.px \
              Test-E-k.px \
              Test-ftp.px \
+             Test-ftp-dir.px \
              Test-ftp-pasv-fail.px \
              Test-ftp-bad-list.px \
              Test-ftp-recursive.px \
