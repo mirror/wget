@@ -55,6 +55,7 @@ AM_INIT_AUTOMAKE([subdir-objects dist-lzip])
 
 AC_USE_SYSTEM_EXTENSIONS
 AC_PROG_CC
+AC_PROG_CC_C99
 AM_PROG_CC_C_O
 
 dnl
