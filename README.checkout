@@ -76,7 +76,7 @@ Compiling From Repository Sources
        On GNU systems, the functionality provided by libiconv is already
        present in the system libraries.
 
-     * [33]git is used to fetch gnulib files trough the bootstrap.sh script.
+     * [33]git is used to fetch gnulib files through the bootstrap.sh script.
 
      * [34]libpsl is required for using a public suffix list to check for valid
        cookie domains. You need the header files and the library installed.

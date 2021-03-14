@@ -422,7 +422,7 @@ Building from the Tarballs works as it used to.
    backward-incompatibility; any script that relies on the old
    behaviour must use --trust-server-names.
 
-** Fix a problem when -k is used and some URLs are specified trough
+** Fix a problem when -k is used and some URLs are specified through
    CSS.
 
 ** Convert correctly URLs that need to be encoded to local files when following
@@ -432,7 +432,7 @@ Building from the Tarballs works as it used to.
 
 ** Print the total download time as part of the summary for recursive downloads.
 
-** Now it is possible to specify a different startup configuration file trough
+** Now it is possible to specify a different startup configuration file through
    the --config option.
 
 ** Fix an infinite loop with the error '<filename> has sprung into existence'
