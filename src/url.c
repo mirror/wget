@@ -1585,7 +1585,7 @@ convert_fname (char *fname)
   if (cd == (iconv_t) (-1))
     {
       logprintf (LOG_VERBOSE, _ ("Conversion from %s to %s isn't supported\n"),
-                 quote (from_encoding), quote (to_encoding));
+                 quote_n (0, from_encoding), quote_n (1, to_encoding));
       return fname;
     }
 
