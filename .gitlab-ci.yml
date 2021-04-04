@@ -67,6 +67,9 @@ Debian-Testing:
         paths:
             - ./
         exclude:
+            - .git/
+            - .gitmodules
+            - gnulib/
             - cache
             - cache/*
             - cache/**
