@@ -144,7 +144,7 @@ typedef int64_t wgint;
 #define WGINT_MIN INT64_MIN
 #define WGINT_MAX INT64_MAX
 
-#define str_to_wgint strtol
+#define str_to_wgint strtoll
 
 #include "options.h"
 
