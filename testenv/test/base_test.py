@@ -138,7 +138,7 @@ class BaseTest:
                                 '--track-origins=yes ' \
                                 '--show-leak-kinds=all ' \
                                 '--gen-suppressions=all ' \
-                                '--suppressions=../valgrind-suppression-ssl ' \
+                                '--suppressions=../valgrind-suppressions-ssl ' \
                                 '%s %s ' % (wget_path, wget_options)
         elif valgrind not in ("", "0"):
             cmd_line = '%s %s %s ' % (os.getenv("VALGRIND_TESTS", ""),
