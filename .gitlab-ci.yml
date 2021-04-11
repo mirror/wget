@@ -3,9 +3,8 @@
 # to speed up compilation.
 
 stages:
-    - bootstrap
-    - test
-    - deploy-test
+    - test-from-git
+    - test-from-tarball
     - deploy
 
 cache:
@@ -25,7 +24,7 @@ after_script:
   # somehow after_script loses environment
   - export CCACHE_BASEDIR=${PWD}
   - export CCACHE_DIR=${PWD}/cache
-  - if which ccache >/dev/null; then ccache -s; fi
+  - if type -p ccache >/dev/null; then ccache -s; fi
 
 variables:
   BUILD_IMAGES_PROJECT: gnuwget/build-images
@@ -40,49 +39,22 @@ variables:
   GET_SOURCES_ATTEMPTS: "3"
   GIT_DEPTH: "5"
   CONFIGURE_BASE_FLAGS: --enable-assert --cache-file cache/config.cache
-  CFLAGS_DEFAULT: -O2 -g -ggdb3
+  CFLAGS_DEFAULT: -O0 -g -ggdb3
 
-
-# Debian Builds
-
-Debian-Testing:
-    stage: bootstrap
-    image: $CI_BASE_PATH/debian:testing-bootstrap
-    script:
-        - export CFLAGS=$CFLAGS_DEFAULT
-        - ./bootstrap --skip-po && touch .manywarnings
-    tags:
-        - shared
-        - linux
-    except:
-        - coverity-scan@gnuwget/wget
-    artifacts:
-        expire_in: 2 weeks
-        when: on_failure
-        paths:
-            - ./*.log
-    artifacts:
-        expire_in: 2 weeks
-        when: on_success
-        paths:
-            - ./
-        exclude:
-            - .git/
-            - .gitmodules
-            - gnulib/
-            - cache
-            - cache/*
-            - cache/**
-
+# Create the tarball in a separate build directory (VPATH).
 Build-Tarball:
-    stage: test
-    image: $CI_BASE_PATH/debian:testing-bootstrap
-    variables:
-        GIT_STRATEGY: none
+    stage: test-from-git
+    image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
     script:
         - export CFLAGS=$CFLAGS_DEFAULT
+        - ./bootstrap
+        - autoreconf -fi
         - mkdir vpath && cd vpath
-        - ../configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache --without-ssl
+        - ../configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
+          --without-ssl --enable-ipv6 --without-zlib --without-libiconv-prefix
+          --disable-iri --disable-ntlm --disable-pcre --without-libpsl --without-libuuid
+          --without-libintl-prefix
+        - make -j$(nproc)
         - make -j$(nproc) syntax-check
         - make -j$(nproc) dist
         - mv wget-*.gz ..
@@ -91,9 +63,6 @@ Build-Tarball:
         - linux
     except:
         - coverity-scan@gnuwget/wget
-    dependencies:
-        - Debian-Testing
-    needs: ["Debian-Testing"]
     artifacts:
         expire_in: 2 weeks
         when: on_failure
@@ -110,12 +79,14 @@ Build-Tarball:
             - wget-*.gz
 
 Valgrind:
-    stage: test
+    stage: test-from-tarball
     image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
     variables:
         GIT_STRATEGY: none
     script:
         - export CFLAGS=$CFLAGS_DEFAULT
+        - tar xvf wget-*.gz
+        - cd wget-*/
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make check-valgrind
     tags:
@@ -124,8 +95,8 @@ Valgrind:
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
-        - Debian-Testing
-    needs: ["Debian-Testing"]
+        - Build-Tarball
+    needs: ["Build-Tarball"]
     artifacts:
         expire_in: 2 weeks
         when: on_failure
@@ -136,7 +107,7 @@ Valgrind:
             - wget-*/testenv/*.log
 
 Minimal:
-    stage: deploy-test
+    stage: test-from-tarball
     image: $CI_BASE_PATH/debian:testing-minimal
     variables:
         GIT_STRATEGY: none
@@ -167,7 +138,7 @@ Minimal:
             - wget-*/testenv/*.log
 
 Debian-OldStable:
-    stage: deploy-test
+    stage: test-from-tarball
     image: $CI_BASE_PATH/debian:oldstable
     variables:
         GIT_STRATEGY: none
@@ -178,14 +149,14 @@ Debian-OldStable:
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make
         - make -j$(nproc) check
-    dependencies:
-        - Build-Tarball
-    needs: ["Build-Tarball"]
     tags:
         - shared
         - linux
     except:
         - coverity-scan@gnuwget/wget
+    dependencies:
+        - Build-Tarball
+    needs: ["Build-Tarball"]
     artifacts:
         expire_in: 2 weeks
         when: on_failure
@@ -196,7 +167,7 @@ Debian-OldStable:
             - wget-*/testenv/*.log
 
 Debian-Stable:
-    stage: deploy-test
+    stage: test-from-tarball
     image: $CI_BASE_PATH/debian:stable
     variables:
         GIT_STRATEGY: none
@@ -205,15 +176,14 @@ Debian-Stable:
         - tar xvf wget-*.gz
         - cd wget-*/
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
-        - make
         - make -j$(nproc) check
-    dependencies:
-        - Build-Tarball
     tags:
         - shared
         - linux
     except:
         - coverity-scan@gnuwget/wget
+    dependencies:
+        - Build-Tarball
     needs: ["Build-Tarball"]
     artifacts:
         expire_in: 2 weeks
@@ -225,7 +195,7 @@ Debian-Stable:
             - wget-*/testenv/*.log
 
 CentOS-OldLTS:
-    stage: deploy-test
+    stage: test-from-tarball
     image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$CENTOS_OLDLTS_BUILD
     variables:
         GIT_STRATEGY: none
@@ -234,17 +204,15 @@ CentOS-OldLTS:
         - tar xvf wget-*.gz
         - cd wget-*/
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
-        - make
+        - make -j$(nproc)
         - make -j$(nproc) check
-    dependencies:
-        - Build-Tarball
     tags:
         - shared
         - linux
     except:
         - coverity-scan@gnuwget/wget
-    # The test suite is currently broken, so a temporary allowance
-    allow_failure: true
+    dependencies:
+        - Build-Tarball
     needs: ["Build-Tarball"]
     artifacts:
         expire_in: 2 weeks
@@ -254,26 +222,31 @@ CentOS-OldLTS:
             - wget-*/fuzz/*.log
             - wget-*/tests/*.log
             - wget-*/testenv/*.log
+    # The test suite is currently broken, so a temporary allowance
+    allow_failure: true
 
 TLS/OpenSSL:
-    stage: test
+    stage: test-from-tarball
     image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
     variables:
         GIT_STRATEGY: none
     script:
+        - export CFLAGS=$CFLAGS_DEFAULT
+        - tar xvf wget-*.gz
+        - cd wget-*/
         - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
         - cat /etc/hosts
-        - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=openssl
-        - make -j$(nproc) distcheck
-        - make check-valgrind
+        - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache --with-ssl=openssl
+        - make -j$(nproc)
+        - make -j$(nproc) check-valgrind
     tags:
         - shared
         - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
-        - Debian-Testing
-    needs: ["Debian-Testing"]
+        - Build-Tarball
+    needs: ["Build-Tarball"]
     artifacts:
         expire_in: 2 weeks
         when: on_failure
@@ -284,24 +257,27 @@ TLS/OpenSSL:
             - testenv/*.log
 
 TLS/GnuTLS:
-    stage: test
+    stage: test-from-tarball
     image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
     variables:
         GIT_STRATEGY: none
     script:
+        - export CFLAGS=$CFLAGS_DEFAULT
+        - tar xvf wget-*.gz
+        - cd wget-*/
         - echo "127.0.0.1 wgettestingserver" >>/etc/hosts
         - cat /etc/hosts
-        - ./configure $CONFIGURE_BASE_FLAGS --with-ssl=gnutls
-        - make -j$(nproc) distcheck
-        - make check-valgrind
+        - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache --with-ssl=gnutls
+        - make -j$(nproc)
+        - make -j$(nproc) check-valgrind
     tags:
         - shared
         - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
-        - Debian-Testing
-    needs: ["Debian-Testing"]
+        - Build-Tarball
+    needs: ["Build-Tarball"]
     artifacts:
         expire_in: 2 weeks
         when: on_failure
@@ -311,20 +287,23 @@ TLS/GnuTLS:
             - tests/*.log
             - testenv/*.log
 
-
 Sanitizers:
-    stage: test
+    stage: test-from-tarball
     image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
     variables:
         GIT_STRATEGY: none
     script:
+        - export CFLAGS=$CFLAGS_DEFAULT
+        - tar xvf wget-*.gz
+        - cd wget-*/
 #       - export CFLAGS="$CFLAGS_DEFAULT -Werror"
         - export CFLAGS="$CFLAGS_DEFAULT"
         - export CC="ccache clang"
         - export UBSAN_OPTIONS=print_stacktrace=1
         - export ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-8/bin/llvm-symbolizer
 #       - export LSAN_OPTIONS=suppressions="$PWD/tests/clang-asan-suppressions"
-        - ./configure $CONFIGURE_BASE_FLAGS --enable-fsanitize-asan --enable-fsanitize-ubsan
+        - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
+            --enable-fsanitize-asan --enable-fsanitize-ubsan
         - make -j$(nproc) check
     tags:
         - shared
@@ -332,8 +311,8 @@ Sanitizers:
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
-        - Debian-Testing
-    needs: ["Debian-Testing"]
+        - Build-Tarball
+    needs: ["Build-Tarball"]
     artifacts:
         expire_in: 2 weeks
         when: on_failure
@@ -343,17 +322,16 @@ Sanitizers:
             - tests/*.log
             - testenv/*.log
 
-
-# Maybe we should run scan-build on a tarball build?
 Scan-Build:
-    stage: test
+    stage: test-from-tarball
     image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
     variables:
         GIT_STRATEGY: none
     script:
         - export CFLAGS=$CFLAGS_DEFAULT
-        - rm .manywarnings
-        - scan-build ./configure $CONFIGURE_BASE_FLAGS
+        - tar xvf wget-*.gz
+        - cd wget-*/
+        - scan-build ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make -C lib -j$(nproc)
         - scan-build -v -enable-checker nullability --keep-empty --status-bugs -o scan-build make -j$(nproc)
     tags:
@@ -362,51 +340,97 @@ Scan-Build:
     except:
         - tags
         - coverity-scan@gnuwget/wget
-    allow_failure: true
     dependencies:
-        - Debian-Testing
-    needs: ["Debian-Testing"]
+        - Build-Tarball
+    needs: ["Build-Tarball"]
     artifacts:
-        when: always
+        expire_in: 2 weeks
+        when: on_failure
         paths:
-            - scan-build
+            - wget-*/scan-build/*
+    # There currently is a false positive that needs to be suppressed.
+    allow_failure: true
 
 CoverageReports:
-    stage: test
+    stage: test-from-tarball
     image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
     variables:
         GIT_STRATEGY: none
     script:
-        - export CFLAGS="$CFLAGS_DEFAULT"
-        - ./configure $CONFIGURE_BASE_FLAGS
+        - export CFLAGS=$CFLAGS_DEFAULT
+        - tar xvf wget-*.gz
+        - cd wget-*/
+        - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make -j$(nproc) check-coverage
         - mv lcov test-coverage
         - make -C doc html
         - make -j$(nproc) fuzz-coverage
         - mv lcov fuzz-coverage
         - make dist
-        - mv wget-*.gz wget-latest.tar.gz
     tags:
         - shared
         - linux
     dependencies:
-        - Debian-Testing
-    needs: ["Debian-Testing"]
+        - Build-Tarball
+    needs: ["Build-Tarball"]
     artifacts:
         when: on_success
         paths:
-            - wget-latest.tar.gz
             - test-coverage/
             - fuzz-coverage/
     only:
         - master
 
+MinGW64:
+    stage: test-from-tarball
+    image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$MINGW_BUILD
+    variables:
+        GIT_STRATEGY: none
+    script:
+        - export CFLAGS=$CFLAGS_DEFAULT
+        - tar xvf wget-*.gz
+        - cd wget-*/
+        - mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+        - echo ':DOSWin:M::MZ::/usr/bin/wine:' > /proc/sys/fs/binfmt_misc/register
+        - export CC="ccache $PREFIX-gcc"
+        - export GCCLIB=$(dirname $(find /usr/lib/gcc/$PREFIX -name libgcc_s_seh-1.dll|grep posix))
+        - export WINEPATH="$WINEPATH;/usr/$PREFIX/bin;/usr/$PREFIX/lib;$PWD/libwget/.libs;$GCCLIB"
+        - echo "WINEPATH=$WINEPATH"
+        - LIBS="-ldl -lpsapi" ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
+            --build=x86_64-pc-linux-gnu --host=$PREFIX --enable-shared
+        - make -j$(nproc)
+        - cp -p src/wget.exe src/wget
+        - make check -j$(nproc) LOG_COMPILER=wine
+    tags:
+        - shared
+        - linux
+    except:
+        - tags
+        - coverity-scan@gnuwget/wget
+    dependencies:
+        - Build-Tarball
+    needs: ["Build-Tarball"]
+    artifacts:
+        expire_in: 2 weeks
+        when: on_failure
+        paths:
+            - wget-*/./config.h
+            - wget-*/./*.log
+            - wget-*/fuzz/*.log
+            - wget-*/tests/*.log
+            - wget-*/testenv/*.log
+    # The MinGW64 build breaks quite often, mostly due to dependencies.
+    allow_failure: true
+
+# Build from git should work on Arch.
 ArchLinux:
-    stage: test
+    stage: test-from-git
     image: $CI_BASE_PATH/archlinux
     script:
         - export CFLAGS="$CFLAGS_DEFAULT"
-        - ./bootstrap --skip-po && touch .manywarnings
+        - ./bootstrap
+        - autoreconf -fi
+        - touch .manywarnings
         - ./configure $CONFIGURE_BASE_FLAGS
         - make -j$(nproc)
         - make check -j$(nproc)
@@ -425,12 +449,15 @@ ArchLinux:
             - tests/*.log
             - testenv/*.log
 
+# Build from git should work on Fedora.
 Fedora:
-    stage: test
+    stage: test-from-git
     image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
     script:
         - export CFLAGS="$CFLAGS_DEFAULT"
-        - ./bootstrap --skip-po && touch .manywarnings
+        - ./bootstrap
+        - autoreconf -fi
+        - touch .manywarnings
         - ./configure $CONFIGURE_BASE_FLAGS
         - make -j$(nproc) check
     tags:
@@ -448,52 +475,13 @@ Fedora:
             - tests/*.log
             - testenv/*.log
 
-MinGW64:
-    stage: deploy-test
-    image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$MINGW_BUILD
-    variables:
-        GIT_STRATEGY: none
-    script:
-        - mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc &&
-          echo ':DOSWin:M::MZ::/usr/bin/wine:' > /proc/sys/fs/binfmt_misc/register
-        - tar xvf wget-*.gz
-        - cd wget-*/
-        - export CFLAGS=$CFLAGS_DEFAULT
-        - export CC="ccache $PREFIX-gcc"
-        - export GCCLIB=$(dirname $(find /usr/lib/gcc/$PREFIX -name libgcc_s_seh-1.dll|grep posix))
-        - export WINEPATH="$WINEPATH;/usr/$PREFIX/bin;/usr/$PREFIX/lib;$PWD/libwget/.libs;$GCCLIB"
-        - echo "WINEPATH=$WINEPATH"
-        - LIBS="-ldl -lpsapi" ./configure $CONFIGURE_BASE_FLAGS --build=x86_64-pc-linux-gnu --host=$PREFIX --enable-shared
-        - make -j$(nproc)
-        - cp -p src/wget.exe src/wget
-        - make check -j$(nproc) LOG_COMPILER=wine
-    dependencies:
-        - Build-Tarball
-    needs: ["Build-Tarball"]
-    tags:
-        - shared
-        - linux
-    except:
-        - tags
-        - coverity-scan@gnuwget/wget
-    allow_failure: true
-    artifacts:
-        expire_in: 2 weeks
-        when: on_failure
-        paths:
-            - wget-*/./config.h
-            - wget-*/./*.log
-            - wget-*/fuzz/*.log
-            - wget-*/tests/*.log
-            - wget-*/testenv/*.log
-
 
 pages:
     stage: deploy
     script:
         - mkdir -p public
         - rm -rf public/reference public/coverage public/fuzz-coverage
-        - mv wget-latest.tar.gz public/
+        - mv wget-*.gz public/wget-latest.tar.gz
         - mv test-coverage public/coverage
         - mv fuzz-coverage public/fuzz-coverage
         - mv scan-build public/scan-build
