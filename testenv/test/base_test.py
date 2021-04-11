@@ -134,8 +134,9 @@ class BaseTest:
             cmd_line = 'gdb --args %s %s ' % (wget_path, wget_options)
         elif valgrind == "1":
             cmd_line = 'valgrind --error-exitcode=301 ' \
-                                '--leak-check=yes ' \
+                                '--leak-check=full ' \
                                 '--track-origins=yes ' \
+                                '--show-leak-kinds=all ' \
                                 '--gen-suppressions=all ' \
                                 '--suppressions=../valgrind-suppression-ssl ' \
                                 '%s %s ' % (wget_path, wget_options)
