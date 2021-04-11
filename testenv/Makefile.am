@@ -122,7 +122,7 @@ endif
 endif
 
 EXTRA_DIST = certs conf exc misc server test README \
-             valgrind-suppressions valgrind-suppression-ssl \
+             valgrind-suppressions-ssl \
              $(DEFAULT_TESTS) $(METALINK_TESTS)
 
 TEST_EXTENSIONS = .py
