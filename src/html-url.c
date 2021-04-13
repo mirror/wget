@@ -837,7 +837,7 @@ get_urls_html_fm (const char *file, const struct file_memory *fm,
 #endif
   xfree (meta_charset);
 
-  DEBUGP (("no-follow in %s: %d\n", file, ctx.nofollow));
+  DEBUGP (("nofollow in %s: %d\n", file, ctx.nofollow));
 
   if (meta_disallow_follow)
     *meta_disallow_follow = ctx.nofollow;
