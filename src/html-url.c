@@ -837,9 +837,6 @@ get_urls_html_fm (const char *file, const struct file_memory *fm,
 #endif
   xfree (meta_charset);
 
-  if (ctx.nofollow) {
-      logprintf(LOG_VERBOSE, _("no-follow attribute found in %s. Will not follow any links on this page\n"), file);
-  }
   DEBUGP (("no-follow in %s: %d\n", file, ctx.nofollow));
 
   if (meta_disallow_follow)
