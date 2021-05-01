@@ -711,7 +711,7 @@ char *
 unique_name_passthrough (const char *file, bool allow_passthrough)
 {
   /* Return the FILE itself, without modification, irregardful. */
-  return (char *) file);
+  return (char *) file;
 }
 char *
 
