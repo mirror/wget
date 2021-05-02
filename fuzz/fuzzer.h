@@ -20,6 +20,12 @@
 #include <stddef.h> // size_t
 #include <stdint.h> // uint8_t
 
+#if defined __clang__ || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+	#pragma GCC diagnostic ignored "-Wunused"
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
+	#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 #define CLOSE_STDERR \
 	int bak = dup(STDERR_FILENO); \
 	int fd = open("/dev/null", O_WRONLY); \

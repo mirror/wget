@@ -2197,6 +2197,13 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
 /* Sleep the specified amount of seconds.  On machines without
    nanosleep(), this may sleep shorter if interrupted by signals.  */
 
+#if defined FUZZING && defined TESTING
+void
+xsleep (double seconds)
+{
+  // Don't wait when fuzzing
+}
+#else
 void
 xsleep (double seconds)
 {
@@ -2239,6 +2246,7 @@ xsleep (double seconds)
      track sleeps is slow and unreliable due to clock skew.  */
 #endif
 }
+#endif
 
 #endif /* not WINDOWS */
 
