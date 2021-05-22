@@ -79,9 +79,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 
 	//	CLOSE_STDERR
 
-	struct ntlmdata *ntlm = calloc(1, sizeof(struct ntlmdata));
-	char *data0 = malloc(size + 4 + 1);
-	char *val;
+	struct ntlmdata *ntlm = (struct ntlmdata *) calloc(1, sizeof(struct ntlmdata));
+	char *data0 = (char *) malloc(size + 4 + 1);
 	bool ready;
 
 	assert(ntlm && data0);
