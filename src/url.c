@@ -1652,6 +1652,52 @@ convert_fname (char *fname)
 }
 #endif
 
+/* Check if the length of path element is acceptable.
+   If it's longer than OS-defined maximum, truncate it. */
+static void
+possibly_truncate_pathel (char *pathel) {
+  size_t len = strlen (pathel);
+  size_t max_length;
+
+#ifdef WINDOWS
+  if (MAX_PATH > (len + CHOMP_BUFFER + 2))
+    {
+      max_length = MAX_PATH - (len + CHOMP_BUFFER + 2);
+      /* FIXME: In Windows a filename is usually limited to 255 characters.
+      To really be accurate you could call GetVolumeInformation() to get
+      lpMaximumComponentLength
+
+      Only FAT16 actually uses the 8.3 standard; this shouldn't be worrisome.
+      */
+      if (max_length > 255)
+        {
+          max_length = 255;
+        }
+    }
+  else
+    {
+      max_length = 0;
+    }
+#else
+  max_length = get_max_length (pathel, len, _PC_NAME_MAX) - CHOMP_BUFFER;
+#endif
+  if (max_length > 0 && len > max_length)
+    {
+      logprintf (LOG_NOTQUIET, "The name is too long, %lu chars total.\n",
+          (unsigned long) len);
+      logprintf (LOG_NOTQUIET, "Trying to shorten...\n");
+
+      /* Truncate path element. */
+      pathel[max_length] = '\0';
+
+      logprintf (LOG_NOTQUIET, "New name is %s.\n", pathel);
+
+      return;
+    }
+
+  return;
+}
+
 /* Append to DEST the directory structure that corresponds the
    directory part of URL's path.  For example, if the URL is
    http://server/dir1/dir2/file, this appends "/dir1/dir2".
@@ -1686,7 +1732,11 @@ append_dir_structure (const struct url *u, struct growable *dest)
 
       if (dest->tail)
         append_char ('/', dest);
+
+      *next = '\0';   /* temporarily isolate the next element */
+      possibly_truncate_pathel(pathel);
       append_uri_pathel (pathel, next, true, dest);
+      *next = '/';
     }
 }
 
@@ -1796,41 +1846,8 @@ url_file_name (const struct url *u, char *replaced_filename)
   temp_fnres.size = 0;
   temp_fnres.tail = 0;
   append_string (fname, &temp_fnres);
+
   xfree (fname);
-
-  /* Check that the length of the file name is acceptable. */
-#ifdef WINDOWS
-  if (MAX_PATH > (fnres.tail + CHOMP_BUFFER + 2))
-    {
-      max_length = MAX_PATH - (fnres.tail + CHOMP_BUFFER + 2);
-      /* FIXME: In Windows a filename is usually limited to 255 characters.
-      To really be accurate you could call GetVolumeInformation() to get
-      lpMaximumComponentLength
-      */
-      if (max_length > 255)
-        {
-          max_length = 255;
-        }
-    }
-  else
-    {
-      max_length = 0;
-    }
-#else
-  max_length = get_max_length (fnres.base, fnres.tail, _PC_NAME_MAX) - CHOMP_BUFFER;
-#endif
-  if (max_length > 0 && strlen (temp_fnres.base) > max_length)
-    {
-      logprintf (LOG_NOTQUIET, "The name is too long, %lu chars total.\n",
-          (unsigned long) strlen (temp_fnres.base));
-      logprintf (LOG_NOTQUIET, "Trying to shorten...\n");
-
-      /* Shorten the file name. */
-      temp_fnres.base[max_length] = '\0';
-
-      logprintf (LOG_NOTQUIET, "New name is %s.\n", temp_fnres.base);
-    }
-
   xfree (fname_len_check);
 
   /* The filename has already been 'cleaned' by append_uri_pathel() above.  So,
