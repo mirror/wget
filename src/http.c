@@ -3666,7 +3666,7 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   xfree (hs->error);
   if (statcode == -1)
     hs->error = xstrdup (_("Malformed status line"));
-  else if (!*message)
+  else if (!message || !*message)
     hs->error = xstrdup (_("(no description)"));
   else
     hs->error = xstrdup (message);
