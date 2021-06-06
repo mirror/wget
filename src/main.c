@@ -1422,8 +1422,8 @@ main (int argc, char **argv)
      option ("--config") and parse it before the other user options. */
   longindex = -1;
 
-  while ((retconf = getopt_long (argc, argv,
-                                short_options, long_options, &longindex)) != -1)
+  while ((getopt_long (argc, argv,
+                       short_options, long_options, &longindex)) != -1)
     {
       int confval;
       struct cmdline_option *config_opt;
