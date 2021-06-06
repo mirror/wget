@@ -334,7 +334,7 @@ Scan-Build:
         - scan-build ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make -C lib -j$(nproc)
         - make -C src css_.o
-        - scan-build -v -enable-checker nullability --keep-empty --status-bugs -o scan-build make -j$(nproc)
+        - scan-build -v -enable-checker nullability --keep-empty --status-bugs -o ../scan-build make -j$(nproc)
     tags:
         - shared
         - linux
@@ -348,7 +348,7 @@ Scan-Build:
         expire_in: 2 weeks
         when: on_failure
         paths:
-            - wget-*/scan-build/*
+            - scan-build/
 
 CoverageReports:
     stage: test-from-tarball
