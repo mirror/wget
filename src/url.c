@@ -1518,6 +1518,11 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
   outlen = (e - b) + (2 * quoted);
   GROW (dest, outlen);
 
+  // This should not happen, but it's impossible to argue with static analysis that it can't happen
+  // (in theory it can). So give static analyzers a hint.
+  if (!dest->base)
+    return;
+
   if (!quoted)
     {
       /* If there's nothing to quote, we can simply append the string
