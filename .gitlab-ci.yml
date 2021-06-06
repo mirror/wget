@@ -489,6 +489,7 @@ pages:
     dependencies:
         - CoverageReports
         - Scan-Build
+        - Build-Tarball
     artifacts:
         when: on_success
         paths:
