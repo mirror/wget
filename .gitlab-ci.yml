@@ -483,7 +483,7 @@ pages:
         - mv wget-*.gz public/wget-latest.tar.gz
         - mv test-coverage public/coverage
         - mv fuzz-coverage public/fuzz-coverage
-        - mv scan-build public/scan-build
+        - [ -d scan-build ] && mv scan-build public/scan-build
     dependencies:
         - CoverageReports
         - Scan-Build
