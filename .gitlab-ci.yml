@@ -361,10 +361,10 @@ CoverageReports:
         - cd wget-*/
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make -j$(nproc) check-coverage
-        - mv lcov test-coverage
+        - mv lcov ../test-coverage
         - make -C doc html
         - make -j$(nproc) fuzz-coverage
-        - mv lcov fuzz-coverage
+        - mv lcov ../fuzz-coverage
         - make dist
     tags:
         - shared
