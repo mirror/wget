@@ -483,10 +483,8 @@ pages:
         - mv wget-*.gz public/wget-latest.tar.gz
         - mv test-coverage public/coverage
         - mv fuzz-coverage public/fuzz-coverage
-        - [ -d scan-build ] && mv scan-build public/scan-build
     dependencies:
         - CoverageReports
-        - Scan-Build
         - Build-Tarball
     artifacts:
         when: on_success
