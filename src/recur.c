@@ -745,8 +745,9 @@ download_child (const struct urlpos *upos, struct url *parent, int depth,
               specs = res_parse_from_file (rfile);
 
               /* Delete the robots.txt file if we chose to either delete the
-                 files after downloading or we're just running a spider. */
-              if (opt.delete_after || opt.spider)
+                 files after downloading or we're just running a spider or
+                 we use page requisites or pattern matching. */
+              if (opt.delete_after || opt.spider || match_tail(rfile, ".tmp", false))
                 {
                   logprintf (LOG_VERBOSE, _("Removing %s.\n"), rfile);
                   if (unlink (rfile))
