@@ -1,22 +1,31 @@
-AM_CFLAGS = $(WERROR_CFLAGS) $(WARN_CFLAGS) -Wno-unused-parameter -Wno-pedantic
+AM_CFLAGS = $(WERROR_CFLAGS) $(WARN_CFLAGS) $(CODE_COVERAGE_CFLAGS)
 AM_CPPFLAGS = -I$(top_srcdir)/src -I$(srcdir) -I$(top_builddir)/lib -I$(top_srcdir)/lib \
+ $(CODE_COVERAGE_CPPFLAGS) \
  -DSRCDIR=\"$(abs_srcdir)\"
 LDADD = ../lib/libgnu.a \
  $(GETADDRINFO_LIB) $(HOSTENT_LIB) $(INET_NTOP_LIB) $(INET_PTON_LIB) \
  $(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO) $(LIB_GETLOGIN) $(LIB_NANOSLEEP) $(LIB_POLL) \
  $(LIB_POSIX_SPAWN) $(LIB_PTHREAD_SIGMASK) $(LIB_SELECT) $(LIBICONV) $(LIBINTL) \
  $(LIBMULTITHREAD) $(LIBTHREAD) $(SERVENT_LIB) @INTL_MACOSX_LIBS@ \
- -ldl
+ $(FUZZ_LIBS) $(CODE_COVERAGE_LIBS)
 
 WGET_TESTS = \
- wget_css_fuzzer$(EXEEXT) \
  wget_cookie_fuzzer$(EXEEXT) \
+ wget_css_fuzzer$(EXEEXT) \
  wget_ftpls_fuzzer$(EXEEXT) \
  wget_html_fuzzer$(EXEEXT) \
  wget_netrc_fuzzer$(EXEEXT) \
  wget_options_fuzzer$(EXEEXT) \
+ wget_progress_fuzzer$(EXEEXT) \
+ wget_read_hunk_fuzzer$(EXEEXT) \
  wget_robots_fuzzer$(EXEEXT) \
  wget_url_fuzzer$(EXEEXT)
+
+EXTRA_DIST = test-runner.sh
+
+if WITH_NTLM
+  WGET_TESTS += wget_ntlm_fuzzer$(EXEEXT)
+endif
 
 if FUZZING
   bin_PROGRAMS = $(WGET_TESTS)
@@ -26,6 +35,7 @@ if FUZZING
 else
   AM_CPPFLAGS += -DTEST_RUN
   AM_TESTS_ENVIRONMENT = export VALGRIND_TESTS"=@VALGRIND_TESTS@";
+  LOG_COMPILER = $(top_srcdir)/fuzz/test-runner.sh
   TESTS = $(WGET_TESTS)
   check_PROGRAMS = $(WGET_TESTS)
   MAIN = main.c fuzzer.h
@@ -36,11 +46,11 @@ endif
 ../src/libunittest.a:
 	$(MAKE) $(AM_MAKEFLAGS) -C ../src libunittest.a
 
-wget_css_fuzzer_SOURCES = wget_css_fuzzer.c $(MAIN)
-wget_css_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
-
 wget_cookie_fuzzer_SOURCES = wget_cookie_fuzzer.c $(MAIN)
 wget_cookie_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
+wget_css_fuzzer_SOURCES = wget_css_fuzzer.c $(MAIN)
+wget_css_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_ftpls_fuzzer_SOURCES = wget_ftpls_fuzzer.c $(MAIN)
 wget_ftpls_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
@@ -51,8 +61,17 @@ wget_html_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 wget_netrc_fuzzer_SOURCES = wget_netrc_fuzzer.c $(MAIN)
 wget_netrc_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
+wget_ntlm_fuzzer_SOURCES = wget_ntlm_fuzzer.c $(MAIN)
+wget_ntlm_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
 wget_options_fuzzer_SOURCES = wget_options_fuzzer.c $(MAIN)
 wget_options_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
+wget_progress_fuzzer_SOURCES = wget_progress_fuzzer.c $(MAIN)
+wget_progress_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
+
+wget_read_hunk_fuzzer_SOURCES = wget_read_hunk_fuzzer.c $(MAIN)
+wget_read_hunk_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
 
 wget_robots_fuzzer_SOURCES = wget_robots_fuzzer.c $(MAIN)
 wget_robots_fuzzer_LDADD = ../src/libunittest.a $(LDADD)
@@ -74,7 +93,7 @@ clean-local:
 
 oss-fuzz:
 	if test "$$OUT" != ""; then \
-	XLIBS="-lpsl -lgnutls -lnettle -lhogweed -lidn2 -lunistring"; \
+	XLIBS="-lpsl -lgnutls -lhogweed -lnettle -lidn2 -lunistring"; \
 	for ccfile in wget*_fuzzer.c; do \
 	fuzzer=$$(basename $$ccfile .c); \
 	$$CXX $$CXXFLAGS -I$(top_srcdir)/src -I$(top_srcdir) -I$(top_srcdir)/lib \

@@ -49,7 +49,6 @@ class HTTPSServer(StoppableHTTPServer):
                                                'server-key.pem'))
         self.socket = ssl.wrap_socket(
             sock=socket.socket(self.address_family, self.socket_type),
-            ssl_version=ssl.PROTOCOL_TLSv1,
             certfile=CERTFILE,
             keyfile=KEYFILE,
             server_side=True
@@ -69,7 +68,7 @@ class _Handler(BaseHTTPRequestHandler):
     def get_rule_list(self, name):
         return self.rules.get(name)
 
-    # The defailt protocol version of the server we run is HTTP/1.1 not
+    # The default protocol version of the server we run is HTTP/1.1 not
     # HTTP/1.0 which is the default with the http.server module.
     protocol_version = 'HTTP/1.1'
 

@@ -1,5 +1,6 @@
 /* struct options.
-   Copyright (C) 1996-2011, 2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2021 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -92,7 +93,7 @@ struct options
   void *acceptregex;            /* Patterns to accept (a regex struct). */
   void *rejectregex;            /* Patterns to reject (a regex struct). */
   enum {
-#ifdef HAVE_LIBPCRE
+#if defined HAVE_LIBPCRE || HAVE_LIBPCRE2
     regex_type_pcre,
 #endif
     regex_type_posix
@@ -170,7 +171,7 @@ struct options
 
   wgint limit_rate;             /* Limit the download rate to this
                                    many bps. */
-  SUM_SIZE_INT quota;           /* Maximum file size to download and
+  wgint quota;                  /* Maximum file size to download and
                                    store. */
 
   bool server_response;         /* Do we print server response? */
