@@ -1,7 +1,6 @@
 /* Host name resolution and matching.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2015 Free Software
-   Foundation, Inc.
+   Copyright (C) 1996-2012, 2015, 2018-2021 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -76,7 +75,7 @@ extern int h_errno;
    lookup_host for details.  */
 
 struct address_list {
-  int count;                    /* number of adrresses */
+  int count;                    /* number of addresses */
   ip_address *addresses;        /* pointer to the string of addresses */
 
   int faulty;                   /* number of addresses known not to work. */
@@ -517,7 +516,7 @@ is_valid_ipv6_address (const char *str, const char *end)
       if (c_isxdigit (ch))
         {
           val <<= 4;
-          val |= XDIGIT_TO_NUM (ch);
+          val |= _unhex (ch);
           if (val > 0xffff)
             return false;
           saw_xdigit = true;
@@ -733,6 +732,8 @@ wait_ares (ares_channel channel)
       else
         ares_process (channel, &read_fds, &write_fds);
     }
+  if (timer)
+    ptimer_destroy (timer);
 }
 
 static void
@@ -856,8 +857,8 @@ lookup_host (const char *host, int flags)
 #ifdef HAVE_LIBCARES
   if (ares)
     {
-      struct address_list *al4;
-      struct address_list *al6;
+      struct address_list *al4 = NULL;
+      struct address_list *al6 = NULL;
 
       if (opt.ipv4_only || !opt.ipv6_only)
         ares_gethostbyname (ares, host, AF_INET, callback, &al4);
@@ -1019,21 +1020,30 @@ sufmatch (const char **list, const char *what)
   int i, j, k, lw;
 
   lw = strlen (what);
+
   for (i = 0; list[i]; i++)
     {
-      if (list[i][0] == '\0')
-        continue;
+      j = strlen (list[i]);
+      if (lw < j)
+        continue; /* what is no (sub)domain of list[i] */
 
-      for (j = strlen (list[i]), k = lw; j >= 0 && k >= 0; j--, k--)
+      for (k = lw; j >= 0 && k >= 0; j--, k--)
         if (c_tolower (list[i][j]) != c_tolower (what[k]))
           break;
-      /* The domain must be first to reach to beginning.  */
-      if (j == -1)
+
+      /* Domain or subdomain match
+       * k == -1: exact match
+       * k >= 0 && what[k] == '.': subdomain match
+       * k >= 0 && list[i][0] == '.': dot-prefixed subdomain match
+       */
+      if (j == -1 && (k == -1 || what[k] == '.' || list[i][0] == '.'))
         return true;
     }
+
   return false;
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 host_cleanup (void)
 {
@@ -1054,6 +1064,7 @@ host_cleanup (void)
       host_name_addresses_map = NULL;
     }
 }
+#endif
 
 bool
 is_valid_ip_address (const char *name)

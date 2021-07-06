@@ -106,7 +106,7 @@ found unsafe too, the file is not downloaded.
 
 See [1 #section-1.1].
 
-cat > bugus.meta4 << EOF
+cat > bogus.meta4 << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <metalink xmlns="urn:ietf:params:xml:ns:metalink">
   <file name="/dir/A/File1">

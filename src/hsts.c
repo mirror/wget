@@ -1,7 +1,6 @@
 /* HTTP Strict Transport Security (HSTS) support.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2015 Free Software
-   Foundation, Inc.
+   Copyright (C) 1996-2012, 2015, 2018-2021 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -34,11 +33,11 @@ as that of the covered work.  */
 #include "hsts.h"
 #include "utils.h"
 #include "host.h" /* for is_valid_ip_address() */
-#include "init.h" /* for home_dir() */
 #include "hash.h"
 #include "c-ctype.h"
 #ifdef TESTING
-#include "test.h"
+#include "init.h" /* for ajoin_dir_file() */
+#include "../tests/unit-tests.h"
 #endif
 
 #include <unistd.h>
@@ -85,6 +84,9 @@ enum hsts_kh_match {
 
 /* Hashing and comparison functions for the hash table */
 
+#ifdef __clang__
+__attribute__((no_sanitize("integer")))
+#endif
 static unsigned long
 hsts_hash_func (const void *key)
 {
@@ -219,7 +221,7 @@ hsts_add_entry (hsts_store_t store,
   time_t t = time (NULL);
 
   /* It might happen time() returned -1 */
-  return (t < 0 ?
+  return (t == (time_t)(-1) ?
       false :
       hsts_new_entry_internal (store, host, port, t, max_age, include_subdomains, false, true, false));
 }
@@ -464,7 +466,7 @@ hsts_store_entry (hsts_store_t store,
                * See also Section 11.2. */
               time_t t = time (NULL);
 
-              if (t != -1 && t != entry->created)
+              if (t != (time_t)(-1) && t != entry->created)
                 {
                   entry->created = t;
                   entry->max_age = max_age;
@@ -623,19 +625,17 @@ hsts_store_close (hsts_store_t store)
 static char *
 get_hsts_store_filename (void)
 {
-  char *home = NULL, *filename = NULL;
+  char *filename = NULL;
   FILE *fp = NULL;
 
-  home = home_dir ();
-  if (home)
+  if (opt.homedir)
     {
-      filename = aprintf ("%s/.wget-hsts-test", home);
+      filename = ajoin_dir_file (opt.homedir, ".wget-hsts-test");
       fp = fopen (filename, "w");
       if (fp)
         fclose (fp);
     }
 
-  xfree (home);
   return filename;
 }
 
@@ -655,11 +655,13 @@ open_hsts_test_store (void)
 static void
 close_hsts_test_store (hsts_store_t store)
 {
-  char *filename = NULL;
+  char *filename;
 
-  filename = get_hsts_store_filename ();
-  unlink (filename);
-  xfree (filename);
+  if ((filename = get_hsts_store_filename ()))
+    {
+      unlink (filename);
+      xfree (filename);
+    }
   xfree (store);
 }
 
@@ -788,14 +790,13 @@ const char*
 test_hsts_read_database (void)
 {
   hsts_store_t table;
-  char *home = home_dir();
   char *file = NULL;
   FILE *fp = NULL;
   time_t created = time(NULL) - 10;
 
-  if (home)
+  if (opt.homedir)
     {
-      file = aprintf ("%s/.wget-hsts-testing", home);
+      file = ajoin_dir_file (opt.homedir, ".wget-hsts-testing");
       fp = fopen (file, "w");
       if (fp)
         {
@@ -820,7 +821,6 @@ test_hsts_read_database (void)
           unlink (file);
         }
       xfree (file);
-      xfree (home);
     }
 
   return NULL;

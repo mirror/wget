@@ -1,6 +1,6 @@
 /* SSL support via GnuTLS library.
-   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2015
-   Free Software Foundation, Inc.
+   Copyright (C) 2005-2012, 2015, 2018-2021 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -58,8 +58,21 @@ as that of the covered work.  */
 
 #include "host.h"
 
+struct st_read_timer
+{
+  double timeout;
+  double next_timeout;
+  struct ptimer *timer;
+  int timed_out;
+};
+
 static int
-_do_handshake (gnutls_session_t session, int fd, double timeout);
+_do_handshake (gnutls_session_t session, int fd, struct st_read_timer *timeout);
+
+#if GNUTLS_VERSION_NUMBER >= 0x030604
+static int
+_do_reauth (gnutls_session_t session, int fd, struct st_read_timer *timeout);
+#endif
 
 static int
 key_type_to_gnutls_type (enum keyfile_type type)
@@ -80,15 +93,18 @@ key_type_to_gnutls_type (enum keyfile_type type)
    confused with actual gnutls functions -- such as the gnutls_read
    preprocessor macro.  */
 
+static bool ssl_initialized = false;
+
 static gnutls_certificate_credentials_t credentials;
 bool
 ssl_init (void)
 {
+  fprintf(stderr,"SSL_INIT\n");
   /* Becomes true if GnuTLS is initialized. */
-  static bool ssl_initialized = false;
   const char *ca_directory;
   DIR *dir;
   int ncerts = -1;
+  int rc;
 
   /* GnuTLS should be initialized only once. */
   if (ssl_initialized)
@@ -108,7 +124,10 @@ ssl_init (void)
    * Also use old behaviour if the CA directory is user-provided.  */
   if (ncerts <= 0)
     {
+      ncerts = 0;
+
       ca_directory = opt.ca_directory ? opt.ca_directory : "/etc/ssl/certs";
+
       if ((dir = opendir (ca_directory)) == NULL)
         {
           if (opt.ca_directory && *opt.ca_directory)
@@ -119,18 +138,15 @@ ssl_init (void)
         {
           struct hash_table *inode_map = hash_table_new (196, NULL, NULL);
           struct dirent *dent;
-          size_t dirlen = strlen(ca_directory);
-          int rc;
-
-          ncerts = 0;
 
           while ((dent = readdir (dir)) != NULL)
             {
               struct stat st;
-              size_t ca_file_length = dirlen + strlen(dent->d_name) + 2;
-              char *ca_file = alloca(ca_file_length);
+              char ca_file[1024];
 
-              snprintf (ca_file, ca_file_length, "%s/%s", ca_directory, dent->d_name);
+              if (((unsigned) snprintf (ca_file, sizeof (ca_file), "%s/%s", ca_directory, dent->d_name)) >= sizeof (ca_file))
+                continue; // overflow
+
               if (stat (ca_file, &st) != 0)
                 continue;
 
@@ -156,32 +172,29 @@ ssl_init (void)
 
   if (opt.ca_cert)
     {
-      int rc;
-
-      ncerts = 0;
+      if (ncerts < 0)
+        ncerts = 0;
 
       if ((rc = gnutls_certificate_set_x509_trust_file (credentials, opt.ca_cert,
                                                         GNUTLS_X509_FMT_PEM)) <= 0)
-        logprintf (LOG_NOTQUIET, _ ("ERROR: Failed to open cert %s: (%d).\n"),
+        logprintf (LOG_NOTQUIET, _("ERROR: Failed to open cert %s: (%d).\n"),
                    opt.ca_cert, rc);
       else
         {
           ncerts += rc;
-          logprintf (LOG_NOTQUIET, _ ("Loaded CA certificate '%s'\n"), opt.ca_cert);
+          logprintf (LOG_VERBOSE, _("Loaded CA certificate '%s'\n"), opt.ca_cert);
         }
     }
 
   if (opt.crl_file)
     {
-      int rc;
-
       if ((rc = gnutls_certificate_set_x509_crl_file (credentials, opt.crl_file, GNUTLS_X509_FMT_PEM)) <= 0)
         {
           logprintf (LOG_NOTQUIET, _("ERROR: Failed to load CRL file '%s': (%d)\n"), opt.crl_file, rc);
           return false;
         }
 
-      logprintf (LOG_NOTQUIET, _ ("Loaded CRL file '%s'\n"), opt.crl_file);
+      logprintf (LOG_VERBOSE, _("Loaded CRL file '%s'\n"), opt.crl_file);
     }
 
   DEBUGP (("Certificates loaded: %d\n", ncerts));
@@ -221,6 +234,22 @@ cert to be of the same type.\n"));
   return true;
 }
 
+void
+ssl_cleanup (void)
+{
+  fprintf(stderr,"SSL_CLEANUP\n");
+
+  if (!ssl_initialized)
+    return;
+
+  if (credentials)
+    gnutls_certificate_free_credentials(credentials);
+
+  gnutls_global_deinit();
+
+  ssl_initialized = false;
+}
+
 struct wgnutls_transport_context
 {
   gnutls_session_t session;       /* GnuTLS session handle */
@@ -241,12 +270,14 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 #ifdef F_GETFL
   int flags = 0;
 #endif
-  int ret = 0;
-  struct ptimer *timer = NULL;
   struct wgnutls_transport_context *ctx = arg;
-  int timed_out = 0;
+  int ret = gnutls_record_check_pending (ctx->session);
+  struct st_read_timer read_timer = {(timeout == -1 ? opt.read_timeout : timeout), 0, NULL, 0};
 
-  if (timeout)
+  if (ret)
+    return gnutls_record_recv (ctx->session, buf, MIN (ret, bufsize));
+
+  if (read_timer.timeout)
     {
 #ifdef F_GETFL
       flags = fcntl (fd, F_GETFL, 0);
@@ -261,51 +292,83 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
         return -1;
 #endif
 
-      timer = ptimer_new ();
-      if (timer == NULL)
-        return -1;
+      read_timer.timer = ptimer_new ();
+      if (read_timer.timer == NULL)
+        {
+          ret = -1;
+          goto timer_err;
+        }
+      read_timer.next_timeout = read_timer.timeout;
     }
 
+  ret = ctx->last_error;
   do
     {
-      double next_timeout = 0;
-      if (timeout)
+      if (ret == GNUTLS_E_REHANDSHAKE)
         {
-          next_timeout = timeout - ptimer_measure (timer);
-          if (next_timeout < 0)
-            break;
-        }
-
-      ret = GNUTLS_E_AGAIN;
-      if (timeout == 0 || gnutls_record_check_pending (ctx->session)
-          || select_fd (fd, next_timeout, WAIT_FOR_READ))
-        {
-          ret = gnutls_record_recv (ctx->session, buf, bufsize);
-          timed_out = timeout && ptimer_measure (timer) >= timeout;
-          if (!timed_out && ret == GNUTLS_E_REHANDSHAKE)
+          int err;
+          DEBUGP (("GnuTLS: *** REHANDSHAKE while reading\n"));
+          if ((err = _do_handshake (ctx->session, fd, &read_timer)) != 0)
             {
-              DEBUGP (("GnuTLS: *** REHANDSHAKE while reading\n"));
-              if ((ret = _do_handshake (ctx->session, fd, timeout)) == 0)
-                ret = GNUTLS_E_AGAIN; /* restart reading */
+              ret = err;
+              break;
             }
         }
+#if GNUTLS_VERSION_NUMBER >= 0x030604
+      else if (ret == GNUTLS_E_REAUTH_REQUEST)
+        {
+          int err;
+          DEBUGP (("GnuTLS: *** re-authentication while reading\n"));
+          if ((err = _do_reauth (ctx->session, fd, &read_timer)) != 0)
+            {
+              ret = err;
+              break;
+            }
+        }
+#endif
+      do
+        {
+          ret = gnutls_record_recv (ctx->session, buf, bufsize);
+          if (ret == GNUTLS_E_AGAIN && read_timer.timer)
+            {
+              int err = select_fd_nb (fd, read_timer.next_timeout, WAIT_FOR_READ);
+              if (err <= 0)
+                {
+                  if (err == 0)
+                    read_timer.timed_out = 1;
+                  goto break_all;
+                }
+              if ( (read_timer.next_timeout = read_timer.timeout - ptimer_measure (read_timer.timer)) <= 0 )
+                {
+                  read_timer.timed_out = 1;
+                  goto break_all;
+                }
+            }
+        }
+      while (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED);
     }
-  while (ret == GNUTLS_E_INTERRUPTED || (ret == GNUTLS_E_AGAIN && !timed_out));
+  while (ret == GNUTLS_E_REHANDSHAKE
+#if GNUTLS_VERSION_NUMBER >= 0x030604
+         || ret == GNUTLS_E_REAUTH_REQUEST
+#endif
+         );
 
-  if (timeout)
+break_all:
+  if (read_timer.timer)
     {
-      ptimer_destroy (timer);
-
+      ptimer_destroy (read_timer.timer);
+timer_err: ;
 #ifdef F_GETFL
       if (fcntl (fd, F_SETFL, flags) < 0)
         return -1;
 #else
-      const int zero = 0;
-      if (ioctl (fd, FIONBIO, &zero) < 0)
-        return -1;
+      {
+        const int zero = 0;
+        if (ioctl (fd, FIONBIO, &zero) < 0)
+          return -1;
+      }
 #endif
-
-      if (timed_out && ret == GNUTLS_E_AGAIN)
+      if (read_timer.timed_out)
         errno = ETIMEDOUT;
     }
 
@@ -313,9 +376,9 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 }
 
 static int
-wgnutls_read (int fd, char *buf, int bufsize, void *arg)
+wgnutls_read (int fd, char *buf, int bufsize, void *arg, double timeout)
 {
-  int ret = 0;
+  int ret;
   struct wgnutls_transport_context *ctx = arg;
 
   if (ctx->peeklen)
@@ -330,23 +393,39 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
       return copysize;
     }
 
-  ret = wgnutls_read_timeout (fd, buf, bufsize, arg, opt.read_timeout);
-  if (ret < 0)
-    ctx->last_error = ret;
-
+  ret = wgnutls_read_timeout (fd, buf, bufsize, arg, timeout);
+  ctx->last_error = ret;
   return ret;
 }
 
 static int
 wgnutls_write (int fd _GL_UNUSED, char *buf, int bufsize, void *arg)
 {
-  int ret;
   struct wgnutls_transport_context *ctx = arg;
+  int ret = ctx->last_error;
+
+  /* it should never happen,
+     placed here only for debug msg. */
+  if (ret == GNUTLS_E_REHANDSHAKE)
+    {
+      DEBUGP (("GnuTLS: *** REHANDSHAKE while writing\n"));
+      if ((ret = _do_handshake (ctx->session, fd, NULL)) != 0)
+        goto ext;
+    }
+#if GNUTLS_VERSION_NUMBER >= 0x030604
+  else if (ret == GNUTLS_E_REAUTH_REQUEST)
+    {
+      DEBUGP (("GnuTLS: *** re-authentication while writing\n"));
+      if ((ret = _do_reauth (ctx->session, fd, NULL)) != 0)
+        goto ext;
+    }
+#endif
+
   do
     ret = gnutls_record_send (ctx->session, buf, bufsize);
   while (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN);
-  if (ret < 0)
-    ctx->last_error = ret;
+ext:
+  ctx->last_error = ret;
   return ret;
 }
 
@@ -355,15 +434,17 @@ wgnutls_poll (int fd, double timeout, int wait_for, void *arg)
 {
   struct wgnutls_transport_context *ctx = arg;
 
-  if (timeout)
-    return ctx->peeklen || gnutls_record_check_pending (ctx->session)
-      || select_fd (fd, timeout, wait_for);
-  else
-    return ctx->peeklen || gnutls_record_check_pending (ctx->session);
+  if ((wait_for & WAIT_FOR_READ)
+      && (ctx->peeklen || gnutls_record_check_pending (ctx->session)))
+    return 1;
+
+  if (timeout == -1)
+    timeout = opt.read_timeout;
+  return select_fd (fd, timeout, wait_for);
 }
 
 static int
-wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
+wgnutls_peek (int fd, char *buf, int bufsize, void *arg, double timeout)
 {
   int read = 0;
   struct wgnutls_transport_context *ctx = arg;
@@ -379,13 +460,14 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
     bufsize = sizeof ctx->peekbuf;
 
   if (bufsize > offset)
-    {
-      if (opt.read_timeout && gnutls_record_check_pending (ctx->session) == 0
+    { /* let wgnutls_read_timeout() take care about timeout */
+      /*if (timeout && gnutls_record_check_pending (ctx->session) == 0
           && select_fd (fd, 0.0, WAIT_FOR_READ) <= 0)
         read = 0;
-      else
+      else*/
         read = wgnutls_read_timeout (fd, buf + offset, bufsize - offset,
-                                     ctx, opt.read_timeout);
+                                     ctx, timeout);
+        ctx->last_error = read;
       if (read < 0)
         {
           if (offset)
@@ -409,6 +491,16 @@ static const char *
 wgnutls_errstr (int fd _GL_UNUSED, void *arg)
 {
   struct wgnutls_transport_context *ctx = arg;
+
+  if (ctx->last_error > 0
+      || ((ctx->last_error == GNUTLS_E_AGAIN
+           || ctx->last_error == GNUTLS_E_REHANDSHAKE
+#if GNUTLS_VERSION_NUMBER >= 0x030604
+           || ctx->last_error == GNUTLS_E_REAUTH_REQUEST
+#endif
+          ) && errno == ETIMEDOUT))
+    return NULL;
+
   return gnutls_strerror (ctx->last_error);
 }
 
@@ -437,14 +529,16 @@ static struct transport_implementation wgnutls_transport =
 };
 
 static int
-_do_handshake (gnutls_session_t session, int fd, double timeout)
+_do_handshake (gnutls_session_t session, int fd, struct st_read_timer *read_timer)
 {
 #ifdef F_GETFL
   int flags = 0;
 #endif
   int err;
+  double next_timeout = (read_timer ? read_timer->next_timeout : opt.read_timeout);
 
-  if (timeout)
+  /* if (read_timer != NULL)  - fd is already non blocking */
+  if (!read_timer && next_timeout)
     {
 #ifdef F_GETFL
       flags = fcntl (fd, F_GETFL, 0);
@@ -465,30 +559,46 @@ _do_handshake (gnutls_session_t session, int fd, double timeout)
     {
       err = gnutls_handshake (session);
 
-      if (timeout && err == GNUTLS_E_AGAIN)
+      if (err == GNUTLS_E_AGAIN && next_timeout)
         {
+          int sel;
           if (gnutls_record_get_direction (session))
             {
               /* wait for writeability */
-              err = select_fd (fd, timeout, WAIT_FOR_WRITE);
+              sel = WAIT_FOR_WRITE;
             }
           else
             {
               /* wait for readability */
-              err = select_fd (fd, timeout, WAIT_FOR_READ);
+              sel = WAIT_FOR_READ;
             }
+          sel = select_fd_nb (fd, next_timeout, sel);
 
-          if (err <= 0)
+          if (sel <= 0)
             {
-              if (err == 0)
+              if (sel == 0)
                 {
-                  errno = ETIMEDOUT;
-                  err = -1;
+                  if  (read_timer)
+                    goto read_timedout;
+                  else
+                    {
+                      errno = ETIMEDOUT;
+                      err = -1;
+                    }
                 }
               break;
             }
-
-           err = GNUTLS_E_AGAIN;
+          if  (read_timer)
+            {
+              if ( (read_timer->next_timeout = read_timer->timeout - ptimer_measure (read_timer->timer)) <= 0 )
+                {
+read_timedout:    /* return GNUTLS_E_REHANDSHAKE for gnutls_read */
+                  err = GNUTLS_E_REHANDSHAKE;
+                  read_timer->timed_out = 1;
+                  break;
+                }
+               next_timeout = read_timer->next_timeout;
+            }
         }
       else if (err < 0)
         {
@@ -505,7 +615,7 @@ _do_handshake (gnutls_session_t session, int fd, double timeout)
     }
   while (err && gnutls_error_is_fatal (err) == 0);
 
-  if (timeout)
+  if (!read_timer && next_timeout)
     {
 #ifdef F_GETFL
       if (fcntl (fd, F_SETFL, flags) < 0)
@@ -519,6 +629,102 @@ _do_handshake (gnutls_session_t session, int fd, double timeout)
 
   return err;
 }
+
+#if GNUTLS_VERSION_NUMBER >= 0x030604
+static int
+_do_reauth (gnutls_session_t session, int fd, struct st_read_timer *read_timer)
+{
+#ifdef F_GETFL
+  int flags = 0;
+#endif
+  int err;
+  double next_timeout = (read_timer ? read_timer->next_timeout : opt.read_timeout);
+
+  /* if (read_timer != NULL)  - fd is already non blocking */
+  if (!read_timer && next_timeout)
+    {
+#ifdef F_GETFL
+      flags = fcntl (fd, F_GETFL, 0);
+      if (flags < 0)
+        return flags;
+      if (fcntl (fd, F_SETFL, flags | O_NONBLOCK))
+        return -1;
+#else
+      /* XXX: Assume it was blocking before.  */
+      const int one = 1;
+      if (ioctl (fd, FIONBIO, &one) < 0)
+        return -1;
+#endif
+    }
+
+  /* We don't stop the handshake process for non-fatal errors */
+  do
+    {
+      err = gnutls_reauth (session, 0);
+
+      if (err == GNUTLS_E_AGAIN && next_timeout)
+        {
+          int sel;
+          if (gnutls_record_get_direction (session))
+            {
+              /* wait for writeability */
+              sel = WAIT_FOR_WRITE;
+            }
+          else
+            {
+              /* wait for readability */
+              sel = WAIT_FOR_READ;
+            }
+          sel = select_fd_nb (fd, next_timeout, sel);
+
+          if (sel <= 0)
+            {
+              if (sel == 0)
+                {
+                  if  (read_timer)
+                    goto read_timedout;
+                  else
+                    {
+                      errno = ETIMEDOUT;
+                      err = -1;
+                    }
+                }
+              break;
+            }
+          if  (read_timer)
+            {
+              if ( (read_timer->next_timeout = read_timer->timeout - ptimer_measure (read_timer->timer)) <= 0 )
+                {
+read_timedout:    /* return GNUTLS_E_REAUTH_REQUEST for gnutls_read */
+                  err = GNUTLS_E_REAUTH_REQUEST;
+                  read_timer->timed_out = 1;
+                  break;
+                }
+               next_timeout = read_timer->next_timeout;
+            }
+        }
+      else if (err < 0)
+        {
+          logprintf (LOG_NOTQUIET, "GnuTLS: %s\n", gnutls_strerror (err));
+        }
+    }
+  while (err && gnutls_error_is_fatal (err) == 0);
+
+  if (!read_timer && next_timeout)
+    {
+#ifdef F_GETFL
+      if (fcntl (fd, F_SETFL, flags) < 0)
+        return -1;
+#else
+      const int zero = 0;
+      if (ioctl (fd, FIONBIO, &zero) < 0)
+        return -1;
+#endif
+    }
+
+  return err;
+}
+#endif
 
 static const char *
 _sni_hostname(const char *hostname)
@@ -536,35 +742,10 @@ _sni_hostname(const char *hostname)
   return sni_hostname;
 }
 
-bool
-ssl_connect_wget (int fd, const char *hostname, int *continue_session)
+static int
+set_prio_default (gnutls_session_t session)
 {
-  struct wgnutls_transport_context *ctx;
-  gnutls_session_t session;
-  int err;
-
-  gnutls_init (&session, GNUTLS_CLIENT);
-
-  /* We set the server name but only if it's not an IP address. */
-  if (! is_valid_ip_address (hostname))
-    {
-      /* GnuTLS 3.4.x (x<=10) disrespects the length parameter, we have to construct a new string */
-      /* see https://gitlab.com/gnutls/gnutls/issues/78 */
-      const char *sni_hostname = _sni_hostname(hostname);
-
-      gnutls_server_name_set (session, GNUTLS_NAME_DNS, sni_hostname, strlen(sni_hostname));
-      xfree(sni_hostname);
-    }
-
-  gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, credentials);
-#ifndef FD_TO_SOCKET
-# define FD_TO_SOCKET(X) (X)
-#endif
-#ifdef HAVE_INTPTR_T
-  gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) (intptr_t) FD_TO_SOCKET (fd));
-#else
-  gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) FD_TO_SOCKET (fd));
-#endif
+  int err = -1;
 
 #if HAVE_GNUTLS_PRIORITY_SET_DIRECT
   switch (opt.secure_protocol)
@@ -590,6 +771,15 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
     case secure_protocol_tlsv1_2:
       err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1", NULL);
       break;
+
+    case secure_protocol_tlsv1_3:
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0:+VERS-TLS1.3:-VERS-TLS1.0:-VERS-TLS1.1:-VERS-TLS1.2", NULL);
+      break;
+#else
+      logprintf (LOG_NOTQUIET, _("Your GnuTLS version is too old to support TLS 1.3\n"));
+      return -1;
+#endif
 
     case secure_protocol_pfs:
       err = gnutls_priority_set_direct (session, "PFS:-VERS-SSL3.0", NULL);
@@ -622,19 +812,38 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
       allowed_protocols[0] = GNUTLS_TLS1_0;
       allowed_protocols[1] = GNUTLS_TLS1_1;
       allowed_protocols[2] = GNUTLS_TLS1_2;
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      allowed_protocols[3] = GNUTLS_TLS1_3;
+#endif
       err = gnutls_protocol_set_priority (session, allowed_protocols);
       break;
 
     case secure_protocol_tlsv1_1:
       allowed_protocols[0] = GNUTLS_TLS1_1;
       allowed_protocols[1] = GNUTLS_TLS1_2;
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      allowed_protocols[2] = GNUTLS_TLS1_3;
+#endif
       err = gnutls_protocol_set_priority (session, allowed_protocols);
       break;
 
     case secure_protocol_tlsv1_2:
       allowed_protocols[0] = GNUTLS_TLS1_2;
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      allowed_protocols[1] = GNUTLS_TLS1_3;
+#endif
       err = gnutls_protocol_set_priority (session, allowed_protocols);
       break;
+
+    case secure_protocol_tlsv1_3:
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+      allowed_protocols[0] = GNUTLS_TLS1_3;
+      err = gnutls_protocol_set_priority (session, allowed_protocols);
+      break;
+#else
+      logprintf (LOG_NOTQUIET, _("Your GnuTLS version is too old to support TLS 1.3\n"));
+      return -1;
+#endif
 
     default:
       logprintf (LOG_NOTQUIET, _("GnuTLS: unimplemented 'secure-protocol' option value %d\n"), opt.secure_protocol);
@@ -642,6 +851,58 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
       abort ();
     }
 #endif
+
+  return err;
+}
+
+bool
+ssl_connect_wget (int fd, const char *hostname, int *continue_session)
+{
+  struct wgnutls_transport_context *ctx;
+  gnutls_session_t session;
+  int err;
+
+#if GNUTLS_VERSION_NUMBER >= 0x030604
+  // enable support of TLS1.3 post-handshake authentication
+  gnutls_init (&session, GNUTLS_CLIENT | GNUTLS_POST_HANDSHAKE_AUTH);
+#else
+  gnutls_init (&session, GNUTLS_CLIENT);
+#endif
+
+  /* We set the server name but only if it's not an IP address. */
+  if (! is_valid_ip_address (hostname))
+    {
+      /* GnuTLS 3.4.x (x<=10) disrespects the length parameter, we have to construct a new string */
+      /* see https://gitlab.com/gnutls/gnutls/issues/78 */
+      const char *sni_hostname = _sni_hostname(hostname);
+
+      gnutls_server_name_set (session, GNUTLS_NAME_DNS, sni_hostname, strlen(sni_hostname));
+      xfree(sni_hostname);
+    }
+
+  gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, credentials);
+#ifndef FD_TO_SOCKET
+# define FD_TO_SOCKET(X) (X)
+#endif
+#ifdef HAVE_INTPTR_T
+  gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) (intptr_t) FD_TO_SOCKET (fd));
+#else
+  gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) FD_TO_SOCKET (fd));
+#endif
+
+  if (!opt.tls_ciphers_string)
+    {
+      err = set_prio_default (session);
+    }
+  else
+    {
+#if HAVE_GNUTLS_PRIORITY_SET_DIRECT
+      err = gnutls_priority_set_direct (session, opt.tls_ciphers_string, NULL);
+#else
+      logprintf (LOG_NOTQUIET, _("GnuTLS: Cannot set prio string directly. Falling back to default priority.\n"));
+      err = gnutls_set_default_priority (session);
+#endif
+    }
 
   if (err < 0)
     {
@@ -675,7 +936,7 @@ ssl_connect_wget (int fd, const char *hostname, int *continue_session)
         }
     }
 
-  err = _do_handshake (session, fd, opt.connect_timeout);
+  err = _do_handshake (session, fd, NULL);
 
   if (err < 0)
     {
@@ -784,7 +1045,7 @@ ssl_check_certificate (int fd, const char *host)
     }
 
   _CHECK_CERT (GNUTLS_CERT_INVALID, _("%s: The certificate of %s is not trusted.\n"));
-  _CHECK_CERT (GNUTLS_CERT_SIGNER_NOT_FOUND, _("%s: The certificate of %s hasn't got a known issuer.\n"));
+  _CHECK_CERT (GNUTLS_CERT_SIGNER_NOT_FOUND, _("%s: The certificate of %s doesn't have a known issuer.\n"));
   _CHECK_CERT (GNUTLS_CERT_REVOKED, _("%s: The certificate of %s has been revoked.\n"));
   _CHECK_CERT (GNUTLS_CERT_SIGNER_NOT_CA, _("%s: The certificate signer of %s was not a CA.\n"));
   _CHECK_CERT (GNUTLS_CERT_INSECURE_ALGORITHM, _("%s: The certificate of %s was signed using an insecure algorithm.\n"));

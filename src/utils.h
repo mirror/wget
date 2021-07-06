@@ -1,7 +1,6 @@
 /* Declarations for utils.c.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free Software
-   Foundation, Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2021 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -32,7 +31,8 @@ as that of the covered work.  */
 #ifndef UTILS_H
 #define UTILS_H
 
-# include <stdlib.h>
+#include <stdlib.h>
+#include <wget.h>
 
 /* Constant is using when we don`t know attempted size exactly */
 #define UNKNOWN_ATTEMPTED_SIZE -3
@@ -50,8 +50,6 @@ as that of the covered work.  */
 #define xnew0(type) (xcalloc (1, sizeof (type)))
 #define xnew_array(type, len) (xmalloc ((len) * sizeof (type)))
 #define xnew0_array(type, len) (xcalloc ((len), sizeof (type)))
-
-#define alloca_array(type, size) ((type *) alloca ((size) * sizeof (type)))
 
 #define xfree(p) do { free ((void *) (p)); p = NULL; } while (0)
 
@@ -73,7 +71,7 @@ char *xstrdup_lower (const char *);
 char *strdupdelim (const char *, const char *);
 char **sepstring (const char *);
 bool subdir_p (const char *, const char *);
-void fork_to_background (void);
+bool fork_to_background (void);
 
 char *aprintf (const char *, ...) GCC_FORMAT_ATTR (1, 2);
 char *concat_strings (const char *, ...);
@@ -90,7 +88,8 @@ bool file_exists_p (const char *, file_stats_t *);
 bool file_non_directory_p (const char *);
 wgint file_size (const char *);
 int make_directory (const char *);
-char *unique_name (const char *, bool);
+char *unique_name_passthrough (const char *);
+char *unique_name (const char *);
 FILE *unique_create (const char *, bool, char **);
 FILE *fopen_excl (const char *, int);
 FILE *fopen_stat (const char *, const char *, file_stats_t *);
@@ -122,15 +121,8 @@ void free_keys_and_values (struct hash_table *);
 
 const char *with_thousand_seps (wgint);
 
-/* human_readable must be able to accept wgint and SUM_SIZE_INT
-   arguments.  On machines where wgint is 32-bit, declare it to accept
-   double.  */
-#if SIZEOF_WGINT >= 8
-# define HR_NUMTYPE wgint
-#else
-# define HR_NUMTYPE double
-#endif
-char *human_readable (HR_NUMTYPE, const int, const int);
+/* human_readable must be able to accept wgint arguments. */
+char *human_readable (wgint, const int, const int);
 
 
 int numdigit (wgint);
@@ -150,6 +142,11 @@ void xsleep (double);
 
 size_t wget_base64_encode (const void *, size_t, char *);
 ssize_t wget_base64_decode (const char *, void *, size_t);
+
+#ifdef HAVE_LIBPCRE2
+void *compile_pcre2_regex (const char *);
+bool match_pcre2_regex (const void *, const char *);
+#endif
 
 #ifdef HAVE_LIBPCRE
 void *compile_pcre_regex (const char *);

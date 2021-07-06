@@ -1,0 +1,7 @@
+local-encoding=yes
+delete-after=yes
+
+input=Xu'€f
+convert-links=yes
+
+input=X

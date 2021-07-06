@@ -1,6 +1,5 @@
 /* File retrieval.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2014, 2015 Free Software
+   Copyright (C) 1996-2011, 2014-2015, 2018-2021 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -63,7 +62,7 @@ as that of the covered work.  */
 #include "hsts.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
-SUM_SIZE_INT total_downloaded_bytes;
+wgint total_downloaded_bytes;
 
 /* Total download time in seconds. */
 double total_download_time;
@@ -160,8 +159,8 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
 /* Write data in BUF to OUT.  However, if *SKIP is non-zero, skip that
    amount of data and decrease SKIP.  Increment *TOTAL by the amount
    of data written.  If OUT2 is not NULL, also write BUF to OUT2.
-   In case of error writing to OUT, -1 is returned.  In case of error
-   writing to OUT2, -2 is returned.  Return 1 if the whole BUF was
+   In case of error writing to OUT, -2 is returned.  In case of error
+   writing to OUT2, -3 is returned.  Return 1 if the whole BUF was
    skipped.  */
 
 static int
@@ -170,25 +169,31 @@ write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
 {
   if (out == NULL && out2 == NULL)
     return 1;
-  if (*skip > bufsize)
+
+  if (skip)
     {
-      *skip -= bufsize;
-      return 1;
-    }
-  if (*skip)
-    {
-      buf += *skip;
-      bufsize -= *skip;
-      *skip = 0;
-      if (bufsize == 0)
-        return 1;
+      if (*skip > bufsize)
+        {
+          *skip -= bufsize;
+          return 1;
+        }
+      if (*skip)
+        {
+          buf += *skip;
+          bufsize -= *skip;
+          *skip = 0;
+          if (bufsize == 0)
+            return 1;
+        }
     }
 
-  if (out != NULL)
+  if (out)
     fwrite (buf, 1, bufsize, out);
-  if (out2 != NULL)
+  if (out2)
     fwrite (buf, 1, bufsize, out2);
-  *written += bufsize;
+
+  if (written)
+    *written += bufsize;
 
   /* Immediately flush the downloaded data.  This should not hinder
      performance: fast downloads will arrive in large 16K chunks
@@ -204,17 +209,18 @@ write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
      actual justification.  (Also, why 16K?  Anyone test other values?)
   */
 #ifndef __VMS
-  if (out != NULL)
+  if (out)
     fflush (out);
-  if (out2 != NULL)
+  if (out2)
     fflush (out2);
 #endif /* ndef __VMS */
-  if (out != NULL && ferror (out))
-    return -1;
-  else if (out2 != NULL && ferror (out2))
+
+  if (out && ferror (out))
     return -2;
-  else
-    return 0;
+  else if (out2 && ferror (out2))
+    return -3;
+
+  return 0;
 }
 
 /* Read the contents of file descriptor FD until it the connection
@@ -411,6 +417,8 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
              timeout, so that the gauge can be updated regularly even
              when the data arrives very slowly or stalls.  */
           tmout = 0.95;
+          /* avoid wrong 'interactive timeout' */
+          errno = 0;
           if (opt.read_timeout)
             {
               double waittm;
@@ -419,7 +427,8 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
                 {
                   /* Don't let total idle time exceed read timeout. */
                   tmout = opt.read_timeout - waittm;
-                  if (tmout < 0)
+                  /* if 0 fd_read can be 'blocked read' */
+                  if (tmout <= 0)
                     {
                       /* We've already exceeded the timeout. */
                       ret = -1, errno = ETIMEDOUT;
@@ -453,6 +462,15 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
             {
               int err;
               int towrite;
+
+              /* Write original data to WARC file */
+              write_res = write_data (NULL, out2, dlbuf, ret, NULL, NULL);
+              if (write_res < 0)
+                {
+                  ret = write_res;
+                  goto out;
+                }
+
               gzstream.avail_in = ret;
               gzstream.next_in = (unsigned char *) dlbuf;
 
@@ -477,17 +495,17 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
                     case Z_STREAM_END:
                       if (exact && sum_read != toread)
                         {
-                          DEBUGP(("zlib stream ended unexpectedly after "
-                                  "%ld/%ld bytes\n", sum_read, toread));
+                          DEBUGP(("zlib stream ended unexpectedly after %"PRId64"/%"PRId64
+                                  " bytes\n", sum_read, toread));
                         }
                     }
 
                   towrite = gzbufsize - gzstream.avail_out;
-                  write_res = write_data (out, out2, gzbuf, towrite, &skip,
+                  write_res = write_data (out, NULL, gzbuf, towrite, &skip,
                                           &sum_written);
                   if (write_res < 0)
                     {
-                      ret = (write_res == -3) ? -3 : -2;
+                      ret = write_res;
                       goto out;
                     }
                 }
@@ -500,7 +518,7 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
                                       &sum_written);
               if (write_res < 0)
                 {
-                  ret = (write_res == -3) ? -3 : -2;
+                  ret = write_res;
                   goto out;
                 }
             }
@@ -544,10 +562,12 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
   if (progress)
     progress_finish (progress, ptimer_read (timer));
 
-  if (elapsed)
-    *elapsed = ptimer_read (timer);
   if (timer)
-    ptimer_destroy (timer);
+    {
+      if (elapsed)
+        *elapsed = ptimer_read (timer);
+      ptimer_destroy (timer);
+    }
 
 #ifdef HAVE_LIBZ
   if (gzbuf != NULL)
@@ -566,9 +586,9 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
         }
       xfree (gzbuf);
 
-      if (gzstream.total_in != sum_read)
+      if (gzstream.total_in != (uLong) sum_read)
         {
-          DEBUGP(("zlib read size differs from raw read size (%lu/%lu)\n",
+          DEBUGP(("zlib read size differs from raw read size (%lu/%"PRId64")\n",
                   gzstream.total_in, sum_read));
         }
     }
@@ -794,14 +814,12 @@ double
 calc_rate (wgint bytes, double secs, int *units)
 {
   double dlrate;
-  double bibyte = 1000.0;
+  double bibyte;
 
   if (!opt.report_bps)
     bibyte = 1024.0;
-
-
-  assert (secs >= 0);
-  assert (bytes >= 0);
+  else
+    bibyte = 1000.0;
 
   if (secs == 0)
     /* If elapsed time is exactly zero, it means we're under the
@@ -810,17 +828,20 @@ calc_rate (wgint bytes, double secs, int *units)
        0 and the timer's resolution, assume half the resolution.  */
     secs = ptimer_resolution () / 2.0;
 
-  dlrate = convert_to_bits (bytes) / secs;
+  dlrate = secs ? convert_to_bits (bytes) / secs : 0;
   if (dlrate < bibyte)
     *units = 0;
   else if (dlrate < (bibyte * bibyte))
     *units = 1, dlrate /= bibyte;
   else if (dlrate < (bibyte * bibyte * bibyte))
     *units = 2, dlrate /= (bibyte * bibyte);
-
-  else
-    /* Maybe someone will need this, one day. */
+  else if (dlrate < (bibyte * bibyte * bibyte * bibyte))
     *units = 3, dlrate /= (bibyte * bibyte * bibyte);
+  else {
+    *units = 4, dlrate /= (bibyte * bibyte * bibyte * bibyte);
+    if (dlrate > 99.99)
+		 dlrate = 99.99; // upper limit 99.99TB/s
+  }
 
   return dlrate;
 }
@@ -918,6 +939,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           iri_free (pi);
           RESTORE_METHOD;
           result = PROXERR;
+          if (orig_parsed != u)
+            url_free (u);
           goto bail;
         }
       if (proxy_url->scheme != SCHEME_HTTP && proxy_url->scheme != u->scheme)
@@ -929,6 +952,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           iri_free (pi);
           RESTORE_METHOD;
           result = PROXERR;
+          if (orig_parsed != u)
+            url_free (u);
           goto bail;
         }
       iri_free(pi);
@@ -1139,9 +1164,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
     xfree (local_file);
 
   if (orig_parsed != u)
-    {
-      url_free (u);
-    }
+    url_free (u);
 
   if (redirection_count || iri_fallbacked)
     {
@@ -1392,11 +1415,12 @@ rotate_backups(const char *fname)
 # define SEP "."
 # define AVSL 0
 #endif
+#define FILE_BUF_SIZE 1024
 
-  int maxlen = strlen (fname) + sizeof (SEP) + numdigit (opt.backups) + AVSL;
-  char *from = alloca (maxlen);
-  char *to = alloca (maxlen);
+  /* avoid alloca() here */
+  char from[FILE_BUF_SIZE], to[FILE_BUF_SIZE];
   struct stat sb;
+  bool overflow;
   int i;
 
   if (stat (fname, &sb) == 0)
@@ -1413,21 +1437,30 @@ rotate_backups(const char *fname)
        */
       if (i == opt.backups)
         {
-          snprintf (to, sizeof(to), "%s%s%d%s", fname, SEP, i, AVS);
-          delete (to);
+          if (((unsigned) snprintf (to, sizeof (to), "%s%s%d%s", fname, SEP, i, AVS)) >= sizeof (to))
+            logprintf (LOG_NOTQUIET, "Failed to delete %s: File name truncation\n", to);
+          else
+            delete (to);
         }
 #endif
-      snprintf (to, maxlen, "%s%s%d", fname, SEP, i);
-      snprintf (from, maxlen, "%s%s%d", fname, SEP, i - 1);
-      if (rename (from, to))
+      overflow = (unsigned) snprintf (to, FILE_BUF_SIZE, "%s%s%d", fname, SEP, i) >= FILE_BUF_SIZE;
+      overflow |= (unsigned) snprintf (from, FILE_BUF_SIZE, "%s%s%d", fname, SEP, i - 1) >= FILE_BUF_SIZE;
+
+      if (overflow)
+          errno = ENAMETOOLONG;
+      if (overflow || rename (from, to))
         logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
                    from, to, errno, strerror (errno));
     }
 
-  snprintf (to, maxlen, "%s%s%d", fname, SEP, 1);
-  if (rename(fname, to))
+  overflow = (unsigned) snprintf (to, FILE_BUF_SIZE, "%s%s%d", fname, SEP, 1) >= FILE_BUF_SIZE;
+  if (overflow)
+    errno = ENAMETOOLONG;
+  if (overflow || rename(fname, to))
     logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
                fname, to, errno, strerror (errno));
+
+#undef FILE_BUF_SIZE
 }
 
 static bool no_proxy_match (const char *, const char **);

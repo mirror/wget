@@ -1,7 +1,6 @@
 # Makefile for `wget' utility
-# Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-# 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free Software
-# Foundation, Inc.
+# Copyright (C) 1995-2011, 2015, 2018-2021 Free Software Foundation,
+# Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,7 +45,7 @@ endif
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
 
-EXTRA_DIST = css.l css.c css_.c build_info.c.in
+EXTRA_DIST = css.l css.c css_.c build_info.c.in build_info.c
 
 bin_PROGRAMS = wget
 wget_SOURCES = connect.c convert.c cookies.c ftp.c	\
@@ -62,13 +61,13 @@ wget_SOURCES = connect.c convert.c cookies.c ftp.c	\
 		spider.h ssl.h sysdep.h url.h warc.h utils.h wget.h iri.h	\
 		exits.h version.h metalink.h xattr.h
 nodist_wget_SOURCES = version.c
-EXTRA_wget_SOURCES = iri.c
-LDADD = $(LIBOBJS) ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB)\
+EXTRA_wget_SOURCES = iri.c metalink.c xattr.c
+LDADD = $(CODE_COVERAGE_LIBS) $(LIBOBJS) ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB)\
  $(INET_NTOP_LIB) $(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO)\
  $(LIB_NANOSLEEP) $(LIB_POSIX_SPAWN) $(LIB_SELECT) $(LIBICONV) $(LIBINTL)\
  $(LIBTHREAD) $(LIBUNISTRING) $(SERVENT_LIB)
-AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
-
+AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib $(CODE_COVERAGE_CPPFLAGS)
+AM_CFLAGS = $(WERROR_CFLAGS) $(WARN_CFLAGS) $(CODE_COVERAGE_CFLAGS)
 
 ../lib/libgnu.a:
 	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
@@ -103,9 +102,9 @@ distclean-local:
 	rm -f css.c css_.c
 
 check_LIBRARIES = libunittest.a
-libunittest_a_SOURCES = $(wget_SOURCES) test.c build_info.c test.h
+libunittest_a_SOURCES = $(wget_SOURCES) build_info.c
 nodist_libunittest_a_SOURCES = version.c
-libunittest_a_CPPFLAGS = -DTESTING "-I$(top_builddir)/lib" "-I$(top_srcdir)/lib"
+libunittest_a_CPPFLAGS = -DTESTING "-I$(top_builddir)/lib" "-I$(top_srcdir)/lib" $(CODE_COVERAGE_CPPLAGS)
 libunittest_a_LIBADD = $(LIBOBJS)
 
 CLEANFILES = *~ *.bak core core.[0-9]* build_info.c version.c

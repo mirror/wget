@@ -1,0 +1,8 @@
+extraction:
+  cpp:
+    prepare:
+      packages:
+        - libgpgme11-dev
+        - autoconf-archive
+    configure:
+      command: ./bootstrap && autoreconf -ivf && ./configure
