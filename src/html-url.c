@@ -588,16 +588,16 @@ tag_handle_meta (int tagid _GL_UNUSED, struct taginfo *tag, struct map_context *
 
       struct urlpos *entry;
       int attrind;
-      int timeout = 0;
+      int timeout;
       char *p;
 
       char *refresh = find_attr (tag, "content", &attrind);
       if (!refresh)
         return;
 
-      for (p = refresh; c_isdigit (*p); p++)
-        timeout = 10 * timeout + *p - '0';
-      if (*p++ != ';')
+      timeout = strtol(refresh, &p, 10);
+
+      if (timeout < 0 || *p++ != ';')
         return;
 
       while (c_isspace (*p))
