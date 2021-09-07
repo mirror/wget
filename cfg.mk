@@ -43,5 +43,5 @@ VC_LIST_ALWAYS_EXCLUDE_REGEX = ^ABOUT-NLS|((msdos|vms)/.*)|ChangeLog-2014-12-10|
 update-copyright-env = UPDATE_COPYRIGHT_USE_INTERVALS=1
 generated_files =
 
-old_NEWS_hash = 0813bf0ca67740840d6385f115107fac
+old_NEWS_hash = aeb5129a870c3e8b8186045387b19715
 manual_title = $(VERSION)
