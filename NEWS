@@ -1,6 +1,15 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 1.21.2 (2021-09-07)
+
+** Support for autoconf 2.71
+
+** Fix a double free in FTP when using an absolute path
+
+** Release tarballs no longer have a dependency on Python.
+
+** --page-requisites will now also download links marked as "alternate
+   stylesheet" or "icon"
 
 
 * Noteworthy changes in release 1.21.1 (2021-01-09)
