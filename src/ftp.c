@@ -2083,7 +2083,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
             /* --dont-remove-listing was specified, so do count this towards the
                number of bytes and files downloaded. */
             {
-              total_downloaded_bytes += qtyread;
+              total_downloaded_bytes += (qtyread - restval);
               numurls++;
             }
 
@@ -2098,7 +2098,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
              downloaded if they're going to be deleted.  People seeding proxies,
              for instance, may want to know how many bytes and files they've
              downloaded through it. */
-          total_downloaded_bytes += qtyread;
+          total_downloaded_bytes += (qtyread - restval);
           numurls++;
 
           if (opt.delete_after && !input_file_url (opt.input_filename))
