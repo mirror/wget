@@ -1449,16 +1449,25 @@ rotate_backups(const char *fname)
       if (overflow)
           errno = ENAMETOOLONG;
       if (overflow || rename (from, to))
-        logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
-                   from, to, errno, strerror (errno));
+        {
+          // The original file may not exist. In which case rename() will
+          // return ENOENT. This is not a real error. We could make this better
+          // by calling stat() first and making sure that the file exists.
+          if (errno != ENOENT)
+              logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
+                      from, to, errno, strerror (errno));
+        }
     }
 
   overflow = (unsigned) snprintf (to, FILE_BUF_SIZE, "%s%s%d", fname, SEP, 1) >= FILE_BUF_SIZE;
   if (overflow)
     errno = ENAMETOOLONG;
   if (overflow || rename(fname, to))
-    logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
-               fname, to, errno, strerror (errno));
+    {
+      if (errno != ENOENT)
+          logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
+                  from, to, errno, strerror (errno));
+    }
 
 #undef FILE_BUF_SIZE
 }
