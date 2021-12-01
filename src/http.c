@@ -4796,7 +4796,7 @@ Remote file exists.\n\n"));
                              number_to_static_string (hstat.len));
                   logprintf (LOG_NONVERBOSE,
                              "%s URL:%s [%s] -> \"%s\" [%d]\n",
-                             tms, u->url, number_to_static_string (hstat.len),
+                             tms, url_string (u, URL_AUTH_HIDE_PASSWD), number_to_static_string (hstat.len),
                              hstat.local_file, count);
                 }
               ++numurls;
