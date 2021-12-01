@@ -293,12 +293,12 @@ hsts_read_database (hsts_store_t store, FILE *fp, bool merge_with_existing_entri
       if (*p == '#')
         continue;
 
-      items_read = sscanf (p, "%255s %d %d %lu %lu",
+      items_read = sscanf (p, "%255s %d %d %llu %llu",
                            host,
                            &port,
                            &include_subdomains,
-                           (unsigned long *) &created,
-                           (unsigned long *) &max_age);
+                           &created,
+                           &max_age);
 
       if (items_read == 5)
         func (store, host, port, created, max_age, !!include_subdomains);
