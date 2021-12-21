@@ -96,7 +96,7 @@ oss-fuzz:
 	XLIBS="-lpsl -lgnutls -lhogweed -lnettle -lidn2 -lunistring"; \
 	for ccfile in wget*_fuzzer.c; do \
 	fuzzer=$$(basename $$ccfile .c); \
-	$$CXX $$CXXFLAGS -I$(top_srcdir)/src -I$(top_srcdir) -I$(top_srcdir)/lib \
+	$$CC $$CFLAGS -I$(top_srcdir)/src -I$(top_srcdir) -I$(top_srcdir)/lib \
 	"$${fuzzer}.c" -o "$${fuzzer}" \
 	../src/libunittest.a ../lib/libgnu.a $${LIB_FUZZING_ENGINE} \
 	-Wl,-Bstatic $${XLIBS} -Wl,-Bdynamic; \
