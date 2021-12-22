@@ -1,0 +1,3 @@
+input=http://%42
+http-proxy=1%%30a%%30a%%30a
+localencoding=
