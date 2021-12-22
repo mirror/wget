@@ -375,8 +375,8 @@ CoverageReports:
     artifacts:
         when: on_success
         paths:
-            - wget-*/test-coverage/
-            - wget-*/fuzz-coverage/
+            - test-coverage/
+            - fuzz-coverage/
     only:
         - master
 
