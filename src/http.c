@@ -4794,10 +4794,15 @@ Remote file exists.\n\n"));
                              tms, tmrate,
                              write_to_stdout ? "" : quote (hstat.local_file),
                              number_to_static_string (hstat.len));
-                  logprintf (LOG_NONVERBOSE,
-                             "%s URL:%s [%s] -> \"%s\" [%d]\n",
-                             tms, url_string (u, URL_AUTH_HIDE_PASSWD), number_to_static_string (hstat.len),
-                             hstat.local_file, count);
+                  if (!(opt.verbose || opt.quiet))
+                    {
+                      char *url = url_string (u, URL_AUTH_HIDE_PASSWD);
+                      logprintf (LOG_NONVERBOSE,
+                                 "%s URL:%s [%s] -> \"%s\" [%d]\n",
+                                 tms, url, number_to_static_string (hstat.len),
+                                 hstat.local_file, count);
+                      xfree (url);
+                    }
                 }
               ++numurls;
               total_downloaded_bytes += hstat.rd_size;
