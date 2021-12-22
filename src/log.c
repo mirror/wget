@@ -569,11 +569,12 @@ logprintf (enum log_options o, const char *fmt, ...)
   bool done;
   int errno_saved = errno;
 
+  CHECK_VERBOSE (o);
+
   check_redirect_output ();
   errno = errno_saved;
   if (inhibit_logging)
     return;
-  CHECK_VERBOSE (o);
 
   xzero (lpstate);
   errno = 0;
