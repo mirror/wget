@@ -251,10 +251,10 @@ TLS/OpenSSL:
         expire_in: 2 weeks
         when: on_failure
         paths:
-            - ./*.log
-            - fuzz/*.log
-            - tests/*.log
-            - testenv/*.log
+            - wget-*/./*.log
+            - wget-*/fuzz/*.log
+            - wget-*/tests/*.log
+            - wget-*/testenv/*.log
 
 TLS/GnuTLS:
     stage: test-from-tarball
@@ -282,10 +282,10 @@ TLS/GnuTLS:
         expire_in: 2 weeks
         when: on_failure
         paths:
-            - ./*.log
-            - fuzz/*.log
-            - tests/*.log
-            - testenv/*.log
+            - wget-*/./*.log
+            - wget-*/fuzz/*.log
+            - wget-*/tests/*.log
+            - wget-*/testenv/*.log
 
 Sanitizers:
     stage: test-from-tarball
@@ -317,10 +317,10 @@ Sanitizers:
         expire_in: 2 weeks
         when: on_failure
         paths:
-            - ./*.log
-            - fuzz/*.log
-            - tests/*.log
-            - testenv/*.log
+            - wget-*/./*.log
+            - wget-*/fuzz/*.log
+            - wget-*/tests/*.log
+            - wget-*/testenv/*.log
 
 Scan-Build:
     stage: test-from-tarball
@@ -348,7 +348,7 @@ Scan-Build:
         expire_in: 2 weeks
         when: on_failure
         paths:
-            - scan-build/
+            - wget-*/scan-build/
 
 CoverageReports:
     stage: test-from-tarball
@@ -375,8 +375,8 @@ CoverageReports:
     artifacts:
         when: on_success
         paths:
-            - test-coverage/
-            - fuzz-coverage/
+            - wget-*/test-coverage/
+            - wget-*/fuzz-coverage/
     only:
         - master
 
