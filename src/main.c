@@ -1987,6 +1987,11 @@ for details.\n\n"));
 # define FOPEN_OPT_ARGS
 #endif /* def __VMS [else] */
 
+          if (opt.unlink_requested)
+            {
+              unlink(opt.output_document);
+            }
+
           output_stream = fopen (opt.output_document,
                                  opt.always_rest ? "ab" : "wb"
                                  FOPEN_OPT_ARGS);
