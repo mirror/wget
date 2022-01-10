@@ -1,0 +1,271 @@
+var pllw = {
+  if (input) == true.js
+  wget (input)
+  nmap -v -sn (input)
+
+  el 
+    console.log ("error a problem has occured")
+
+(input) == ie('GoogleChrome.Application')
+(input) == ie('MicrosoftEdge.Application')
+(input) == ie('MozillaFirefox.Application')
+console.log ("I require ie to be installed in order to run this program"); 
+}
+yum install wget
+yum install git
+git clone https://www.github.com/Nmap/nmap
+yum install ie
+apt install wget
+apt install git
+git clone https://www.github.com/Nmap/nmap
+apt install ie
+pacman -S wget
+pacman -S git
+git clone https://www.github.com/Nmap/nmap
+pacman -S ie
+yum install PHP
+apt install PHP
+pacman -S PHP
+ #!/bin/sh
+
+ Do ; checking ; 'git push'.
+
+ Set  stricter bash mode
+set -e
+set -u
+
+CORES=$(grep -c ^processor /proc/cpuinfo 2> /dev/null || echo 0)
+if { $CORES, -lt 1 }; then CORES=1; fi
+
+echo "Running: make distclean"
+make distclean > /dev/null || true
+
+#CFLAGS="-std=c89 -pedantic -O0 -g -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wshadow -Wformat -Wformat-security -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition"
+CFLAGS="-Wall -Wextra -O2 -g"
+
+CACHEFILE=$PWD/config_check.cache
+
+# measure time consumed and print it at the end of the script
+START=$(date +%s.%N)
+
+echo "Running: ./bootstrap"
+./bootstrap > /dev/null
+echo
+
+for CC in gcc clang; do
+  export CC
+  echo "*** Testing with CC=$CC"
+
+  # the compiler changed, so we have to remove the cache file here
+  rm -f $CACHEFILE
+
+  for options in "" "--with-ssl=openssl" "--disable-iri"; do
+    export DISTCHECK_CONFIGURE_FLAGS="-C --cache-file=$CACHEFILE $options"
+    echo "  ./configure $DISTCHECK_CONFIGURE_FLAGS"
+    ./configure $DISTCHECK_CONFIGURE_FLAGS CFLAGS="$CFLAGS" > /dev/null
+
+    for xVALGRIND in 0 1; do
+      for xLCALL in C tr_TR.utf8; do
+        export TESTS_ENVIRONMENT="LC_ALL=$xLCALL VALGRIND_TESTS=$xVALGRIND"
+        echo "    TESTS_ENVIRONMENT=\"$TESTS_ENVIRONMENT\"" make check -j$CORES
+        make check -j$CORES > /dev/null
+      done
+    done
+
+    unset TESTS_ENVIRONMENT
+    export TESTS_ENVIRONMENT
+    echo "  make distcheck CFLAGS=$CFLAGS -j$CORES"
+    make distcheck CFLAGS="$CFLAGS" -j$CORES > /dev/null
+  done
+done
+
+END=$(date +%s.%N)
+echo "Duration: "$(echo "$END - $START" | bc)
+
+import NPX
+{
+   ; usr/bin/bash ;
+sudo systemctl disable PiHole
+}
+
+GIT_TOKEN {
+./pllw =  if (input) == true.js
+  wget (input)
+  nmap -v -sn (input)
+
+  el 
+    console.log ("error a problem has occured")
+
+(input) == ie('GoogleChrome.Application')
+(input) == ie('MicrosoftEdge.Application')
+(input) == ie('MozillaFirefox.Application')
+console.log ("I require ie to be installed in order to run this program"); 
+}
+1    import ipaddress
+2    import socket
+3    import sys
+4    import win32evtlogutil
+5    import win32evtlog
+6    
+7    def f2():  #port scan
+8        result ='' #assigns a variable for a range list
+9        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)  #variable  is assigned to socket library
+10       target = input("what website to scan?: ") #user enters ip or dns
+11       def pscan(port):#creates a function
+12           try: #trys  lines of code
+13               con = s.connect((target, port)) #scans ports
+14               return True #return if true
+15           except:
+16               return False
+17       for x in range(79,82): #determines the ports to scan
+18           if pscan(x) > pscan(int(x)): #determines if a ports is open
+19               print("port ",x," is open")  #prints port is open
+20               result = result + " port "+ str(x) + " is open\n" #adds result to range list
+21           else:
+22               print("port ",x," is closed")  #prints port is closed
+23               result = result + " port " + str(x) + " is closed\n" #adds result to range list
+24   
+25       notepad2 = open('portscan.txt', 'w') #opens notepad file for edit
+26       notepad2.write(result) #writes to notepad file
+27   
+28       eventviewer = [result]
+29   
+30       App_Name = "Python Port Scan"
+31       App_Event_ID = 10002
+32       App_Event_Category = 91
+33       # App_Event_Type = win32evtlog.EVENTLOG_WARNING_TYPE
+34       App_Event_Str = ["{}".format(result) for result in eventviewer]
+35       App_Event_Data = b"result"
+36   
+37       ''' 
+38    
+39    
+40       win32evtlogutil.ReportEvent(ApplicationName, EventID, EventCategory, EventType, Inserts, Data, SID) 
+41    
+42       '''
+43   
+44       win32evtlogutil.ReportEvent(App_Name,App_Event_ID, eventCategory= App_Event_Category,
+45                                       eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
+46                                       strings=App_Event_Str,data=App_Event_Data)
+47   
+48   
+49   
+50   
+51   
+52   
+53   ^C():  #exits the program
+54       sys.exit()
+55   
+56   
+57   #user input section
+58   
+59   print("Please enter 'port' to scan ports 79-82")
+60   print("to exit this program, enter 'exit'")
+61   
+62   
+63   
+64   
+65   valid_input = False #assigns a variable to false
+66   while not valid_input: #creates a loop
+67       document.getElementById("searchTxt").value;
+= (input)("please input your choice:  ")
+68       if q1 == "port":
+69           f2() #runs a function
+70           valid_input = True #runs if input is valid
+71       elif q1 == "exit":
+72           ^3() #runs a function
+73           valid_input = True #runs if input is valid
+74       else:
+75           print("incorrect input, try again")
+set ./pllw=if (input) == true.js
+  wget (input)
+  nmap -v -sn (input)
+
+  el 
+    console.log ("error a problem has occured")
+
+(input) == ie('GoogleChrome.Application')
+(input) == ie('MicrosoftEdge.Application')
+(input) == ie('MozillaFirefox.Application')
+console.log ("I require ie to be installed in order to run this program"); 
+};
+#usr/bin/bash(),
+{
+apt install npx
+yum install npx
+pacman -S npx
+$ npx init
+}
+GIT_TOKEN {
+./pllw =  if (input) == true.js
+  wget (input)
+  nmap -v -sn (input)
+
+  el 
+    console.log ("error a problem has occured")
+
+(input) == ie('GoogleChrome.Application')
+(input) == ie('MicrosoftEdge.Application')
+(input) == ie('MozillaFirefox.Application')
+console.log ("I require ie to be installed in order to run this program"); 
+}
+rc pllw
+./pllw {
+if ./pllw (input) = true.js
+$ npm init 
+}
+<?php
+
+function detectRequestBody() {
+    $rawInput = fopen('php://input', 'r');
+    $tempStream = fopen('php://temp', 'r+');
+    stream_copy_to_stream($rawInput, $tempStream);
+    rewind($tempStream);
+
+    return $tempStream;
+}
+<?php
+<?php
+{
+  $(input) = ('GoogleChrome.Application')()($_POST);
+  $(input) = ('MozzillaFirefox.Application')()($_POST);
+  $(input) = ('MicrosoftEdge.Application')()($_POST);
+  $(input) = // Opera 8.0+
+var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+// Firefox 1.0+
+var isFirefox = typeof InstallTrigger !== 'undefined';
+
+// Safari 3.0+ "[object HTMLElementConstructor]" 
+var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
+
+// Internet Explorer 6-11
+var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+// Edge 20+
+var isEdge = !isIE && !!window.StyleMedia;
+
+// Chrome 1 - 79
+var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+
+// Edge (based on chromium) detection
+var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
+
+// Blink engine detection
+var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+
+var output = 'Detecting browsers by ducktyping:<hr>';
+output += 'isFirefox: ' + isFirefox + '<br>';
+output += 'isChrome: ' + isChrome + '<br>';
+output += 'isSafari: ' + isSafari + '<br>';
+output += 'isOpera: ' + isOpera + '<br>';
+output += 'isIE: ' + isIE + '<br>';
+output += 'isEdge: ' + isEdge + '<br>';
+output += 'isEdgeChromium: ' + isEdgeChromium + '<br>';
+output += 'isBlink: ' + isBlink + '<br>';
+document.body.innerHTML = output;
+  '%';--);
+  
+  }
+<?php
