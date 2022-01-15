@@ -485,7 +485,7 @@ dot_finish (void *progress, double dltime)
 #else
   print_row_stats (dp, dltime, true);
 #endif
-  logputs (LOG_VERBOSE, "\n\n");
+  logputs (LOG_PROGRESS, "\n\n");
   log_set_flush (false);
 
   xfree (dp);
