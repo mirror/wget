@@ -2868,7 +2868,6 @@ delelement (struct fileinfo **f, struct fileinfo **start)
   xfree ((*f)->name);
   xfree ((*f)->linkto);
   xfree (*f);
-  *f = NULL;
 
   if (next)
     next->prev = prev;
@@ -2887,8 +2886,7 @@ freefileinfo (struct fileinfo *f)
     {
       struct fileinfo *next = f->next;
       xfree (f->name);
-      if (f->linkto)
-        xfree (f->linkto);
+      xfree (f->linkto);
       xfree (f);
       f = next;
     }
