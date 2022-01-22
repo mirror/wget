@@ -625,32 +625,31 @@ then
   if test x"$ENABLE_NTLM" != xno
   then
     ENABLE_NTLM=yes
-    AC_DEFINE([ENABLE_NTLM], 1,
-     [Define if you want the NTLM authorization support compiled in.])
+    AC_DEFINE([ENABLE_NTLM], 1, [Define if you want the NTLM authorization support compiled in.])
     AC_LIBOBJ([http-ntlm])
   fi
 else
-  AC_CHECK_LIB(nettle, nettle_md4_init, [HAVE_NETTLE=yes], [HAVE_NETTLE=no; AC_MSG_WARN(*** libnettle was not found. You will not be able to use NTLM)])
-
-  if test x"$HAVE_NETTLE" = xyes
-  then
-    AC_SUBST(NETTLE_LIBS, "-lnettle")
-    AC_DEFINE([HAVE_NETTLE], [1], [Use libnettle])
-    if test x"$ENABLE_NTLM" != xno
-    then
-      ENABLE_NTLM=yes
-      AC_DEFINE([ENABLE_NTLM], 1,
-       [Define if you want the NTLM authorization support compiled in.])
-      AC_LIBOBJ([http-ntlm])
+  PKG_CHECK_MODULES([NETTLE], nettle, [
+    HAVE_NETTLE=yes
+    LIBS="$NETTLE_LIBS $LIBS"
+    CFLAGS="$NETTLE_CFLAGS $CFLAGS"
+  ], [
+    AC_CHECK_LIB(nettle, nettle_md4_init, [HAVE_NETTLE=yes], [HAVE_NETTLE=no; AC_MSG_WARN(*** libnettle was not found. You will not be able to use NTLM)])
+    if test x"$HAVE_NETTLE" != xyes; then
+      if  test x"$ENABLE_NTLM" = xyes; then
+        AC_MSG_ERROR([NTLM authorization requested and SSL not enabled; aborting])
+      fi
+    else
+      AC_SUBST(NETTLE_LIBS, "-lnettle")
       LIBS="$NETTLE_LIBS $LIBS"
     fi
-  else
-    dnl If SSL is unavailable and the user explicitly requested NTLM,
-    dnl abort.
-    if test x"$ENABLE_NTLM" = xyes
-    then
-      AC_MSG_ERROR([NTLM authorization requested and SSL not enabled; aborting])
-    fi
+  ])
+
+  if test x"$HAVE_NETTLE" = xyes; then
+    AC_DEFINE([HAVE_NETTLE], [1], [Use libnettle])
+    ENABLE_NTLM=yes
+    AC_DEFINE([ENABLE_NTLM], 1, [Define if you want the NTLM authorization support compiled in.])
+    AC_LIBOBJ([http-ntlm])
   fi
 fi
 
@@ -789,19 +788,18 @@ AS_IF([test "X$iri" != "Xno"],[
   fi
 ])
 
-AC_ARG_WITH(libidn, AS_HELP_STRING([--with-libidn=[DIR]],[Support IDN2008/IRIs (needs GNU libidn2 + libunicode)]),
-                                   libidn=$withval, libidn="")
 if test "X$iri" != "Xno"; then
   AS_IF([test "x$with_libidn2" != xno], [
-    AC_SEARCH_LIBS(idn2_lookup_u8, idn2,
-      [with_libidn2=yes; AC_DEFINE([ENABLE_IRI], 1, [Define if IRI support is enabled.])],
-      [with_libidn2=no; iri=no; AC_MSG_WARN(*** LIBIDN2 was not found. You will not be able to use IDN2008 support)])
-
-#    AS_IF([test "x$with_libidn2" = xyes], [
-#      AC_SEARCH_LIBS(u8_tolower, unistring,
-#        [AC_DEFINE([ENABLE_IRI], 1, [Define if IRI support is enabled.])],
-#        [iri=no; AC_MSG_WARN(*** LIBUNISTRING was not found. You will not be able to use IDN2008 support)])
-#    ])
+    PKG_CHECK_MODULES([LIBIDN2], [libidn2 >= 0.14.0], [
+      with_libidn2=yes
+      LIBS="$LIBIDN2_LIBS $LIBS"
+      CFLAGS="$LIBIDN2_CFLAGS $CFLAGS"
+      AC_DEFINE([ENABLE_IRI], 1, [Define if IRI support is enabled.])
+    ], [
+      AC_SEARCH_LIBS(idn2_lookup_u8, idn2,
+        [with_libidn2=yes; AC_DEFINE([ENABLE_IRI], 1, [Define if IRI support is enabled.])],
+        [with_libidn2=no; iri=no; AC_MSG_WARN(*** LIBIDN2 was not found. You will not be able to use IDN2008 support)])
+    ])
   ])
 fi
 
@@ -930,15 +928,22 @@ AS_IF([test x"$with_metalink" != xno], [
     dnl
     dnl Check for GPGME
     dnl
-    m4_ifdef([AM_PATH_GPGME], [
-      AM_PATH_GPGME([], [
-        # Put libgpgme to the end of the library list since it introduces a -L linker flags.
-        # That -L might break the build if there are two different version of
-        # a library (e.g. GnuTLS) in /usr/local and in the system directory.
-        LIBS="$LIBS $GPGME_LIBS"
-        CFLAGS="$GPGME_CFLAGS $CFLAGS"
-        AC_DEFINE([HAVE_GPGME], [1], [Define if GPGME is available.])
-        have_gpg=yes
+    PKG_CHECK_MODULES([GPGME], gpgme, [
+      LIBS="$LIBS $GPGME_LIBS"
+      CFLAGS="$GPGME_CFLAGS $CFLAGS"
+      AC_DEFINE([HAVE_GPGME], [1], [Define if GPGME is available.])
+      have_gpg=yes
+    ], [
+      m4_ifdef([AM_PATH_GPGME], [
+        AM_PATH_GPGME([], [
+          # Put libgpgme to the end of the library list since it introduces a -L linker flags.
+          # That -L might break the build if there are two different version of
+          # a library (e.g. GnuTLS) in /usr/local and in the system directory.
+          LIBS="$LIBS $GPGME_LIBS"
+          CFLAGS="$GPGME_CFLAGS $CFLAGS"
+          AC_DEFINE([HAVE_GPGME], [1], [Define if GPGME is available.])
+          have_gpg=yes
+        ])
       ])
     ])
   ])
