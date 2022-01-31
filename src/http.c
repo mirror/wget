@@ -1343,7 +1343,7 @@ parse_strict_transport_security (const char *header, time_t *max_age, bool *incl
       else
         {
           /* something weird happened */
-          logprintf (LOG_VERBOSE, "Could not parse String-Transport-Security header\n");
+          logprintf (LOG_VERBOSE, "Could not parse Strict-Transport-Security header\n");
           success = false;
         }
     }
