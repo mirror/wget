@@ -300,7 +300,7 @@ Sanitizers:
         - export CFLAGS="$CFLAGS_DEFAULT"
         - export CC="ccache clang"
         - export UBSAN_OPTIONS=print_stacktrace=1
-        - export ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-8/bin/llvm-symbolizer
+        - export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 #       - export LSAN_OPTIONS=suppressions="$PWD/tests/clang-asan-suppressions"
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
             --enable-fsanitize-asan --enable-fsanitize-ubsan
