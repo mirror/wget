@@ -481,6 +481,56 @@ free_netrc(acc_t *l)
 }
 #endif
 
+#ifdef TESTING
+#include "../tests/unit-tests.h"
+const char *
+test_parse_netrc(void)
+{
+  static const struct test {
+    const char *pw_in;
+    const char *pw_expected;
+  } tests[] = {
+    { "a\\b", "ab" },
+    { "a\\\\b", "a\\b" },
+    { "\"a\\\\b\"", "a\\b" },
+    { "\"a\\\"b\"", "a\"b" },
+    { "a\"b", "a\"b" },
+    { "a\\\\\\\\b", "a\\\\b" },
+    { "a\\\\", "a\\" },
+    { "\"a\\\\\"", "a\\" },
+    { "a\\", "a" },
+    { "\"a b\"", "a b" },
+    { "a b", "a" },
+  };
+  unsigned i;
+  static char errmsg[128];
+
+  for (i = 0; i < countof(tests); ++i)
+    {
+      const struct test *t = &tests[i];
+      char netrc[128];
+      FILE *fp;
+      acc_t *acc;
+      int n;
+
+      n = snprintf (netrc, sizeof(netrc), "machine localhost\n\tlogin me\n\tpassword %s", t->pw_in);
+      mu_assert ("test_parse_netrc: failed to fmemopen() netrc", (fp = fmemopen(netrc, n, "r")) != NULL);
+
+      acc = parse_netrc_fp ("memory", fp);
+      fclose(fp);
+
+      if (strcmp(acc->passwd, t->pw_expected))
+        {
+          snprintf(errmsg, sizeof(errmsg), "test_parse_netrc: wrong result [%u]. Expected '%s', got '%s'",
+                   i, t->pw_expected, acc->passwd);
+          return errmsg;
+        }
+    }
+
+  return NULL;
+}
+#endif
+
 #ifdef STANDALONE
 #include <sys/types.h>
 #include <sys/stat.h>

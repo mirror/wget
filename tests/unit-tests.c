@@ -65,6 +65,7 @@ all_tests(void)
   mu_run_test (test_hsts_url_rewrite_congruent);
   mu_run_test (test_hsts_read_database);
 #endif
+  mu_run_test (test_parse_netrc);
 
   return NULL;
 }

@@ -61,6 +61,7 @@ const char *test_hsts_new_entry(void);
 const char *test_hsts_url_rewrite_superdomain(void);
 const char *test_hsts_url_rewrite_congruent(void);
 const char *test_hsts_read_database(void);
+const char *test_parse_netrc(void);
 
 #endif /* TEST_H */
 
