@@ -523,8 +523,11 @@ test_parse_netrc(void)
         {
           snprintf(errmsg, sizeof(errmsg), "test_parse_netrc: wrong result [%u]. Expected '%s', got '%s'",
                    i, t->pw_expected, acc->passwd);
+          free_netrc(acc);
           return errmsg;
         }
+
+      free_netrc(acc);
     }
 
   return NULL;
