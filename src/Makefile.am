@@ -56,10 +56,31 @@ wget_SOURCES = connect.c convert.c cookies.c ftp.c	\
 		utils.c exits.c build_info.c $(IRI_OBJ) $(METALINK_OBJ)	\
 		css-url.h css-tokens.h connect.h convert.h cookies.h	\
 		ftp.h hash.h host.h hsts.h  html-parse.h html-url.h	\
-		http.h http-ntlm.h init.h log.h mswindows.h netrc.h	\
+		http.h init.h log.h netrc.h	\
 		options.h progress.h ptimer.h recur.h res.h retr.h	\
 		spider.h ssl.h sysdep.h url.h warc.h utils.h wget.h iri.h	\
 		exits.h version.h metalink.h xattr.h
+
+if WITH_OPIE
+wget_SOURCES += ftp-opie.c
+endif
+
+if OS_MSWINDOWS
+wget_SOURCES += mswindows.c mswindows.h
+endif
+
+if WITH_NTLM
+wget_SOURCES += http-ntlm.c http-ntlm.h
+endif
+
+if WITH_OPENSSL
+wget_SOURCES += openssl.c
+endif
+
+if WITH_GNUTLS
+wget_SOURCES += gnutls.c
+endif
+
 nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = iri.c metalink.c xattr.c
 LDADD = $(CODE_COVERAGE_LIBS) $(LIBOBJS) ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB)\

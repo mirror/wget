@@ -347,10 +347,6 @@ AC_CHECK_FUNCS(strptime timegm vsnprintf vasprintf drand48 pathconf)
 AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr wcwidth mbtowc)
 AC_CHECK_FUNCS(sleep symlink utime strlcpy random fmemopen)
 
-if test x"$ENABLE_OPIE" = xyes; then
-  AC_LIBOBJ([ftp-opie])
-fi
-
 dnl We expect to have these functions on Unix-like systems configure
 dnl runs on.  The defines are provided to get them in config.h.in so
 dnl Wget can still be ported to non-Unix systems (such as Windows)
@@ -362,9 +358,10 @@ dnl Deal with specific hosts
 case $host_os in
   *mingw32* )
     LIBS+=' -lws2_32'
-    AC_LIBOBJ([mswindows])
+    OS_USED="mswindows"
     ;;
 esac
+AM_CONDITIONAL([OS_MSWINDOWS], [test x"$OS_USED" = x"mswindows"])
 
 # enable all possible compiler warnings in WARN_FLAGS
 #
@@ -517,7 +514,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
   if [test x"$with_libssl_prefix" = x]; then
     PKG_CHECK_MODULES([OPENSSL], [openssl], [
       AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
-      AC_LIBOBJ([openssl])
+      ssl_library="openssl"
       LIBS="$OPENSSL_LIBS $LIBS"
       CFLAGS="$OPENSSL_CFLAGS -DHAVE_LIBSSL $CFLAGS"
       LIBSSL=" " # ntlm check below wants this
@@ -546,7 +543,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
           AC_CHECK_LIB(ssl32, SSL_connect, [
             ssl_found=yes
             AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
-            AC_LIBOBJ([openssl])
+            ssl_library="openssl"
             LIBS="${LIBS} -lssl32"
             AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the 'ssl32' library (-lssl32).])
           ],
@@ -575,7 +572,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
       then
         ssl_found=yes
         AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
-        AC_LIBOBJ([openssl])
+        ssl_library="openssl"
         LIBS="$LIBSSL $LIBS"
         AC_CHECK_FUNCS([RAND_egd])
       elif test x"$with_ssl" != x
@@ -594,7 +591,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     if [test x"$with_libgnutls_prefix" = x]; then
       PKG_CHECK_MODULES([GNUTLS], [gnutls], [
         AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
-        AC_LIBOBJ([gnutls])
+        ssl_library="gnutls"
         LIBS="$GNUTLS_LIBS $LIBS"
         CFLAGS="$GNUTLS_CFLAGS -DHAVE_LIBGNUTLS $CFLAGS"
         AC_DEFINE([HAVE_LIBGNUTLS], [1], [Define if using gnutls.])
@@ -609,7 +606,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
       then
         ssl_found=yes
         AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
-        AC_LIBOBJ([gnutls])
+        ssl_library="gnutls"
         LIBS="$LIBGNUTLS $LIBS"
       else
         AC_MSG_ERROR([GnuTLS has not been found. Use --with-ssl=openssl if you explicitly want OpenSSL.])
@@ -627,7 +624,6 @@ then
   then
     ENABLE_NTLM=yes
     AC_DEFINE([ENABLE_NTLM], 1, [Define if you want the NTLM authorization support compiled in.])
-    AC_LIBOBJ([http-ntlm])
   fi
 else
   PKG_CHECK_MODULES([NETTLE], nettle, [
@@ -650,7 +646,6 @@ else
     AC_DEFINE([HAVE_NETTLE], [1], [Use libnettle])
     ENABLE_NTLM=yes
     AC_DEFINE([ENABLE_NTLM], 1, [Define if you want the NTLM authorization support compiled in.])
-    AC_LIBOBJ([http-ntlm])
   fi
 fi
 
@@ -982,6 +977,9 @@ AM_CONDITIONAL([WITH_SSL], [test "X$with_ssl" != "Xno"])
 AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$with_metalink" != "Xno"])
 AM_CONDITIONAL([WITH_XATTR], [test "X$ENABLE_XATTR" != "Xno"])
 AM_CONDITIONAL([WITH_NTLM], [test "X$ENABLE_NTLM" = "Xyes"])
+AM_CONDITIONAL([WITH_OPIE], [test x"$ENABLE_OPIE" = x"yes"])
+AM_CONDITIONAL([WITH_OPENSSL], [test x"$ssl_library" = x"openssl"])
+AM_CONDITIONAL([WITH_GNUTLS], [test x"$ssl_library" = x"gnutls"])
 
 dnl
 dnl Create output
