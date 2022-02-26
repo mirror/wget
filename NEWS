@@ -1,6 +1,18 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 1.21.3 (2022-02-26)
+
+** Fix computation of total bytes downloaded during FTP trasnfers (#61277)
+
+** Add option to select TLS 1.3 on the command line
+
+** Fix HSTS build issues on some 64-bit big-endian systems
+
+** Hide password during status report in --no-verbose
+
+** Remove a sprurious print statement that showed up even during --quiet
+
+** Some more cleanups and bug-fixes
 
 
 * Noteworthy changes in release 1.21.2 (2021-09-07)
