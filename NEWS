@@ -1,5 +1,8 @@
 GNU Wget NEWS -- history of user-visible changes.
 
+* Noteworthy changes in release ?.? (????-??-??) [?]
+
+
 * Noteworthy changes in release 1.21.3 (2022-02-26)
 
 ** Fix computation of total bytes downloaded during FTP trasnfers (#61277)
