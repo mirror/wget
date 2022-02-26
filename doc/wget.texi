@@ -3046,7 +3046,7 @@ file so that it keeps its date of modification.
 wget -S http://www.gnu.ai.mit.edu/
 @end example
 
-A simple @code{ls -l} shows that the time stamp on the local file equals
+A simple @code{ls -l} shows that the timestamp on the local file equals
 the state of the @code{Last-Modified} header, as returned by the server.
 As you can see, the time-stamping info is preserved locally, even
 without @samp{-N} (at least for @sc{http}).

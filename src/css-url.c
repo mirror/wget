@@ -38,7 +38,7 @@ as that of the covered work.  */
   a browser would ignore.  That might merit some more investigation.
  */
 
-#include <wget.h>
+#include "wget.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -46,7 +46,6 @@ as that of the covered work.  */
 #include <ctype.h>
 #include <errno.h>
 
-#include "wget.h"
 #include "utils.h"
 #include "convert.h"
 #include "html-url.h"

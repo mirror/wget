@@ -843,7 +843,7 @@ Error in server response, closing control connection.\n"));
           if (con->rs == ST_VMS)
             {
               char *tmpp;
-              char *ntarget = (char *)alloca (strlen (target) + 2);
+              char *ntarget = alloca (strlen (target) + 2);
               /* We use a converted initial dir, so directories in
                  TARGET will be separated with slashes, something like
                  "/INITIAL/FOLDER/DIR/SUBDIR".  Convert that to
