@@ -161,7 +161,7 @@ Testing and development
  that bug, which might be tedious. Tests should only be run through GDB for that purpose.
 
 
- Copyright (C) 2008, 2010, 2014-2015, 2018-2021 Free Software
+ Copyright (C) 2008, 2010, 2014-2015, 2018-2022 Free Software
  Foundation, Inc.
  License GPLv3+: GNU GPL version 3 or later
  <https://www.gnu.org/licenses/gpl.html>.
