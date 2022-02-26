@@ -293,7 +293,7 @@ hsts_read_database (hsts_store_t store, FILE *fp, bool merge_with_existing_entri
       if (*p == '#')
         continue;
 
-      items_read = sscanf (p, "%255s %d %d %llu %llu",
+      items_read = sscanf (p, "%255s %d %d %" SCNd64 " %" SCNd64,
                            host,
                            &port,
                            &include_subdomains,
