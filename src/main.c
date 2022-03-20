@@ -649,6 +649,8 @@ Download:\n"),
     N_("\
        --retry-connrefused         retry even if connection is refused\n"),
     N_("\
+       --retry-on-host-error       consider host errors as non-fatal, transient errors\n"),
+    N_("\
        --retry-on-http-error=ERRORS    comma-separated list of HTTP errors to retry\n"),
     N_("\
   -O,  --output-document=FILE      write documents to FILE\n"),
