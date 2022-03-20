@@ -486,6 +486,7 @@ free_netrc(acc_t *l)
 const char *
 test_parse_netrc(void)
 {
+#ifdef HAVE_FMEMOPEN
   static const struct test {
     const char *pw_in;
     const char *pw_expected;
@@ -530,6 +531,7 @@ test_parse_netrc(void)
       free_netrc(acc);
     }
 
+#endif // HAVE_FMEMOPEN
   return NULL;
 }
 #endif
