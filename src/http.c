@@ -1300,7 +1300,7 @@ parse_content_disposition (const char *hdr, char **filename)
 
 #ifdef HAVE_HSTS
 static bool
-parse_strict_transport_security (const char *header, time_t *max_age, bool *include_subdomains)
+parse_strict_transport_security (const char *header, int64_t *max_age, bool *include_subdomains)
 {
   param_token name, value;
   const char *c_max_age = NULL;
@@ -1330,7 +1330,7 @@ parse_strict_transport_security (const char *header, time_t *max_age, bool *incl
            * Also, time_t is normally defined as a long, so this should not break.
            */
           if (max_age)
-            *max_age = (time_t) strtol (c_max_age, NULL, 10);
+            *max_age = (int64_t) strtoll (c_max_age, NULL, 10);
           if (include_subdomains)
             *include_subdomains = is;
 
@@ -3184,9 +3184,6 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 #else
   extern hsts_store_t hsts_store;
 #endif
-  const char *hsts_params;
-  time_t max_age;
-  bool include_subdomains;
 #endif
 
   int sock = -1;
@@ -3674,21 +3671,24 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
 #ifdef HAVE_HSTS
   if (opt.hsts && hsts_store)
     {
-      hsts_params = resp_header_strdup (resp, "Strict-Transport-Security");
+      int64_t max_age;
+      const char *hsts_params = resp_header_strdup (resp, "Strict-Transport-Security");
+      bool include_subdomains;
+
       if (parse_strict_transport_security (hsts_params, &max_age, &include_subdomains))
         {
           /* process strict transport security */
           if (hsts_store_entry (hsts_store, u->scheme, u->host, u->port, max_age, include_subdomains))
-            DEBUGP(("Added new HSTS host: %s:%u (max-age: %lu, includeSubdomains: %s)\n",
+            DEBUGP(("Added new HSTS host: %s:%" PRIu32 " (max-age: %" PRId64 ", includeSubdomains: %s)\n",
                    u->host,
-                   (unsigned) u->port,
-                   (unsigned long) max_age,
+                   (uint32_t) u->port,
+                   max_age,
                    (include_subdomains ? "true" : "false")));
           else
-            DEBUGP(("Updated HSTS host: %s:%u (max-age: %lu, includeSubdomains: %s)\n",
+            DEBUGP(("Updated HSTS host: %s:%" PRIu32 " (max-age: %" PRId64 ", includeSubdomains: %s)\n",
                    u->host,
-                   (unsigned) u->port,
-                   (unsigned long) max_age,
+                   (uint32_t) u->port,
+                   max_age,
                    (include_subdomains ? "true" : "false")));
         }
       xfree (hsts_params);

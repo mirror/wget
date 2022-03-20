@@ -46,7 +46,7 @@ bool hsts_store_has_changed (hsts_store_t);
 
 bool hsts_store_entry (hsts_store_t,
                        enum url_scheme, const char *, int,
-                       time_t, bool);
+                       int64_t, bool);
 bool hsts_match (hsts_store_t, struct url *);
 
 #endif /* HAVE_HSTS */

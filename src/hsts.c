@@ -61,8 +61,8 @@ struct hsts_kh {
 };
 
 struct hsts_kh_info {
-  time_t created;
-  time_t max_age;
+  int64_t created;
+  int64_t max_age;
   bool include_subdomains;
 };
 
@@ -166,7 +166,7 @@ end:
 static bool
 hsts_new_entry_internal (hsts_store_t store,
                          const char *host, int port,
-                         time_t created, time_t max_age,
+                         int64_t created, int64_t max_age,
                          bool include_subdomains,
                          bool check_validity,
                          bool check_expired,
@@ -216,21 +216,21 @@ bail:
 static bool
 hsts_add_entry (hsts_store_t store,
                 const char *host, int port,
-                time_t max_age, bool include_subdomains)
+                int64_t max_age, bool include_subdomains)
 {
-  time_t t = time (NULL);
+  int64_t t = (int64_t) time (NULL);
 
   /* It might happen time() returned -1 */
-  return (t == (time_t)(-1) ?
+  return (t == -1) ?
       false :
-      hsts_new_entry_internal (store, host, port, t, max_age, include_subdomains, false, true, false));
+      hsts_new_entry_internal (store, host, port, t, max_age, include_subdomains, false, true, false);
 }
 
 /* Creates a new entry, unless an identical one already exists. */
 static bool
 hsts_new_entry (hsts_store_t store,
                 const char *host, int port,
-                time_t created, time_t max_age,
+                int64_t created, int64_t max_age,
                 bool include_subdomains)
 {
   return hsts_new_entry_internal (store, host, port, created, max_age, include_subdomains, true, true, true);
@@ -245,7 +245,7 @@ hsts_remove_entry (hsts_store_t store, struct hsts_kh *kh)
 static bool
 hsts_store_merge (hsts_store_t store,
                   const char *host, int port,
-                  time_t created, time_t max_age,
+                  int64_t created, int64_t max_age,
                   bool include_subdomains)
 {
   enum hsts_kh_match match_type = NO_MATCH;
@@ -276,11 +276,11 @@ hsts_read_database (hsts_store_t store, FILE *fp, bool merge_with_existing_entri
   size_t len = 0;
   int items_read;
   bool result = false;
-  bool (*func)(hsts_store_t, const char *, int, time_t, time_t, bool);
+  bool (*func)(hsts_store_t, const char *, int, int64_t, int64_t, bool);
 
   char host[256];
   int port;
-  time_t created, max_age;
+  int64_t created, max_age;
   int include_subdomains;
 
   func = (merge_with_existing_entries ? hsts_store_merge : hsts_new_entry);
@@ -326,10 +326,9 @@ hsts_store_dump (hsts_store_t store, FILE *fp)
       struct hsts_kh *kh = (struct hsts_kh *) it.key;
       struct hsts_kh_info *khi = (struct hsts_kh_info *) it.value;
 
-      if (fprintf (fp, "%s\t%d\t%d\t%lu\t%lu\n",
+      if (fprintf (fp, "%s\t%d\t%d\t%" PRId64 "\t%" PRId64 "\n",
                    kh->host, kh->explicit_port, khi->include_subdomains,
-                   (unsigned long) khi->created,
-                   (unsigned long) khi->max_age) < 0)
+                   khi->created, khi->max_age) < 0)
         {
           logprintf (LOG_ALWAYS, "Could not write the HSTS database correctly.\n");
           break;
@@ -439,7 +438,7 @@ hsts_match (hsts_store_t store, struct url *u)
 bool
 hsts_store_entry (hsts_store_t store,
                   enum url_scheme scheme, const char *host, int port,
-                  time_t max_age, bool include_subdomains)
+                  int64_t max_age, bool include_subdomains)
 {
   bool result = false;
   enum hsts_kh_match match = NO_MATCH;
@@ -464,9 +463,9 @@ hsts_store_entry (hsts_store_t store,
                * 'created' field too. The RFC also states that we have to
                * update the entry each time we see HSTS header.
                * See also Section 11.2. */
-              time_t t = time (NULL);
+              int64_t t = (int64_t) time (NULL);
 
-              if (t != (time_t)(-1) && t != entry->created)
+              if (t != -1 && t != entry->created)
                 {
                   entry->created = t;
                   entry->max_age = max_age;
@@ -792,7 +791,7 @@ test_hsts_read_database (void)
   hsts_store_t table;
   char *file = NULL;
   FILE *fp = NULL;
-  time_t created = time(NULL) - 10;
+  int64_t created = time(NULL) - 10;
 
   if (opt.homedir)
     {
@@ -801,9 +800,9 @@ test_hsts_read_database (void)
       if (fp)
         {
           fputs ("# dummy comment\n", fp);
-          fprintf (fp, "foo.example.com\t0\t1\t%lu\t123\n",(unsigned long) created);
-          fprintf (fp, "bar.example.com\t0\t0\t%lu\t456\n", (unsigned long) created);
-          fprintf (fp, "test.example.com\t8080\t0\t%lu\t789\n", (unsigned long) created);
+          fprintf (fp, "foo.example.com\t0\t1\t%" PRId64 "\t123\n", created);
+          fprintf (fp, "bar.example.com\t0\t0\t%" PRId64 "\t456\n", created);
+          fprintf (fp, "test.example.com\t8080\t0\t%" PRId64 "\t789\n", created);
           fclose (fp);
 
           table = hsts_store_open (file);
