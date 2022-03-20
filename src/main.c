@@ -1062,13 +1062,13 @@ secs_to_human_time (double interval)
   mins = secs / 60, secs %= 60;
 
   if (days)
-    sprintf (buf, "%dd %dh %dm %ds", days, hours, mins, secs);
+    snprintf (buf, sizeof(buf), "%dd %dh %dm %ds", days, hours, mins, secs);
   else if (hours)
-    sprintf (buf, "%dh %dm %ds", hours, mins, secs);
+    snprintf (buf, sizeof(buf), "%dh %dm %ds", hours, mins, secs);
   else if (mins)
-    sprintf (buf, "%dm %ds", mins, secs);
+    snprintf (buf, sizeof(buf), "%dm %ds", mins, secs);
   else
-    sprintf (buf, "%ss", print_decimal (interval));
+    snprintf (buf, sizeof(buf), "%ss", print_decimal (interval));
 
   return buf;
 }
