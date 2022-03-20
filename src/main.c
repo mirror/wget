@@ -1361,7 +1361,6 @@ main (int argc, char **argv)
   char *p;
   int i, ret, longindex;
   int nurls;
-  int retconf;
   int argstring_length;
   bool use_userconfig = false;
   bool noconfig = false;
