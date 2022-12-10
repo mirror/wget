@@ -648,8 +648,11 @@ else
 
   if test x"$HAVE_NETTLE" = xyes; then
     AC_DEFINE([HAVE_NETTLE], [1], [Use libnettle])
-    ENABLE_NTLM=yes
-    AC_DEFINE([ENABLE_NTLM], 1, [Define if you want the NTLM authorization support compiled in.])
+    if test x"$ENABLE_NTLM" != xno
+    then
+      ENABLE_NTLM=yes
+      AC_DEFINE([ENABLE_NTLM], 1, [Define if you want the NTLM authorization support compiled in.])
+    fi
   fi
 fi
 
