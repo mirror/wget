@@ -54,7 +54,6 @@ as that of the covered work.  */
 #include "http.h"
 #include "host.h"
 #include "connect.h"
-#include "hash.h"
 #include "convert.h"
 #include "ptimer.h"
 #include "html-url.h"
