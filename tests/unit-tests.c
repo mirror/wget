@@ -1,5 +1,5 @@
 /* Unit testing.
-   Copyright (C) 2005-2011, 2015, 2018-2022 Free Software Foundation,
+   Copyright (C) 2005-2011, 2015, 2018-2023 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.

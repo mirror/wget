@@ -31,7 +31,7 @@ This file documents the GNU Wget utility for downloading network
 data.
 
 @c man begin COPYRIGHT
-Copyright @copyright{} 1996--2011, 2015, 2018--2022 Free Software
+Copyright @copyright{} 1996--2011, 2015, 2018--2023 Free Software
 Foundation, Inc.
 
 @iftex
