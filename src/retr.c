@@ -290,28 +290,19 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
   if (flags & rb_compressed_gzip)
     {
       gzbuf = xmalloc (gzbufsize);
-      if (gzbuf != NULL)
-        {
-          gzstream.zalloc = zalloc;
-          gzstream.zfree = zfree;
-          gzstream.opaque = Z_NULL;
-          gzstream.next_in = Z_NULL;
-          gzstream.avail_in = 0;
+      gzstream.zalloc = zalloc;
+      gzstream.zfree = zfree;
+      gzstream.opaque = Z_NULL;
+      gzstream.next_in = Z_NULL;
+      gzstream.avail_in = 0;
 
-          #define GZIP_DETECT 32 /* gzip format detection */
-          #define GZIP_WINDOW 15 /* logarithmic window size (default: 15) */
-          ret = inflateInit2 (&gzstream, GZIP_DETECT | GZIP_WINDOW);
-          if (ret != Z_OK)
-            {
-              xfree (gzbuf);
-              errno = (ret == Z_MEM_ERROR) ? ENOMEM : EINVAL;
-              ret = -1;
-              goto out;
-            }
-        }
-      else
+      #define GZIP_DETECT 32 /* gzip format detection */
+      #define GZIP_WINDOW 15 /* logarithmic window size (default: 15) */
+      ret = inflateInit2 (&gzstream, GZIP_DETECT | GZIP_WINDOW);
+      if (ret != Z_OK)
         {
-          errno = ENOMEM;
+          xfree (gzbuf);
+          errno = (ret == Z_MEM_ERROR) ? ENOMEM : EINVAL;
           ret = -1;
           goto out;
         }
@@ -455,7 +446,7 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
           sum_read += ret;
 
 #ifdef HAVE_LIBZ
-          if (gzbuf != NULL)
+          if (gzbuf)
             {
               int err;
               int towrite;
@@ -567,7 +558,7 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
     }
 
 #ifdef HAVE_LIBZ
-  if (gzbuf != NULL)
+  if (gzbuf)
     {
       int err = inflateEnd (&gzstream);
       if (ret >= 0)
