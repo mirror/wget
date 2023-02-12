@@ -254,7 +254,7 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
               FILE *out2)
 {
   int ret = 0;
-  int dlbufsize = MAX (BUFSIZ, 8 * 1024);
+  int dlbufsize = MAX (BUFSIZ, 64 * 1024);
   char *dlbuf = xmalloc (dlbufsize);
 
   struct ptimer *timer = NULL;
