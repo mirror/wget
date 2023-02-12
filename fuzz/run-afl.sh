@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with GNU Wget.  If not, see <https://www.gnu.org/licenses/>.
 
-if ! grep -q '^CC=.afl-clang-fast' ../config.log; then
+if ! grep '^CC=.afl-clang-fast' ../config.log >/dev/null; then
 	echo "compile first library as:"
 	echo "CC=afl-clang-fast ./configure"
 	exit 1
