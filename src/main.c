@@ -2135,9 +2135,7 @@ only if outputting to a regular file.\n"));
 
       if (!url_parsed)
         {
-          char *error = url_error (t, url_err);
-          logprintf (LOG_NOTQUIET, "%s: %s.\n",t, error);
-          xfree (error);
+          logprintf (LOG_NOTQUIET, "%s: %s.\n", t, url_error (url_err));
           inform_exit_status (URLERROR);
         }
       else

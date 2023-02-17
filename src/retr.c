@@ -929,11 +929,9 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       proxy_url = url_parse (proxy, &up_error_code, pi, true);
       if (!proxy_url)
         {
-          char *error = url_error (proxy, up_error_code);
           logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
-                     proxy, error);
+                     proxy, url_error (up_error_code));
           xfree (url);
-          xfree (error);
           xfree (proxy);
           iri_free (pi);
           RESTORE_METHOD;
@@ -1052,16 +1050,14 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       newloc_parsed = url_parse (mynewloc, &up_error_code, iri, true);
       if (!newloc_parsed)
         {
-          char *error = url_error (mynewloc, up_error_code);
           logprintf (LOG_NOTQUIET, "%s: %s.\n", escnonprint_uri (mynewloc),
-                     error);
+                     url_error (up_error_code));
           if (orig_parsed != u)
             {
               url_free (u);
             }
           xfree (url);
           xfree (mynewloc);
-          xfree (error);
           RESTORE_METHOD;
           goto bail;
         }
@@ -1217,9 +1213,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       struct url *url_parsed = url_parse (url, &url_err, iri, true);
       if (!url_parsed)
         {
-          char *error = url_error (url, url_err);
-          logprintf (LOG_NOTQUIET, "%s: %s.\n", url, error);
-          xfree (error);
+          logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (url_err));
           iri_free (iri);
           return URLERROR;
         }

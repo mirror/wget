@@ -2827,10 +2827,8 @@ skip_content_type:
 
               if (!url)
                 {
-                  char *error = url_error (urlstr, url_err);
                   logprintf (LOG_NOTQUIET, _("When downloading signature:\n"
-                                             "%s: %s.\n"), urlstr, error);
-                  xfree (error);
+                                             "%s: %s.\n"), urlstr, url_error (url_err));
                   iri_free (iri);
                 }
               else

@@ -321,9 +321,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 
           if (!url_parsed)
             {
-              char *error = url_error (url, url_err);
-              logprintf (LOG_NOTQUIET, "%s: %s.\n",url, error);
-              xfree (error);
+              logprintf (LOG_NOTQUIET, "%s: %s.\n",url, url_error (url_err));
               inform_exit_status (URLERROR);
             }
           else

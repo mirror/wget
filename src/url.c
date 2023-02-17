@@ -673,6 +673,8 @@ init_seps (enum url_scheme scheme)
 enum {
     PE_NO_ERROR = 0,
     PE_UNSUPPORTED_SCHEME,
+    PE_UNSUPPORTED_SCHEME_HTTPS,
+    PE_UNSUPPORTED_SCHEME_FTPS,
     PE_MISSING_SCHEME,
     PE_INVALID_HOST_NAME,
     PE_BAD_PORT_NUMBER,
@@ -684,7 +686,9 @@ enum {
 
 static const char *parse_errors[] = {
   [PE_NO_ERROR] = N_("No error"),
-  // PE_UNSUPPORTED_SCHEME is handled separately in url_error()
+  [PE_UNSUPPORTED_SCHEME] = N_("Unsupported scheme"),
+  [PE_UNSUPPORTED_SCHEME_HTTPS] = N_("HTTPS support not compiled in"),
+  [PE_UNSUPPORTED_SCHEME_FTPS] = N_("FTPS support not compiled in"),
   [PE_MISSING_SCHEME] = N_("Scheme missing"),
   [PE_INVALID_HOST_NAME] = N_("Invalid host name"),
   [PE_BAD_PORT_NUMBER] = N_("Bad port number"),
@@ -726,10 +730,14 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
   scheme = url_scheme (url);
   if (scheme == SCHEME_INVALID)
     {
-      if (url_has_scheme (url))
-        error_code = PE_UNSUPPORTED_SCHEME;
-      else
+      if (!url_has_scheme (url))
         error_code = PE_MISSING_SCHEME;
+      else if (!c_strncasecmp (url, "https:", 6))
+        error_code = PE_UNSUPPORTED_SCHEME_HTTPS;
+      else if (!c_strncasecmp (url, "ftps:", 5))
+        error_code = PE_UNSUPPORTED_SCHEME_FTPS;
+      else
+        error_code = PE_UNSUPPORTED_SCHEME;
       goto error;
     }
 
@@ -993,29 +1001,15 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
 /* Return the error message string from ERROR_CODE, which should have
    been retrieved from url_parse.  The error message is translated.  */
 
-char *
-url_error (const char *url, int error_code)
+const char *
+url_error (int error_code)
 {
-  assert (error_code >= 0 && ((size_t) error_code) < countof (parse_errors));
+  assert (error_code >= 0 && error_code < (int) countof (parse_errors));
 
-  if (error_code != PE_UNSUPPORTED_SCHEME)
-    return xstrdup (_(parse_errors[error_code]));
+  if (error_code >= 0 && error_code < (int) countof (parse_errors))
+    return _(parse_errors[error_code]);
 
-  assert (url_has_scheme (url));
-
-  if (!url_has_scheme (url))
-    return xstrdup (_("Unexpected missing scheme"));
-
-  const char *p = strchr (url, ':');
-  if (p)
-    {
-      if (!c_strncasecmp (url, "https", p - url))
-        return xstrdup (_("HTTPS support not compiled in"));
-
-      return aprintf (_("Unsupported scheme %s"), quote_mem (url, url - p));
-    }
-
-  return xstrdup (""); // This should never be reached
+  return ""; // This should never be reached
 }
 
 /* Split PATH into DIR and FILE.  PATH comes from the URL and is
