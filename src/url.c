@@ -670,25 +670,28 @@ init_seps (enum url_scheme scheme)
   return seps;
 }
 
+enum {
+    PE_NO_ERROR = 0,
+    PE_UNSUPPORTED_SCHEME,
+    PE_MISSING_SCHEME,
+    PE_INVALID_HOST_NAME,
+    PE_BAD_PORT_NUMBER,
+    PE_INVALID_USER_NAME,
+    PE_UNTERMINATED_IPV6_ADDRESS,
+    PE_IPV6_NOT_SUPPORTED,
+    PE_INVALID_IPV6_ADDRESS
+};
+
 static const char *parse_errors[] = {
-#define PE_NO_ERROR                     0
-  N_("No error"),
-#define PE_UNSUPPORTED_SCHEME           1
-  N_("Unsupported scheme %s"), /* support for format token only here */
-#define PE_MISSING_SCHEME               2
-  N_("Scheme missing"),
-#define PE_INVALID_HOST_NAME            3
-  N_("Invalid host name"),
-#define PE_BAD_PORT_NUMBER              4
-  N_("Bad port number"),
-#define PE_INVALID_USER_NAME            5
-  N_("Invalid user name"),
-#define PE_UNTERMINATED_IPV6_ADDRESS    6
-  N_("Unterminated IPv6 numeric address"),
-#define PE_IPV6_NOT_SUPPORTED           7
-  N_("IPv6 addresses not supported"),
-#define PE_INVALID_IPV6_ADDRESS         8
-  N_("Invalid IPv6 numeric address")
+  [PE_NO_ERROR] = N_("No error"),
+  // PE_UNSUPPORTED_SCHEME is handled separately in url_error()
+  [PE_MISSING_SCHEME] = N_("Scheme missing"),
+  [PE_INVALID_HOST_NAME] = N_("Invalid host name"),
+  [PE_BAD_PORT_NUMBER] = N_("Bad port number"),
+  [PE_INVALID_USER_NAME] = N_("Invalid user name"),
+  [PE_UNTERMINATED_IPV6_ADDRESS] = N_("Unterminated IPv6 numeric address"),
+  [PE_IPV6_NOT_SUPPORTED] = N_("IPv6 addresses not supported"),
+  [PE_INVALID_IPV6_ADDRESS] = N_("Invalid IPv6 numeric address")
 };
 
 /* Parse a URL.
@@ -995,24 +998,24 @@ url_error (const char *url, int error_code)
 {
   assert (error_code >= 0 && ((size_t) error_code) < countof (parse_errors));
 
-  if (error_code == PE_UNSUPPORTED_SCHEME)
-    {
-      char *error, *p;
-      char *scheme = xstrdup (url);
-      assert (url_has_scheme (url));
-
-      if ((p = strchr (scheme, ':')))
-        *p = '\0';
-      if (!c_strcasecmp (scheme, "https"))
-        error = aprintf (_("HTTPS support not compiled in"));
-      else
-        error = aprintf (_(parse_errors[error_code]), quote (scheme));
-      xfree (scheme);
-
-      return error;
-    }
-  else
+  if (error_code != PE_UNSUPPORTED_SCHEME)
     return xstrdup (_(parse_errors[error_code]));
+
+  assert (url_has_scheme (url));
+
+  if (!url_has_scheme (url))
+    return xstrdup (_("Unexpected missing scheme"));
+
+  const char *p = strchr (url, ':');
+  if (p)
+    {
+      if (!c_strncasecmp (url, "https", p - url))
+        return xstrdup (_("HTTPS support not compiled in"));
+
+      return aprintf (_("Unsupported scheme %s"), quote_mem (url, url - p));
+    }
+
+  return xstrdup (""); // This should never be reached
 }
 
 /* Split PATH into DIR and FILE.  PATH comes from the URL and is
