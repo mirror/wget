@@ -233,6 +233,7 @@ struct options
     secure_protocol_tlsv1_3,
     secure_protocol_pfs
   } secure_protocol;            /* type of secure protocol to use. */
+  char secure_protocol_name[8]; /* name of secure protocol to use. */
   int check_cert;               /* whether to validate the server's cert */
   char *cert_file;              /* external client certificate to use. */
   char *private_key;            /* private key file (if not internal). */

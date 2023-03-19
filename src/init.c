@@ -1756,6 +1756,7 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *place)
     { "tlsv1_3", secure_protocol_tlsv1_3 },
     { "pfs", secure_protocol_pfs },
   };
+  snprintf (opt.secure_protocol_name, sizeof (opt.secure_protocol_name), "%s", val);
   int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
     fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
