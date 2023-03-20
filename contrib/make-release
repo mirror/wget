@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+
+# GNU Wget: Make a new release
+#
+# This is a helper script to make a new release of GNU Wget
+#
+# Author: Darshit Shah <darnir@gnu.org>
+
+set -e
+set -o pipefail
+set -u
+
+export CFLAGS="-g -O2 -Wall"
+export LC_ALL=C
+
+EXTENSIONS="gzip lzip"
+
+ask_continue() {
+	printf "Continue? [y/N]: "
+	read -r inp
+	[ "$inp" != "y" ] && [ "$inp" != "Y" ] && exit 1
+	# For some completely weird reason, this set +x is required. Else, the test
+	# *ALWAYS* fails
+	set +x
+}
+
+REQUIRED_PROGRAMS="ncftpput sponge"
+for prog in $REQUIRED_PROGRAMS; do
+    if ! command -v "$prog" >/dev/null 2>&1; then
+        2>&1 echo "Required program $prog not found. Please install before proceeding"
+        exit 1
+    fi
+done
+
+if [ ! -d ".git" ]; then
+	echo "Please run this script from the root of the git repository"
+fi
+
+echo "This script will make a new release and upload it to the GNU FTP Servers"
+echo "Will run git clean -dxf to get a clean dir"
+ask_continue
+
+# Make sure we have a clean working directory
+git clean -dxfq
+
+echo "=> Bootstrap"
+./bootstrap > /dev/null 2>&1
+autoreconf -ivf
+
+echo "=> Configure"
+./configure -q
+
+APP_NAME=$(grep "^PACKAGE_NAME='" configure | cut -d "'" -f2)
+APP_VER=$(grep "^PACKAGE_VERSION='" configure | cut -d "'" -f2)
+
+echo "Making release for $APP_NAME $APP_VER"
+ask_continue
+
+NEWS_VERSION=$(grep -i "Noteworthy changes in release" NEWS | head -1 | awk '{print $6}')
+if [ "$NEWS_VERSION" != "$APP_VER" ]; then
+	echo "Latest version in NEWS file does not match latest tag"
+	exit 1
+fi
+PREV_VER=$(cat .prev-version)
+LNO_CVER=$(grep -in "Noteworthy changes in release" NEWS | head -1 | cut -f1 -d:)
+LNO_PVER=$(grep -in "Changes in $APP_NAME" NEWS | head -2 | tail -1 | cut -f1 -d:)
+sed -n "${LNO_CVER},${LNO_PVER}p" NEWS
+echo "This is the current contents of your NEWS"
+ask_continue
+
+echo ""
+REL_TYPE=
+while [ -z $REL_TYPE ]; do
+	printf "Enter release type (alpha, beta, stable): "
+	read x
+	case $x in
+		a|A|alpha|Alpha) REL_TYPE=alpha;;
+		b|B|beta|Beta) REL_TYPE=beta;;
+		s|S|stable|Stable) REL_TYPE=stable;;
+	esac
+done
+
+echo "=> Make release"
+make -s release RELEASE_TYPE=$REL_TYPE
+
+GPG_KEY=
+while [ -z $GPG_KEY ]; do
+	printf "Enter GPG Key ID for Signing: "
+	read key
+	gpg --list-keys "$key" || continue
+	printf "Will use this key to sign releases. Continue? [y/N]: "
+	read x
+	[ "$x" = "y" ] || [ "$x" = "Y" ] && GPG_KEY="$key"
+done
+
+echo ""
+
+upload_command=$(make -s emit_upload_commands RELEASE_TYPE=stable \
+    | sponge \
+    | head -n3 \
+    | tail -1 \
+    | sed "s/--to/--user $GPG_KEY --symlink-regex --to/g"
+)
+
+echo "=> Uploading"
+echo "Upload tarballs?"
+echo "$upload_command"
+ask_continue
+$upload_command
+
+echo ""
+echo "Remaining Release Checklist:
+  1. Send a mail to coordinator@translationproject.org with the subject
+	 \"Requesting Translations for $APP_NAME-$APP_VER.POT\"
+  2. Announce email template placed at ~/announce-$APP_NAME-$APP_VER
+     Send an announce mail to info-gnu@gnu.org
+  3. Run \`make web-manual\` and \`make web-manual-update\` to update manual online
+  (Only Stable)
+"
+
+echo ""
+
+prev_tag=$(git tag | tail -2 | head -1)
+echo ""
+echo "Don't forget to mention the following contributors in the announcement:"
+(
+  git log "${prev_tag}.." --format="%aN" --reverse
+  git log "${prev_tag}.." --reverse | grep -i reported | cut -d':' -f2 | cut -d'<' -f1 | cut -d' ' -f2- | tr -d '"'
+) | sort -u

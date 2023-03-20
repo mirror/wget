@@ -1,6 +1,6 @@
 /* Messages logging.
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-   2007, 2008, 2009, 2010, 2011, 2015 Free Software Foundation, Inc.
+   Copyright (C) 1998-2011, 2015, 2018-2023 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -427,6 +427,9 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
   FILE *fp = get_log_fp ();
   FILE *warcfp = get_warc_log_fp ();
 
+  if (fp == NULL)
+      return false;
+
   if (!save_context_p && warcfp == NULL)
     {
       /* In the simple case just call vfprintf(), to avoid needless
@@ -480,7 +483,7 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
   if (save_context_p)
     saved_append (write_ptr);
   FPUTS (write_ptr, fp);
-  if (warcfp != NULL)
+  if (warcfp != NULL && warcfp != fp)
     FPUTS (write_ptr, warcfp);
   xfree (state->bigmsg);
 
@@ -566,11 +569,12 @@ logprintf (enum log_options o, const char *fmt, ...)
   bool done;
   int errno_saved = errno;
 
+  CHECK_VERBOSE (o);
+
   check_redirect_output ();
   errno = errno_saved;
   if (inhibit_logging)
     return;
-  CHECK_VERBOSE (o);
 
   xzero (lpstate);
   errno = 0;
@@ -600,7 +604,9 @@ debug_logprintf (const char *fmt, ...)
       struct logvprintf_state lpstate;
       bool done;
 
+#ifndef TESTING
       check_redirect_output ();
+#endif
       if (inhibit_logging)
         return;
 
@@ -677,9 +683,16 @@ log_close (void)
 {
   int i;
 
-  if (logfp && (logfp != stderr))
-    fclose (logfp);
+  if (logfp && logfp != stderr && logfp != stdout)
+    {
+      if (logfp == stdlogfp)
+        stdlogfp = NULL;
+      if (logfp == filelogfp)
+        filelogfp = NULL;
+      fclose (logfp);
+    }
   logfp = NULL;
+
   inhibit_logging = true;
   save_context_p = false;
 
@@ -892,6 +905,7 @@ escnonprint_uri (const char *str)
   return escnonprint_internal (str, '%', 16);
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 log_cleanup (void)
 {
@@ -899,6 +913,7 @@ log_cleanup (void)
   for (i = 0; i < countof (ring); i++)
     xfree (ring[i].buffer);
 }
+#endif
 
 /* When SIGHUP or SIGUSR1 are received, the output is redirected
    elsewhere.  Such redirection is only allowed once. */
@@ -957,14 +972,16 @@ redirect_output (bool to_file, const char *signal_name)
 static void
 check_redirect_output (void)
 {
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(__VMS)
   /* If it was redirected already to log file by SIGHUP, SIGUSR1 or -o parameter,
    * it was permanent.
    * If there was no SIGHUP or SIGUSR1 and shell is interactive
    * we check if process is fg or bg before every line is printed.*/
   if (!redirect_request_signal_name && shell_is_interactive && !opt.lfilename)
     {
-      if (tcgetpgrp (STDIN_FILENO) != getpgrp ())
+      pid_t foreground_pgrp = tcgetpgrp (STDIN_FILENO);
+
+      if (foreground_pgrp != -1 && foreground_pgrp != getpgrp () && !opt.quiet)
         {
           /* Process backgrounded */
           redirect_output (true,NULL);
@@ -975,5 +992,5 @@ check_redirect_output (void)
           redirect_output (false,NULL);
         }
     }
-#endif /* WINDOWS */
+#endif /* !defined(WINDOWS) && !defined(__VMS) */
 }

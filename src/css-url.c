@@ -1,6 +1,6 @@
 /* Collect URLs from CSS source.
-   Copyright (C) 1998, 2000, 2001, 2002, 2003, 2009, 2010, 2011, 2014,
-   2015 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2000-2003, 2009-2011, 2014-2015, 2018-2023 Free
+   Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -38,7 +38,7 @@ as that of the covered work.  */
   a browser would ignore.  That might merit some more investigation.
  */
 
-#include <wget.h>
+#include "wget.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -46,7 +46,6 @@ as that of the covered work.  */
 #include <ctype.h>
 #include <errno.h>
 
-#include "wget.h"
 #include "utils.h"
 #include "convert.h"
 #include "html-url.h"
@@ -61,6 +60,7 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 extern YY_BUFFER_STATE yy_scan_bytes (const char *bytes,int len  );
 extern void yy_delete_buffer (YY_BUFFER_STATE  b);
 extern int yylex (void);
+extern void yylex_destroy(void);
 
 /*
   Given a detected URI token, get only the URI specified within.
@@ -74,13 +74,17 @@ extern int yylex (void);
 static char *
 get_uri_string (const char *at, int *pos, int *length)
 {
+  if (*length < 4)
+    return NULL;
+
   if (0 != strncasecmp (at + *pos, "url(", 4))
     return NULL;
 
   *pos += 4;
   *length -= 5; /* url() */
+
   /* skip leading space */
-  while (isspace (at[*pos]))
+  while (*length > 0 && isspace (at[*pos]))
     {
       (*pos)++;
       if (--(*length) == 0)
@@ -88,16 +92,20 @@ get_uri_string (const char *at, int *pos, int *length)
     }
 
   /* skip trailing space */
-  while (isspace (at[*pos + *length - 1]))
+  while (*length > 0 && isspace (at[*pos + *length - 1]))
     {
       (*length)--;
     }
+
   /* trim off quotes */
-  if (at[*pos] == '\'' || at[*pos] == '"')
+  if (*length >= 2 && (at[*pos] == '\'' || at[*pos] == '"'))
     {
       (*pos)++;
       *length -= 2;
     }
+
+  if (*length <= 0)
+    return NULL;
 
   return xstrndup (at + *pos, *length);
 }
@@ -139,7 +147,7 @@ get_urls_css (struct map_context *ctx, int offset, int buf_length)
                 {
                   uri = get_uri_string (ctx->text, &pos, &length);
                 }
-              else
+              else if (length >= 2)
                 {
                   /* cut out quote characters */
                   pos++;
@@ -148,6 +156,8 @@ get_urls_css (struct map_context *ctx, int offset, int buf_length)
                   memcpy (uri, yytext + 1, length);
                   uri[length] = '\0';
                 }
+              else
+                uri = NULL;
 
               if (uri)
                 {
@@ -192,6 +202,7 @@ get_urls_css (struct map_context *ctx, int offset, int buf_length)
     }
 
   yy_delete_buffer(b);
+  yylex_destroy();
 
   DEBUGP (("\n"));
 }

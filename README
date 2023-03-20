@@ -1,7 +1,7 @@
                                                           -*- text -*-
 GNU Wget
 ========
-                  Current Web home: http://www.gnu.org/software/wget/
+                  Current Web home: https://www.gnu.org/software/wget/
 
 GNU Wget is a free utility for non-interactive download of files from
 the Web.  It supports HTTP, HTTPS, and FTP protocols, as well as
@@ -14,7 +14,7 @@ While doing that, Wget respects the Robot Exclusion Standard
 (/robots.txt).  Wget can be instructed to convert the links in
 downloaded HTML files to the local files for offline viewing.
 
-Recursive downloading also works with FTP, where Wget can retrieves a
+Recursive downloading also works with FTP, where Wget can retrieve a
 hierarchy of directories and files.
 
 With both HTTP and FTP, Wget can check whether a remote file has
@@ -50,18 +50,17 @@ resides at <ftp://ftp.gnu.org/pub/gnu/wget/>.
 Please report bugs in Wget to <bug-wget@gnu.org>.
 
 See the file `MAILING-LIST' for information about Wget mailing lists.
-Wget's home page is at <http://www.gnu.org/software/wget/>.
+Wget's home page is at <https://www.gnu.org/software/wget/>.
 
 If you would like to contribute code for Wget, please read
-http://wget.addictivecode.org/PatchGuidelines.
+CONTRIBUTING.md.
 
 Wget was originally written and mainained by Hrvoje Niksic.  Please see
 the file AUTHORS for a list of major contributors, and the ChangeLogs
 for a detailed listing of all contributions.
 
 
-Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
-2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+Copyright (C) 1995-2023 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

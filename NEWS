@@ -1,9 +1,151 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-Copyright (C) 1997-2017 Free Software Foundation, Inc.
-See the end for copying conditions.
+* Noteworthy changes in release ?.? (????-??-??) [?]
 
-Please send GNU Wget bug reports to <bug-wget@gnu.org>.
+
+* Noteworthy changes in release 1.21.3 (2022-02-26)
+
+** Fix computation of total bytes downloaded during FTP trasnfers (#61277)
+
+** Add option to select TLS 1.3 on the command line
+
+** Fix HSTS build issues on some 64-bit big-endian systems
+
+** Hide password during status report in --no-verbose
+
+** Remove a sprurious print statement that showed up even during --quiet
+
+** Some more cleanups and bug-fixes
+
+
+* Noteworthy changes in release 1.21.2 (2021-09-07)
+
+** Support for autoconf 2.71
+
+** Fix a double free in FTP when using an absolute path
+
+** Release tarballs no longer have a dependency on Python.
+
+** --page-requisites will now also download links marked as "alternate
+   stylesheet" or "icon"
+
+
+* Noteworthy changes in release 1.21.1 (2021-01-09)
+
+** Fix compilation on MacOS and Solaris 9
+
+** Resove bashism from configure.ac
+
+** Fix a compilation warning on 32-bit systems
+
+
+* Changes in Wget 1.21
+
+** Improve the number of translated strings
+
+** Remove all uses of alloca
+   In some places the length of untrusted strings has been used, e.g.
+   strings from the command line or from remote.
+
+** Fix buffer overflows in progress bar code in some locales
+
+** Fix two null pointer accesses
+
+** Amend cookie file header to be recognized by the 'file' command
+
+** Post Handshake Authentication for OpenSSL
+
+** Require gettext version 0.19.3+
+
+** Add configure flags --enable-fsanitize-ubsan, --enable-fsanitize-asan
+   and --enable-fsanitize-msan for gcc and clang
+
+** Make several smaller fixes, enhance fuzzing, enhance building
+
+
+* Changes in Wget 1.20.3
+
+** Fixed a buffer overflow vulnerability
+
+
+* Changes in Wget 1.20.2
+
+** NTLM authentication will retry under certain cases
+
+
+* Changes in Wget 1.20.1
+
+** --xattr is no longer default since it introduces privacy issues.
+
+** --xattr saves the Referer as scheme/host/port, user/pw/path/query/fragment
+   are no longer saved to prevent privacy issues.
+
+** --xattr saves the Original URL without user/password to prevent
+   privacy issues.
+
+
+* Changes in Wget 1.20
+
+** Add new option `--retry-on-host-error` to treat local errors as transient
+and hence Wget will retry to download the file after a brief waiting period.
+
+** Fixed multiple potential resource leaks as found by static analysis
+
+** Wget will now not create an empty wget-log file when running with -q and -b
+switches together
+
+** When compiled using the GnuTLS >= 3.6.3, Wget now has support for TLSv1.3
+
+** Now there is support for using libpcre2 for regex pattern matching
+
+** When downloading over FTP recursively, one can now use the
+--{accept,reject}-regex switches to fine-tune the downloaded files
+
+** Building Wget from the git sources now requires autoconf 2.63 or above.
+Building from the Tarballs works as it used to.
+
+
+* Changes in Wget 1.19.5
+
+* Fix cookie injection (CVE-2018-0494)
+
+* Enable TLS1.3 with recent OpenSSL environment
+
+* New option --ciphers to set GnuTLS / OpenSSL ciphers directly
+
+* Updated CSS grammar to CSS 2.2
+
+* Fixed several memleaks found by OSS-Fuzz
+
+* Fixed several buffer overflows found by OSS-Fuzz
+
+* Fixed several integer overflows found by OSS-Fuzz
+
+* Several minor bug fixes
+
+
+* Changes in Wget 1.19.4
+
+* A major bug that caused GZip'ed pages to never be decompressed has been fixed
+
+* Support for Content-Encoding and Transfer-Encoding have been marked as
+  experimental and disabled by default
+
+
+* Changes in Wget 1.19.3
+
+* Prevent erroneous decompression of .gz and .tgz files with broken servers
+
+* Added support for HTTP 308 Permanent Redirect response
+
+* Fix a segfault in some cases where the Content-Type header is not sent
+
+* Support OpenSSL 1.1 builds without using deprecated features
+
+* Fix netrc file detection on Windows
+
+* Several minor bug fixes
+
 
 * Changes in Wget 1.19.2
 
@@ -307,7 +449,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
    backward-incompatibility; any script that relies on the old
    behaviour must use --trust-server-names.
 
-** Fix a problem when -k is used and some URLs are specified trough
+** Fix a problem when -k is used and some URLs are specified through
    CSS.
 
 ** Convert correctly URLs that need to be encoded to local files when following
@@ -317,7 +459,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Print the total download time as part of the summary for recursive downloads.
 
-** Now it is possible to specify a different startup configuration file trough
+** Now it is possible to specify a different startup configuration file through
    the --config option.
 
 ** Fix an infinite loop with the error '<filename> has sprung into existence'
@@ -1045,7 +1187,7 @@ geturl -vo log http://fly.cc.fer.hr/
 ----------------------------------------------------------------------
 Copyright information:
 
-Copyright (C) 1997-2005 Free Software Foundation, Inc.
+Copyright (C) 1997-2023 Free Software Foundation, Inc.
 
    Permission is granted to anyone to make or distribute verbatim
    copies of this document as received, in any medium, provided that

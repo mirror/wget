@@ -1,7 +1,6 @@
 /* URL handling.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free Software
-   Foundation, Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2023 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -53,7 +52,7 @@ as that of the covered work.  */
 #endif /* def __VMS */
 
 #ifdef TESTING
-#include "test.h"
+#include "../tests/unit-tests.h"
 #endif
 
 enum {
@@ -176,8 +175,8 @@ static const unsigned char urlchr_table[256] =
 static void
 url_unescape_1 (char *s, unsigned char mask)
 {
-  char *t = s;                  /* t - tortoise */
-  char *h = s;                  /* h - hare     */
+  unsigned char *t = (unsigned char *) s; /* t - tortoise */
+  unsigned char *h = (unsigned char *) s; /* h - hare     */
 
   for (; *h; h++, t++)
     {
@@ -188,7 +187,7 @@ url_unescape_1 (char *s, unsigned char mask)
         }
       else
         {
-          char c;
+          unsigned char c;
           /* Do nothing if '%' is not followed by two hex digits. */
           if (!h[1] || !h[2] || !(c_isxdigit (h[1]) && c_isxdigit (h[2])))
             goto copychar;
@@ -671,25 +670,32 @@ init_seps (enum url_scheme scheme)
   return seps;
 }
 
+enum {
+    PE_NO_ERROR = 0,
+    PE_UNSUPPORTED_SCHEME,
+    PE_UNSUPPORTED_SCHEME_HTTPS,
+    PE_UNSUPPORTED_SCHEME_FTPS,
+    PE_MISSING_SCHEME,
+    PE_INVALID_HOST_NAME,
+    PE_BAD_PORT_NUMBER,
+    PE_INVALID_USER_NAME,
+    PE_UNTERMINATED_IPV6_ADDRESS,
+    PE_IPV6_NOT_SUPPORTED,
+    PE_INVALID_IPV6_ADDRESS
+};
+
 static const char *parse_errors[] = {
-#define PE_NO_ERROR                     0
-  N_("No error"),
-#define PE_UNSUPPORTED_SCHEME           1
-  N_("Unsupported scheme %s"), /* support for format token only here */
-#define PE_MISSING_SCHEME               2
-  N_("Scheme missing"),
-#define PE_INVALID_HOST_NAME            3
-  N_("Invalid host name"),
-#define PE_BAD_PORT_NUMBER              4
-  N_("Bad port number"),
-#define PE_INVALID_USER_NAME            5
-  N_("Invalid user name"),
-#define PE_UNTERMINATED_IPV6_ADDRESS    6
-  N_("Unterminated IPv6 numeric address"),
-#define PE_IPV6_NOT_SUPPORTED           7
-  N_("IPv6 addresses not supported"),
-#define PE_INVALID_IPV6_ADDRESS         8
-  N_("Invalid IPv6 numeric address")
+  [PE_NO_ERROR] = N_("No error"),
+  [PE_UNSUPPORTED_SCHEME] = N_("Unsupported scheme"),
+  [PE_UNSUPPORTED_SCHEME_HTTPS] = N_("HTTPS support not compiled in"),
+  [PE_UNSUPPORTED_SCHEME_FTPS] = N_("FTPS support not compiled in"),
+  [PE_MISSING_SCHEME] = N_("Scheme missing"),
+  [PE_INVALID_HOST_NAME] = N_("Invalid host name"),
+  [PE_BAD_PORT_NUMBER] = N_("Bad port number"),
+  [PE_INVALID_USER_NAME] = N_("Invalid user name"),
+  [PE_UNTERMINATED_IPV6_ADDRESS] = N_("Unterminated IPv6 numeric address"),
+  [PE_IPV6_NOT_SUPPORTED] = N_("IPv6 addresses not supported"),
+  [PE_INVALID_IPV6_ADDRESS] = N_("Invalid IPv6 numeric address")
 };
 
 /* Parse a URL.
@@ -724,10 +730,14 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
   scheme = url_scheme (url);
   if (scheme == SCHEME_INVALID)
     {
-      if (url_has_scheme (url))
-        error_code = PE_UNSUPPORTED_SCHEME;
-      else
+      if (!url_has_scheme (url))
         error_code = PE_MISSING_SCHEME;
+      else if (!c_strncasecmp (url, "https:", 6))
+        error_code = PE_UNSUPPORTED_SCHEME_HTTPS;
+      else if (!c_strncasecmp (url, "ftps:", 5))
+        error_code = PE_UNSUPPORTED_SCHEME_FTPS;
+      else
+        error_code = PE_UNSUPPORTED_SCHEME;
       goto error;
     }
 
@@ -991,29 +1001,15 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
 /* Return the error message string from ERROR_CODE, which should have
    been retrieved from url_parse.  The error message is translated.  */
 
-char *
-url_error (const char *url, int error_code)
+const char *
+url_error (int error_code)
 {
-  assert (error_code >= 0 && ((size_t) error_code) < countof (parse_errors));
+  assert (error_code >= 0 && error_code < (int) countof (parse_errors));
 
-  if (error_code == PE_UNSUPPORTED_SCHEME)
-    {
-      char *error, *p;
-      char *scheme = xstrdup (url);
-      assert (url_has_scheme (url));
+  if (error_code >= 0 && error_code < (int) countof (parse_errors))
+    return _(parse_errors[error_code]);
 
-      if ((p = strchr (scheme, ':')))
-        *p = '\0';
-      if (!c_strcasecmp (scheme, "https"))
-        error = aprintf (_("HTTPS support not compiled in"));
-      else
-        error = aprintf (_(parse_errors[error_code]), quote (scheme));
-      xfree (scheme);
-
-      return error;
-    }
-  else
-    return xstrdup (_(parse_errors[error_code]));
+  return ""; // This should never be reached
 }
 
 /* Split PATH into DIR and FILE.  PATH comes from the URL and is
@@ -1250,9 +1246,8 @@ mkalldirs (const char *path)
   struct stat st;
   int res;
 
-  p = path + strlen (path);
-  for (; *p != '/' && p != path; p--)
-    ;
+  p = strrchr(path, '/');
+  p = p == NULL ? path : p;
 
   /* Don't create if it's just a file.  */
   if ((p == path) && (*p != '/'))
@@ -1464,23 +1459,37 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
                    struct growable *dest)
 {
   const char *p;
+  char buf[1024];
+  char *unescaped = NULL;
   int quoted, outlen;
-
   int mask;
+  int max_length;
+
+  if (!dest)
+    return;
+
   if (opt.restrict_files_os == restrict_unix)
     mask = filechr_not_unix;
   else if (opt.restrict_files_os == restrict_vms)
     mask = filechr_not_vms;
   else
     mask = filechr_not_windows;
+
   if (opt.restrict_files_ctrl)
     mask |= filechr_control;
 
   /* Copy [b, e) to PATHEL and URL-unescape it. */
   if (escaped)
     {
-      char *unescaped;
-      BOUNDED_TO_ALLOCA (b, e, unescaped);
+      size_t len = e - b;
+		if (len < sizeof (buf))
+        unescaped = buf;
+      else
+        unescaped = xmalloc(len + 1);
+
+		memcpy(unescaped, b, len);
+		unescaped[len] = 0;
+
       url_unescape (unescaped);
       b = unescaped;
       e = unescaped + strlen (unescaped);
@@ -1505,7 +1514,24 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
      string length.  Each quoted char introduces two additional
      characters in the string, hence 2*quoted.  */
   outlen = (e - b) + (2 * quoted);
+# ifdef WINDOWS
+  max_length = MAX_PATH;
+# else
+  max_length = get_max_length(dest->base, dest->tail, _PC_NAME_MAX);
+# endif
+  max_length -= CHOMP_BUFFER;
+  if (max_length > 0 && outlen > max_length)
+    {
+      logprintf (LOG_NOTQUIET, "The destination name is too long (%d), reducing to %d\n", outlen, max_length);
+
+      outlen = max_length;
+    }
   GROW (dest, outlen);
+
+  // This should not happen, but it's impossible to argue with static analysis that it can't happen
+  // (in theory it can). So give static analyzers a hint.
+  if (!dest->base)
+    return;
 
   if (!quoted)
     {
@@ -1516,19 +1542,29 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
   else
     {
       char *q = TAIL (dest);
-      for (p = b; p < e; p++)
+      int i;
+
+      for (i = 0, p = b; p < e; p++)
         {
           if (!FILE_CHAR_TEST (*p, mask))
-            *q++ = *p;
-          else
+	    {
+	      if (i == outlen)
+	        break;
+	      *q++ = *p;
+	      i++;
+	    }
+          else if (i + 3 > outlen)
+	    break;
+	  else
             {
               unsigned char ch = *p;
               *q++ = '%';
               *q++ = XNUM_TO_DIGIT (ch >> 4);
               *q++ = XNUM_TO_DIGIT (ch & 0xf);
+	      i += 3;
             }
         }
-      assert (q - TAIL (dest) == outlen);
+      assert (q - TAIL (dest) <= outlen);
     }
 
   /* Perform inline case transformation if required.  */
@@ -1547,19 +1583,22 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
 
   TAIL_INCR (dest, outlen);
   append_null (dest);
+
+  if (unescaped && unescaped != buf)
+	  free (unescaped);
 }
 
 #ifdef HAVE_ICONV
 static char *
 convert_fname (char *fname)
 {
-  char *converted_fname = fname;
+  char *converted_fname;
   const char *from_encoding = opt.encoding_remote;
   const char *to_encoding = opt.locale;
   iconv_t cd;
   size_t len, done, inlen, outlen;
   char *s;
-  const char *orig_fname = fname;
+  const char *orig_fname;
 
   /* Defaults for remote and local encodings.  */
   if (!from_encoding)
@@ -1569,62 +1608,64 @@ convert_fname (char *fname)
 
   cd = iconv_open (to_encoding, from_encoding);
   if (cd == (iconv_t) (-1))
-    logprintf (LOG_VERBOSE, _ ("Conversion from %s to %s isn't supported\n"),
-               quote (from_encoding), quote (to_encoding));
-  else
     {
-      inlen = strlen (fname);
-      len = outlen = inlen * 2;
-      converted_fname = s = xmalloc (outlen + 1);
-      done = 0;
-
-      for (;;)
-        {
-          errno = 0;
-          if (iconv (cd, (ICONV_CONST char **) &fname, &inlen, &s, &outlen) == 0
-              && iconv (cd, NULL, NULL, &s, &outlen) == 0)
-            {
-              *(converted_fname + len - outlen - done) = '\0';
-              iconv_close (cd);
-              DEBUGP (("Converted file name '%s' (%s) -> '%s' (%s)\n",
-                       orig_fname, from_encoding, converted_fname, to_encoding));
-              xfree (orig_fname);
-              return converted_fname;
-            }
-
-          /* Incomplete or invalid multibyte sequence */
-          if (errno == EINVAL || errno == EILSEQ || errno == 0)
-            {
-              if (errno)
-                logprintf (LOG_VERBOSE,
-                           _ ("Incomplete or invalid multibyte sequence encountered\n"));
-              else
-                logprintf (LOG_VERBOSE,
-                           _ ("Unconvertable multibyte sequence encountered\n"));
-              xfree (converted_fname);
-              converted_fname = (char *) orig_fname;
-              break;
-            }
-          else if (errno == E2BIG) /* Output buffer full */
-            {
-              done = len;
-              len = outlen = done + inlen * 2;
-              converted_fname = xrealloc (converted_fname, outlen + 1);
-              s = converted_fname + done;
-            }
-          else /* Weird, we got an unspecified error */
-            {
-              logprintf (LOG_VERBOSE, _ ("Unhandled errno %d\n"), errno);
-              xfree (converted_fname);
-              converted_fname = (char *) orig_fname;
-              break;
-            }
-        }
-      DEBUGP (("Failed to convert file name '%s' (%s) -> '?' (%s)\n",
-               orig_fname, from_encoding, to_encoding));
+      logprintf (LOG_VERBOSE, _ ("Conversion from %s to %s isn't supported\n"),
+                 quote_n (0, from_encoding), quote_n (1, to_encoding));
+      return fname;
     }
 
-    iconv_close(cd);
+  orig_fname = fname;
+  inlen = strlen (fname);
+  len = outlen = inlen * 2;
+  converted_fname = s = xmalloc (outlen + 1);
+  done = 0;
+
+  for (;;)
+    {
+      errno = 0;
+      if (iconv (cd, (ICONV_CONST char **) &fname, &inlen, &s, &outlen) == 0
+          && iconv (cd, NULL, NULL, &s, &outlen) == 0)
+        {
+          *(converted_fname + len - outlen - done) = '\0';
+          iconv_close (cd);
+          DEBUGP (("Converted file name '%s' (%s) -> '%s' (%s)\n",
+                   orig_fname, from_encoding, converted_fname, to_encoding));
+          xfree (orig_fname);
+          return converted_fname;
+        }
+
+      /* Incomplete or invalid multibyte sequence */
+      if (errno == EINVAL || errno == EILSEQ || errno == 0)
+        {
+          if (errno)
+            logprintf (LOG_VERBOSE,
+                       _ ("Incomplete or invalid multibyte sequence encountered\n"));
+          else
+            logprintf (LOG_VERBOSE,
+                       _ ("Unconvertable multibyte sequence encountered\n"));
+          xfree (converted_fname);
+          converted_fname = (char *) orig_fname;
+          break;
+        }
+      else if (errno == E2BIG) /* Output buffer full */
+        {
+          done = len;
+          len = outlen = done + inlen * 2;
+          converted_fname = xrealloc (converted_fname, outlen + 1);
+          s = converted_fname + done;
+        }
+      else /* Weird, we got an unspecified error */
+        {
+          logprintf (LOG_VERBOSE, _ ("Unhandled errno %d\n"), errno);
+          xfree (converted_fname);
+          converted_fname = (char *) orig_fname;
+          break;
+        }
+    }
+  DEBUGP (("Failed to convert file name '%s' (%s) -> '?' (%s)\n",
+           orig_fname, from_encoding, to_encoding));
+
+  iconv_close (cd);
 
   return converted_fname;
 }
@@ -1670,6 +1711,7 @@ append_dir_structure (const struct url *u, struct growable *dest)
 
       if (dest->tail)
         append_char ('/', dest);
+
       append_uri_pathel (pathel, next, true, dest);
     }
 }
@@ -1686,7 +1728,6 @@ url_file_name (const struct url *u, char *replaced_filename)
   const char *u_file;
   char *fname, *unique, *fname_len_check;
   const char *index_filename = "index.html"; /* The default index file is index.html */
-  size_t max_length;
 
   fnres.base = NULL;
   fnres.size = 0;
@@ -1780,41 +1821,8 @@ url_file_name (const struct url *u, char *replaced_filename)
   temp_fnres.size = 0;
   temp_fnres.tail = 0;
   append_string (fname, &temp_fnres);
+
   xfree (fname);
-
-  /* Check that the length of the file name is acceptable. */
-#ifdef WINDOWS
-  if (MAX_PATH > (fnres.tail + CHOMP_BUFFER + 2))
-    {
-      max_length = MAX_PATH - (fnres.tail + CHOMP_BUFFER + 2);
-      /* FIXME: In Windows a filename is usually limited to 255 characters.
-      To really be accurate you could call GetVolumeInformation() to get
-      lpMaximumComponentLength
-      */
-      if (max_length > 255)
-        {
-          max_length = 255;
-        }
-    }
-  else
-    {
-      max_length = 0;
-    }
-#else
-  max_length = get_max_length (fnres.base, fnres.tail, _PC_NAME_MAX) - CHOMP_BUFFER;
-#endif
-  if (max_length > 0 && strlen (temp_fnres.base) > max_length)
-    {
-      logprintf (LOG_NOTQUIET, "The name is too long, %lu chars total.\n",
-          (unsigned long) strlen (temp_fnres.base));
-      logprintf (LOG_NOTQUIET, "Trying to shorten...\n");
-
-      /* Shorten the file name. */
-      temp_fnres.base[max_length] = '\0';
-
-      logprintf (LOG_NOTQUIET, "New name is %s.\n", temp_fnres.base);
-    }
-
   xfree (fname_len_check);
 
   /* The filename has already been 'cleaned' by append_uri_pathel() above.  So,
@@ -1847,7 +1855,7 @@ url_file_name (const struct url *u, char *replaced_filename)
     }
   else
     {
-      unique = unique_name (fname, true);
+      unique = unique_name_passthrough (fname);
       if (unique != fname)
         xfree (fname);
     }

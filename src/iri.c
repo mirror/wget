@@ -1,5 +1,5 @@
 /* IRI related functions.
-   Copyright (C) 2008, 2009, 2010, 2011, 2015 Free Software Foundation,
+   Copyright (C) 2008-2011, 2015, 2018-2023 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -96,9 +96,9 @@ find_locale (void)
 	const char *encoding = nl_langinfo(CODESET);
 
 	if (!encoding || !*encoding)
-		return "ASCII";
+		return xstrdup("ASCII");
 
-   return encoding;
+   return xstrdup(encoding);
 }
 
 /* Basic check of an encoding name. */
@@ -138,7 +138,7 @@ do_conversion (const char *tocode, const char *fromcode, char const *in_org, siz
   if (cd == (iconv_t)(-1))
     {
       logprintf (LOG_VERBOSE, _("Conversion from %s to %s isn't supported\n"),
-                 quote (fromcode), quote (tocode));
+                 quote_n (0, fromcode), quote_n (1, tocode));
       *out = NULL;
       return false;
     }
@@ -190,9 +190,10 @@ do_conversion (const char *tocode, const char *fromcode, char const *in_org, siz
         {
           tooshort++;
           done = len;
-          len = outlen = done + inlen * 2;
-          s = xrealloc (s, outlen + 1);
-          *out = s + done;
+          len = done + inlen * 2;
+          s = xrealloc (s, len + 1);
+          *out = s + done - outlen;
+          outlen += inlen * 2;
         }
       else /* Weird, we got an unspecified error */
         {

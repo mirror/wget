@@ -1,6 +1,6 @@
 /* Support for Robot Exclusion Standard (RES).
-   Copyright (C) 2001, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free
-   Software Foundation, Inc.
+   Copyright (C) 2001, 2006-2011, 2015, 2018-2023 Free Software
+   Foundation, Inc.
 
 This file is part of Wget.
 
@@ -84,7 +84,7 @@ as that of the covered work.  */
 #include "c-strcase.h"
 
 #ifdef TESTING
-#include "test.h"
+#include "../tests/unit-tests.h"
 #endif
 
 struct path_info {
@@ -170,6 +170,8 @@ prune_non_exact (struct robot_specs *specs)
   for (i = 0, j = 0; i < specs->count; i++)
     if (specs->paths[i].user_agent_exact_p)
       newpaths[j++] = specs->paths[i];
+	 else
+		 xfree (specs->paths[i].path);
   assert (j == cnt);
   xfree (specs->paths);
   specs->paths = newpaths;
@@ -389,7 +391,7 @@ res_parse_from_file (const char *filename)
   struct file_memory *fm = wget_read_file (filename);
   if (!fm)
     {
-      logprintf (LOG_NOTQUIET, _("Cannot open %s: %s"),
+      logprintf (LOG_NOTQUIET, _("Cannot open %s: %s\n"),
                  filename, strerror (errno));
       return NULL;
     }
@@ -417,7 +419,7 @@ free_specs (struct robot_specs *specs)
 #define DECODE_MAYBE(c, ptr) do {                               \
   if (c == '%' && c_isxdigit (ptr[1]) && c_isxdigit (ptr[2]))       \
     {                                                           \
-      char decoded = X2DIGITS_TO_NUM (ptr[1], ptr[2]);          \
+      unsigned char decoded = X2DIGITS_TO_NUM (ptr[1], ptr[2]);          \
       if (decoded != '/')                                       \
         {                                                       \
           c = decoded;                                          \
@@ -477,15 +479,6 @@ res_match_path (const struct robot_specs *specs, const char *path)
 
 static struct hash_table *registered_specs;
 
-/* Stolen from cookies.c. */
-#define SET_HOSTPORT(host, port, result) do {           \
-  int HP_len = strlen (host);                           \
-  result = alloca (HP_len + 1 + numdigit (port) + 1);   \
-  memcpy (result, host, HP_len);                        \
-  result[HP_len] = ':';                                 \
-  number_to_string (result + HP_len + 1, port);         \
-} while (0)
-
 /* Register RES specs that below to server on HOST:PORT.  They will
    later be retrievable using res_get_specs.  */
 
@@ -493,21 +486,27 @@ void
 res_register_specs (const char *host, int port, struct robot_specs *specs)
 {
   struct robot_specs *old;
-  char *hp, *hp_old;
-  SET_HOSTPORT (host, port, hp);
+  char buf[256], *hp, *hp_old;
+
+  if (((unsigned) snprintf (buf, sizeof (buf), "%s:%d", host, port)) >= sizeof (buf))
+    hp = aprintf("%s:%d", host, port);
+  else
+    hp = buf;
 
   if (!registered_specs)
     registered_specs = make_nocase_string_hash_table (0);
 
   if (hash_table_get_pair (registered_specs, hp, &hp_old, &old))
     {
+      if (hp != buf)
+        xfree (hp);
       if (old)
         free_specs (old);
       hash_table_put (registered_specs, hp_old, specs);
     }
   else
     {
-      hash_table_put (registered_specs, xstrdup (hp), specs);
+      hash_table_put (registered_specs, hp == buf ? xstrdup (hp) : hp, specs);
     }
 }
 
@@ -516,10 +515,16 @@ res_register_specs (const char *host, int port, struct robot_specs *specs)
 struct robot_specs *
 res_get_specs (const char *host, int port)
 {
-  char *hp;
-  SET_HOSTPORT (host, port, hp);
+  char buf[256], *hp;
+
   if (!registered_specs)
     return NULL;
+
+  if (((unsigned) snprintf (buf, sizeof (buf), "%s:%d", host, port)) >= sizeof (buf))
+    hp = aprintf("%s:%d", host, port);
+  else
+    hp = buf;
+
   return hash_table_get (registered_specs, hp);
 }
 
@@ -556,9 +561,7 @@ res_retrieve_file (const char *url, char **file, struct iri *iri)
   url_parsed = url_parse (robots_url, &url_err, i, true);
   if (!url_parsed)
     {
-      char *error = url_error (robots_url, url_err);
-      logprintf (LOG_NOTQUIET, "%s: %s.\n", robots_url, error);
-      xfree (error);
+      logprintf (LOG_NOTQUIET, "%s: %s.\n", robots_url, url_error (url_err));
       err = URLERROR;
     }
   else
@@ -594,6 +597,7 @@ is_robots_txt_url (const char *url)
   return ret;
 }
 
+#if defined DEBUG_MALLOC || defined TESTING
 void
 res_cleanup (void)
 {
@@ -611,6 +615,7 @@ res_cleanup (void)
       registered_specs = NULL;
     }
 }
+#endif
 
 #ifdef TESTING
 

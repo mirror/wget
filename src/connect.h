@@ -1,7 +1,6 @@
 /* Declarations for connect.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free Software
-   Foundation, Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2023 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -64,10 +63,10 @@ int select_fd (int, double, int);
 bool test_socket_open (int);
 
 struct transport_implementation {
-  int (*reader) (int, char *, int, void *);
+  int (*reader) (int, char *, int, void *, double);
   int (*writer) (int, char *, int, void *);
   int (*poller) (int, double, int, void *);
-  int (*peeker) (int, char *, int, void *);
+  int (*peeker) (int, char *, int, void *, double);
   const char *(*errstr) (int, void *);
   void (*closer) (int, void *);
 };
@@ -79,5 +78,12 @@ int fd_write (int, char *, int, double);
 int fd_peek (int, char *, int, double);
 const char *fd_errstr (int);
 void fd_close (int);
+void connect_cleanup (void);
+
+#ifdef WINDOWS
+int select_fd_nb (int, double, int);
+#else
+#define select_fd_nb select_fd
+#endif
 
 #endif /* CONNECT_H */

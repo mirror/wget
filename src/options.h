@@ -1,7 +1,6 @@
 /* struct options.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free Software
-   Foundation, Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2023 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -43,6 +42,7 @@ struct options
   bool quiet;                   /* Are we quiet? */
   int ntry;                     /* Number of tries per URL */
   bool retry_connrefused;       /* Treat CONNREFUSED as non-fatal. */
+  bool retry_on_host_error;     /* Treat host errors as non-fatal. */
   char *retry_on_http_error;    /* Treat given HTTP errors as non-fatal. */
   bool background;              /* Whether we should work in background. */
   bool ignore_length;           /* Do we heed content-length at all?  */
@@ -93,7 +93,7 @@ struct options
   void *acceptregex;            /* Patterns to accept (a regex struct). */
   void *rejectregex;            /* Patterns to reject (a regex struct). */
   enum {
-#ifdef HAVE_LIBPCRE
+#if defined HAVE_LIBPCRE || HAVE_LIBPCRE2
     regex_type_pcre,
 #endif
     regex_type_posix
@@ -171,7 +171,7 @@ struct options
 
   wgint limit_rate;             /* Limit the download rate to this
                                    many bps. */
-  SUM_SIZE_INT quota;           /* Maximum file size to download and
+  wgint quota;                  /* Maximum file size to download and
                                    store. */
 
   bool server_response;         /* Do we print server response? */
@@ -230,8 +230,10 @@ struct options
     secure_protocol_tlsv1,
     secure_protocol_tlsv1_1,
     secure_protocol_tlsv1_2,
+    secure_protocol_tlsv1_3,
     secure_protocol_pfs
   } secure_protocol;            /* type of secure protocol to use. */
+  char secure_protocol_name[8]; /* name of secure protocol to use. */
   int check_cert;               /* whether to validate the server's cert */
   char *cert_file;              /* external client certificate to use. */
   char *private_key;            /* private key file (if not internal). */
@@ -258,6 +260,8 @@ struct options
   bool ftps_fallback_to_ftp;
   bool ftps_implicit;
   bool ftps_clear_data_connection;
+
+  char *tls_ciphers_string;
 #endif /* HAVE_SSL */
 
   bool cookies;                 /* whether cookies are used. */
@@ -340,6 +344,9 @@ struct options
   bool hsts;
   char *hsts_file;
 #endif
+
+  const char *homedir;          /* the homedir of the running process */
+  const char *wgetrcfile;       /* the wgetrc file to be loaded */
 };
 
 extern struct options opt;
