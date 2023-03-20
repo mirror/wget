@@ -1,5 +1,6 @@
 /* Utility functions for writing WARC files.
-   Copyright (C) 2011-2012, 2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 2011-2012, 2015, 2018-2023 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -203,6 +204,7 @@ warc_write_start_record (void)
   /* Start a GZIP stream, if required. */
   if (opt.warc_compression_enabled)
     {
+      int dup_fd;
       /* Record the starting offset of the new record. */
       warc_current_gzfile_offset = ftello (warc_current_file);
 
@@ -210,17 +212,38 @@ warc_write_start_record (void)
          In warc_write_end_record we will fill this space
          with information about the uncompressed and
          compressed size of the record. */
-      fseek (warc_current_file, EXTRA_GZIP_HEADER_SIZE, SEEK_CUR);
-      fflush (warc_current_file);
+      if (fseek (warc_current_file, EXTRA_GZIP_HEADER_SIZE, SEEK_CUR) < 0)
+        {
+          logprintf (LOG_NOTQUIET, _("Error setting WARC file position.\n"));
+          warc_write_ok = false;
+          return false;
+        }
+
+      if (fflush (warc_current_file) != 0)
+        {
+          logprintf (LOG_NOTQUIET, _("Error flushing WARC file to disk.\n"));
+          warc_write_ok = false;
+          return false;
+        }
 
       /* Start a new GZIP stream. */
-      warc_current_gzfile = gzdopen (dup (fileno (warc_current_file)), "wb9");
+      dup_fd = dup (fileno (warc_current_file));
+      if (dup_fd < 0)
+        {
+          logprintf (LOG_NOTQUIET,
+_("Error duplicating WARC file file descriptor.\n"));
+          warc_write_ok = false;
+          return false;
+        }
+
+      warc_current_gzfile = gzdopen (dup_fd, "wb9");
       warc_current_gzfile_uncompressed_size = 0;
 
       if (warc_current_gzfile == NULL)
         {
           logprintf (LOG_NOTQUIET,
 _("Error opening GZIP stream to WARC file.\n"));
+          close (dup_fd);
           warc_write_ok = false;
           return false;
         }
@@ -304,7 +327,11 @@ warc_write_block_from_file (FILE *data_in)
 static bool
 warc_write_end_record (void)
 {
-  warc_write_buffer ("\r\n\r\n", 4);
+  if (warc_write_buffer ("\r\n\r\n", 4) != 4)
+    {
+      warc_write_ok = false;
+      return false;
+    }
 
 #ifdef HAVE_LIBZ
   /* We start a new gzip stream for each record.  */
@@ -345,8 +372,13 @@ warc_write_end_record (void)
       compressed_size = warc_current_gzfile_uncompressed_size;
 
       /* Go back to the static GZIP header. */
-      fseeko (warc_current_file, warc_current_gzfile_offset
+      result = fseeko (warc_current_file, warc_current_gzfile_offset
               + EXTRA_GZIP_HEADER_SIZE, SEEK_SET);
+      if (result != 0)
+        {
+          warc_write_ok = false;
+          return false;
+        }
 
       /* Read the header. */
       result = fread (static_header, 1, GZIP_STATIC_HEADER_SIZE,
@@ -479,7 +511,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
 
           if (n == 0)
             {
-              /* Check for the error flag IFF N == 0, so that we don't
+              /* Check for the error flag IF N == 0, so that we don't
                  exit the loop after a partial read due to e.g., EAGAIN
                  or EWOULDBLOCK.  */
               if (ferror (stream))
@@ -619,7 +651,7 @@ warc_timestamp (char *timestamp, size_t timestamp_size)
    The string will be 47 characters long. */
 #if HAVE_LIBUUID
 void
-warc_uuid_str (char *urn_str)
+warc_uuid_str (char *urn_str, size_t urn_size)
 {
   char uuid_str[37];
   uuid_t record_id;
@@ -627,11 +659,11 @@ warc_uuid_str (char *urn_str)
   uuid_generate (record_id);
   uuid_unparse (record_id, uuid_str);
 
-  sprintf (urn_str, "<urn:uuid:%s>", uuid_str);
+  snprintf (urn_str, urn_size, "<urn:uuid:%s>", uuid_str);
 }
 #elif HAVE_UUID_CREATE
 void
-warc_uuid_str (char *urn_str)
+warc_uuid_str (char *urn_str, size_t urn_size)
 {
   char *uuid_str;
   uuid_t record_id;
@@ -639,7 +671,7 @@ warc_uuid_str (char *urn_str)
   uuid_create (&record_id, NULL);
   uuid_to_string (&record_id, &uuid_str, NULL);
 
-  sprintf (urn_str, "<urn:uuid:%s>", uuid_str);
+  snprintf (urn_str, urn_size, "<urn:uuid:%s>", uuid_str);
   xfree (uuid_str);
 }
 #else
@@ -650,7 +682,7 @@ typedef RPC_STATUS (RPC_ENTRY * UuidToString_proc) (UUID *, unsigned char **);
 typedef RPC_STATUS (RPC_ENTRY * RpcStringFree_proc) (unsigned char **);
 
 static int
-windows_uuid_str (char *urn_str)
+windows_uuid_str (char *urn_str, size_t urn_size)
 {
   static UuidCreate_proc pfn_UuidCreate = NULL;
   static UuidToString_proc pfn_UuidToString = NULL;
@@ -689,7 +721,7 @@ windows_uuid_str (char *urn_str)
 	{
 	  if (pfn_UuidToString (&uuid, &uuid_str) == RPC_S_OK)
 	    {
-	      sprintf (urn_str, "<urn:uuid:%s>", uuid_str);
+	      snprintf (urn_str, urn_size, "<urn:uuid:%s>", uuid_str);
 	      pfn_RpcStringFree (&uuid_str);
 	      return 1;
 	    }
@@ -707,7 +739,7 @@ windows_uuid_str (char *urn_str)
 
    The string will be 47 characters long. */
 void
-warc_uuid_str (char *urn_str)
+warc_uuid_str (char *urn_str, size_t urn_size)
 {
   /* RFC 4122, a version 4 UUID with only random numbers */
 
@@ -717,7 +749,7 @@ warc_uuid_str (char *urn_str)
 #ifdef WINDOWS
   /* If the native method fails (expected on older Windows versions),
      use the fallback below.  */
-  if (windows_uuid_str (urn_str))
+  if (windows_uuid_str (urn_str, urn_size))
     return;
 #endif
 
@@ -732,7 +764,7 @@ warc_uuid_str (char *urn_str)
 	*  clock_seq_hi_and_reserved to zero and one, respectively. */
   uuid_data[8] = (uuid_data[8] & 0xBF) | 0x80;
 
-  sprintf (urn_str,
+  snprintf (urn_str, urn_size,
     "<urn:uuid:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x>",
     uuid_data[0], uuid_data[1], uuid_data[2], uuid_data[3], uuid_data[4],
     uuid_data[5], uuid_data[6], uuid_data[7], uuid_data[8], uuid_data[9],
@@ -753,7 +785,7 @@ warc_write_warcinfo_record (const char *filename)
   /* Write warc-info record as the first record of the file. */
   /* We add the record id of this info record to the other records in the
      file. */
-  warc_uuid_str (warc_current_warcinfo_uuid_str);
+  warc_uuid_str (warc_current_warcinfo_uuid_str, sizeof (warc_current_warcinfo_uuid_str));
 
   warc_timestamp (timestamp, sizeof(timestamp));
 
@@ -883,11 +915,10 @@ warc_start_new_file (bool meta)
 static bool
 warc_start_cdx_file (void)
 {
-  int filename_length = strlen (opt.warc_filename);
-  char *cdx_filename = alloca (filename_length + 4 + 1);
-  memcpy (cdx_filename, opt.warc_filename, filename_length);
-  memcpy (cdx_filename + filename_length, ".cdx", 5);
+  char *cdx_filename = aprintf("%s.cdx", opt.warc_filename);
   warc_current_cdx_file = fopen (cdx_filename, "a+");
+  free(cdx_filename);
+
   if (warc_current_cdx_file == NULL)
     return false;
 
@@ -995,7 +1026,7 @@ warc_process_cdx_line (char *lineptr, int field_num_original_url,
       /* For some extra efficiency, we decode the base32 encoded
          checksum value.  This should produce exactly SHA1_DIGEST_SIZE
          bytes.  */
-      size_t checksum_l;
+      idx_t checksum_l;
       char * checksum_v;
       base32_decode_alloc (checksum, strlen (checksum), &checksum_v,
                            &checksum_l);
@@ -1193,7 +1224,7 @@ warc_write_metadata (void)
   if (opt.warc_maxsize > 0)
     warc_start_new_file (true);
 
-  warc_uuid_str (manifest_uuid);
+  warc_uuid_str (manifest_uuid, sizeof (manifest_uuid));
 
   fflush (warc_manifest_fp);
   warc_write_metadata_record (manifest_uuid,
@@ -1353,6 +1384,7 @@ warc_write_cdx_record (const char *url, const char *timestamp_str,
   char timestamp_str_cdx[15];
   char offset_string[MAX_INT_TO_STRING_LEN(off_t)];
   const char *checksum;
+  char *tmp_location = NULL;
 
   memcpy (timestamp_str_cdx     , timestamp_str     , 4); /* "YYYY" "-" */
   memcpy (timestamp_str_cdx +  4, timestamp_str +  5, 2); /* "mm"   "-" */
@@ -1371,18 +1403,19 @@ warc_write_cdx_record (const char *url, const char *timestamp_str,
   if (mime_type == NULL || strlen(mime_type) == 0)
     mime_type = "-";
   if (redirect_location == NULL || strlen(redirect_location) == 0)
-    redirect_location = "-";
+    tmp_location = strdup ("-");
   else
-    redirect_location = url_escape(redirect_location);
+    tmp_location = url_escape(redirect_location);
 
   number_to_string (offset_string, offset);
 
   /* Print the CDX line. */
   fprintf (warc_current_cdx_file, "%s %s %s %s %d %s %s - %s %s %s\n", url,
            timestamp_str_cdx, url, mime_type, response_code, checksum,
-           redirect_location, offset_string, warc_current_filename,
+           tmp_location, offset_string, warc_current_filename,
            response_uuid);
   fflush (warc_current_cdx_file);
+  free (tmp_location);
 
   return true;
 }
@@ -1409,7 +1442,7 @@ warc_write_revisit_record (const char *url, const char *timestamp_str,
   char block_digest[BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5];
   char sha1_res_block[SHA1_DIGEST_SIZE];
 
-  warc_uuid_str (revisit_uuid);
+  warc_uuid_str (revisit_uuid, sizeof (revisit_uuid));
 
   sha1_stream (body, sha1_res_block);
   warc_base32_sha1_digest (sha1_res_block, block_digest, sizeof(block_digest));
@@ -1504,7 +1537,7 @@ warc_write_response_record (const char *url, const char *timestamp_str,
 
   /* Not a revisit, just store the record. */
 
-  warc_uuid_str (response_uuid);
+  warc_uuid_str (response_uuid, sizeof (response_uuid));
 
   fseeko (warc_current_file, 0L, SEEK_END);
   offset = ftello (warc_current_file);
@@ -1555,11 +1588,11 @@ warc_write_record (const char *record_type, const char *resource_uuid,
                  const ip_address *ip, const char *content_type, FILE *body,
                  off_t payload_offset)
 {
+  char uuid_buf[48];
+
   if (resource_uuid == NULL)
     {
-      /* using uuid_buf allows const for resource_uuid in function declaration */
-      char *uuid_buf = alloca (48);
-      warc_uuid_str (uuid_buf);
+      warc_uuid_str (uuid_buf, sizeof (uuid_buf));
       resource_uuid = uuid_buf;
     }
 

@@ -1,5 +1,5 @@
 /* Metalink module.
-   Copyright (C) 2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 2015, 2018-2023 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -40,7 +40,7 @@ as that of the covered work.  */
 #include "sha1.h"
 #include "sha256.h"
 #include "sha512.h"
-#include "dosname.h"
+#include "filename.h"
 #include "xmemdup0.h"
 #include "xstrndup.h"
 #include "c-strcase.h"
@@ -419,9 +419,7 @@ retrieve_from_metalink (const metalink_t* metalink)
 
           if (!url)
             {
-              char *error = url_error (mres->url, url_err);
-              logprintf (LOG_NOTQUIET, "%s: %s.\n", mres->url, error);
-              xfree (error);
+              logprintf (LOG_NOTQUIET, "%s: %s.\n", mres->url, url_error (url_err));
               inform_exit_status (URLERROR);
               iri_free (iri);
               continue;
@@ -1108,7 +1106,7 @@ badhash_suffix (char *name)
   char *bhash, *uname;
 
   bhash = concat_strings (name, ".badhash", (char *)0);
-  uname = unique_name (bhash, false);
+  uname = unique_name (bhash);
 
   logprintf (LOG_VERBOSE, _("Renaming %s to %s.\n"),
              quote_n (0, name), quote_n (1, uname));
@@ -1175,11 +1173,9 @@ fetch_metalink_file (const char *url_str,
 
   if (!url)
     {
-      char *error = url_error (url_str, url_err);
-      logprintf (LOG_NOTQUIET, "%s: %s.\n", url_str, error);
+      logprintf (LOG_NOTQUIET, "%s: %s.\n", url_str, url_error (url_err));
       inform_exit_status (retr_err);
       iri_free (iri);
-      xfree (error);
       return retr_err;
     }
 

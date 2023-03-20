@@ -1,5 +1,5 @@
 /* Command line parsing.
-   Copyright (C) 1996-2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015, 2018-2023 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -153,6 +153,7 @@ i18n_initialize (void)
   setlocale (LC_ALL, "");
   /* Set the text message domain.  */
   bindtextdomain ("wget", LOCALEDIR);
+  bindtextdomain ("wget-gnulib", LOCALEDIR);
   textdomain ("wget");
 #elif defined WINDOWS
   char MBCP[16] = "";
@@ -177,7 +178,7 @@ get_hsts_database (void)
 
   if (opt.homedir)
     {
-      char *dir = aprintf ("%s/.wget-hsts", opt.homedir);
+      char *dir = ajoin_dir_file(opt.homedir, ".wget-hsts");
       return dir;
     }
 
@@ -236,13 +237,13 @@ _Noreturn static void print_help (void);
 _Noreturn static void print_version (void);
 
 #ifdef HAVE_SSL
-# define IF_SSL(x) x
+# define IF_SSL(a,b,c,d,e) { a, b, c, d , e },
 #else
-# define IF_SSL(x) NULL
+# define IF_SSL(a,b,c,d,e)
 #endif
 
 struct cmdline_option {
-  const char *long_name;
+  char long_name[MAX_LONGOPTION];
   char short_name;
   enum {
     OPT_VALUE,
@@ -279,12 +280,12 @@ static struct cmdline_option option_data[] =
 #endif
     { "body-data", 0, OPT_VALUE, "bodydata", -1 },
     { "body-file", 0, OPT_VALUE, "bodyfile", -1 },
-    { IF_SSL ("ca-certificate"), 0, OPT_VALUE, "cacertificate", -1 },
-    { IF_SSL ("ca-directory"), 0, OPT_VALUE, "cadirectory", -1 },
+    IF_SSL ( "ca-certificate", 0, OPT_VALUE, "cacertificate", -1 )
+    IF_SSL ( "ca-directory", 0, OPT_VALUE, "cadirectory", -1 )
     { "cache", 0, OPT_BOOLEAN, "cache", -1 },
-    { IF_SSL ("certificate"), 0, OPT_VALUE, "certificate", -1 },
-    { IF_SSL ("certificate-type"), 0, OPT_VALUE, "certificatetype", -1 },
-    { IF_SSL ("check-certificate"), 0, OPT_BOOLEAN, "checkcertificate", -1 },
+    IF_SSL ( "certificate", 0, OPT_VALUE, "certificate", -1 )
+    IF_SSL ( "certificate-type", 0, OPT_VALUE, "certificatetype", -1 )
+    IF_SSL ( "check-certificate", 0, OPT_BOOLEAN, "checkcertificate", -1 )
     { "clobber", 0, OPT__CLOBBER, NULL, optional_argument },
 #ifdef HAVE_LIBZ
     { "compression", 0, OPT_VALUE, "compression", -1 },
@@ -297,7 +298,7 @@ static struct cmdline_option option_data[] =
     { "content-disposition", 0, OPT_BOOLEAN, "contentdisposition", -1 },
     { "content-on-error", 0, OPT_BOOLEAN, "contentonerror", -1 },
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
-    { IF_SSL ("crl-file"), 0, OPT_VALUE, "crlfile", -1 },
+    IF_SSL ( "crl-file", 0, OPT_VALUE, "crlfile", -1 )
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
     { "debug", 'd', OPT_BOOLEAN, "debug", -1 },
     { "default-page", 0, OPT_VALUE, "defaultpage", -1 },
@@ -325,12 +326,10 @@ static struct cmdline_option option_data[] =
     { "ftp-stmlf", 0, OPT_BOOLEAN, "ftpstmlf", -1 },
 #endif /* def __VMS */
     { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
-#ifdef HAVE_SSL
-    { "ftps-clear-data-connection", 0, OPT_BOOLEAN, "ftpscleardataconnection", -1 },
-    { "ftps-fallback-to-ftp", 0, OPT_BOOLEAN, "ftpsfallbacktoftp", -1 },
-    { "ftps-implicit", 0, OPT_BOOLEAN, "ftpsimplicit", -1 },
-    { "ftps-resume-ssl", 0, OPT_BOOLEAN, "ftpsresumessl", -1 },
-#endif
+    IF_SSL ( "ftps-clear-data-connection", 0, OPT_BOOLEAN, "ftpscleardataconnection", -1 )
+    IF_SSL ( "ftps-fallback-to-ftp", 0, OPT_BOOLEAN, "ftpsfallbacktoftp", -1 )
+    IF_SSL ( "ftps-implicit", 0, OPT_BOOLEAN, "ftpsimplicit", -1 )
+    IF_SSL ( "ftps-resume-ssl", 0, OPT_BOOLEAN, "ftpsresumessl", -1 )
     { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },
@@ -345,7 +344,7 @@ static struct cmdline_option option_data[] =
     { "http-passwd", 0, OPT_VALUE, "httppassword", -1 }, /* deprecated */
     { "http-password", 0, OPT_VALUE, "httppassword", -1 },
     { "http-user", 0, OPT_VALUE, "httpuser", -1 },
-    { IF_SSL ("https-only"), 0, OPT_BOOLEAN, "httpsonly", -1 },
+    IF_SSL ( "https-only", 0, OPT_BOOLEAN, "httpsonly", -1 )
     { "ignore-case", 0, OPT_BOOLEAN, "ignorecase", -1 },
     { "ignore-length", 0, OPT_BOOLEAN, "ignorelength", -1 },
     { "ignore-tags", 0, OPT_VALUE, "ignoretags", -1 },
@@ -384,7 +383,7 @@ static struct cmdline_option option_data[] =
     { "parent", 0, OPT__PARENT, NULL, optional_argument },
     { "passive-ftp", 0, OPT_BOOLEAN, "passiveftp", -1 },
     { "password", 0, OPT_VALUE, "password", -1 },
-    { IF_SSL ("pinnedpubkey"), 0, OPT_VALUE, "pinnedpubkey", -1 },
+    IF_SSL ( "pinnedpubkey", 0, OPT_VALUE, "pinnedpubkey", -1 )
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
@@ -392,9 +391,9 @@ static struct cmdline_option option_data[] =
     { "preferred-location", 0, OPT_VALUE, "preferredlocation", -1 },
 #endif
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
-    { IF_SSL ("ciphers"), 0, OPT_VALUE, "ciphers", -1 },
-    { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
-    { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
+    IF_SSL ( "ciphers", 0, OPT_VALUE, "ciphers", -1 )
+    IF_SSL ( "private-key", 0, OPT_VALUE, "privatekey", -1 )
+    IF_SSL ( "private-key-type", 0, OPT_VALUE, "privatekeytype", -1 )
     { "progress", 0, OPT_VALUE, "progress", -1 },
     { "show-progress", 0, OPT_BOOLEAN, "showprogress", -1 },
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
@@ -424,7 +423,7 @@ static struct cmdline_option option_data[] =
     { "retry-on-http-error", 0, OPT_VALUE, "retryonhttperror", -1 },
     { "save-cookies", 0, OPT_VALUE, "savecookies", -1 },
     { "save-headers", 0, OPT_BOOLEAN, "saveheaders", -1 },
-    { IF_SSL ("secure-protocol"), 0, OPT_VALUE, "secureprotocol", -1 },
+    IF_SSL ( "secure-protocol", 0, OPT_VALUE, "secureprotocol", -1 )
     { "server-response", 'S', OPT_BOOLEAN, "serverresponse", -1 },
     { "span-hosts", 'H', OPT_BOOLEAN, "spanhosts", -1 },
     { "spider", 0, OPT_BOOLEAN, "spider", -1 },
@@ -436,7 +435,9 @@ static struct cmdline_option option_data[] =
     { "tries", 't', OPT_VALUE, "tries", -1 },
     { "unlink", 0, OPT_BOOLEAN, "unlink", -1 },
     { "trust-server-names", 0, OPT_BOOLEAN, "trustservernames", -1 },
+#ifndef __VMS
     { "use-askpass", 0, OPT_VALUE, "useaskpass", -1},
+#endif
     { "use-server-timestamps", 0, OPT_BOOLEAN, "useservertimestamps", -1 },
     { "user", 0, OPT_VALUE, "user", -1 },
     { "user-agent", 'U', OPT_VALUE, "useragent", -1 },
@@ -513,10 +514,6 @@ init_switches (void)
     {
       struct cmdline_option *cmdopt = &option_data[i];
       struct option *longopt;
-
-      if (!cmdopt->long_name)
-        /* The option is disabled. */
-        continue;
 
       longopt = &long_options[o++];
       longopt->name = cmdopt->long_name;
@@ -652,6 +649,8 @@ Download:\n"),
     N_("\
        --retry-connrefused         retry even if connection is refused\n"),
     N_("\
+       --retry-on-host-error       consider host errors as non-fatal, transient errors\n"),
+    N_("\
        --retry-on-http-error=ERRORS    comma-separated list of HTTP errors to retry\n"),
     N_("\
   -O,  --output-document=FILE      write documents to FILE\n"),
@@ -696,11 +695,14 @@ Download:\n"),
     N_("\
        --read-timeout=SECS         set the read timeout to SECS\n"),
     N_("\
-  -w,  --wait=SECONDS              wait SECONDS between retrievals\n"),
+  -w,  --wait=SECONDS              wait SECONDS between retrievals\n\
+                                     (applies if more then 1 URL is to be retrieved)\n"),
     N_("\
-       --waitretry=SECONDS         wait 1..SECONDS between retries of a retrieval\n"),
+       --waitretry=SECONDS         wait 1..SECONDS between retries of a retrieval\n\
+                                     (applies if more then 1 URL is to be retrieved)\n"),
     N_("\
-       --random-wait               wait from 0.5*WAIT...1.5*WAIT secs between retrievals\n"),
+       --random-wait               wait from 0.5*WAIT...1.5*WAIT secs between retrievals\n\
+                                     (applies if more then 1 URL is to be retrieved)\n"),
     N_("\
        --no-proxy                  explicitly turn off proxy\n"),
     N_("\
@@ -730,11 +732,13 @@ Download:\n"),
        --password=PASS             set both ftp and http password to PASS\n"),
     N_("\
        --ask-password              prompt for passwords\n"),
+#ifndef __VMS
     N_("\
        --use-askpass=COMMAND       specify credential handler for requesting \n\
                                      username and password.  If no COMMAND is \n\
                                      specified the WGET_ASKPASS or the SSH_ASKPASS \n\
                                      environment variable is used.\n"),
+#endif
     N_("\
        --no-iri                    turn off IRI support\n"),
     N_("\
@@ -755,7 +759,7 @@ Download:\n"),
 #endif
 #ifdef ENABLE_XATTR
     N_("\
-       --no-xattr                  turn off storage of metadata in extended file attributes\n"),
+       --xattr                     turn on storage of metadata in extended file attributes\n"),
 #endif
     "\n",
 
@@ -844,7 +848,7 @@ HTTP options:\n"),
 HTTPS (SSL/TLS) options:\n"),
     N_("\
        --secure-protocol=PR        choose secure protocol, one of auto, SSLv2,\n\
-                                     SSLv3, TLSv1, TLSv1_1, TLSv1_2 and PFS\n"),
+                                     SSLv3, TLSv1, TLSv1_1, TLSv1_2, TLSv1_3 and PFS\n"),
     N_("\
        --https-only                only follow secure HTTPS links\n"),
     N_("\
@@ -995,7 +999,7 @@ Recursive accept/reject:\n"),
        --accept-regex=REGEX        regex matching accepted URLs\n"),
     N_("\
        --reject-regex=REGEX        regex matching rejected URLs\n"),
-#ifdef HAVE_LIBPCRE
+#if defined HAVE_LIBPCRE || defined HAVE_LIBPCRE2
     N_("\
        --regex-type=TYPE           regex type (posix|pcre)\n"),
 #else
@@ -1026,8 +1030,8 @@ Recursive accept/reject:\n"),
     N_("\
   -np, --no-parent                 don't ascend to the parent directory\n"),
     "\n",
-    N_("Email bug reports, questions, discussions to <bug-wget@gnu.org>\n"),
-    N_("and/or open issues at https://savannah.gnu.org/bugs/?func=additem&group=wget.\n")
+    N_("Email bug reports, questions, discussions to <bug-wget@gnu.org>\n"
+    "and/or open issues at https://savannah.gnu.org/bugs/?func=additem&group=wget.\n")
   };
 
   size_t i;
@@ -1060,13 +1064,13 @@ secs_to_human_time (double interval)
   mins = secs / 60, secs %= 60;
 
   if (days)
-    sprintf (buf, "%dd %dh %dm %ds", days, hours, mins, secs);
+    snprintf (buf, sizeof(buf), "%dd %dh %dm %ds", days, hours, mins, secs);
   else if (hours)
-    sprintf (buf, "%dh %dm %ds", hours, mins, secs);
+    snprintf (buf, sizeof(buf), "%dh %dm %ds", hours, mins, secs);
   else if (mins)
-    sprintf (buf, "%dm %ds", mins, secs);
+    snprintf (buf, sizeof(buf), "%dm %ds", mins, secs);
   else
-    sprintf (buf, "%ss", print_decimal (interval));
+    snprintf (buf, sizeof(buf), "%ss", print_decimal (interval));
 
   return buf;
 }
@@ -1273,6 +1277,12 @@ print_version (void)
   if (printf ("\n") < 0)
     exit (WGET_EXIT_IO_FAIL);
 
+  /* Print VMS-specific version info. */
+#ifdef __VMS
+  if (vms_version_supplement() < 0)
+    exit (WGET_EXIT_IO_FAIL);
+#endif /* def __VMS */
+
   /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is
      absent. */
   if (printf ("%s\n", wgetrc_title) < 0)
@@ -1350,10 +1360,9 @@ int cleaned_up;
 int
 main (int argc, char **argv)
 {
-  char **url, **t, *p;
+  char *p;
   int i, ret, longindex;
-  int nurl;
-  int retconf;
+  int nurls;
   int argstring_length;
   bool use_userconfig = false;
   bool noconfig = false;
@@ -1414,8 +1423,8 @@ main (int argc, char **argv)
      option ("--config") and parse it before the other user options. */
   longindex = -1;
 
-  while ((retconf = getopt_long (argc, argv,
-                                short_options, long_options, &longindex)) != -1)
+  while ((getopt_long (argc, argv,
+                       short_options, long_options, &longindex)) != -1)
     {
       int confval;
       struct cmdline_option *config_opt;
@@ -1569,7 +1578,7 @@ main (int argc, char **argv)
       longindex = -1;
     }
 
-  nurl = argc - optind;
+  nurls = argc - optind;
 
   /* Initialize logging ASAP.  */
   log_init (opt.lfilename, append_to_log);
@@ -1653,7 +1662,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
   if (opt.output_document)
     {
       if ((opt.convert_links || opt.convert_file_only)
-          && (nurl > 1 || opt.page_requisites || opt.recursive))
+          && (nurls > 1 || opt.page_requisites || opt.recursive))
         {
           fputs (_("\
 Cannot specify both -k or --convert-file-only and -O if multiple URLs are given, or in combination\n\
@@ -1755,6 +1764,12 @@ for details.\n\n"));
       exit (WGET_EXIT_GENERIC_ERROR);
     }
 
+  if (opt.ask_passwd && !(opt.user || opt.http_user || opt.ftp_user))
+    {
+      fprintf(stderr,
+              _("WARNING: No username set with --ask-password. This is usually not what you want.\n"));
+    }
+
   if (opt.start_pos >= 0 && opt.always_rest)
     {
       fprintf (stderr,
@@ -1763,7 +1778,7 @@ for details.\n\n"));
       opt.always_rest = false;
     }
 
-  if (!nurl && !opt.input_filename
+  if (!nurls && !opt.input_filename
 #ifdef HAVE_METALINK
       && !opt.input_metalink
 #endif
@@ -1784,6 +1799,12 @@ for details.\n\n"));
   /* Compile the regular expressions.  */
   switch (opt.regex_type)
     {
+#ifdef HAVE_LIBPCRE2
+      case regex_type_pcre:
+        opt.regex_compile_fun = compile_pcre2_regex;
+        opt.regex_match_fun = match_pcre2_regex;
+        break;
+#endif
 #ifdef HAVE_LIBPCRE
       case regex_type_pcre:
         opt.regex_compile_fun = compile_pcre_regex;
@@ -1927,23 +1948,6 @@ for details.\n\n"));
   if (opt.show_progress)
     set_progress_implementation (opt.progress_type);
 
-  /* Fill in the arguments.  */
-  url = alloca_array (char *, nurl + 1);
-  if (url == NULL)
-    {
-      fprintf (stderr, _("Memory allocation problem\n"));
-      exit (WGET_EXIT_PARSE_ERROR);
-    }
-  for (i = 0; i < nurl; i++, optind++)
-    {
-      char *rewritten = rewrite_shorthand_url (argv[optind]);
-      if (rewritten)
-        url[i] = rewritten;
-      else
-        url[i] = xstrdup (argv[optind]);
-    }
-  url[i] = NULL;
-
   /* Open WARC file. */
   if (opt.warc_filename != 0)
     warc_init ();
@@ -1983,6 +1987,11 @@ for details.\n\n"));
 #else /* def __VMS */
 # define FOPEN_OPT_ARGS
 #endif /* def __VMS [else] */
+
+          if (opt.unlink_requested)
+            {
+              unlink(opt.output_document);
+            }
 
           output_stream = fopen (opt.output_document,
                                  opt.always_rest ? "ab" : "wb"
@@ -2106,24 +2115,27 @@ only if outputting to a regular file.\n"));
 #endif
 
   /* Retrieve the URLs from argument list.  */
-  for (t = url; *t; t++)
+  for (i = 0; i < nurls; i++, optind++)
     {
+      char *t;
       char *filename = NULL, *redirected_URL = NULL;
-      int dt, url_err;
+      int dt = 0, url_err;
       /* Need to do a new struct iri every time, because
        * retrieve_url may modify it in some circumstances,
        * currently. */
       struct iri *iri = iri_new ();
       struct url *url_parsed;
 
+      t = rewrite_shorthand_url (argv[optind]);
+      if (!t)
+        t = argv[optind];
+
       set_uri_encoding (iri, opt.locale, true);
-      url_parsed = url_parse (*t, &url_err, iri, true);
+      url_parsed = url_parse (t, &url_err, iri, true);
 
       if (!url_parsed)
         {
-          char *error = url_error (*t, url_err);
-          logprintf (LOG_NOTQUIET, "%s: %s.\n",*t, error);
-          xfree (error);
+          logprintf (LOG_NOTQUIET, "%s: %s.\n", t, url_error (url_err));
           inform_exit_status (URLERROR);
         }
       else
@@ -2133,9 +2145,9 @@ only if outputting to a regular file.\n"));
             use_askpass (url_parsed);
 
           if ((opt.recursive || opt.page_requisites)
-              && ((url_scheme (*t) != SCHEME_FTP
+              && ((url_scheme (t) != SCHEME_FTP
 #ifdef HAVE_SSL
-              && url_scheme (*t) != SCHEME_FTPS
+              && url_scheme (t) != SCHEME_FTPS
 #endif
               )
                   || url_uses_proxy (url_parsed)))
@@ -2143,9 +2155,9 @@ only if outputting to a regular file.\n"));
               int old_follow_ftp = opt.follow_ftp;
 
               /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-              if (url_scheme (*t) == SCHEME_FTP
+              if (url_scheme (t) == SCHEME_FTP
 #ifdef HAVE_SSL
-                  || url_scheme (*t) == SCHEME_FTPS
+                  || url_scheme (t) == SCHEME_FTPS
 #endif
                   )
                 opt.follow_ftp = 1;
@@ -2156,7 +2168,7 @@ only if outputting to a regular file.\n"));
             }
           else
             {
-              retrieve_url (url_parsed, *t, &filename, &redirected_URL, NULL,
+              retrieve_url (url_parsed, t, &filename, &redirected_URL, NULL,
                             &dt, opt.recursive, iri, true);
             }
 
@@ -2171,7 +2183,11 @@ only if outputting to a regular file.\n"));
           xfree (filename);
           url_free (url_parsed);
         }
+
       iri_free (iri);
+
+      if (t != argv[optind])
+        xfree (t);
     }
 
   /* And then from the input file, if any.  */
@@ -2243,7 +2259,7 @@ only if outputting to a regular file.\n"));
 
   /* Print the downloaded sum.  */
   if ((opt.recursive || opt.page_requisites
-       || nurl > 1
+       || nurls > 1
        || (opt.input_filename && total_downloaded_bytes != 0))
       &&
       total_downloaded_bytes != 0)

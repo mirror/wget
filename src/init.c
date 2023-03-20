@@ -1,6 +1,6 @@
 /* Reading/parsing the initialization file.
-   Copyright (C) 1996-2012, 2014-2015, 2018 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2012, 2014-2015, 2018-2023 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -47,9 +47,6 @@ as that of the covered work.  */
 #endif
 
 #include <regex.h>
-#ifdef HAVE_LIBPCRE
-# include <pcre.h>
-#endif
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>
@@ -61,6 +58,8 @@ as that of the covered work.  */
 #include "host.h"
 #include "netrc.h"
 #include "progress.h"
+#include "connect.h"            /* for connect_cleanup */
+#include "ssl.h"                /* for ssl_cleanup */
 #include "recur.h"              /* for INFINITE_RECURSION */
 #include "convert.h"            /* for convert_cleanup */
 #include "res.h"                /* for res_cleanup */
@@ -333,7 +332,9 @@ static const struct {
   { "tries",            &opt.ntry,              cmd_number_inf },
   { "trustservernames", &opt.trustservernames,  cmd_boolean },
   { "unlink",           &opt.unlink_requested,  cmd_boolean },
+#ifndef __VMS
   { "useaskpass" ,      &opt.use_askpass,       cmd_use_askpass },
+#endif
   { "useproxy",         &opt.use_proxy,         cmd_boolean },
   { "user",             &opt.user,              cmd_string },
   { "useragent",        NULL,                   cmd_spec_useragent },
@@ -510,11 +511,7 @@ defaults (void)
   opt.hsts = true;
 #endif
 
-#ifdef ENABLE_XATTR
-  opt.enable_xattr = true;
-#else
   opt.enable_xattr = false;
-#endif
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
@@ -592,20 +589,33 @@ wgetrc_env_file_name (void)
   return NULL;
 }
 
+/* Append file name to (locally appropriate) directory spec.
+   Return pointer to allocated storage. */
+char *
+ajoin_dir_file (const char *dir, const char *file)
+{
+  char *dir_file;
+#ifdef __VMS
+   /* No separator: "dev:[dir]" + "name.type" */
+  dir_file = aprintf ("%s%s", dir, file);
+#else /* def __VMS */
+  /* Slash separator: "/a/b" + "/" + "name.type" */
+  dir_file = aprintf ("%s/%s", dir, file);
+#endif /* def __VMS [else] */
+  return dir_file;
+}
+
 /* Check for the existence of '$HOME/.wgetrc' and return its path
    if it exists and is set.  */
 char *
 wgetrc_user_file_name (void)
 {
   char *file = NULL;
-  /* If that failed, try $HOME/.wgetrc (or equivalent).  */
 
-#ifdef __VMS
-  file = "SYS$LOGIN:.wgetrc";
-#else /* def __VMS */
-  if (opt.homedir)
-    file = aprintf ("%s/.wgetrc", opt.homedir);
-#endif /* def __VMS [else] */
+  /* Join opt.homedir ($HOME) and ".wgetrc" */
+  if (opt.homedir) {
+    file = ajoin_dir_file(opt.homedir, ".wgetrc");
+  }
 
   if (!file)
     return NULL;
@@ -640,7 +650,7 @@ wgetrc_file_name (void)
      SYSTEM_WGETRC should not be defined under WINDOWS.  */
   if (!file)
     {
-      char *home = ws_mypath ();
+      const char *home = ws_mypath ();
       if (home)
         {
           file = aprintf ("%s/wget.ini", home);
@@ -648,7 +658,6 @@ wgetrc_file_name (void)
             {
               xfree (file);
             }
-          xfree (home);
         }
     }
 #endif /* WINDOWS */
@@ -835,6 +844,8 @@ parse_line (const char *line, char **com, char **val, int *comind)
   const char *end = line + strlen (line);
   const char *cmdstart, *cmdend;
   const char *valstart, *valend;
+  char buf[1024];
+  size_t len;
 
   char *cmdcopy;
   int ind;
@@ -875,9 +886,18 @@ parse_line (const char *line, char **com, char **val, int *comind)
 
   /* The line now known to be syntactically correct.  Check whether
      the command is valid.  */
-  BOUNDED_TO_ALLOCA (cmdstart, cmdend, cmdcopy);
+  len = cmdend - cmdstart;
+  if (len < sizeof (buf))
+    cmdcopy = buf;
+  else
+    cmdcopy = xmalloc (len + 1);
+  memcpy (cmdcopy, cmdstart, len);
+  cmdcopy[len] = 0;
+
   dehyphen (cmdcopy);
   ind = command_by_name (cmdcopy);
+  if (cmdcopy != buf)
+    xfree (cmdcopy);
   if (ind == -1)
     return line_unknown_command;
 
@@ -888,8 +908,10 @@ parse_line (const char *line, char **com, char **val, int *comind)
 
 #if defined(WINDOWS) || defined(MSDOS)
 # define ISSEP(c) ((c) == '/' || (c) == '\\')
+# define SEPSTRING "/\\"
 #else
 # define ISSEP(c) ((c) == '/')
+# define SEPSTRING "/"
 #endif
 
 /* Run commands[comind].action. */
@@ -930,8 +952,7 @@ setval_internal_tilde (int comind, const char *com, const char *val)
           xfree (*pstring);
 
           /* Skip the leading "~/". */
-          for (++val; ISSEP (*val); val++)
-            ;
+          val += strspn(val + 1, SEPSTRING) + 1;
           *pstring = concat_strings (home, "/", val, (char *)0);
           xfree (home);
         }
@@ -953,12 +974,13 @@ void
 setoptval (const char *com, const char *val, const char *optname)
 {
   /* Prepend "--" to OPTNAME. */
-  char *dd_optname = (char *) alloca (2 + strlen (optname) + 1);
-  dd_optname[0] = '-';
-  dd_optname[1] = '-';
-  strcpy (dd_optname + 2, optname);
+  char dd_optname[2 + MAX_LONGOPTION + 1];
+
+  if ((unsigned) snprintf(dd_optname, sizeof (dd_optname), "--%s", optname) > sizeof (dd_optname))
+    exit (WGET_EXIT_PARSE_ERROR);
 
   assert (val != NULL);
+
   if (!setval_internal (command_by_name (com), dd_optname, val))
     exit (WGET_EXIT_PARSE_ERROR);
 }
@@ -1350,13 +1372,13 @@ cmd_bytes_sum (const char *com, const char *val, void *place)
   double byte_value;
 
   if (!parse_bytes_helper (val, &byte_value)
-      || byte_value < LONG_MIN || byte_value > LONG_MAX)
+      || byte_value < WGINT_MIN || byte_value > WGINT_MAX)
     {
       fprintf (stderr, _("%s: %s: Invalid byte value %s\n"),
                exec_name, com, quote (val));
       return false;
     }
-  *(SUM_SIZE_INT *) place = (SUM_SIZE_INT) byte_value;
+  *(wgint *) place = (wgint) byte_value;
   return true;
 }
 
@@ -1415,6 +1437,13 @@ cmd_time (const char *com, const char *val, void *place)
 
   if (!simple_atof (val, end, &number))
     goto err;
+
+  if (number < 0)
+    {
+      fprintf (stderr, _("%s: %s: Negative time period %s\n"),
+               exec_name, com, quote (val));
+      return false;
+    }
 
   *(double *)place = number * mult;
   return true;
@@ -1636,7 +1665,7 @@ cmd_spec_regex_type (const char *com, const char *val, void *place_ignored _GL_U
 {
   static const struct decode_item choices[] = {
     { "posix", regex_type_posix },
-#ifdef HAVE_LIBPCRE
+#if defined HAVE_LIBPCRE || defined HAVE_LIBPCRE2
     { "pcre",  regex_type_pcre },
 #endif
   };
@@ -1727,6 +1756,7 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *place)
     { "tlsv1_3", secure_protocol_tlsv1_3 },
     { "pfs", secure_protocol_pfs },
   };
+  snprintf (opt.secure_protocol_name, sizeof (opt.secure_protocol_name), "%s", val);
   int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
     fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
@@ -1936,6 +1966,10 @@ cleanup (void)
   host_cleanup ();
   log_cleanup ();
   netrc_cleanup ();
+#ifdef HAVE_SSL
+  ssl_cleanup ();
+#endif
+  connect_cleanup ();
 
   xfree (opt.choose_config);
   xfree (opt.lfilename);
@@ -2012,7 +2046,9 @@ cleanup (void)
 
   xfree (opt.encoding_remote);
   xfree (opt.locale);
+#ifdef HAVE_HSTS
   xfree (opt.hsts_file);
+#endif
 
   xfree (opt.wgetrcfile);
   xfree (opt.homedir);

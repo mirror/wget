@@ -1,5 +1,6 @@
 /* Declarations for utils.c.
-   Copyright (C) 1996-2011, 2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2023 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -50,8 +51,6 @@ as that of the covered work.  */
 #define xnew_array(type, len) (xmalloc ((len) * sizeof (type)))
 #define xnew0_array(type, len) (xcalloc ((len), sizeof (type)))
 
-#define alloca_array(type, size) ((type *) alloca ((size) * sizeof (type)))
-
 #define xfree(p) do { free ((void *) (p)); p = NULL; } while (0)
 
 struct hash_table;
@@ -89,7 +88,8 @@ bool file_exists_p (const char *, file_stats_t *);
 bool file_non_directory_p (const char *);
 wgint file_size (const char *);
 int make_directory (const char *);
-char *unique_name (const char *, bool);
+char *unique_name_passthrough (const char *);
+char *unique_name (const char *);
 FILE *unique_create (const char *, bool, char **);
 FILE *fopen_excl (const char *, int);
 FILE *fopen_stat (const char *, const char *, file_stats_t *);
@@ -121,15 +121,8 @@ void free_keys_and_values (struct hash_table *);
 
 const char *with_thousand_seps (wgint);
 
-/* human_readable must be able to accept wgint and SUM_SIZE_INT
-   arguments.  On machines where wgint is 32-bit, declare it to accept
-   double.  */
-#if SIZEOF_WGINT >= 8
-# define HR_NUMTYPE wgint
-#else
-# define HR_NUMTYPE double
-#endif
-char *human_readable (HR_NUMTYPE, const int, const int);
+/* human_readable must be able to accept wgint arguments. */
+char *human_readable (wgint, const int, const int);
 
 
 int numdigit (wgint);
@@ -149,6 +142,11 @@ void xsleep (double);
 
 size_t wget_base64_encode (const void *, size_t, char *);
 ssize_t wget_base64_decode (const char *, void *, size_t);
+
+#ifdef HAVE_LIBPCRE2
+void *compile_pcre2_regex (const char *);
+bool match_pcre2_regex (const void *, const char *);
+#endif
 
 #ifdef HAVE_LIBPCRE
 void *compile_pcre_regex (const char *);

@@ -1,6 +1,6 @@
 /* File Transfer Protocol support.
-   Copyright (C) 1996-2011, 2014-2015, 2018 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2011, 2014-2015, 2018-2023 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -400,7 +400,7 @@ getftp (struct url *u, struct url *original_url,
       if (!ssl_init ())
         {
           scheme_disable (SCHEME_FTPS);
-          logprintf (LOG_NOTQUIET, _("Could not initialize SSL. It will be disabled."));
+          logprintf (LOG_NOTQUIET, _("Could not initialize SSL. It will be disabled.\n"));
           err = SSLINITFAILED;
           return err;
         }
@@ -756,11 +756,11 @@ Error in server response, closing control connection.\n"));
       else
         {
           const char *targ = NULL;
+          char *target = u->dir;
+          char targetbuf[1024];
           int cwd_count;
           int cwd_end;
           int cwd_start;
-
-          char *target = u->dir;
 
           DEBUGP (("changing working directory\n"));
 
@@ -799,13 +799,20 @@ Error in server response, closing control connection.\n"));
               && (con->rs != ST_OS400)
               && (con->rs != ST_VMS))
             {
-              int idlen = strlen (con->id);
               char *ntarget, *p;
+              size_t idlen = strlen (con->id);
+              size_t len;
 
               /* Strip trailing slash(es) from con->id. */
               while (idlen > 0 && con->id[idlen - 1] == '/')
                 --idlen;
-              p = ntarget = (char *)alloca (idlen + 1 + strlen (u->dir) + 1);
+
+              len = idlen + 1 + strlen (target);
+              if (len < sizeof (targetbuf))
+                p = ntarget = targetbuf;
+              else
+                p = ntarget = xmalloc (len + 1);
+
               memcpy (p, con->id, idlen);
               p += idlen;
               *p++ = '/';
@@ -836,7 +843,7 @@ Error in server response, closing control connection.\n"));
           if (con->rs == ST_VMS)
             {
               char *tmpp;
-              char *ntarget = (char *)alloca (strlen (target) + 2);
+              char *ntarget = alloca (strlen (target) + 2);
               /* We use a converted initial dir, so directories in
                  TARGET will be separated with slashes, something like
                  "/INITIAL/FOLDER/DIR/SUBDIR".  Convert that to
@@ -1580,7 +1587,7 @@ Error in server response, closing control connection.\n"));
 
 #ifdef ENABLE_XATTR
   if (opt.enable_xattr)
-    set_file_metadata (u->url, NULL, fp);
+    set_file_metadata (u, NULL, fp);
 #endif
 
   fd_close (local_sock);
@@ -1806,7 +1813,7 @@ Error in server response, closing control connection.\n"));
 exit_error:
 
   /* If fp is a regular file, close and try to remove it */
-  if (fp && !output_stream)
+  if (fp && (!output_stream || con->cmd & DO_LIST))
     fclose (fp);
   return err;
 }
@@ -1830,7 +1837,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
   /* Declare WARC variables. */
   bool warc_enabled = (opt.warc_filename != NULL);
   FILE *warc_tmp = NULL;
-  ip_address *warc_ip = NULL;
+  ip_address warc_ip_buf, *warc_ip = NULL;
   wgint last_expected_bytes = 0;
 
   /* Get the target, and set the name for the message accordingly. */
@@ -1912,7 +1919,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
 
           if (!con->proxy && con->csock != -1)
             {
-              warc_ip = (ip_address *) alloca (sizeof (ip_address));
+              warc_ip = &warc_ip_buf;
               socket_ip_address (con->csock, warc_ip, ENDPOINT_PEER);
             }
         }
@@ -1974,6 +1981,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
         case HOSTERR: case CONIMPOSSIBLE: case FWRITEERR: case FOPENERR:
         case FTPNSFOD: case FTPLOGINC: case FTPNOPASV: case FTPNOAUTH: case FTPNOPBSZ: case FTPNOPROT:
         case UNLINKERR: case WARC_TMP_FWRITEERR: case CONSSLERR: case CONTNOTSUPPORTED:
+        case VERIFCERTERR:
 #ifdef HAVE_SSL
           if (err == FTPNOAUTH)
             logputs (LOG_NOTQUIET, "Server does not support AUTH TLS.\n");
@@ -2075,7 +2083,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
             /* --dont-remove-listing was specified, so do count this towards the
                number of bytes and files downloaded. */
             {
-              total_downloaded_bytes += qtyread;
+              total_downloaded_bytes += (qtyread - restval);
               numurls++;
             }
 
@@ -2090,7 +2098,7 @@ ftp_loop_internal (struct url *u, struct url *original_url, struct fileinfo *f,
              downloaded if they're going to be deleted.  People seeding proxies,
              for instance, may want to know how many bytes and files they've
              downloaded through it. */
-          total_downloaded_bytes += qtyread;
+          total_downloaded_bytes += (qtyread - restval);
           numurls++;
 
           if (opt.delete_after && !input_file_url (opt.input_filename))
@@ -2184,7 +2192,7 @@ ftp_get_listing (struct url *u, struct url *original_url, ccon *con,
 static uerr_t ftp_retrieve_dirs (struct url *, struct url *,
                                  struct fileinfo *, ccon *);
 static uerr_t ftp_retrieve_glob (struct url *, struct url *, ccon *, int);
-static struct fileinfo *delelement (struct fileinfo *, struct fileinfo **);
+static struct fileinfo *delelement (struct fileinfo **, struct fileinfo **);
 
 /* Retrieve a list of files given in struct fileinfo linked list.  If
    a file is a symbolic link, do not retrieve it, but rather try to
@@ -2325,22 +2333,34 @@ The sizes do not match (local %s) -- retrieving.\n\n"),
                       size_t len = strlen (f->linkto) + 1;
                       if (S_ISLNK (st.st_mode))
                         {
-                          char *link_target = (char *)alloca (len);
-                          size_t n = readlink (con->target, link_target, len);
-                          if ((n == len - 1)
-                              && (memcmp (link_target, f->linkto, n) == 0))
+                          char buf[1024], *link_target;
+                          size_t n;
+                          bool res;
+
+                          if (len < sizeof (buf))
+                            link_target = buf;
+                          else
+                            link_target = xmalloc (len);
+
+                          n = readlink (con->target, link_target, len);
+                          res = (n == len - 1) && (memcmp (link_target, f->linkto, n) == 0);
+
+                          if (link_target != buf)
+                            xfree (link_target);
+
+                          if (res)
                             {
                               logprintf (LOG_VERBOSE, _("\
 Already have correct symlink %s -> %s\n\n"),
-                                         quote (con->target),
-                                         quote (f->linkto));
+                                         quote_n (0, con->target),
+                                         quote_n (1, f->linkto));
                               dlthis = false;
                               break;
                             }
                         }
                     }
                   logprintf (LOG_VERBOSE, _("Creating symlink %s -> %s\n"),
-                             quote (con->target), quote (f->linkto));
+                             quote_n (0, con->target), quote_n (1, f->linkto));
                   /* Unlink before creating symlink!  */
                   unlink (con->target);
                   if (symlink (f->linkto, con->target) == -1)
@@ -2460,8 +2480,9 @@ static uerr_t
 ftp_retrieve_dirs (struct url *u, struct url *original_url,
                    struct fileinfo *f, ccon *con)
 {
-  char *container = NULL;
-  int container_size = 0;
+  char buf[1024];
+  char *container = buf;
+  int container_size = sizeof (buf);
 
   for (; f; f = f->next)
     {
@@ -2478,7 +2499,14 @@ ftp_retrieve_dirs (struct url *u, struct url *original_url,
          item on the bottom of the stack.  */
       size = strlen (u->dir) + 1 + strlen (f->name) + 1;
       if (size > container_size)
-        container = (char *)alloca (size);
+        {
+          if (container == buf)
+            container = xmalloc (size);
+          else
+            container = xrealloc (container, size);
+
+          container_size = size;
+        }
       newdir = container;
 
       odir = u->dir;
@@ -2514,6 +2542,9 @@ Not descending to %s as it is excluded/not-included.\n"),
 
       /* Set the time-stamp?  */
     }
+
+  if (container != buf)
+    xfree (container);
 
   if (opt.quota && total_downloaded_bytes > opt.quota)
     return QUOTEXC;
@@ -2578,96 +2609,117 @@ ftp_retrieve_glob (struct url *u, struct url *original_url,
   res = ftp_get_listing (u, original_url, con, &start);
   if (res != RETROK)
     return res;
-  /* First: weed out that do not conform the global rules given in
-     opt.accepts and opt.rejects.  */
-  if (opt.accepts || opt.rejects)
-    {
-      f = start;
-      while (f)
-        {
-          if (f->type != FT_DIRECTORY && !acceptable (f->name))
-            {
-              logprintf (LOG_VERBOSE, _("Rejecting %s.\n"),
-                         quote (f->name));
-              f = delelement (f, &start);
-            }
-          else
-            f = f->next;
-        }
-    }
-  /* Remove all files with possible harmful names or invalid entries. */
+
+  // Set the function used for glob matching.
+  int (*matcher) (const char *, const char *, int)
+    = opt.ignore_case ? fnmatch_nocase : fnmatch;
+
+  // Set the function used to compare strings
+#ifdef __VMS
+  /* 2009-09-09 SMS.
+   * Odd-ball compiler ("HP C V7.3-009 on OpenVMS Alpha V7.3-2")
+   * bug causes spurious %CC-E-BADCONDIT complaint with this
+   * "?:" statement.  (Different linkage attributes for strcmp()
+   * and strcasecmp().)  Converting to "if" changes the
+   * complaint to %CC-W-PTRMISMATCH on "cmp = strcmp;".  Adding
+   * the senseless type cast clears the complaint, and looks
+   * harmless.
+   */
+  int (*cmp) (const char *, const char *)
+    = opt.ignore_case ? strcasecmp : (int (*)())strcmp;
+#else /* def __VMS */
+  int (*cmp) (const char *, const char *)
+    = opt.ignore_case ? strcasecmp : strcmp;
+#endif /* def __VMS [else] */
+
   f = start;
   while (f)
     {
-      if (has_insecure_name_p (f->name) || is_invalid_entry (f))
+
+      // Weed out files that do not confirm to the global rules given in
+      // opt.accepts and opt.rejects
+      if ((opt.accepts || opt.rejects) &&
+          f->type != FT_DIRECTORY && !acceptable (f->name))
         {
           logprintf (LOG_VERBOSE, _("Rejecting %s.\n"),
                      quote (f->name));
-          f = delelement (f, &start);
+          f = delelement (&f, &start);
+          continue;
         }
-      else
-        f = f->next;
-    }
-  /* Now weed out the files that do not match our globbing pattern.
-     If we are dealing with a globbing pattern, that is.  */
-  if (*u->file)
-    {
-      if (action == GLOB_GLOBALL)
-        {
-          int (*matcher) (const char *, const char *, int)
-            = opt.ignore_case ? fnmatch_nocase : fnmatch;
-          int matchres = 0;
 
-          f = start;
-          while (f)
+
+      // Identify and eliminate possibly harmful names or invalid entries.
+      if (has_insecure_name_p (f->name) || is_invalid_entry (f))
+        {
+          logprintf (LOG_VERBOSE, _("Rejecting %s (Invalid Entry).\n"),
+                     quote (f->name));
+          f = delelement (&f, &start);
+          continue;
+        }
+
+      if (opt.acceptregex || opt.rejectregex)
+        {
+          // accept_url() takes the full URL.
+          char buf[1024];
+          char *url = buf;
+
+          if ((unsigned) snprintf(buf, sizeof(buf), "%s%s%s",
+                                  u->url, f->name, f->type == FT_DIRECTORY ? "/" : "")
+                                  >= sizeof(buf))
             {
-              matchres = matcher (u->file, f->name, 0);
+              url = aprintf("%s%s%s", u->url, f->name, f->type == FT_DIRECTORY ? "/" : "");
+            }
+
+          if (!accept_url (url))
+            {
+              logprintf (LOG_VERBOSE, _ ("%s is excluded/not-included through regex.\n"), url);
+              f = delelement (&f, &start);
+              if (url != buf)
+                xfree(url);
+              continue;
+            }
+
+            if (url != buf)
+              xfree(url);
+        }
+
+      /* Now weed out the files that do not match our globbing pattern.
+         If we are dealing with a globbing pattern, that is.  */
+      if (*u->file)
+        {
+          if (action == GLOB_GLOBALL)
+            {
+              int matchres = matcher (u->file, f->name, 0);
               if (matchres == -1)
                 {
                   logprintf (LOG_NOTQUIET, _("Error matching %s against %s: %s\n"),
                              u->file, quotearg_style (escape_quoting_style, f->name),
                              strerror (errno));
-                  break;
+                  freefileinfo (start);
+                  return RETRBADPATTERN;
                 }
               if (matchres == FNM_NOMATCH)
-                f = delelement (f, &start); /* delete the element from the list */
-              else
-                f = f->next;        /* leave the element in the list */
+                {
+                  f = delelement (&f, &start); /* delete the element from the list */
+                  continue;
+                }
             }
-          if (matchres == -1)
-            {
-              freefileinfo (start);
-              return RETRBADPATTERN;
-            }
-        }
-      else if (action == GLOB_GETONE)
-        {
-#ifdef __VMS
-          /* 2009-09-09 SMS.
-           * Odd-ball compiler ("HP C V7.3-009 on OpenVMS Alpha V7.3-2")
-           * bug causes spurious %CC-E-BADCONDIT complaint with this
-           * "?:" statement.  (Different linkage attributes for strcmp()
-           * and strcasecmp().)  Converting to "if" changes the
-           * complaint to %CC-W-PTRMISMATCH on "cmp = strcmp;".  Adding
-           * the senseless type cast clears the complaint, and looks
-           * harmless.
-           */
-          int (*cmp) (const char *, const char *)
-            = opt.ignore_case ? strcasecmp : (int (*)())strcmp;
-#else /* def __VMS */
-          int (*cmp) (const char *, const char *)
-            = opt.ignore_case ? strcasecmp : strcmp;
-#endif /* def __VMS [else] */
-          f = start;
-          while (f)
+          else if (action == GLOB_GETONE)
             {
               if (0 != cmp(u->file, f->name))
-                f = delelement (f, &start);
-              else
-                f = f->next;
+                {
+                  f = delelement (&f, &start);
+                  continue;
+                }
             }
         }
+      f = f->next;
     }
+
+  /*
+   * Now that preprocessing of the file listing is over, let's try to download
+   * all the remaining files in our listing.
+   */
   if (start)
     {
       /* Just get everything.  */
@@ -2808,14 +2860,14 @@ ftp_loop (struct url *u, struct url *original_url, char **local_file, int *dt,
    address of the next element, or NULL if the list is exhausted.  It
    can modify the start of the list.  */
 static struct fileinfo *
-delelement (struct fileinfo *f, struct fileinfo **start)
+delelement (struct fileinfo **f, struct fileinfo **start)
 {
-  struct fileinfo *prev = f->prev;
-  struct fileinfo *next = f->next;
+  struct fileinfo *prev = (*f)->prev;
+  struct fileinfo *next = (*f)->next;
 
-  xfree (f->name);
-  xfree (f->linkto);
-  xfree (f);
+  xfree ((*f)->name);
+  xfree ((*f)->linkto);
+  xfree (*f);
 
   if (next)
     next->prev = prev;
@@ -2834,8 +2886,7 @@ freefileinfo (struct fileinfo *f)
     {
       struct fileinfo *next = f->next;
       xfree (f->name);
-      if (f->linkto)
-        xfree (f->linkto);
+      xfree (f->linkto);
       xfree (f);
       f = next;
     }

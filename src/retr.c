@@ -1,6 +1,6 @@
 /* File retrieval.
-   Copyright (C) 1996-2011, 2014-2015, 2018 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2011, 2014-2015, 2018-2023 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -54,7 +54,6 @@ as that of the covered work.  */
 #include "http.h"
 #include "host.h"
 #include "connect.h"
-#include "hash.h"
 #include "convert.h"
 #include "ptimer.h"
 #include "html-url.h"
@@ -62,7 +61,7 @@ as that of the covered work.  */
 #include "hsts.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
-SUM_SIZE_INT total_downloaded_bytes;
+wgint total_downloaded_bytes;
 
 /* Total download time in seconds. */
 double total_download_time;
@@ -255,9 +254,7 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
               FILE *out2)
 {
   int ret = 0;
-#undef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-  int dlbufsize = max (BUFSIZ, 8 * 1024);
+  int dlbufsize = MAX (BUFSIZ, 64 * 1024);
   char *dlbuf = xmalloc (dlbufsize);
 
   struct ptimer *timer = NULL;
@@ -293,28 +290,19 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
   if (flags & rb_compressed_gzip)
     {
       gzbuf = xmalloc (gzbufsize);
-      if (gzbuf != NULL)
-        {
-          gzstream.zalloc = zalloc;
-          gzstream.zfree = zfree;
-          gzstream.opaque = Z_NULL;
-          gzstream.next_in = Z_NULL;
-          gzstream.avail_in = 0;
+      gzstream.zalloc = zalloc;
+      gzstream.zfree = zfree;
+      gzstream.opaque = Z_NULL;
+      gzstream.next_in = Z_NULL;
+      gzstream.avail_in = 0;
 
-          #define GZIP_DETECT 32 /* gzip format detection */
-          #define GZIP_WINDOW 15 /* logarithmic window size (default: 15) */
-          ret = inflateInit2 (&gzstream, GZIP_DETECT | GZIP_WINDOW);
-          if (ret != Z_OK)
-            {
-              xfree (gzbuf);
-              errno = (ret == Z_MEM_ERROR) ? ENOMEM : EINVAL;
-              ret = -1;
-              goto out;
-            }
-        }
-      else
+      #define GZIP_DETECT 32 /* gzip format detection */
+      #define GZIP_WINDOW 15 /* logarithmic window size (default: 15) */
+      ret = inflateInit2 (&gzstream, GZIP_DETECT | GZIP_WINDOW);
+      if (ret != Z_OK)
         {
-          errno = ENOMEM;
+          xfree (gzbuf);
+          errno = (ret == Z_MEM_ERROR) ? ENOMEM : EINVAL;
           ret = -1;
           goto out;
         }
@@ -417,6 +405,8 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
              timeout, so that the gauge can be updated regularly even
              when the data arrives very slowly or stalls.  */
           tmout = 0.95;
+          /* avoid wrong 'interactive timeout' */
+          errno = 0;
           if (opt.read_timeout)
             {
               double waittm;
@@ -425,7 +415,8 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
                 {
                   /* Don't let total idle time exceed read timeout. */
                   tmout = opt.read_timeout - waittm;
-                  if (tmout < 0)
+                  /* if 0 fd_read can be 'blocked read' */
+                  if (tmout <= 0)
                     {
                       /* We've already exceeded the timeout. */
                       ret = -1, errno = ETIMEDOUT;
@@ -455,7 +446,7 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
           sum_read += ret;
 
 #ifdef HAVE_LIBZ
-          if (gzbuf != NULL)
+          if (gzbuf)
             {
               int err;
               int towrite;
@@ -492,8 +483,8 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
                     case Z_STREAM_END:
                       if (exact && sum_read != toread)
                         {
-                          DEBUGP(("zlib stream ended unexpectedly after "
-                                  "%ld/%ld bytes\n", sum_read, toread));
+                          DEBUGP(("zlib stream ended unexpectedly after %"PRId64"/%"PRId64
+                                  " bytes\n", sum_read, toread));
                         }
                     }
 
@@ -559,13 +550,15 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
   if (progress)
     progress_finish (progress, ptimer_read (timer));
 
-  if (elapsed)
-    *elapsed = ptimer_read (timer);
   if (timer)
-    ptimer_destroy (timer);
+    {
+      if (elapsed)
+        *elapsed = ptimer_read (timer);
+      ptimer_destroy (timer);
+    }
 
 #ifdef HAVE_LIBZ
-  if (gzbuf != NULL)
+  if (gzbuf)
     {
       int err = inflateEnd (&gzstream);
       if (ret >= 0)
@@ -581,9 +574,9 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
         }
       xfree (gzbuf);
 
-      if (gzstream.total_in != sum_read)
+      if (gzstream.total_in != (uLong) sum_read)
         {
-          DEBUGP(("zlib read size differs from raw read size (%lu/%lu)\n",
+          DEBUGP(("zlib read size differs from raw read size (%lu/%"PRId64")\n",
                   gzstream.total_in, sum_read));
         }
     }
@@ -809,14 +802,12 @@ double
 calc_rate (wgint bytes, double secs, int *units)
 {
   double dlrate;
-  double bibyte = 1000.0;
+  double bibyte;
 
   if (!opt.report_bps)
     bibyte = 1024.0;
-
-
-  assert (secs >= 0);
-  assert (bytes >= 0);
+  else
+    bibyte = 1000.0;
 
   if (secs == 0)
     /* If elapsed time is exactly zero, it means we're under the
@@ -825,17 +816,20 @@ calc_rate (wgint bytes, double secs, int *units)
        0 and the timer's resolution, assume half the resolution.  */
     secs = ptimer_resolution () / 2.0;
 
-  dlrate = convert_to_bits (bytes) / secs;
+  dlrate = secs ? convert_to_bits (bytes) / secs : 0;
   if (dlrate < bibyte)
     *units = 0;
   else if (dlrate < (bibyte * bibyte))
     *units = 1, dlrate /= bibyte;
   else if (dlrate < (bibyte * bibyte * bibyte))
     *units = 2, dlrate /= (bibyte * bibyte);
-
-  else
-    /* Maybe someone will need this, one day. */
+  else if (dlrate < (bibyte * bibyte * bibyte * bibyte))
     *units = 3, dlrate /= (bibyte * bibyte * bibyte);
+  else {
+    *units = 4, dlrate /= (bibyte * bibyte * bibyte * bibyte);
+    if (dlrate > 99.99)
+		 dlrate = 99.99; // upper limit 99.99TB/s
+  }
 
   return dlrate;
 }
@@ -924,15 +918,15 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       proxy_url = url_parse (proxy, &up_error_code, pi, true);
       if (!proxy_url)
         {
-          char *error = url_error (proxy, up_error_code);
           logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
-                     proxy, error);
+                     proxy, url_error (up_error_code));
           xfree (url);
-          xfree (error);
           xfree (proxy);
           iri_free (pi);
           RESTORE_METHOD;
           result = PROXERR;
+          if (orig_parsed != u)
+            url_free (u);
           goto bail;
         }
       if (proxy_url->scheme != SCHEME_HTTP && proxy_url->scheme != u->scheme)
@@ -944,6 +938,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           iri_free (pi);
           RESTORE_METHOD;
           result = PROXERR;
+          if (orig_parsed != u)
+            url_free (u);
           goto bail;
         }
       iri_free(pi);
@@ -1043,16 +1039,14 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       newloc_parsed = url_parse (mynewloc, &up_error_code, iri, true);
       if (!newloc_parsed)
         {
-          char *error = url_error (mynewloc, up_error_code);
           logprintf (LOG_NOTQUIET, "%s: %s.\n", escnonprint_uri (mynewloc),
-                     error);
+                     url_error (up_error_code));
           if (orig_parsed != u)
             {
               url_free (u);
             }
           xfree (url);
           xfree (mynewloc);
-          xfree (error);
           RESTORE_METHOD;
           goto bail;
         }
@@ -1154,9 +1148,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
     xfree (local_file);
 
   if (orig_parsed != u)
-    {
-      url_free (u);
-    }
+    url_free (u);
 
   if (redirection_count || iri_fallbacked)
     {
@@ -1210,9 +1202,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       struct url *url_parsed = url_parse (url, &url_err, iri, true);
       if (!url_parsed)
         {
-          char *error = url_error (url, url_err);
-          logprintf (LOG_NOTQUIET, "%s: %s.\n", url, error);
-          xfree (error);
+          logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (url_err));
           iri_free (iri);
           return URLERROR;
         }
@@ -1407,11 +1397,12 @@ rotate_backups(const char *fname)
 # define SEP "."
 # define AVSL 0
 #endif
+#define FILE_BUF_SIZE 1024
 
-  int maxlen = strlen (fname) + sizeof (SEP) + numdigit (opt.backups) + AVSL;
-  char *from = alloca (maxlen);
-  char *to = alloca (maxlen);
+  /* avoid alloca() here */
+  char from[FILE_BUF_SIZE], to[FILE_BUF_SIZE];
   struct stat sb;
+  bool overflow;
   int i;
 
   if (stat (fname, &sb) == 0)
@@ -1428,21 +1419,39 @@ rotate_backups(const char *fname)
        */
       if (i == opt.backups)
         {
-          snprintf (to, sizeof(to), "%s%s%d%s", fname, SEP, i, AVS);
-          delete (to);
+          if (((unsigned) snprintf (to, sizeof (to), "%s%s%d%s", fname, SEP, i, AVS)) >= sizeof (to))
+            logprintf (LOG_NOTQUIET, "Failed to delete %s: File name truncation\n", to);
+          else
+            delete (to);
         }
 #endif
-      snprintf (to, maxlen, "%s%s%d", fname, SEP, i);
-      snprintf (from, maxlen, "%s%s%d", fname, SEP, i - 1);
-      if (rename (from, to))
-        logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
-                   from, to, errno, strerror (errno));
+      overflow = (unsigned) snprintf (to, FILE_BUF_SIZE, "%s%s%d", fname, SEP, i) >= FILE_BUF_SIZE;
+      overflow |= (unsigned) snprintf (from, FILE_BUF_SIZE, "%s%s%d", fname, SEP, i - 1) >= FILE_BUF_SIZE;
+
+      if (overflow)
+          errno = ENAMETOOLONG;
+      if (overflow || rename (from, to))
+        {
+          // The original file may not exist. In which case rename() will
+          // return ENOENT. This is not a real error. We could make this better
+          // by calling stat() first and making sure that the file exists.
+          if (errno != ENOENT)
+              logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
+                      from, to, errno, strerror (errno));
+        }
     }
 
-  snprintf (to, maxlen, "%s%s%d", fname, SEP, 1);
-  if (rename(fname, to))
-    logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
-               fname, to, errno, strerror (errno));
+  overflow = (unsigned) snprintf (to, FILE_BUF_SIZE, "%s%s%d", fname, SEP, 1) >= FILE_BUF_SIZE;
+  if (overflow)
+    errno = ENAMETOOLONG;
+  if (overflow || rename(fname, to))
+    {
+      if (errno != ENOENT)
+          logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
+                  from, to, errno, strerror (errno));
+    }
+
+#undef FILE_BUF_SIZE
 }
 
 static bool no_proxy_match (const char *, const char **);

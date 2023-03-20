@@ -1,5 +1,6 @@
 /* Declarations for hsts.c
-   Copyright (C) 1996-2012, 2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 1996-2012, 2015, 2018-2023 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -45,7 +46,7 @@ bool hsts_store_has_changed (hsts_store_t);
 
 bool hsts_store_entry (hsts_store_t,
                        enum url_scheme, const char *, int,
-                       time_t, bool);
+                       int64_t, bool);
 bool hsts_match (hsts_store_t, struct url *);
 
 #endif /* HAVE_HSTS */
