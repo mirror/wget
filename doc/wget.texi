@@ -3982,7 +3982,7 @@ or @samp{application/xhtml+xml} to @file{@var{name}.html}.
 
 @example
 wget --mirror --convert-links --backup-converted \
-     --html-extension -o /home/me/weeklog        \
+     --adjust-extension -o /home/me/weeklog      \
      https://www.gnu.org/
 @end example
 
