@@ -631,7 +631,7 @@ else
    }
 dev_descr.dsc$w_length = strlen( dev_descr.dsc$a_pointer);
 
-/* Get filesystem type code.
+/* Get file system type code.
    (Text results for this item code have been unreliable.)
 */
 sts = lib$getdvi( &((int) DVI$_ACPTYPE),

@@ -433,7 +433,7 @@ defaults (void)
   opt.ftp_pasv = true;
   /* 2014-09-07  Darshit Shah  <darnir@gmail.com>
    * opt.retr_symlinks is set to true by default. Creating symbolic links on the
-   * local filesystem pose a security threat by malicious FTP Servers that
+   * local file system pose a security threat by malicious FTP Servers that
    * server a specially crafted .listing file akin to this:
    *
    * lrwxrwxrwx   1 root     root           33 Dec 25  2012 JoCxl6d8rFU -> /

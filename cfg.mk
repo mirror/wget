@@ -3,7 +3,7 @@ exclude_file_name_regexp--sc_trailing_blank = ^doc/annou.*$$
 exclude_file_name_regexp--sc_bindtextdomain = ^fuzz/.*.c$$
 exclude_file_name_regexp--sc_require_config_h = (fuzz/.*.c|src/decc_ver.c|util/trunc.c)$$
 exclude_file_name_regexp--sc_require_config_h_first = (fuzz/.*.c|src/decc_ver.c|src/vms.c|util/trunc.c)$$
-# exclude_file_name_regexp--sc_po_
+exclude_file_name_regexp--sc_file_system = ^(NEWS|testenv/server/ftp/ftp_server.py)$$
 
 
 export VC_LIST_EXCEPT_DEFAULT=^(lib/.*|m4/.*|md5/.*|build-aux/.*|src/gettext\.h|.*ChangeLog|tests/certs/.*)$$
@@ -12,7 +12,6 @@ config_h_header = "wget\.h"
 local-checks-to-skip = \
     sc_const_long_option \
     sc_error_message_uppercase \
-    sc_file_system \
     sc_two_space_separator_in_usage \
     sc_useless_cpp_parens \
     \
