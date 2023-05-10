@@ -3,6 +3,18 @@ GNU Wget NEWS -- history of user-visible changes.
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
 
+* Noteworthy changes in release 1.21.4 (2023-05-11)
+
+** Document --retry-on-host-error in help text
+
+** Increase read buffer size to 64k. This should speed up downloads on gigabit and faster connections
+
+** Update deprecated option '--html-extension' to '--adjust-extension' in documentation
+
+** Update gnulib compatibility layer.
+   Fixes HSTS test failures on i686. (Thanks to Andreas Enge for ponting it out)
+
+
 * Noteworthy changes in release 1.21.3 (2022-02-26)
 
 ** Fix computation of total bytes downloaded during FTP trasnfers (#61277)
