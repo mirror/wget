@@ -56,14 +56,14 @@ APP_VER=$(grep "^PACKAGE_VERSION='" configure | cut -d "'" -f2)
 echo "Making release for $APP_NAME $APP_VER"
 ask_continue
 
-NEWS_VERSION=$(grep -i "Noteworthy changes in release" NEWS | head -1 | awk '{print $6}')
+NEWS_VERSION=$(grep -i "Noteworthy changes in release" NEWS | head -2 | tail -1 | awk '{print $6}')
 if [ "$NEWS_VERSION" != "$APP_VER" ]; then
 	echo "Latest version in NEWS file does not match latest tag"
 	exit 1
 fi
 PREV_VER=$(cat .prev-version)
-LNO_CVER=$(grep -in "Noteworthy changes in release" NEWS | head -1 | cut -f1 -d:)
-LNO_PVER=$(grep -in "Changes in $APP_NAME" NEWS | head -2 | tail -1 | cut -f1 -d:)
+LNO_CVER=$(grep -in "Noteworthy changes in release" NEWS | head -2 | tail -1 | cut -f1 -d:)
+LNO_PVER=$(grep -in "Noteworthy changes in release" NEWS | head -3 | tail -1 | cut -f1 -d:)
 sed -n "${LNO_CVER},${LNO_PVER}p" NEWS
 echo "This is the current contents of your NEWS"
 ask_continue
