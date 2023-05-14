@@ -41,6 +41,17 @@ variables:
   CONFIGURE_BASE_FLAGS: --enable-assert --cache-file cache/config.cache
   CFLAGS_DEFAULT: -O0 -g -ggdb3
 
+CommitCheck:
+  stage: test-from-git
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_TESTING_BUILD
+  script:
+    - ./contrib/commit-check
+  allow_failure: true
+  cache:
+      paths:
+      policy: push
+
+
 # Create the tarball in a separate build directory (VPATH).
 Build-Tarball:
     stage: test-from-git
