@@ -44,6 +44,7 @@ DEFAULT_TESTS = \
   Test-condget.py                                 \
   Test-Content-disposition-2.py                   \
   Test-Content-disposition.py                     \
+  test_css_url.py								  \
   Test--convert-links--content-on-error.py        \
   Test-cookie-401.py                              \
   Test-cookie-domain-mismatch.py                  \
