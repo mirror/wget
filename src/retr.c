@@ -44,6 +44,10 @@ as that of the covered work.  */
 # include <zlib.h>
 #endif
 
+#ifdef HAVE_LIBPROXY
+# include "proxy.h"
+#endif
+
 #include "exits.h"
 #include "utils.h"
 #include "retr.h"
@@ -1489,7 +1493,39 @@ getproxy (struct url *u)
       break;
     }
   if (!proxy || !*proxy)
+#ifdef HAVE_LIBPROXY
+    {
+      pxProxyFactory *pf = px_proxy_factory_new ();
+      if (!pf)
+        {
+          debug_logprintf ("Allocating memory for libproxy failed");
+         return NULL;
+        }
+
+      debug_logprintf ("asking libproxy about url '%s'\n", u->url);
+      char **proxies = px_proxy_factory_get_proxies (pf, u->url);
+      if (proxies)
+        {
+          if (proxies[0])
+            {
+              debug_logprintf ("libproxy suggest to use '%s'\n", proxies[0]);
+              if (strcmp (proxies[0], "direct://") != 0)
+                {
+                  proxy = xstrdup (proxies[0]);
+                  debug_logprintf ("libproxy setting to use '%s'\n", proxy);
+                }
+            }
+
+           px_proxy_factory_free_proxies (proxies);
+        }
+        px_proxy_factory_free (pf);
+
+      if (!proxy || !*proxy)
+        return NULL;
+    }
+#else
     return NULL;
+#endif
 
   /* Handle shorthands.  `rewritten_storage' is a kludge to allow
      getproxy() to return static storage. */
