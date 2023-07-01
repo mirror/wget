@@ -2525,6 +2525,33 @@ test_are_urls_equal(void)
   return NULL;
 }
 
+const char *
+test_uri_merge(void)
+{
+  static const struct test_data {
+    const char *url;
+    const char *link;
+    const char *expected;
+  } test_data[] = {
+    { "http://www.yoyodyne.com/path/", "somepage.html", "http://www.yoyodyne.com/path/somepage.html" },
+    { "http://example.com/path/", "//other.com/somepage.html", "http://other.com/somepage.html" },
+    { "https://example.com/path/", "//other.com/somepage.html", "https://other.com/somepage.html" },
+  };
+
+  for (unsigned i = 0; i < countof(test_data); ++i)
+    {
+      const struct test_data *t = &test_data[i];
+      char *result = uri_merge (t->url, t->link);
+      bool ok = strcmp (result, t->expected) == 0;
+      if (ok)
+        return aprintf ("test_uri_merge [%u]: expected '%s', got '%s'", i, t->expected, result);
+
+      xfree (result);
+    }
+
+  return NULL;
+}
+
 #endif /* TESTING */
 
 /*
