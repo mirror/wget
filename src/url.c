@@ -2543,7 +2543,7 @@ test_uri_merge(void)
       const struct test_data *t = &test_data[i];
       char *result = uri_merge (t->url, t->link);
       bool ok = strcmp (result, t->expected) == 0;
-      if (ok)
+      if (!ok)
         return aprintf ("test_uri_merge [%u]: expected '%s', got '%s'", i, t->expected, result);
 
       xfree (result);
