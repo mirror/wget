@@ -156,7 +156,7 @@ AM_CFLAGS = $(WERROR_CFLAGS) $(WARN_CFLAGS)
 
 CLEANFILES = *~ *.bak core core.[0-9]*
 
-TESTS = ./unit-tests$(EXEEXT) $(PX_TESTS)
+TESTS = unit-tests$(EXEEXT) $(PX_TESTS)
 TEST_EXTENSIONS = .px
 PX_LOG_COMPILER = $(PERL)
 AM_PX_LOG_FLAGS = -I$(srcdir)
