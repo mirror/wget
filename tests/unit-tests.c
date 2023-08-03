@@ -67,6 +67,7 @@ all_tests(void)
   mu_run_test (test_hsts_read_database);
 #endif
   mu_run_test (test_parse_netrc);
+  mu_run_test (test_retr_rate);
 
   return NULL;
 }

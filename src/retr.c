@@ -776,8 +776,8 @@ const char *
 retr_rate (wgint bytes, double secs)
 {
   static char res[20];
-  static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
-  static const char *rate_names_bits[] = {"b/s", "Kb/s", "Mb/s", "Gb/s" };
+  static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s", "TB/s" };
+  static const char *rate_names_bits[] = {"b/s", "Kb/s", "Mb/s", "Gb/s", "Tb/s" };
   int units;
 
   double dlrate = calc_rate (bytes, secs, &units);
@@ -1555,3 +1555,33 @@ input_file_url (const char *input_file)
   else
     return false;
 }
+
+#ifdef TESTING
+
+#include <stdint.h>
+#include "../tests/unit-tests.h"
+
+const char *
+test_retr_rate(void)
+{
+  static const struct test {
+    wgint bytes;
+    double secs;
+    const char *expected;
+  } tests[] = {
+    { 0, 1, "0.00 B/s" },
+    { INT64_MAX, 1, "100 TB/s" },
+  };
+
+  for (struct test *t = tests; t < tests+countof(tests); t++)
+    {
+      const char *result = retr_rate (t->bytes, t->secs);
+
+      if (strcmp(result,t->expected))
+        return aprintf("%s: Expected '%s', got '%s'", __func__, t->expected, result);
+    }
+
+  return NULL;
+}
+
+#endif /* TESTING */
