@@ -4164,7 +4164,11 @@ gethttp (const struct url *u, struct url *original_url, struct http_stat *hs,
   err = open_output_stream (hs, count, &fp);
   if (err != RETROK)
     {
+      /* Make sure that errno doesn't get clobbered.
+       * This is the case for OpenSSL's SSL_shutdown(). */
+      int tmp_errno = errno;
       CLOSE_INVALIDATE (sock);
+      errno = tmp_errno;
       retval = err;
       goto cleanup;
     }
