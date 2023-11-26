@@ -388,7 +388,8 @@ parse_netrc_fp (const char *path, FILE *fp)
               else if (!strcmp (tok, "default"))
                   maybe_add_to_list (&current, &retval);
 
-              else if (!strcmp (tok, "login"))
+              /* fetchmail compatibility, "user" is an alias for "login" */
+              else if (!strcmp (tok, "login") || !strcmp (tok, "user"))
                 last_token = tok_login;
 
               else if (!strcmp (tok, "macdef"))
@@ -397,7 +398,8 @@ parse_netrc_fp (const char *path, FILE *fp)
               else if (!strcmp (tok, "machine"))
                 last_token = tok_machine;
 
-              else if (!strcmp (tok, "password"))
+              /* fetchmail compatibility, "passwd" is an alias for "password" */
+              else if (!strcmp (tok, "password") || !strcmp (tok, "passwd"))
                 last_token = tok_password;
 
 				  /* GNU extensions 'port' and 'force', not operational
