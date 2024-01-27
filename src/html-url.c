@@ -105,7 +105,7 @@ static struct known_tag {
   { TAG_FORM,    "form",        tag_handle_form },
   { TAG_FRAME,   "frame",       tag_find_urls },
   { TAG_IFRAME,  "iframe",      tag_find_urls },
-  { TAG_IMG,     "img",         tag_handle_img },
+  { TAG_IMG,     "img",         tag_handle_img }, // tag_find_urls() plus handling "srcset"
   { TAG_INPUT,   "input",       tag_find_urls },
   { TAG_LAYER,   "layer",       tag_find_urls },
   { TAG_LINK,    "link",        tag_handle_link },
@@ -118,7 +118,7 @@ static struct known_tag {
   { TAG_TH,      "th",          tag_find_urls },
   { TAG_VIDEO,   "video",       tag_find_urls },
   { TAG_AUDIO,   "audio",       tag_find_urls },
-  { TAG_SOURCE,  "source",      tag_find_urls }
+  { TAG_SOURCE,  "source",      tag_handle_img } // tag_find_urls() plus handling "srcset"
 };
 
 /* tag_url_attributes documents which attributes of which tags contain
@@ -170,7 +170,7 @@ static struct {
   { TAG_VIDEO,          "poster",       ATTR_INLINE },
   { TAG_AUDIO,          "src",          ATTR_INLINE },
   { TAG_AUDIO,          "poster",       ATTR_INLINE },
-  { TAG_SOURCE,         "src",          ATTR_INLINE }
+  { TAG_SOURCE,         "src",          ATTR_INLINE },
 };
 
 /* The lists of interesting tags and attributes are built dynamically,
