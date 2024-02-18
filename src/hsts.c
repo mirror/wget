@@ -120,7 +120,6 @@ hsts_find_entry (hsts_store_t store,
   struct hsts_kh *k = NULL;
   struct hsts_kh_info *khi = NULL;
   enum hsts_kh_match match = NO_MATCH;
-  char *pos = NULL;
   char *org_ptr = NULL;
 
   k = (struct hsts_kh *) xnew (struct hsts_kh);
@@ -137,14 +136,15 @@ hsts_find_entry (hsts_store_t store,
       goto end;
     }
 
-  while (match == NO_MATCH &&
-      (pos = strchr (k->host, '.')) && pos - k->host > 0 &&
-      strchr (pos + 1, '.'))
+  for (char *p = k->host; (p = strchr(p, '.')); )
     {
-      k->host += (pos - k->host + 1);
+      k->host = ++p;
       khi = (struct hsts_kh_info *) hash_table_get (store->table, k);
-      if (khi)
-        match = SUPERDOMAIN_MATCH;
+      if (khi && khi->include_subdomains)
+        {
+          match = SUPERDOMAIN_MATCH;
+          break;
+        }
     }
 
 end:
@@ -735,7 +735,7 @@ test_hsts_new_entry (void)
   mu_assert("Should've been no match", match == NO_MATCH);
 
   khi = hsts_find_entry (s, ".www.foo.com", MAKE_EXPLICIT_PORT (SCHEME_HTTPS, 443), &match, NULL);
-  mu_assert("Should've been no match", match == NO_MATCH);
+  mu_assert("Should've been no match", match == SUPERDOMAIN_MATCH);
 
   hsts_store_close (s);
   close_hsts_test_store (s);
@@ -752,11 +752,15 @@ test_hsts_url_rewrite_superdomain (void)
   s = open_hsts_test_store ();
   mu_assert("Could not open the HSTS store", s != NULL);
 
-  created = hsts_store_entry (s, SCHEME_HTTPS, "www.foo.com", 443, 1234, true);
+  created = hsts_store_entry (s, SCHEME_HTTPS, "example.com", 443, 1234, true);
   mu_assert("A new entry should've been created", created == true);
 
-  TEST_URL_RW (s, "www.foo.com", 80);
-  TEST_URL_RW (s, "bar.www.foo.com", 80);
+  created = hsts_store_entry (s, SCHEME_HTTPS, "rep.example.com", 443, 1234, false);
+  mu_assert("A new entry should've been created", created == true);
+
+  TEST_URL_RW (s, "example.com", 80);
+  TEST_URL_RW (s, "rep.example.com", 80);
+  TEST_URL_RW (s, "rep.rep.example.com", 80);
 
   hsts_store_close (s);
   close_hsts_test_store (s);
