@@ -4,6 +4,7 @@ import sys
 from conf import hook
 from exc.test_failed import TestFailed
 
+
 """ Post-Test Hook: ExpectedFiles
 This is a Post-Test hook that checks the test directory for the files it
 contains. A dictionary object is passed to it, which contains a mapping of
@@ -45,11 +46,12 @@ class ExpectedFiles:
                 local_file = local_fs.pop(file.name)
                 formatted_content = test_obj._replace_substring(file.content)
                 if formatted_content != local_file['content']:
-                    for line in unified_diff(local_file['content'],
-                                             formatted_content,
-                                             fromfile='Actual',
-                                             tofile='Expected'):
-                        print(line, file=sys.stderr)
+                    diff = ''.join(unified_diff(local_file['content'].splitlines(1),
+                                                formatted_content.splitlines(1),
+                                                fromfile="Actual",
+                                                tofile="Expected")
+                                   )
+                    print(diff, file=sys.stderr)
                     raise TestFailed('Contents of %s do not match' % file.name)
             else:
                 raise TestFailed('Expected file %s not found.' % file.name)
