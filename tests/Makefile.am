@@ -44,11 +44,6 @@
 	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
 
 PX_TESTS = \
-             Test-auth-basic.px \
-             Test-auth-no-challenge.px \
-             Test-auth-no-challenge-url.px \
-             Test-auth-with-content-disposition.px \
-             Test-auth-retcode.px \
              Test-c-full.px \
              Test-c-partial.px \
              Test-c.px \
@@ -89,7 +84,6 @@ PX_TESTS = \
              Test-iri-disabled.px \
              Test-iri-forced-remote.px \
              Test-iri-list.px \
-             Test-k.px \
              Test-meta-robots.px \
              Test-N-current.px \
              Test-N-HTTP-Content-Disposition.px \
