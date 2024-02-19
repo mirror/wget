@@ -92,8 +92,8 @@ check-coverage: clean clean-lcov
 	lcov --capture --initial --directory src/ --output-file $(LCOV_INFO)
 	$(MAKE) CFLAGS="$(CFLAGS) --coverage" LDFLAGS="$(LDFLAGS) --coverage" VALGRIND_TESTS=0 check
 	lcov --capture --directory src/ --output-file $(LCOV_INFO)
-	lcov --remove $(LCOV_INFO) '/usr/include/*' '*/lib/*' -o $(LCOV_INFO)
-	genhtml --prefix . --ignore-errors source $(LCOV_INFO) --legend --title "Wget" --output-directory=lcov
+	lcov --remove $(LCOV_INFO) --ignore-errors unused '/usr/include/*' '*/lib/*' -o $(LCOV_INFO)
+	genhtml --prefix . --ignore-errors source --ignore-errors unmapped $(LCOV_INFO) --legend --title "Wget" --output-directory=lcov
 	@echo
 	@echo "You can now view the coverage report with 'xdg-open lcov/index.html'"
 
