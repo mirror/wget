@@ -44,7 +44,7 @@ DEFAULT_TESTS = \
   Test-condget.py                                 \
   Test-Content-disposition-2.py                   \
   Test-Content-disposition.py                     \
-  test_css_url.py								  \
+  test_css_url.py                                 \
   Test--convert-links--content-on-error.py        \
   Test-cookie-401.py                              \
   Test-cookie-domain-mismatch.py                  \
@@ -52,8 +52,10 @@ DEFAULT_TESTS = \
   Test-cookie.py                                  \
   Test-Head.py                                    \
   Test-hsts.py                                    \
+  Test-https-k.py                                 \
   Test--https.py                                  \
   Test--https-crl.py                              \
+  Test-k.py                                       \
   Test-missing-scheme-retval.py                   \
   Test-O.py                                       \
   Test-pinnedpubkey-der-https.py                  \
