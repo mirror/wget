@@ -1,5 +1,5 @@
 /* HTTP support.
-   Copyright (C) 1996-2012, 2014-2015, 2018-2023 Free Software
+   Copyright (C) 1996-2012, 2014-2015, 2018-2024 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.

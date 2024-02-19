@@ -1,5 +1,5 @@
 /* Conversion of links to local files.
-   Copyright (C) 2003-2011, 2014-2015, 2018-2023 Free Software
+   Copyright (C) 2003-2011, 2014-2015, 2018-2024 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
