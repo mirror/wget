@@ -26,15 +26,32 @@ ask_continue() {
 
 REQUIRED_PROGRAMS="ncftpput sponge"
 for prog in $REQUIRED_PROGRAMS; do
-    if ! command -v "$prog" >/dev/null 2>&1; then
-        2>&1 echo "Required program $prog not found. Please install before proceeding"
-        exit 1
-    fi
+	if ! command -v "$prog" >/dev/null 2>&1; then
+		2>&1 echo "Required program $prog not found. Please install before proceeding"
+		exit 1
+	fi
 done
 
 if [ ! -d ".git" ]; then
-	echo "Please run this script from the root of the git repository"
+	2>&1 echo "Please run this script from the root of the git repository"
+	exit 1
 fi
+
+if [ $# -ne 2 ]; then
+	2>&1 echo "Usage: $0 [version] [release-type]"
+	exit 1
+fi
+
+readonly VERSION="$1" && shift
+readonly REL_TYPE_IN="$1" && shift
+REL_TYPE=
+case $REL_TYPE_IN in
+	a|A|alpha|Alpha) REL_TYPE=alpha;;
+	b|B|beta|Beta) REL_TYPE=beta;;
+	s|S|stable|Stable) REL_TYPE=stable;;
+esac
+echo "Building GNU Wget v$VERSION $REL_TYPE"
+ask_continue
 
 echo "This script will make a new release and upload it to the GNU FTP Servers"
 echo "Will run git clean -dxf to get a clean dir"
@@ -50,38 +67,19 @@ autoreconf -ivf
 echo "=> Configure"
 ./configure -q
 
-APP_NAME=$(grep "^PACKAGE_NAME='" configure | cut -d "'" -f2)
-APP_VER=$(grep "^PACKAGE_VERSION='" configure | cut -d "'" -f2)
-
-echo "Making release for $APP_NAME $APP_VER"
-ask_continue
-
-NEWS_VERSION=$(grep -i "Noteworthy changes in release" NEWS | head -2 | tail -1 | awk '{print $6}')
-if [ "$NEWS_VERSION" != "$APP_VER" ]; then
-	echo "Latest version in NEWS file does not match latest tag"
-	exit 1
-fi
-PREV_VER=$(cat .prev-version)
-LNO_CVER=$(grep -in "Noteworthy changes in release" NEWS | head -2 | tail -1 | cut -f1 -d:)
-LNO_PVER=$(grep -in "Noteworthy changes in release" NEWS | head -3 | tail -1 | cut -f1 -d:)
+LNO_CVER=$(grep -in "Noteworthy changes in release" NEWS | head -1 | tail -1 | cut -f1 -d:)
+LNO_PVER=$(grep -in "Noteworthy changes in release" NEWS | head -2 | tail -1 | cut -f1 -d:)
 sed -n "${LNO_CVER},${LNO_PVER}p" NEWS
 echo "This is the current contents of your NEWS"
 ask_continue
 
-echo ""
-REL_TYPE=
-while [ -z $REL_TYPE ]; do
-	printf "Enter release type (alpha, beta, stable): "
-	read x
-	case $x in
-		a|A|alpha|Alpha) REL_TYPE=alpha;;
-		b|B|beta|Beta) REL_TYPE=beta;;
-		s|S|stable|Stable) REL_TYPE=stable;;
-	esac
-done
+export RELEASE="$VERSION $REL_TYPE"
+
+echo "=> Making release-commit"
+make -s release-commit
 
 echo "=> Make release"
-make -s release RELEASE_TYPE=$REL_TYPE
+make -s release
 
 GPG_KEY=
 while [ -z $GPG_KEY ]; do
@@ -95,7 +93,7 @@ done
 
 echo ""
 
-upload_command=$(make -s emit_upload_commands RELEASE_TYPE=stable \
+upload_command=$(make -s emit_upload_commands \
     | sponge \
     | head -n3 \
     | tail -1 \
