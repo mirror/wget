@@ -2,8 +2,21 @@ GNU Wget NEWS -- history of user-visible changes.
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Fix how subdomain matches are checked for HSTS.
+   Fixes a minor issue where cookies may be leaked to the wrong domain
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+** Wget will now also parse the srcset attribute in <source> HTML tags
+
+** Support reading fetchmail style "user" and "passwd" fields from netrc
+
+** In some cases, prevent the confusing "Cannot write to... (success)" error messages
+
+** Support extremely fast download speeds (TB/s).
+   Previously this would cause Wget to crash when printing the speed
+
+** Improve portability on OpenBSD to run the test suite
+
+** Ensure that CSS URLs are corectly quoted (Bug: 64082)
 
 
 * Noteworthy changes in release 1.21.4 (2023-05-11)
