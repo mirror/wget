@@ -1,6 +1,6 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
+* Noteworthy changes in release 1.24.5 (2024-03-10) [stable]
 
 ** Fix how subdomain matches are checked for HSTS.
    Fixes a minor issue where cookies may be leaked to the wrong domain
