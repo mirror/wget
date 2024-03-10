@@ -50,8 +50,6 @@ case $REL_TYPE_IN in
 	b|B|beta|Beta) REL_TYPE=beta;;
 	s|S|stable|Stable) REL_TYPE=stable;;
 esac
-echo "Building GNU Wget v$VERSION $REL_TYPE"
-ask_continue
 
 echo "This script will make a new release and upload it to the GNU FTP Servers"
 echo "Will run git clean -dxf to get a clean dir"
@@ -66,6 +64,9 @@ autoreconf -ivf
 
 echo "=> Configure"
 ./configure -q
+
+echo "Building $APP_NAME v$VERSION $REL_TYPE"
+ask_continue
 
 LNO_CVER=$(grep -in "Noteworthy changes in release" NEWS | head -1 | tail -1 | cut -f1 -d:)
 LNO_PVER=$(grep -in "Noteworthy changes in release" NEWS | head -2 | tail -1 | cut -f1 -d:)
@@ -109,8 +110,8 @@ $upload_command
 echo ""
 echo "Remaining Release Checklist:
   1. Send a mail to coordinator@translationproject.org with the subject
-	 \"Requesting Translations for $APP_NAME-$APP_VER.POT\"
-  2. Announce email template placed at ~/announce-$APP_NAME-$APP_VER
+	 \"Requesting Translations for $APP_NAME-$VERSION.POT\"
+  2. Announce email template placed at ~/announce-$APP_NAME-$VERSION
      Send an announce mail to info-gnu@gnu.org
   3. Run \`make web-manual\` and \`make web-manual-update\` to update manual online
   (Only Stable)
