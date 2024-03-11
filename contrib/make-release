@@ -24,7 +24,7 @@ ask_continue() {
 	set +x
 }
 
-REQUIRED_PROGRAMS="ncftpput sponge"
+REQUIRED_PROGRAMS="ncftpput sponge cvs ssh rsync rsh"
 for prog in $REQUIRED_PROGRAMS; do
 	if ! command -v "$prog" >/dev/null 2>&1; then
 		2>&1 echo "Required program $prog not found. Please install before proceeding"
@@ -107,22 +107,17 @@ echo "$upload_command"
 ask_continue
 $upload_command
 
+if [[ $REL_TYPE == "stable" ]]; then
+    export CVSROOT=:ext:${CVSUSER:-${USER}}@cvs.savannah.gnu.org:/web/wget
+    export CVS_RSH=/usr/bin/ssh
+    export gendocs_options_=-I ../build-aux
+    make web-manual-update
+fi
+
 echo ""
 echo "Remaining Release Checklist:
   1. Send a mail to coordinator@translationproject.org with the subject
 	 \"Requesting Translations for $APP_NAME-$VERSION.POT\"
   2. Announce email template placed at ~/announce-$APP_NAME-$VERSION
      Send an announce mail to info-gnu@gnu.org
-  3. Run \`make web-manual\` and \`make web-manual-update\` to update manual online
-  (Only Stable)
 "
-
-echo ""
-
-prev_tag=$(git tag | tail -2 | head -1)
-echo ""
-echo "Don't forget to mention the following contributors in the announcement:"
-(
-  git log "${prev_tag}.." --format="%aN" --reverse
-  git log "${prev_tag}.." --reverse | grep -i reported | cut -d':' -f2 | cut -d'<' -f1 | cut -d' ' -f2- | tr -d '"'
-) | sort -u
