@@ -120,7 +120,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 	if (setjmp(jmpbuf)) {
 		cleanup();
 		goto done;
-          }
+	}
 
 	main_wget(sizeof(argv)/sizeof(argv[0]), argv);
 
