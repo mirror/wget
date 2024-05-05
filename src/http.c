@@ -4327,11 +4327,12 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
       if (opt.if_modified_since && !send_head_first && got_name && file_exists_p (hstat.local_file, NULL))
         {
           *dt |= IF_MODIFIED_SINCE;
-          {
-            uerr_t timestamp_err = set_file_timestamp (&hstat);
-            if (timestamp_err != RETROK)
-              return timestamp_err;
-          }
+          uerr_t timestamp_err = set_file_timestamp (&hstat);
+          if (timestamp_err != RETROK)
+            {
+              ret = timestamp_err;
+              goto exit;
+            }
         }
         /* Send preliminary HEAD request if -N is given and we have existing
          * destination file or content disposition is enabled.  */
