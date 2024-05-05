@@ -327,6 +327,9 @@ warc_write_block_from_file (FILE *data_in)
 static bool
 warc_write_end_record (void)
 {
+  if (!warc_write_ok)
+    return warc_write_ok;
+
   if (warc_write_buffer ("\r\n\r\n", 4) != 4)
     {
       warc_write_ok = false;
