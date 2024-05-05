@@ -1276,6 +1276,8 @@ warc_close (void)
       fclose (warc_log_fp);
       log_set_warc_log_fp (NULL);
     }
+
+  xfree (warc_current_filename);
 }
 
 /* Creates a temporary file for writing WARC output.
