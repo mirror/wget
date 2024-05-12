@@ -106,6 +106,7 @@ bool has_wildcards_p (const char *);
 
 bool has_html_suffix_p (const char *);
 
+struct file_memory *wget_read_from_file (const char *, bool *);
 struct file_memory *wget_read_file (const char *);
 void wget_read_file_free (struct file_memory *);
 

@@ -1266,6 +1266,13 @@ has_html_suffix_p (const char *fname)
   return false;
 }
 
+struct file_memory *
+wget_read_file (const char *file)
+{
+  bool left_open;
+  return wget_read_from_file(file, &left_open);
+}
+
 /* Read FILE into memory.  A pointer to `struct file_memory' are
    returned; use struct element `content' to access file contents, and
    the element `length' to know the file length.  `content' is *not*
@@ -1283,7 +1290,7 @@ has_html_suffix_p (const char *fname)
    If you want to read from a real file named "-", use "./-" instead.  */
 
 struct file_memory *
-wget_read_file (const char *file)
+wget_read_from_file (const char *file, bool *left_open)
 {
   int fd;
   struct file_memory *fm;
@@ -1296,6 +1303,8 @@ wget_read_file (const char *file)
   if (HYPHENP (file))
     {
       fd = fileno (stdin);
+      int flags = fcntl(fd, F_GETFL, 0);
+      fcntl(fd, F_SETFL, flags | O_NONBLOCK);
       inhibit_close = true;
       /* Note that we don't inhibit mmap() in this case.  If stdin is
          redirected from a regular file, mmap() will still work.  */
@@ -1366,11 +1375,24 @@ wget_read_file (const char *file)
         /* Successful read. */
         fm->length += nread;
       else if (nread < 0)
-        /* Error. */
-        goto lose;
+        {
+          if (errno == EAGAIN)
+            {
+              *left_open = true;
+              break;
+            }
+          else
+            {
+              /* Error. */
+              goto lose;
+            }
+        }
       else
-        /* EOF */
-        break;
+        {
+          /* EOF */
+          *left_open = false;
+          break;
+        }
     }
   if (!inhibit_close)
     close (fd);
