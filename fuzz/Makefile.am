@@ -109,7 +109,7 @@ clean-local:
 
 oss-fuzz:
 	if test "$$OUT" != ""; then \
-	XLIBS="-lpsl -lgnutls -lhogweed -lnettle -lidn2 -lunistring -lz"; \
+	XLIBS="-lpsl -lgnutls -lhogweed -lnettle -lgmp -lidn2 -lunistring -lz"; \
 	for ccfile in wget*_fuzzer.c; do \
 	fuzzer=$$(basename $$ccfile .c); \
 	$$CC $$CFLAGS -I$(top_srcdir)/src -I$(top_srcdir) -I$(top_srcdir)/lib \
