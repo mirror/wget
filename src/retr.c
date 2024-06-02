@@ -1292,7 +1292,10 @@ retrieve_from_file (const char *file, bool html, int *count)
       url_free (url_parsed);
 
       if (!url_file || (status != RETROK))
-        return status;
+        {
+          iri_free (iri);
+          return status;
+        }
 
       if (dt & TEXTHTML)
         html = true;
