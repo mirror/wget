@@ -41,6 +41,7 @@ as that of the covered work.  */
 #include "url.h"
 #include "host.h"  /* for is_valid_ipv6_address */
 #include "c-strcase.h"
+#include "c-ctype.h"
 
 #ifdef HAVE_ICONV
 # include <iconv.h>
@@ -526,12 +527,39 @@ scheme_leading_string (enum url_scheme scheme)
 static const char *
 url_skip_credentials (const char *url)
 {
-  /* Look for '@' that comes before terminators, such as '/', '?',
-     '#', or ';'.  */
-  const char *p = (const char *)strpbrk (url, "@/?#;");
-  if (!p || *p != '@')
-    return url;
-  return p + 1;
+  /*
+   * This whole file implements https://www.rfc-editor.org/rfc/rfc2396 .
+   * RFC 2396 is outdated since 2005 and needs a rewrite or a thorough re-visit.
+   *
+   * The RFC says
+   * server        = [ [ userinfo "@" ] hostport ]
+   * userinfo      = *( unreserved | escaped | ";" | ":" | "&" | "=" | "+" | "$" | "," )
+   * unreserved    = alphanum | mark
+   * mark          = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
+   */
+  static const char *allowed = "-_.!~*'();:&=+$,";
+
+  for (const char *p = url; *p; p++)
+    {
+      if (c_isalnum(*p))
+        continue;
+
+      if (strchr(allowed, *p))
+        continue;
+
+      if (*p == '%' && c_isxdigit(p[1]) && c_isxdigit(p[2]))
+        {
+          p += 2;
+          continue;
+        }
+
+      if (*p == '@')
+        return p + 1;
+
+      break;
+    }
+
+  return url;
 }
 
 /* Parse credentials contained in [BEG, END).  The region is expected
