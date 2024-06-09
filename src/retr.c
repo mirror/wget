@@ -1186,8 +1186,8 @@ static uerr_t retrieve_from_url_list(struct urlpos *url_list, int *count, struct
     {
       char *filename = NULL, *new_file = NULL, *proxy;
       int dt = 0;
-      struct iri *tmpiri = iri_dup (iri);
-      struct url *parsed_url = NULL;
+      struct iri *tmpiri;
+      struct url *parsed_url;
 
       if (cur_url->ignore_when_downloading)
         continue;
@@ -1198,6 +1198,7 @@ static uerr_t retrieve_from_url_list(struct urlpos *url_list, int *count, struct
           break;
         }
 
+      tmpiri = iri_dup (iri);
       parsed_url = url_parse (cur_url->url->url, NULL, tmpiri, true);
 
       proxy = getproxy (cur_url->url);
