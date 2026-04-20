@@ -2142,8 +2142,8 @@ Preserve remote file permissions instead of permissions set by umask.
 @item --retr-symlinks
 By default, when retrieving @sc{ftp} directories recursively and a symbolic link
 is encountered, the symbolic link is traversed and the pointed-to files are
-retrieved.  Currently, Wget does not traverse symbolic links to directories to
-download them recursively, though this feature may be added in the future.
+retrieved.  By default, Wget does not traverse symbolic links whose target is
+a directory; see @samp{--ftp-recurse-symlink-dirs} to enable that.
 
 When @samp{--retr-symlinks=no} is specified, the linked-to file is not
 downloaded.  Instead, a matching symbolic link is created on the local
@@ -2157,6 +2157,27 @@ Note that when retrieving a file (not a directory) because it was
 specified on the command-line, rather than because it was recursed to,
 this option has no effect.  Symbolic links are always traversed in this
 case.
+
+@cindex symbolic links, directories, recursion
+@item --ftp-recurse-symlink-dirs
+When retrieving @sc{ftp} directories recursively, descend through
+symbolic links whose target is a directory on the server.  Without this
+option, symbolic links to directories are either materialized as local
+symbolic links (when @samp{--retr-symlinks=no}) or retrieved as files
+(the failure of which is silently ignored), and their contents are never
+explored.
+
+Wget performs server-side descent: the symlink's name is used in a
+@sc{cwd} command, and the server resolves the target.  Cycles are
+detected by canonicalizing each symlink's target path (relative targets
+are resolved against the current remote directory) and tracking them in
+a per-session set; a symlink whose target has already been descended
+through is skipped with a diagnostic.
+
+This option is disabled by default because a malicious @sc{ftp} server
+could craft a listing with symlinks that amplify recursion cost or
+redirect descent outside the intended subtree.  Combine with
+@samp{--exclude-directories} and @samp{--level} to bound the crawl.
 @end table
 
 @section FTPS Options

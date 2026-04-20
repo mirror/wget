@@ -206,6 +206,7 @@ static const struct {
   { "ftppasswd",        &opt.ftp_passwd,        cmd_string }, /* deprecated */
   { "ftppassword",      &opt.ftp_passwd,        cmd_string },
   { "ftpproxy",         &opt.ftp_proxy,         cmd_string },
+  { "ftprecursesymlinkdirs", &opt.ftp_recurse_symlink_dirs, cmd_boolean },
 #ifdef HAVE_SSL
   { "ftpscleardataconnection", &opt.ftps_clear_data_connection, cmd_boolean },
   { "ftpsfallbacktoftp", &opt.ftps_fallback_to_ftp, cmd_boolean },
@@ -447,6 +448,11 @@ defaults (void)
    * not create the symbolic links locally.
    */
   opt.retr_symlinks = true;
+
+  /* Disabled by default: a malicious FTP server could use circular
+     symlinks to cause excessive downloads.  Cycle detection mitigates
+     this, but the conservative default preserves historical behavior. */
+  opt.ftp_recurse_symlink_dirs = false;
 
 #ifdef HAVE_SSL
   opt.check_cert = CHECK_CERT_ON;

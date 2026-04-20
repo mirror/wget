@@ -117,6 +117,9 @@ struct options
                                    retrieving? */
   bool retr_symlinks;           /* Whether we retrieve symlinks in
                                    FTP. */
+  bool ftp_recurse_symlink_dirs;/* When recursing over FTP, descend
+                                   through symlinks whose target is a
+                                   directory. */
   char *output_document;        /* The output file to which the
                                    documents will be printed.  */
   char *warc_filename;          /* WARC output filename */

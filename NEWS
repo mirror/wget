@@ -2,6 +2,10 @@ GNU Wget NEWS -- history of user-visible changes.
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Add --ftp-recurse-symlink-dirs option to descend into FTP directory
+   symlinks during recursive retrieval.  Cycle detection prevents
+   infinite loops from circular symlinks.
+
 
 * Noteworthy changes in release 1.25.0 (2024-11-10) [stable]
 

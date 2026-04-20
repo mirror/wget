@@ -326,6 +326,7 @@ static struct cmdline_option option_data[] =
 #ifdef __VMS
     { "ftp-stmlf", 0, OPT_BOOLEAN, "ftpstmlf", -1 },
 #endif /* def __VMS */
+    { "ftp-recurse-symlink-dirs", 0, OPT_BOOLEAN, "ftprecursesymlinkdirs", -1 },
     { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
     IF_SSL ( "ftps-clear-data-connection", 0, OPT_BOOLEAN, "ftpscleardataconnection", -1 )
     IF_SSL ( "ftps-fallback-to-ftp", 0, OPT_BOOLEAN, "ftpsfallbacktoftp", -1 )
@@ -918,6 +919,8 @@ FTP options:\n"),
        --preserve-permissions      preserve remote file permissions\n"),
     N_("\
        --retr-symlinks             when recursing, get linked-to files (not dir)\n"),
+    N_("\
+       --ftp-recurse-symlink-dirs  when recursing, descend into symlinks to directories\n"),
     "\n",
 
 #ifdef HAVE_SSL
