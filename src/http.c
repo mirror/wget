@@ -1,5 +1,5 @@
 /* HTTP support.
-   Copyright (C) 1996-2012, 2014-2015, 2018-2024 Free Software
+   Copyright (C) 1996-2012, 2014-2015, 2018-2024, 2026 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -4244,7 +4244,6 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
   struct stat st;
   bool send_head_first = true;
   bool force_full_retrieve = false;
-  bool return_local_file;
 
   /* If we are writing to a WARC file: always retrieve the whole file. */
   if (opt.warc_filename != NULL)
@@ -4252,11 +4251,6 @@ http_loop (const struct url *u, struct url *original_url, char **newloc,
 
   /* Assert that no value for *LOCAL_FILE was passed. */
   assert (local_file == NULL || *local_file == NULL);
-
-  /* Set LOCAL_FILE parameter. */
-  return_local_file = local_file && opt.output_document && !HYPHENP (opt.output_document);
-
-//    return_local_file = (local_file && opt.output_document && !HYPHENP (opt.output_document));
 
   /* Reset NEWLOC parameter. */
   *newloc = NULL;

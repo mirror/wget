@@ -1,6 +1,6 @@
 /* HTTP Strict Transport Security (HSTS) support.
-   Copyright (C) 1996-2012, 2015, 2018-2024 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2012, 2015, 2018-2024, 2026 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 

@@ -1,6 +1,6 @@
 /* Declarations for windows
-   Copyright (C) 1996-2011, 2015, 2018-2024 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2024, 2026 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -74,5 +74,6 @@ void ws_percenttitle (double);
 char *ws_mypath (void);
 void windows_main (char **);
 void set_windows_fd_as_blocking_socket (int);
+void set_fd_nonblocking(const int);
 
 #endif /* MSWINDOWS_H */

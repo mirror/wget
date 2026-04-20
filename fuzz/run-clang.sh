@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2017, 2019-2024 Free Software Foundation, Inc.
+# Copyright (c) 2017, 2019-2024, 2026 Free Software Foundation, Inc.
 #
 # This file is part of GNU Wget.
 #

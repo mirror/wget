@@ -1,5 +1,5 @@
 /* File Transfer Protocol support.
-   Copyright (C) 1996-2011, 2014-2015, 2018-2024 Free Software
+   Copyright (C) 1996-2011, 2014-2015, 2018-2024, 2026 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -40,6 +40,7 @@ as that of the covered work.  */
 #include <time.h>
 
 #include "utils.h"
+#include "hash.h"
 #include "url.h"
 #include "retr.h"
 #include "ftp.h"
@@ -2194,6 +2195,69 @@ static uerr_t ftp_retrieve_dirs (struct url *, struct url *,
 static uerr_t ftp_retrieve_glob (struct url *, struct url *, ccon *, int);
 static struct fileinfo *delelement (struct fileinfo **, struct fileinfo **);
 
+/* Cycle-detection table for --ftp-recurse-symlink-dirs.  Keys are
+   heap-allocated "host:port:abs-path" strings owned by the table and
+   leaked at process exit.  NULL until first symlink is visited.  */
+static struct hash_table *ftp_visited_symlinks;
+
+/* Build a canonical cycle-detection key from the current URL and a
+   symlink target.  Relative targets are resolved against u->dir;
+   absolute targets are used as-is.  Trailing slashes are stripped so
+   "foo" and "foo/" collide.  Caller frees.  */
+static char *
+ftp_symlink_cycle_key (const struct url *u, const char *linkto)
+{
+  char *abs;
+  char *key;
+  size_t plen;
+
+  if (linkto[0] == '/')
+    abs = xstrdup (linkto);
+  else
+    {
+      const char *base = u->dir ? u->dir : "";
+      size_t blen = strlen (base);
+      int need_sep = !(blen > 0 && base[blen - 1] == '/');
+      abs = aprintf ("%s%s%s", base, need_sep ? "/" : "", linkto);
+    }
+
+  plen = strlen (abs);
+  while (plen > 1 && abs[plen - 1] == '/')
+    abs[--plen] = '\0';
+
+  key = aprintf ("%s:%d:%s", u->host ? u->host : "", u->port, abs);
+  xfree (abs);
+  return key;
+}
+
+static bool
+ftp_symlink_already_visited (const struct url *u, const char *linkto)
+{
+  char *key;
+  bool seen;
+
+  if (!ftp_visited_symlinks)
+    return false;
+  key = ftp_symlink_cycle_key (u, linkto);
+  seen = hash_table_contains (ftp_visited_symlinks, key) != 0;
+  xfree (key);
+  return seen;
+}
+
+static void
+ftp_symlink_mark_visited (const struct url *u, const char *linkto)
+{
+  char *key;
+
+  if (!ftp_visited_symlinks)
+    ftp_visited_symlinks = make_string_hash_table (0);
+  key = ftp_symlink_cycle_key (u, linkto);
+  if (hash_table_contains (ftp_visited_symlinks, key))
+    xfree (key);
+  else
+    hash_table_put (ftp_visited_symlinks, key, "1");
+}
+
 /* Retrieve a list of files given in struct fileinfo linked list.  If
    a file is a symbolic link, do not retrieve it, but rather try to
    set up a similar link on the local disk, if the symlinks are
@@ -2312,6 +2376,25 @@ The sizes do not match (local %s) -- retrieving.\n\n"),
       switch (f->type)
         {
         case FT_SYMLINK:
+          /* --ftp-recurse-symlink-dirs: treat a symlink as if it were
+             a directory so ftp_retrieve_dirs will CWD into it.  The
+             FTP server resolves the symlink server-side; we only need
+             to avoid infinite loops from circular links.  */
+          if (opt.ftp_recurse_symlink_dirs && opt.recursive && f->linkto)
+            {
+              if (ftp_symlink_already_visited (u, f->linkto))
+                {
+                  logprintf (LOG_VERBOSE,
+                             _("Symlink cycle detected at %s -> %s, skipping.\n"),
+                             quote_n (0, f->name), quote_n (1, f->linkto));
+                  break;
+                }
+              ftp_symlink_mark_visited (u, f->linkto);
+              DEBUGP (("Reclassifying symlink %s -> %s as directory for recursion.\n",
+                       f->name, f->linkto));
+              f->type = FT_DIRECTORY;
+              break;
+            }
           /* If opt.retr_symlinks is defined, we treat symlinks as
              if they were normal files.  There is currently no way
              to distinguish whether they might be directories, and

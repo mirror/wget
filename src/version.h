@@ -1,5 +1,6 @@
 /* Extern declarations for printing version information
-   Copyright (C) 2013, 2015, 2018-2024 Free Software Foundation, Inc.
+   Copyright (C) 2013, 2015, 2018-2024, 2026 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 

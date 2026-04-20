@@ -52,7 +52,7 @@ case $REL_TYPE_IN in
 esac
 
 echo "This script will make a new release and upload it to the GNU FTP Servers"
-echo "Will run git clean -dxf to get a clean dir"
+echo "Will run \`git clean -dxf\` to get a clean dir"
 ask_continue
 
 # Make sure we have a clean working directory
@@ -60,10 +60,14 @@ git clean -dxfq
 
 echo "=> Bootstrap"
 ./bootstrap > /dev/null 2>&1
-autoreconf -ivf
+
+echo "=> autoreconf"
+autoreconf -if
 
 echo "=> Configure"
 ./configure -q
+
+APP_NAME=$(grep "^PACKAGE_NAME='" configure | cut -d "'" -f2)
 
 echo "Building $APP_NAME v$VERSION $REL_TYPE"
 ask_continue
@@ -74,13 +78,6 @@ sed -n "${LNO_CVER},${LNO_PVER}p" NEWS
 echo "This is the current contents of your NEWS"
 ask_continue
 
-export RELEASE="$VERSION $REL_TYPE"
-
-echo "=> Making release-commit"
-make -s release-commit
-
-echo "=> Make release"
-make -s release
 
 GPG_KEY=
 while [ -z $GPG_KEY ]; do
@@ -92,20 +89,16 @@ while [ -z $GPG_KEY ]; do
 	[ "$x" = "y" ] || [ "$x" = "Y" ] && GPG_KEY="$key"
 done
 
-echo ""
+export RELEASE="$VERSION $REL_TYPE"
+export GNUPLOADFLAGS="--user $GPG_KEY --symlink-regex"
 
-upload_command=$(make -s emit_upload_commands \
-    | sponge \
-    | head -n3 \
-    | tail -1 \
-    | sed "s/--to/--user $GPG_KEY --symlink-regex --to/g"
-)
+echo "=> Making release"
+make -s release-commit release RELEASE="$RELEASE" GNUPLOADFLAGS="$GNUPLOADFLAGS"
 
 echo "=> Uploading"
 echo "Upload tarballs?"
-echo "$upload_command"
 ask_continue
-$upload_command
+make upload RELEASE="$RELEASE" GNUPLOADFLAGS="$GNUPLOADFLAGS"
 
 if [[ $REL_TYPE == "stable" ]]; then
     export CVSROOT=:ext:${CVSUSER:-${USER}}@cvs.savannah.gnu.org:/web/wget

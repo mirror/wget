@@ -1,5 +1,5 @@
 /* Reading/parsing the initialization file.
-   Copyright (C) 1996-2012, 2014-2015, 2018-2024 Free Software
+   Copyright (C) 1996-2012, 2014-2015, 2018-2024, 2026 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -206,6 +206,7 @@ static const struct {
   { "ftppasswd",        &opt.ftp_passwd,        cmd_string }, /* deprecated */
   { "ftppassword",      &opt.ftp_passwd,        cmd_string },
   { "ftpproxy",         &opt.ftp_proxy,         cmd_string },
+  { "ftprecursesymlinkdirs", &opt.ftp_recurse_symlink_dirs, cmd_boolean },
 #ifdef HAVE_SSL
   { "ftpscleardataconnection", &opt.ftps_clear_data_connection, cmd_boolean },
   { "ftpsfallbacktoftp", &opt.ftps_fallback_to_ftp, cmd_boolean },
@@ -447,6 +448,11 @@ defaults (void)
    * not create the symbolic links locally.
    */
   opt.retr_symlinks = true;
+
+  /* Disabled by default: a malicious FTP server could use circular
+     symlinks to cause excessive downloads.  Cycle detection mitigates
+     this, but the conservative default preserves historical behavior. */
+  opt.ftp_recurse_symlink_dirs = false;
 
 #ifdef HAVE_SSL
   opt.check_cert = CHECK_CERT_ON;
@@ -937,9 +943,9 @@ setval_internal_tilde (int comind, const char *com, const char *val)
   ret = setval_internal (comind, com, val);
 
   /* We make tilde expansion for cmd_file and cmd_directory */
-  if (((commands[comind].action == cmd_file) ||
+  if (ret && ((commands[comind].action == cmd_file) ||
        (commands[comind].action == cmd_directory))
-      && ret && (*val == '~' && ISSEP (val[1])))
+      && (*val == '~' && ISSEP (val[1])))
     {
       pstring = commands[comind].place;
       if (opt.homedir)

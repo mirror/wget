@@ -1,6 +1,6 @@
 /* Declarations for utils.c.
-   Copyright (C) 1996-2011, 2015, 2018-2024 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2024, 2026 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -31,8 +31,8 @@ as that of the covered work.  */
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <stdlib.h>
 #include <wget.h>
+#include <stdlib.h>
 
 /* Constant is using when we don`t know attempted size exactly */
 #define UNKNOWN_ATTEMPTED_SIZE -3
@@ -164,7 +164,7 @@ const char *print_decimal (double);
 long get_max_length (const char *path, int length, int name);
 
 #ifndef HAVE_STRLCPY
-size_t strlcpy (char *dst, const char *src, size_t size);
+size_t strlcpy (char * restrict dst, const char *  restrict src, size_t size);
 #endif
 
 void wg_hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len);

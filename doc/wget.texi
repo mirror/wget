@@ -31,7 +31,7 @@ This file documents the GNU Wget utility for downloading network
 data.
 
 @c man begin COPYRIGHT
-Copyright @copyright{} 1996--2011, 2015, 2018--2024 Free Software
+Copyright @copyright{} 1996--2011, 2015, 2018--2024, 2026 Free Software
 Foundation, Inc.
 
 @iftex
@@ -314,8 +314,8 @@ for text files.  Here is an example:
 ftp://host/directory/file;type=a
 @end example
 
-Two alternative variants of @sc{url} specification are also supported,
-because of historical (hysterical?) reasons and their widespreaded use.
+The two alternative variants of @sc{url} specifications are no longer
+supported because of security considerations:
 
 @sc{ftp}-only syntax (supported by @code{NcFTP}):
 @example
@@ -327,12 +327,8 @@ host:/dir/file
 host[:port]/dir/file
 @end example
 
-These two alternative forms are deprecated, and may cease being
-supported in the future.
-
-If you do not understand the difference between these notations, or do
-not know which one to use, just use the plain ordinary format you use
-with your favorite browser, like @code{Lynx} or @code{Netscape}.
+These two alternative forms have been deprecated long time ago,
+and support is removed with version 1.22.0.
 
 @c man begin OPTIONS
 
@@ -513,6 +509,13 @@ treated as @samp{html} if the Content-Type matches @samp{text/html}.
 Furthermore, the @var{file}'s location will be implicitly used as base
 href if none was specified.
 
+If the @var{file} is a local file, on systems that support it, it will be
+opened with the @code{O_NONBLOCK} flag to allow non-blocking reads from the
+file. @samp{Wget} will attempt to continue reading from the file until
+EOF is reached or it is closed. This allows one to stream a list of files
+for retrieval where the list is dynamically generated during the execution
+of the process. Currently, this feature is not available on Windows platforms.
+
 @cindex input-metalink
 @item --input-metalink=@var{file}
 Downloads files covered in local Metalink @var{file}. Metalink version 3
@@ -631,7 +634,7 @@ Wget needs to be built with libcares for this option to be available.
 @item -t @var{number}
 @itemx --tries=@var{number}
 Set number of tries to @var{number}. Specify 0 or @samp{inf} for
-infinite retrying.  The default is to retry 20 times, with the exception
+infinite retrying.  The default is to try 20 times, with the exception
 of fatal errors like ``connection refused'' or ``not found'' (404),
 which are not retried.
 
@@ -2139,8 +2142,8 @@ Preserve remote file permissions instead of permissions set by umask.
 @item --retr-symlinks
 By default, when retrieving @sc{ftp} directories recursively and a symbolic link
 is encountered, the symbolic link is traversed and the pointed-to files are
-retrieved.  Currently, Wget does not traverse symbolic links to directories to
-download them recursively, though this feature may be added in the future.
+retrieved.  By default, Wget does not traverse symbolic links whose target is
+a directory; see @samp{--ftp-recurse-symlink-dirs} to enable that.
 
 When @samp{--retr-symlinks=no} is specified, the linked-to file is not
 downloaded.  Instead, a matching symbolic link is created on the local
@@ -2154,6 +2157,27 @@ Note that when retrieving a file (not a directory) because it was
 specified on the command-line, rather than because it was recursed to,
 this option has no effect.  Symbolic links are always traversed in this
 case.
+
+@cindex symbolic links, directories, recursion
+@item --ftp-recurse-symlink-dirs
+When retrieving @sc{ftp} directories recursively, descend through
+symbolic links whose target is a directory on the server.  Without this
+option, symbolic links to directories are either materialized as local
+symbolic links (when @samp{--retr-symlinks=no}) or retrieved as files
+(the failure of which is silently ignored), and their contents are never
+explored.
+
+Wget performs server-side descent: the symlink's name is used in a
+@sc{cwd} command, and the server resolves the target.  Cycles are
+detected by canonicalizing each symlink's target path (relative targets
+are resolved against the current remote directory) and tracking them in
+a per-session set; a symlink whose target has already been descended
+through is skipped with a diagnostic.
+
+This option is disabled by default because a malicious @sc{ftp} server
+could craft a listing with symlinks that amplify recursion cost or
+redirect descent outside the intended subtree.  Combine with
+@samp{--exclude-directories} and @samp{--level} to bound the crawl.
 @end table
 
 @section FTPS Options

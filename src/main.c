@@ -1,5 +1,6 @@
 /* Command line parsing.
-   Copyright (C) 1996-2015, 2018-2024 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015, 2018-2024, 2026 Free Software Foundation,
+   Inc.
 
 This file is part of GNU Wget.
 
@@ -325,6 +326,7 @@ static struct cmdline_option option_data[] =
 #ifdef __VMS
     { "ftp-stmlf", 0, OPT_BOOLEAN, "ftpstmlf", -1 },
 #endif /* def __VMS */
+    { "ftp-recurse-symlink-dirs", 0, OPT_BOOLEAN, "ftprecursesymlinkdirs", -1 },
     { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
     IF_SSL ( "ftps-clear-data-connection", 0, OPT_BOOLEAN, "ftpscleardataconnection", -1 )
     IF_SSL ( "ftps-fallback-to-ftp", 0, OPT_BOOLEAN, "ftpsfallbacktoftp", -1 )
@@ -696,13 +698,13 @@ Download:\n"),
        --read-timeout=SECS         set the read timeout to SECS\n"),
     N_("\
   -w,  --wait=SECONDS              wait SECONDS between retrievals\n\
-                                     (applies if more then 1 URL is to be retrieved)\n"),
+                                     (applies if more than 1 URL is to be retrieved)\n"),
     N_("\
        --waitretry=SECONDS         wait 1..SECONDS between retries of a retrieval\n\
-                                     (applies if more then 1 URL is to be retrieved)\n"),
+                                     (applies if more than 1 URL is to be retrieved)\n"),
     N_("\
        --random-wait               wait from 0.5*WAIT...1.5*WAIT secs between retrievals\n\
-                                     (applies if more then 1 URL is to be retrieved)\n"),
+                                     (applies if more than 1 URL is to be retrieved)\n"),
     N_("\
        --no-proxy                  explicitly turn off proxy\n"),
     N_("\
@@ -917,6 +919,8 @@ FTP options:\n"),
        --preserve-permissions      preserve remote file permissions\n"),
     N_("\
        --retr-symlinks             when recursing, get linked-to files (not dir)\n"),
+    N_("\
+       --ftp-recurse-symlink-dirs  when recursing, descend into symlinks to directories\n"),
     "\n",
 
 #ifdef HAVE_SSL
@@ -2126,7 +2130,7 @@ only if outputting to a regular file.\n"));
       struct iri *iri = iri_new ();
       struct url *url_parsed;
 
-      t = rewrite_shorthand_url (argv[optind]);
+      t = maybe_prepend_scheme (argv[optind]);
       if (!t)
         t = argv[optind];
 

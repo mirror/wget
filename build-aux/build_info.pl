@@ -2,7 +2,8 @@
 
 # Generate build_info.c.
 
-# Copyright (C) 2009-2011, 2018-2024 Free Software Foundation, Inc.
+# Copyright (C) 2009-2011, 2018-2024, 2026 Free Software Foundation,
+# Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -132,8 +133,7 @@ __DATA__
 /* This stores global variables that are initialized with
    preprocessor declarations for output with the --version flag.
 
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-   2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.  */
+   Copyright (C) 1996-2009, 2026 Free Software Foundation, Inc.  */
 
 #include "wget.h"
 #include <stdio.h>

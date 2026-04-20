@@ -1,6 +1,6 @@
 /* Collect URLs from HTML source.
-   Copyright (C) 1998-2012, 2015, 2018-2024 Free Software Foundation,
-   Inc.
+   Copyright (C) 1998-2012, 2015, 2018-2024, 2026 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -932,7 +932,7 @@ get_urls_file (const char *file, bool *read_again)
           url_text = merged;
         }
 
-      new_url = rewrite_shorthand_url (url_text);
+      new_url = maybe_prepend_scheme (url_text);
       if (new_url)
         {
           xfree (url_text);

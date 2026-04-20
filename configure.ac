@@ -1,6 +1,6 @@
 dnl Template file for GNU Autoconf
-dnl Copyright (C) 1995-1997, 2001, 2007-2014, 2018-2024 Free Software
-dnl Foundation, Inc.
+dnl Copyright (C) 1995-1997, 2001, 2007-2014, 2018-2024, 2026 Free
+dnl Software Foundation, Inc.
 
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -398,6 +398,8 @@ if test -n "$WARN_CFLAGS"; then
     nw="$nw -Wnested-externs" # Stylistic choice and we do use it in hsts code
     nw="$nw -Wc90-c99-compat" # gcc-12, we use C99
     nw="$nw -Wlong-long" # gcc-12, we use C99
+    nw="$nw -Wc99-c11-compat" # gnulib is at C11
+    nw="$nw -Wuseless-cast" # gcc-14 warns about it (pretty useless for portable code)
     if test "$cross_compiling" = yes; then
       nw="$nw -Wformat"
     fi

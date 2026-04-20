@@ -1,5 +1,5 @@
 /* mswindows.c -- Windows-specific support
-   Copyright (C) 1996-2011, 2014-2015, 2018-2024 Free Software
+   Copyright (C) 1996-2011, 2014-2015, 2018-2024, 2026 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -309,6 +309,17 @@ cleanup:
 
   /* We failed, return.  */
 }
+
+
+/*
+ * This is the corresponding Windows implementation of
+ * set_fd_nonblocking() function in utils.c
+ * Currently it is an empty no-op. Maybe, we will get to
+ * implementing a nice solution one day
+ */
+void
+set_fd_nonblocking(const int fd)
+{}
 
 /* This is the corresponding Windows implementation of the
    fork_to_background() function in utils.c.  */

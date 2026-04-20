@@ -1,5 +1,5 @@
 /* Declarations for res.c.
-   Copyright (C) 2001, 2007-2011, 2015, 2018-2024 Free Software
+   Copyright (C) 2001, 2007-2011, 2015, 2018-2024, 2026 Free Software
    Foundation, Inc.
 
 This file is part of Wget.

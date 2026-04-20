@@ -1,6 +1,6 @@
 /* struct options.
-   Copyright (C) 1996-2011, 2015, 2018-2024 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2011, 2015, 2018-2024, 2026 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -117,6 +117,9 @@ struct options
                                    retrieving? */
   bool retr_symlinks;           /* Whether we retrieve symlinks in
                                    FTP. */
+  bool ftp_recurse_symlink_dirs;/* When recursing over FTP, descend
+                                   through symlinks whose target is a
+                                   directory. */
   char *output_document;        /* The output file to which the
                                    documents will be printed.  */
   char *warc_filename;          /* WARC output filename */

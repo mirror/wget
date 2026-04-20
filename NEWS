@@ -2,6 +2,22 @@ GNU Wget NEWS -- history of user-visible changes.
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Add --ftp-recurse-symlink-dirs option to descend into FTP directory
+   symlinks during recursive retrieval.  Cycle detection prevents
+   infinite loops from circular symlinks.
+
+
+* Noteworthy changes in release 1.25.0 (2024-11-10) [stable]
+
+** [Breaking change] Drop support for shorthand FTP URLs (CVE-2024-10524)
+
+** [Breaking change] Switch to continuous reading from stdin pipes
+
+** Reimplement user-info parsing based on RFC 2396
+
+** Fix a build issue with libproxy and --disable-debug
+
+
 
 * Noteworthy changes in release 1.24.5 (2024-03-10) [stable]
 
@@ -1218,7 +1234,7 @@ geturl -vo log http://fly.cc.fer.hr/
 ----------------------------------------------------------------------
 Copyright information:
 
-Copyright (C) 1997-2024 Free Software Foundation, Inc.
+Copyright (C) 1997-2024, 2026 Free Software Foundation, Inc.
 
    Permission is granted to anyone to make or distribute verbatim
    copies of this document as received, in any medium, provided that

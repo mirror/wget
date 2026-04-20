@@ -1,6 +1,6 @@
 /* Hash tables.
-   Copyright (C) 2000-2011, 2015, 2018-2024 Free Software Foundation,
-   Inc.
+   Copyright (C) 2000-2011, 2015, 2018-2024, 2026 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -33,6 +33,8 @@ as that of the covered work.  */
 
 #ifndef STANDALONE
 # include "wget.h"
+#else
+# include "config.h"
 #endif
 
 #include <stdio.h>

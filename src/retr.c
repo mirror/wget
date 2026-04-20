@@ -1,5 +1,5 @@
 /* File retrieval.
-   Copyright (C) 1996-2011, 2014-2015, 2018-2024 Free Software
+   Copyright (C) 1996-2011, 2014-2015, 2018-2024, 2026 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -1182,6 +1182,8 @@ static uerr_t retrieve_from_url_list(struct urlpos *url_list, int *count, struct
   struct urlpos *cur_url;
   uerr_t status;
 
+  status = RETROK;             /* Suppose everything is OK.  */
+
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {
       char *filename = NULL, *new_file = NULL, *proxy;
@@ -1267,7 +1269,6 @@ retrieve_from_file (const char *file, bool html, int *count)
   char *input_file, *url_file = NULL;
   const char *url = file;
 
-  status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */
 
   /* sXXXav : Assume filename and links in the file are in the locale */
@@ -1545,7 +1546,7 @@ getproxy (struct url *u)
 
   /* Handle shorthands.  `rewritten_storage' is a kludge to allow
      getproxy() to return static storage. */
-  rewritten_url = rewrite_shorthand_url (proxy);
+  rewritten_url = maybe_prepend_scheme (proxy);
   if (rewritten_url)
     return rewritten_url;
 

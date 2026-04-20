@@ -69,9 +69,6 @@ Build-Tarball:
         - make -j$(nproc) syntax-check
         - make -j$(nproc) dist
         - mv wget-*.gz ..
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     artifacts:
@@ -100,9 +97,6 @@ Valgrind:
         - cd wget-*/
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make check-valgrind
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
@@ -131,9 +125,6 @@ Minimal:
           --disable-iri --disable-ntlm --disable-pcre --without-libpsl --without-libuuid
           --without-libintl-prefix
         - make -j$(nproc) check-valgrind
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
@@ -160,9 +151,6 @@ Debian-OldStable:
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make
         - make -j$(nproc) check
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
@@ -188,9 +176,6 @@ Debian-Stable:
         - cd wget-*/
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make -j$(nproc) check
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
@@ -217,9 +202,6 @@ CentOS-OldLTS:
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
         - make -j$(nproc)
         - make -j$(nproc) check
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
@@ -250,9 +232,6 @@ TLS/OpenSSL:
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache --with-ssl=openssl
         - make -j$(nproc)
         - make -j$(nproc) check-valgrind
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
@@ -281,9 +260,6 @@ TLS/GnuTLS:
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache --with-ssl=gnutls
         - make -j$(nproc)
         - make -j$(nproc) check-valgrind
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
@@ -316,9 +292,6 @@ Sanitizers:
         - ./configure $CONFIGURE_BASE_FLAGS --cache-file ../cache/config.cache
             --enable-fsanitize-asan --enable-fsanitize-ubsan
         - make -j$(nproc) check
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     dependencies:
@@ -346,9 +319,6 @@ Scan-Build:
         - make -C lib -j$(nproc)
         - make -C src css_.o
         - scan-build -v -enable-checker nullability --keep-empty --status-bugs -o ../scan-build make -j$(nproc)
-    tags:
-        - shared
-        - linux
     except:
         - tags
         - coverity-scan@gnuwget/wget
@@ -379,9 +349,6 @@ CoverageReports:
         - make -j$(nproc) fuzz-coverage
         - mv lcov ../fuzz-coverage
         - make dist
-    tags:
-        - shared
-        - linux
     dependencies:
         - Build-Tarball
     needs: ["Build-Tarball"]
@@ -390,8 +357,8 @@ CoverageReports:
         paths:
             - test-coverage/
             - fuzz-coverage/
-    only:
-        - master
+#    only:
+#        - master
 
 MinGW64:
     stage: test-from-tarball
@@ -413,9 +380,6 @@ MinGW64:
         - make -j$(nproc)
         - cp -p src/wget.exe src/wget
         - make check -j$(nproc) LOG_COMPILER=wine
-    tags:
-        - shared
-        - linux
     except:
         - tags
         - coverity-scan@gnuwget/wget
@@ -446,9 +410,6 @@ ArchLinux:
         - ./configure $CONFIGURE_BASE_FLAGS
         - make -j$(nproc)
         - make check -j$(nproc)
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     needs: []
@@ -472,9 +433,6 @@ Fedora:
         - touch .manywarnings
         - ./configure $CONFIGURE_BASE_FLAGS
         - make -j$(nproc) check
-    tags:
-        - shared
-        - linux
     except:
         - coverity-scan@gnuwget/wget
     needs: []
